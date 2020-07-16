@@ -1,0 +1,81 @@
+-- note 指针
+TUID Note (
+	id,
+	owner ID [$User],
+	rNote ID RNote,
+	index owner_note([owner], rNote) unique,
+);
+
+TAG NoteTag;
+
+MAP NoteTagMap (
+	KEY note ID Note,
+	KEY tag TAG NoteTag,
+	INDEX tag_note(tag, note) unique,
+);
+
+ENUM EnumNoteType (Text=0);
+
+-- 包含内容的note
+-- type: 根据type，分配给特定的程序
+-- sub: 特定程序下的操作。每一类操作是sub
+TUID RNote (
+	id,
+	main caption CHAR(200),				-- 标题
+	main content TEXT,					-- 内容，格式根据type而定，json
+	x TINYINT DEFAULT 0,				-- 删除标志
+	stamp (create, update) main,
+);
+
+-- Note 操作中附件的信息
+MAP RNoteEx (
+	KEY rNote ID RNote,
+	KEY exId ID,						-- 不断附加的id，跟操作相关
+	ex TEXT,							-- 附加信息，json
+);
+
+ENUM EnumNoteFlag (None=0, Pin=1, Archive=2);
+
+-- flag, end 主要控制 RNote 本身的操作
+-- state由特定程序定义，是json
+MAP RNoteCur (
+	KEY rNote ID RNote,
+	type SMALLINT DEFAULT 0,			-- Note类, EnumNoteType
+	sub SMALLINT DEFAULT 0,				-- Note类下面的小类，比如，todo-start, todo-doing, done, pass, fail, rated
+	flag TINYINT DEFAULT 0,				-- EnumNoteFlag
+	end TINYINT DEFAULT 0,				-- 1: end, can be archive
+	state TEXT,							-- 由特定程序自己定义的特定的当前状态，json
+);
+
+ACTION AddNote(
+	owner ID,
+	rNote ID,
+) {
+
+};
+
+ACTION AddRNote (
+	caption CHAR(200),
+	content TEXT,
+)
+RETURNS ret (
+	anchor ID,
+	rNote ID RNote,
+) {
+	VAR rNoteId ID, noteId ID, anchorId ID, folderId ID;
+	TUID RNote INTO rNoteId SET caption=caption, content=content;
+	TUID Note INTO noteId SET owner=$user, rNote=rNoteId;
+	TUID Anchor INTO anchorId SET note=noteId;
+	SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
+	BOOK FolderAnchor AT(folderId, anchorId);
+	BOOK RNoteCur AT(rNoteId) SET type=0;
+	INTO ret SELECT anchorId as anchor, rNoteId as rNote;
+};
+
+ACTION SetRNote (
+	rNote ID,
+	caption CHAR(200),
+	content TEXT,
+) {
+	TUID RNote ID rNote SET caption=caption, content=content;
+};

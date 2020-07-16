@@ -1,0 +1,253 @@
+TUID Assign ver 1.1 (
+	id,
+	main caption CHAR(200),
+	main owner ID [$User],
+	main point INT,						-- 分数，通常是工作分钟数
+	discription TEXT,
+
+	checker ID [$User],					-- null 就是owner
+	rater ID [$User],					-- null 就是owner
+
+	stamp (create, update),
+	INDEX owner_id (owner, id) UNIQUE,
+
+	-- may be removed
+	open TINYINT DEFAULT 1, 			-- 0: 指定人，1：一个人，2：任何人
+);
+
+TUID AssignItem (
+	id,
+	assign ID Assign,
+	discription TEXT,
+	INDEX assign_id(assign, id) UNIQUE,
+);
+
+-- 作业的检查，评分，等环节相关的人
+MAP AssignOperator (
+	KEY assign ID Assign,
+	KEY type TINYINT,			-- 1:checker, 2: rater. 暂时就这些
+);
+
+-- 布置对象
+MAP AssignTo (
+	KEY assign ID Assign,
+	KEY to ID [$user],
+);
+
+-- 我正在处理中的Assign
+BOOK MyAssign (
+	KEY me ID [$User],
+	KEY assign ID Assign,
+	end TINYINT DEFAULT 0,		-- 1: end
+);
+
+-- 我处理过的已经归档作业
+BOOK ArchiveMyAssign (
+	KEY me ID [$User],
+	KEY assign ID Assign,
+);
+
+BOOK AssignEx (
+	KEY assign ID Assign,
+	group ID [Group],
+	end TINYINT DEFAULT 0,							-- 1: end
+	-- INDEX assign_group(assign, group) UNIQUE,
+	-- INDEX assign_group(assign) UNIQUE,				-- assign 只允许在一个group存在，所以index应该assign单独唯一
+	INDEX group_assign(group, assign) UNIQUE,
+);
+
+/*
+BOOK ArchiveGroupAssign (
+	KEY group ID [Group],
+	KEY assign ID Assign,
+);
+*/
+
+-- 这个表未来会去掉
+BOOK AssignToGroup (
+	KEY assign ID Assign,
+	group ID Group,
+);
+
+MAP AssignProject (
+	KEY assign ID Assign,
+	project ID Project,
+);
+
+ACTION NewAssign (
+	caption CHAR(100),
+	point SMALLINT,
+) RETURNS ret (
+	id ID,
+) {
+	var assignId ID;
+	TUID Assign INTO assignId SET caption=caption, owner=$user, point=point;
+	BOOK MyAssign at($user, assignId);
+	INTO ret SELECT assignId as id;
+};
+
+ACTION PublishAssign ver 1.0 (
+	groupId ID Group,
+	assignId ID Assign,
+)
+RETURNS ret (
+	note ID
+){
+	VAR note ID;
+	TUID Note INTO note SET [group]=[groupId], type=EnumNoteType.Assign, obj=assignId, owner=$user;
+	BOOK AssignToGroup at(assignId) SET group=groupId;
+	FOREACH (VAR member ID OF SELECT a.member FROM GroupMember as a WHERE a.[group]=[groupId]) {
+		BOOK MyGroup at(member, [groupId]) SET time=$date, unread+=1;
+		TUID [$User] ID (member) SET poke=1;
+	}
+	INTO ret SELECT [note];
+};
+
+ACTION SaveAssignProject (
+	assignId ID Assign,
+	projectId ID Project,
+)
+RETURNS ret (
+	assign ID
+){
+	BOOK AssignProject at(assignId) SET project=projectId;
+	INTO ret SELECT assignId as assign;
+};
+
+QUERY GetAssign (
+	assignId ID,
+)
+RETURNS assign (
+	id ID,
+	caption CHAR(100),
+	discription TEXT,
+	owner ID,
+	checker ID,
+	rater ID,
+	open TINYINT,
+	point SMALLINT,
+	groupId ID,
+	end TINYINT,
+	groupMemberCount SMALLINT,
+	[$create] TIMESTAMP, 
+	[$update] TIMESTAMP
+)
+RETURNS items (
+	id ID,
+	discription TEXT,
+)
+RETURNS tasks (
+	id ID,
+	worker ID,
+	[$create] TIMESTAMP,
+	actionTime TIMESTAMP,
+	state TINYINT,
+	end TINYINT,
+	point SMALLINT,
+	pointDone SMALLINT,
+	pointRate SMALLINT,
+	likes TINYINT,
+) 
+RETURNS todos (
+	id ID,
+	task ID,
+	assignItem ID,					-- if null, worker added
+	discription TEXT,
+	x TINYINT,						-- 0: normal, 1: deleted
+	[$update] TIMESTAMP,
+	done TINYINT,
+	doneMemo TEXT,
+	check TINYINT,
+	checkMemo TEXT,
+)
+RETURNS toList (
+	to ID,							-- $user 
+)
+{
+	INTO assign SELECT a.id, a.caption, a.discription, a.owner
+		, a.checker, a.rater
+		, a.open, a.point
+		, b.[group] as groupId
+		, b.[end]
+		, (SELECT count(*) FROM GroupMember WHERE [group]=b.[group]) as groupMemberCount
+		, a.[$create]
+		, a.[$update]
+		FROM Assign as a JOIN AssignEx as b on a.id=b.assign
+		WHERE a.id=assignId;
+	INTO items SELECT a.id, a.discription
+		FROM AssignItem as a
+		WHERE a.assign=assignId
+		ORDER BY a.id;
+	INTO tasks SELECT a.id, a.worker, a.[$create], b.date as actionTime
+		, b.state, b.end, c.point, b.pointDone, b.pointRate, b.likes
+		FROM Task as a 
+			LEFT JOIN TaskState as b on a.id=b.task
+			LEFT JOIN Assign as c on a.assign=c.id
+		WHERE a.assign=assignId;
+	INTO todos SELECT a.id, a.task, a.assignItem, a.discription, a.x, a.[$update]
+		, a.done, a.doneMemo, a.check, a.checkMemo
+		FROM Todo as a
+			JOIN Task as b ON a.task=b.id
+			WHERE b.assign=assignId
+			ORDER BY a.task, a.id;
+	INTO toList SELECT [to]
+		FROM AssignTo
+		WHERE assign=assignId;
+};
+
+-- 获取我布置的任务
+QUERY GetMyAssigns (
+	archived TINYINT,		-- 0 or null: 当前任务，1：归档任务
+)
+PAGE (
+	id ID desc,
+	caption CHAR(100),
+	discription TEXT,
+	point SMALLINT,
+	[$create] TIMESTAMP, 
+	[$update] TIMESTAMP,
+) 
+RETURNS tasks (
+	assign ID,
+	id ID,
+	worker ID,
+	[$create] TIMESTAMP,
+	state TINYINT,
+	end TINYINT,
+	date TIMESTAMP,
+	point SMALLINT,
+	pointDone SMALLINT,
+	pointRate SMALLINT,
+	likes TINYINT,
+) {
+	IF archived IS NULL {
+		SET archived = 0;
+	}
+	IF archived=1 {
+		Page SELECT a.id, a.caption, a.discription, a.point,
+			a.[$create], 
+			a.[$update]
+			FROM Assign as a LEFT JOIN MyAssign as b ON a.id=b.assign AND b.me=$user
+			WHERE a.owner=$user AND b.assign is null And a.id<$pageStart
+			ORDER BY a.id DESC
+			LIMIT $pageSize;
+	}
+	else {
+		Page SELECT a.id, a.caption, a.discription, a.point,
+			a.[$create], 
+			a.[$update]
+			FROM MyAssign as b JOIN Assign as a ON b.assign=a.id
+			WHERE b.me=$user AND a.id<$pageStart
+			ORDER BY a.id DESC
+			LIMIT $pageSize;
+	}
+	INTO tasks SELECT a.id as assign, b.id, b.worker, 
+		b.[$create], 
+		c.state, c.end, c.date, d.point, c.pointDone, c.pointRate, c.likes
+		FROM [$Page] as a 
+			JOIN Task as b ON a.id=b.assign
+			LEFT JOIN TaskState as c on b.id=c.task
+			LEFT JOIN Assign as d on b.assign=d.id;
+
+};
+

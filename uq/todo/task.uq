@@ -1,0 +1,393 @@
+-- 	state TINYINT DEFAULT 0, 	-- 0:初建，10:待办，20:在办，30:已办，40:完成，50:取消
+ENUM EnumTaskState (
+	start=0, 
+	todo=20, doing=21, done=22, 
+	pass=40, fail=41,
+	rated=60,
+	cancel=-40);
+ENUM EnumTaskAct (todo=20, done=22, check=40, rate=60, cancel=-40);
+
+-- Task拥有一个或者多个Todo
+TUID Task (
+	id,
+	assign ID Assign,
+	worker ID [$User],
+	stamp (create),
+
+	INDEX assign_worker (assign, worker) UNIQUE,
+);
+
+TUID Todo ver 1.3 (
+	id,
+	task ID Task,
+	assignItem ID AssignItem,			-- if null, worker added
+	discription TEXT,
+	x TINYINT DEFAULT 0,				-- 0: normal, 1: deleted
+	stamp (update),
+	done TINYINT,
+	doneMemo TEXT,
+	check TINYINT,
+	checkMemo TEXT,
+	
+	INDEX task_id (task, id) UNIQUE,
+);
+
+BOOK TaskState ver 1.2 (
+	KEY task ID [Task],
+	end TINYINT DEFAULT 0,			-- 1: end
+	state TINYINT DEFAULT 0,		-- EnumTaskState
+	date TIMESTAMP,
+	-- point INT,					-- 通常是分钟数，从Assign带过来的，直接用Assign里面的point
+	pointDone SMALLINT,				-- 实际完成分钟数
+	pointRate SMALLINT,				-- 评估分钟数
+	likes TINYINT,					-- 点赞数
+);
+
+BOOK TaskFlow ver 1.2 (
+	KEY task ID [Task],
+	KEY seq TINYINT,				-- 顺序加1
+	user ID [$User], 
+	act TINYINT,					-- EnumTaskAct
+	state TINYINT,					-- 0:初建，10:领办，20:已办，30:拒办，40:取消
+	date TIMESTAMP,
+	comment TEXT,
+);
+
+BOOK MyTask (
+	KEY me ID [$User],
+	KEY task ID [Task],
+);
+
+QUERY GetTaskFlow(taskId ID)
+RETURNS ret (
+	user ID, 
+	act TINYINT,					-- EnumTaskAct
+	state TINYINT,					-- 0:初建，10:领办，20:已办，30:拒办，40:取消
+	date TIMESTAMP,
+	comment TEXT,
+) {
+	INTO ret SELECT user, act, state, date, comment 
+		FROM TaskFlow
+		WHERE task=taskId
+		ORDER BY seq;
+};
+
+/*
+BOOK MyTaskArchive (
+	KEY me ID [$User],
+	KEY step TINYINT DEFAULT 0,	-- EnumTaskAct
+	KEY task ID [Task],
+);
+*/
+
+-- 领办布置的任务，返回task id
+ACTION TakeAssign (
+	assignId ID Assign,
+	ARR todos (
+		assignItem ID,
+		discription TEXT,
+	)
+)
+RETURNS ret (
+	task ID,
+	step TINYINT,
+	state TINYINT,
+	group ID,
+) {
+	VAR taskId ID, step TINYINT, state TINYINT;
+	SET taskId=a.id FROM Task as a WHERE a.assign=assignId and a.worker=$user;
+	IF taskId IS NULL {
+		TUID Task INTO taskId SET assign=assignId, worker=$user;
+		/*
+		FOREACH (VAR itemId ID, discription TEXT 
+			OF SELECT a.id as itemId, a.discription FROM AssignItem as a
+			WHERE a.assign=assignId)
+		*/
+		FOREACH todos
+		{
+			-- TUID Todo SET task=taskId, assignItem=itemId, discription=discription;
+			TUID Todo SET task=taskId, assignItem=assignItem, discription=discription;
+		}
+		SET step = EnumTaskAct.todo;
+		SET state = EnumTaskState.todo;
+		BOOK MyTask at($user, taskId);
+		BOOK Me at($user) SET tickTodo=$date;
+		// BOOK MyTaskArchive at($user, step, taskId);
+		BOOK TaskState at(taskId) Set state=state;
+		BOOK TaskFlow at(taskId, 1) SET user=$user, act=step, state=state;
+		INTO ret SELECT taskId as task, step, state, 
+			(SELECT a.[group] FROM AssignToGroup as a WHERE a.assign=assignId) as [group];
+	}
+};
+
+-- 办理任务，进入checker的队列
+ACTION TaskDone (
+	taskId ID Task,
+	pointDone SMALLINT,
+) 
+RETURNS ret (
+	task ID,
+	step TINYINT,
+	state TINYINT,
+	group ID,
+) {
+	VAR worker ID, checker ID, assignId ID, seq TINYINT, step TINYINT, state TINYINT;
+	SET worker=a.worker, checker=IFNULL(b.checker, b.owner), assignId=a.assign 
+		FROM Task as a JOIN Assign as b ON a.assign=b.id 
+		WHERE a.id=taskId;
+	DELETE FROM MyTask WHERE me=worker AND task=taskId;
+	BOOK Me at(worker) SET tickTodo=$date;
+	SET step = EnumTaskAct.done;
+	SET state = EnumTaskState.done;
+	BOOK MyTask at(checker, taskId);
+	BOOK Me at(checker) SET tickTodo=$date;
+	// BOOK MyTaskArchive at($user, step, taskId);
+	BOOK TaskState at(taskId) Set state=state, pointDone=pointDone;
+	SET seq = (SELECT max(seq)+1 FROM TaskFlow WHERE task=taskId);
+	BOOK TaskFlow at(taskId, seq) SET user=$user, act=step, state=state;
+	INTO ret SELECT taskId as task, step, state, 
+		(SELECT a.[group] FROM AssignToGroup as a WHERE a.assign=assignId) as [group];
+};
+
+-- Pass任务，进入owner的队列
+ACTION TaskPass (
+	taskId ID Task,
+)
+RETURNS ret (
+	task ID,
+	step TINYINT,
+	state TINYINT,
+	group ID,
+) {
+	VAR checker ID, owner ID, assignId ID, seq TINYINT, step TINYINT, state TINYINT;
+	SET owner=b.owner, checker=IFNULL(b.checker, b.owner), assignId=a.assign 
+		FROM Task as a JOIN Assign as b ON a.assign=b.id
+		WHERE a.id=taskId;
+	DELETE FROM MyTask WHERE me=checker AND task=taskId;
+	BOOK Me at(checker) SET tickTodo=$date;
+	SET step = EnumTaskAct.check;
+	SET state = EnumTaskState.pass;
+	BOOK MyTask at(owner, taskId);
+	BOOK Me at(owner) SET tickTodo=$date;
+	// BOOK MyTaskArchive at($user, step, taskId);
+	BOOK TaskState at(taskId) Set state=state;
+	SET seq = (SELECT max(seq)+1 FROM TaskFlow WHERE task=taskId);
+	BOOK TaskFlow at(taskId, seq) SET user=$user, act=step, state=state;
+	INTO ret SELECT taskId as task, step, state, 
+		(SELECT a.[group] FROM AssignToGroup as a WHERE a.assign=assignId) as [group];
+};
+
+-- Fail任务，进入worker和owner的队列
+ACTION TaskFail (
+	taskId ID Task,
+)
+RETURNS ret (
+	task ID,
+	step TINYINT,
+	state TINYINT,
+	group ID,
+) {
+	VAR worker ID, owner ID, checker ID, assignId ID, seq TINYINT, step TINYINT, state TINYINT;
+	SET worker=a.worker, owner=b.owner, checker=IFNULL(b.checker, b.owner), assignId=a.assign  
+		FROM Task as a JOIN Assign as b ON a.assign=b.id
+		WHERE a.id=taskId;
+	DELETE FROM MyTask WHERE me=checker AND task=taskId;
+	BOOK Me at(checker) SET tickTodo=$date;
+	SET step = EnumTaskAct.check;
+	SET state = EnumTaskState.fail;
+	BOOK MyTask at(worker, taskId);
+	BOOK Me at(worker) SET tickTodo=$date;
+	BOOK MyTask at(owner, taskId);
+	BOOK Me at(owner) SET tickTodo=$date;
+	// BOOK MyTaskArchive at($user, step, taskId);
+	BOOK TaskState at(taskId) Set state=state;
+	SET seq = (SELECT max(seq)+1 FROM TaskFlow WHERE task=taskId);
+	BOOK TaskFlow at(taskId, seq) SET user=$user, act=step, state=state;
+	INTO ret SELECT taskId as task, step, state, 
+		(SELECT a.[group] FROM AssignToGroup as a WHERE a.assign=assignId) as [group];
+};
+
+-- Rate任务，archive
+ACTION TaskRate (
+	taskId ID Task,
+	pointRate SMALLINT,
+)
+RETURNS ret (
+	task ID,
+	step TINYINT,
+	state TINYINT,
+	group ID,
+) {
+	VAR owner ID, checker ID, open TINYINT, assignId ID, step TINYINT, state TINYINT, seq TINYINT;
+	SET owner=b.owner, checker=IFNULL(b.checker, b.owner), open=b.open, assignId=a.assign
+		FROM Task as a JOIN Assign as b ON a.assign=b.id
+		WHERE a.id=taskId;
+	DELETE FROM MyTask WHERE me=owner AND task=taskId;
+	BOOK Me at(owner) SET tickTodo=$date;
+
+	SET step=EnumTaskAct.rate;
+	-- open=1，自动归档，否则，手动归档
+	IF open=1 {
+		DELETE FROM MyAssign WHERE me=owner AND assign=assignId;
+		Set state=EnumTaskState.rated;
+	}
+	else {
+		SET state=EnumTaskState.rated;
+	}
+	BOOK TaskState at(taskId) Set state=state, pointRate=pointRate;
+	SET seq = (SELECT max(seq)+1 FROM TaskFlow WHERE task=taskId);
+	BOOK TaskFlow at(taskId, seq) SET user=$user, state=state;
+	// BOOK MyTaskArchive at($user, step, taskId);
+	INTO ret SELECT taskId as task, step, state, 
+		(SELECT a.[group] FROM AssignToGroup as a WHERE a.assign=assignId) as [group];
+};
+
+-- 获取我的在办任务
+QUERY GetMyTasks (
+)
+PAGE (
+	task ID ASC,
+	assign ID Assign,
+	worker ID,
+	[$create] TIMESTAMP,
+	state TINYINT,
+	date TIMESTAMP,
+	point SMALLINT,
+	pointDone SMALLINT,
+	pointRate SMALLINT,
+	likes TINYINT,
+) {
+	Page SELECT a.task, b.assign, b.worker, 
+		b.[$create], c.state, 
+		c.date, d.point, c.pointDone, c.pointRate, c.likes
+		FROM MyTask as a 
+			JOIN Task as b on a.task=b.id			
+			LEFT JOIN TaskState as c on b.id=c.task
+			LEFT JOIN Assign as d on b.assign=d.id
+		WHERE a.me=$user and a.task>$pageStart
+		ORDER BY a.task ASC
+		LIMIT $pageSize;
+};
+
+
+QUERY GetTask ver 1.0 (
+	taskId ID,
+)
+RETURNS task (
+	id ID,
+	assign ID,
+	caption CHAR(100),
+	discription TEXT,
+	owner ID [$User],
+	[$create] TIMESTAMP, 
+	[$update] TIMESTAMP,
+	state TINYINT,
+	point SMALLINT,
+	pointDone SMALLINT,
+	pointRate SMALLINT,
+	likes TINYINT,
+)
+RETURNS todos (
+	id ID,
+	discription TEXT,
+	assignItem ID,
+	x TINYINT,				-- 0: normal, 1: deleted
+	[$update] TIMESTAMP,
+	done TINYINT,
+	doneMemo TEXT,
+	check TINYINT,
+	checkMemo TEXT,
+)
+RETURNS meTask (
+	me ID [$User],
+	state TINYINT,			-- EnumTaskState
+)
+RETURNS flow (
+	date DATETIME,
+	user ID,
+	state TINYINT,					-- EnumTaskState
+	comment TEXT,
+) {
+	INTO task SELECT a.id, a.assign, b.caption, b.discription, b.owner, 
+		b.[$create], 
+		b.[$update], 
+		c.state, b.point, c.pointDone, c.pointRate, c.likes
+		FROM Task as a 
+			LEFT JOIN Assign as b ON a.assign=b.id
+			LEFT JOIN TaskState as c ON a.id=c.task
+		WHERE a.id=taskId;
+
+	INTO todos SELECT a.id, a.discription, 
+		a.assignItem, a.x, 
+		a.[$update], a.done, a.doneMemo, a.check, a.checkMemo
+		FROM Todo as a
+		WHERE a.task=taskId;
+
+	INTO meTask SELECT a.me, b.state
+		FROM MyTask as a JOIN TaskState as b on a.task=b.task
+		WHERE a.task=taskId;
+
+	INTO flow SELECT a.date, a.user, a.state, a.comment
+		FROM TaskFlow as a
+		WHERE a.task=taskId
+		ORDER BY a.seq ASC;
+};
+
+/*
+QUERY GetMyTaskArchive(
+	step TINYINT,			-- EnumTaskAct
+)
+PAGE (
+	id ID ASC,
+	assign ID Assign,
+	worker ID,
+	[$create] TIMESTAMP,
+	state TINYINT,
+	date TIMESTAMP,
+	stepDate TIMESTAMP,
+	stepComment TEXT,
+	point INT,
+	pointDone INT,
+	pointRate INT,
+	likes TINYINT,
+) {
+	Page SELECT a.task as id, b.assign, b.worker, 
+		b.[$create], 
+		c.state, 
+		c.date,
+		(SELECT f.date FROM TaskFlow as f WHERE f.task=a.task AND f.act=step ORDER by f.seq DESC LIMIT 1) as stepDate,
+		(SELECT f.comment FROM TaskFlow as f WHERE f.task=a.task AND f.act=step ORDER by f.seq DESC LIMIT 1) as stepComment,
+		d.point, c.pointDone, c.pointRate, c.likes
+		FROM MyTaskArchive as a 
+			JOIN Task as b on a.task=b.id
+			LEFT JOIN TaskState as c on b.id=c.task
+			LEFT JOIN Assign as d on b.assign=d.id
+		WHERE a.me=$user AND a.step=step AND a.task>$pageStart
+		ORDER BY a.task DESC
+		limit $pageSize;
+};
+*/
+
+BOOK testBook (
+	key i int,
+	t text,
+);
+
+ACTION testText(
+	i int,
+	tIn Text
+) {
+	var zone int;
+	var d date;
+	setting 'time_zone' int to zone;
+	set d = date(dateadd(hh, zone, $date));
+	set tIn = concat(tIn, '\\nt1 \\nt2 \\tt3 \\tt4');
+	BOOK testBook at(i) set t=tIn;
+	BOOK testBook at(zone) set t='ddddommm';
+	BOOK testBook at(9) set t=$date;
+	BOOK testBook at(10) set t=dateadd(hh, zone, $date);
+	BOOK testBook at(11) set t=dateadd(hh, -4, $date);
+	BOOK testBook at(12) set t=date($date);
+	BOOK testBook at(13) set t=date(dateadd(hh, zone, $date));
+	BOOK testBook at(14) set t=date(dateadd(hh, -4, $date));
+};

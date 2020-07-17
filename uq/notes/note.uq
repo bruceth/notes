@@ -1,9 +1,14 @@
--- note 指针
+ENUM EnumNoteType (Text=0);
+
+-- type: 根据type，分配给特定的程序
+-- sub: 特定程序下的操作。每一类操作是sub
 TUID Note (
 	id,
-	owner ID [$User],
-	rNote ID RNote,
-	index owner_note([owner], rNote) unique,
+	main caption CHAR(200),				-- 标题
+	main content TEXT,					-- 内容，格式根据type而定，json
+	owner ID [$User],					-- 所有者
+	x TINYINT DEFAULT 0,				-- 删除标志
+	stamp (create, update) main,
 );
 
 TAG NoteTag;
@@ -14,32 +19,21 @@ MAP NoteTagMap (
 	INDEX tag_note(tag, note) unique,
 );
 
-ENUM EnumNoteType (Text=0);
-
--- 包含内容的note
--- type: 根据type，分配给特定的程序
--- sub: 特定程序下的操作。每一类操作是sub
-TUID RNote (
-	id,
-	main caption CHAR(200),				-- 标题
-	main content TEXT,					-- 内容，格式根据type而定，json
-	x TINYINT DEFAULT 0,				-- 删除标志
-	stamp (create, update) main,
-);
-
 -- Note 操作中附件的信息
-MAP RNoteEx (
-	KEY rNote ID RNote,
-	KEY exId ID,						-- 不断附加的id，跟操作相关
-	ex TEXT,							-- 附加信息，json
+MAP FLOW (
+	KEY note ID Note,
+	KEY flow SMALLINT DEFAULT 0,		-- 不断附加的id，跟操作相关
+	from ID [$User],
+	to TEXT,							-- comman seperated to list
+	attach TEXT,						-- 附加信息，json
 );
 
 ENUM EnumNoteFlag (None=0, Pin=1, Archive=2);
 
 -- flag, end 主要控制 RNote 本身的操作
 -- state由特定程序定义，是json
-MAP RNoteCur (
-	KEY rNote ID RNote,
+MAP NoteX (
+	KEY note ID Note,
 	type SMALLINT DEFAULT 0,			-- Note类, EnumNoteType
 	sub SMALLINT DEFAULT 0,				-- Note类下面的小类，比如，todo-start, todo-doing, done, pass, fail, rated
 	flag TINYINT DEFAULT 0,				-- EnumNoteFlag
@@ -47,35 +41,60 @@ MAP RNoteCur (
 	state TEXT,							-- 由特定程序自己定义的特定的当前状态，json
 );
 
-ACTION AddNote(
-	owner ID,
-	rNote ID,
-) {
-
-};
-
-ACTION AddRNote (
+ACTION AddNote (
 	caption CHAR(200),
 	content TEXT,
 )
 RETURNS ret (
-	anchor ID,
-	rNote ID RNote,
+	note ID Note,
 ) {
-	VAR rNoteId ID, noteId ID, anchorId ID, folderId ID;
-	TUID RNote INTO rNoteId SET caption=caption, content=content;
-	TUID Note INTO noteId SET owner=$user, rNote=rNoteId;
-	TUID Anchor INTO anchorId SET note=noteId;
+	VAR noteId ID, folderId ID, seconds INT;
+	TUID Note INTO noteId SET caption=caption, content=content, owner=$user;
 	SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
-	BOOK FolderAnchor AT(folderId, anchorId);
-	BOOK RNoteCur AT(rNoteId) SET type=0;
-	INTO ret SELECT anchorId as anchor, rNoteId as rNote;
+	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+	BOOK FolderNote AT(folderId, noteId) SET seconds=seconds;
+	FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
+		IF noteFolderId<>folderId {
+			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds;
+		}
+	}
+	BOOK NoteX AT(noteId) SET type=0;
+	INTO ret SELECT noteId as note;
 };
 
-ACTION SetRNote (
-	rNote ID,
+ACTION SetNote (
+	note ID,
 	caption CHAR(200),
 	content TEXT,
 ) {
-	TUID RNote ID rNote SET caption=caption, content=content;
+	VAR noteId ID, folderId ID, seconds INT;
+	TUID Note ID note SET caption=caption, content=content;
+	SET noteId = note;
+	SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
+	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+	BOOK FolderNote AT(folderId, noteId) SET seconds=seconds;
+	FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
+		IF noteFolderId<>folderId {
+			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds;
+		}
+	}
+};
+
+ACTION SendNoteTo (
+	note ID,
+	ARR tos (
+		to ID,
+	)
+) {
+	FOREACH tos {
+		VAR folderId ID, seconds INT;
+		SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
+		IF folderId IS NULL {
+			TUID Folder INTO folderId SET owner=to;
+			BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
+		}
+		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+		BOOK FolderNote AT(folderId, note) SET seconds=seconds;
+		BOOK NoteX AT(note) SET type=0;
+	};
 };

@@ -1,8 +1,3 @@
-TUID Anchor (
-	id,
-	main note ID Note,
-);
-
 TUID Folder (
 	id,
 	main caption CHAR(100),
@@ -10,9 +5,12 @@ TUID Folder (
 	index owner_id (owner, id) UNIQUE,
 );
 
-MAP FolderAnchor (
+MAP FolderNote (
 	KEY folder ID Folder,
-	KEY anchor ID Anchor,
+	KEY note ID Note,
+	seconds INT,								-- seconds since 2020-1-1
+	index folder_seconds(folder, seconds),
+	index note_folder(note, folder) unique,
 );
 
 ENUM EnumSpecFolder (notes=1, good=2);
@@ -27,9 +25,9 @@ QUERY GetNotes(
 	folderId ID Folder,
 )
 PAGE (
-	anchor ID DESC,
+	seconds INT DESC, 
 	owner ID [$User],
-	rNote ID RNote,
+	note ID Note,
 ) {
 	-- 第一次如果没有notes folder，则创建
 	IF folderId = -EnumSpecFolder.notes {
@@ -43,11 +41,10 @@ PAGE (
 			SET folderId = fid;
 		}
 	}
-	PAGE SELECT b.id as anchor, c.owner, c.rNote
-		FROM FolderAnchor as a
-			LEFT JOIN Anchor as b ON a.anchor=b.id
-			LEFT JOIN Note as c ON b.note=c.id
-		WHERE a.folder=folderId and b.id<$pageStart
-		ORDER BY b.id desc
+	PAGE SELECT a.seconds, b.owner, a.note
+		FROM FolderNote as a
+			LEFT JOIN Note as b ON a.note=b.id
+		WHERE a.folder=folderId and a.seconds<$pageStart
+		ORDER BY a.seconds desc
 		LIMIT $pageSize;
 };

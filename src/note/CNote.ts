@@ -1,7 +1,7 @@
 import { CUqBase, EnumSpecFolder } from "tapp";
 import { QueryPager } from "tonva";
 import { VList } from "./VList";
-import { VAddRNotePage } from "./VAddRNotePage";
+import { VAddNotePage } from "./VAddNotePage";
 
 export class CNote extends CUqBase {
 	notesPager: QueryPager<any>;
@@ -18,21 +18,36 @@ export class CNote extends CUqBase {
 		await this.notesPager.first({folderId: -EnumSpecFolder.notes});
 	}
 
-	async addRNote(caption:string, content:string) {
-		let ret = await this.uqs.notes.AddRNote.submit({caption, content});
-		let {anchor,rNote} = ret;
-		let {Anchor, RNote} = this.uqs.notes;
+	async addNote(caption:string, content:string) {
+		let ret = await this.uqs.notes.AddNote.submit({caption, content});
+		let {note} = ret;
+		let {Note} = this.uqs.notes;
 		this.notesPager.items.unshift({
-			anchor: Anchor.boxId(anchor),
 			owner: this.user.id,
-			rNote: RNote.boxId(rNote)
+			note: Note.boxId(note),
+			$create: new Date(),
+			$update: new Date(),
 		});
+		return ret;
 	}
 
-	async setRNote(rNote:number, caption:string, content:string) {
-		let {SetRNote, RNote} = this.uqs.notes;
-		await SetRNote.submit({rNote, caption, content});
-		RNote.resetCache(rNote);
+	async setNote(note:number, caption:string, content:string) {
+		let {SetNote, Note} = this.uqs.notes;
+		await SetNote.submit({note, caption, content});
+		Note.resetCache(note);
+		let {items} = this.notesPager;
+		let index = items.findIndex(v => v.note===note);
+		if (index >= 0) {
+			let removed = items.splice(index, 1);
+			items.unshift(...removed);
+		}
+	}
+
+	async sendNoteTo(note:number, toList:number[]) {
+		let tos = toList.map(v => {
+			return {to: v}
+		});
+		await this.uqs.notes.SendNoteTo.submit({note, tos});
 	}
 
 	renderListView() {
@@ -40,6 +55,6 @@ export class CNote extends CUqBase {
 	}
 
 	showAddRNotePage = () => {
-		this.openVPage(VAddRNotePage)
+		this.openVPage(VAddNotePage)
 	}
 }

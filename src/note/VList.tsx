@@ -1,47 +1,55 @@
 import React from 'react';
-import { View, List, tv, Page, EasyTime } from "tonva";
-import { CNote } from "./CNote";
-import { VEditRNotePage } from "./VEditRNotePage";
+import { List, tv, EasyTime, FA } from "tonva";
+import { VEditNotePage } from "./VEditNotePage";
+import { VNote } from './VNote';
 
-export class VList extends View<CNote> {
+export class VList extends VNote {
 	render() {
 		return <List items={this.controller.notesPager} 
-			item={{render: this.renderNote, key: this.anchorKey, onClick: this.onAnchorClick}} />
+			item={{render: this.renderNote, key: this.noteKey, onClick: this.onNoteClick}} />
 	}
 
-	private anchorKey = (item:any) => item.anchor;
+	private noteKey = (item:any) => {
+		let {note} = item;
+		if (typeof note === "object") return note.id;
+		return note;
+	}
 
 	private renderNote = (item:any, index:number) => {
-		let {anchor, owner, rNote} = item;
+		let {owner, note} = item;
 		let tvRenderNote = (values:any) => {
 			let {caption, content, $create, $update} = values;
 			let divChanged:any = undefined;
 			let create:Date = $create;
 			let update:Date = $update;
 			if (create && update) {
-				let time:Date, pre:string;
+				let time:Date, action:any;
 				if (update.getTime() - create.getTime() > 60*1000) {
-					pre = '修改: ';
+					action = <FA name="pencil-square-o" />;
 					time = update;
 				}
 				else {
 					time = create;
 				}
-				divChanged = <div className="text-right small text-muted"><small>{pre}<EasyTime date={time} /></small></div>;
+				divChanged = <div className="text-right small text-muted">
+					<small>
+						{action}
+						<span className="text-info"><EasyTime date={time} /></span>
+					</small>
+				</div>;
 			}
 			return <div className="px-3 py-2 d-block border rounded m-2 bg-transparent">
 				{caption && <div className="pb-2"><b>{caption}</b></div>}
-				<div>{(content as string).split('\n').map(v => {
-					return <div>{v}</div>;
+				<div>{(content as string).split('\n').map((v, index) => {
+					return <div key={index}>{v}</div>;
 				})}</div>
 				{divChanged}
 			</div>;
 		}
-		//return <div className="px-3 py-2">anchor={tv(anchor)} owner={tv(owner)} note={tv(note)}</div>;
-		return tv(rNote, tvRenderNote);
+		return tv(note, tvRenderNote);
 	}
 
-	private onAnchorClick = (item:any) => {
-		this.openVPage(VEditRNotePage, item);
+	private onNoteClick = (item:any) => {
+		this.openVPage(VEditNotePage, item);
 	}
 }

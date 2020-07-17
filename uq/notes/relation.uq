@@ -1,0 +1,25 @@
+MAP MyContact (
+	KEY me ID [$User],
+	KEY contact ID [$User],
+	assigned CHAR(100),
+	stamp TIMESTAMP DEFAULT ONUPDATE,
+	INDEX me_stamp(me, stamp),
+);
+
+ACTION AddContact(
+	contact ID [$User]
+) {
+	BOOK MyContact AT($user, contact);
+};
+
+QUERY GetMyContacts()
+PAGE (
+	contact ID [$User] ASC,
+	assigned TEXT(TINY)
+) {
+	PAGE SELECT contact, assigned
+		FROM MyContact 
+		WHERE me=$user AND contact>$pageStart
+		ORDER BY contact ASC
+		LIMIT $pageSize;
+};

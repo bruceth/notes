@@ -2,6 +2,7 @@
 
 /uq/notes/uq.uq
 /uq/todo/uq.uq
+/src/tapp/appName.ts
 # dependencies
 /node_modules
 /.pnp

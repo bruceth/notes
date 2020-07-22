@@ -182,7 +182,7 @@ export class IdCache {
                 let p = row.indexOf('\t');
                 if (p < 0) p = row.length;
                 let id = Number(row.substr(0, p));
-                _.remove(netIds, v => v === id);
+				_.remove(netIds, v => v === id);
                 ret.push(row);
                 this.localArr.setItem(id, row);
             }

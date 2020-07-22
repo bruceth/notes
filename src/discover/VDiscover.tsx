@@ -1,6 +1,6 @@
 import React from 'react';
 import { CDiscover } from './CDiscover';
-import { VPage, Page, FA } from 'tonva';
+import { VPage } from 'tonva';
 
 export class VDiscover extends VPage<CDiscover> {
 	header() {return '发现'}

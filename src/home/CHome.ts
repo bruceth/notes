@@ -1,7 +1,6 @@
 import { CUqBase } from "tapp";
+import { CNote } from "../note";
 import { VHome } from "./VHome";
-import { CNote } from "note";
-
 
 export class CHome extends CUqBase {
 	cNode: CNote;

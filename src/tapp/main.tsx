@@ -32,7 +32,7 @@ export class VMain extends VPage<CApp> {
 		*/
 		let faceTabs: TabProp[] = [
 			{name: 'home', caption: caption('首页', 'home'), content: cHome.tab},
-			{name: 'relation', caption: caption('关系', 'user-plus'), content: cRelation.tab},
+			{name: 'relation', caption: caption('关系', 'user-plus'), content: cRelation.tab, onShown: cRelation.load},
 			{name: 'discover', caption: caption('发现', 'arrows-alt'), content: cDiscover.tab},
 			{name: 'me', caption: caption('我', 'user-o'), content: cMe.tab},
 		];

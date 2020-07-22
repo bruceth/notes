@@ -15,7 +15,7 @@ export class VEdit extends VNoteForm {
 	}
 
 	protected getSaveDisabled():boolean {
-		return (this.title === undefined && this.noteContent === undefined);
+		return (this.title === undefined && this.changedNoteContent === undefined);
 	}
 
 	protected async onButtonSave(): Promise<void> {

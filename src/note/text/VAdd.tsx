@@ -11,8 +11,8 @@ export class VAdd extends VNoteForm {
 		if (this.title !== undefined) {
 			return this.title.length === 0;
 		}
-		if (this.noteContent !== undefined) {
-			return this.noteContent.length === 0;
+		if (this.changedNoteContent !== undefined) {
+			return this.changedNoteContent.length === 0;
 		}
 		return true;
     }

@@ -1,1 +1,2 @@
-export {CNote} from './CNote';
+export * from './model';
+export * from './CNote';

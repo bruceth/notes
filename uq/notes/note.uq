@@ -39,11 +39,30 @@ MAP NoteX (
 	flag TINYINT DEFAULT 0,				-- EnumNoteFlag
 	end TINYINT DEFAULT 0,				-- 1: end, can be archive
 	state TEXT,							-- 由特定程序自己定义的特定的当前状态，json
+	to TEXT,							-- 逗号分隔的to user id list
+);
+
+MAP FolderNote (
+	KEY folder ID Folder,
+	KEY note ID Note,
+	type SMALLINT DEFAULT 0,			-- Note类, EnumNoteType
+	sub SMALLINT DEFAULT 0,				-- Note类下面的小类，比如，todo-start, todo-doing, done, pass, fail, rated
+	seconds INT,						-- seconds since 2020-1-1
+	index folder_seconds(folder, seconds),
+	index note_folder(note, folder) unique,
+);
+
+MAP NoteAccess (
+	KEY note ID Note,
+	KEY user ID [$User],
+	access TINYINT DEFAULT 0,				-- 1 表示允许
 );
 
 ACTION AddNote (
 	caption CHAR(200),
 	content TEXT,
+	type SMALLINT,
+	sub SMALLINT,
 )
 RETURNS ret (
 	note ID Note,
@@ -52,10 +71,11 @@ RETURNS ret (
 	TUID Note INTO noteId SET caption=caption, content=content, owner=$user;
 	SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
-	BOOK FolderNote AT(folderId, noteId) SET seconds=seconds;
+	BOOK FolderNote AT (folderId, noteId) SET seconds=seconds, type=type, sub=sub;
+	BOOK NoteAccess AT (noteId, $user) SET access=1;
 	FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
 		IF noteFolderId<>folderId {
-			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds;
+			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds, type=type, sub=sub;
 		}
 	}
 	BOOK NoteX AT(noteId) SET type=0;
@@ -66,13 +86,15 @@ ACTION SetNote (
 	note ID,
 	caption CHAR(200),
 	content TEXT,
+	type SMALLINT,
+	sub SMALLINT,
 ) {
 	VAR noteId ID, folderId ID, seconds INT;
 	TUID Note ID note SET caption=caption, content=content;
 	SET noteId = note;
 	SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
-	BOOK FolderNote AT(folderId, noteId) SET seconds=seconds;
+	BOOK FolderNote AT(folderId, noteId) SET seconds=seconds, type=type, sub=sub;
 	FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
 		IF noteFolderId<>folderId {
 			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds;
@@ -82,11 +104,12 @@ ACTION SetNote (
 
 ACTION SendNoteTo (
 	note ID,
-	ARR tos (
-		to ID,
-	)
+	tos TEXT,
 ) {
-	FOREACH tos {
+	TABLE tblTo(to ID);
+	TEXT tos sep=',' ln='|' INTO tblTo;
+	BOOK NoteAccess AT (note, *) SET access=0;
+	FOREACH (var to ID OF SELECT to FROM tblTo) {
 		VAR folderId ID, seconds INT;
 		SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
 		IF folderId IS NULL {
@@ -95,6 +118,7 @@ ACTION SendNoteTo (
 		}
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 		BOOK FolderNote AT(folderId, note) SET seconds=seconds;
-		BOOK NoteX AT(note) SET type=0;
+		BOOK NoteX AT(note) SET type=0, to=tos;
+		BOOK NoteAccess AT (note, to) SET access=1;
 	};
 };

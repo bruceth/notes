@@ -1,10 +1,17 @@
 import { CUqBase, EnumSpecFolder } from "tapp";
 import { QueryPager } from "tonva";
-import { VList } from "./VList";
-import { VAddNotePage } from "./VAddNotePage";
+import { VList } from "./views";
+import { CTextNoteItem } from "./text";
+import { EnumNoteItemType, NoteItem } from "./model";
+import { CNoteItem } from "./item/CNoteItem";
+import { VTo } from "./views/VTo";
+import { CTaskNoteItem } from "./task/CTaskNoteItem";
 
-export class CNote extends CUqBase {
+export class CNote extends CUqBase {	
 	notesPager: QueryPager<any>;
+	cTextNoteItem: CTextNoteItem;
+	cTaskNoteItem: CTaskNoteItem;
+	private cNoteItems: {[key in EnumNoteItemType]: CNoteItem};
 
     protected async internalStart() {
 	}
@@ -12,6 +19,21 @@ export class CNote extends CUqBase {
 	init() {
 		let {notes} = this.uqs;
 		this.notesPager = new QueryPager<any>(notes.GetNotes);
+		this.cTextNoteItem = this.newSub(CTextNoteItem);
+		this.cTaskNoteItem = this.newSub(CTaskNoteItem);
+		this.cNoteItems = {
+			[EnumNoteItemType.text]: this.cTextNoteItem,
+			[EnumNoteItemType.task]: this.cTaskNoteItem,
+		}
+	}
+
+	getCNoteItem(type: EnumNoteItemType): CNoteItem {
+		let ret = this.cNoteItems[type];
+		if (ret === undefined) {
+			debugger;
+			throw new Error(`type ${type} CNoteItem not defined`);
+		}
+		return ret;
 	}
 
 	async load() {
@@ -19,21 +41,26 @@ export class CNote extends CUqBase {
 	}
 
 	async addNote(caption:string, content:string) {
-		let ret = await this.uqs.notes.AddNote.submit({caption, content});
+		let type = EnumNoteItemType.text;
+		let sub = 0;
+		let ret = await this.uqs.notes.AddNote.submit({caption, content, type, sub});
 		let {note} = ret;
 		let {Note} = this.uqs.notes;
 		this.notesPager.items.unshift({
 			owner: this.user.id,
 			note: Note.boxId(note),
+			type: EnumNoteItemType.text,
+			sub: 0,
 			$create: new Date(),
 			$update: new Date(),
 		});
 		return ret;
 	}
 
-	async setNote(note:number, caption:string, content:string) {
+	async setNote(waiting:boolean, noteItem:NoteItem, caption:string, content:string) {
 		let {SetNote, Note} = this.uqs.notes;
-		await SetNote.submit({note, caption, content});
+		let {note, type, sub} = noteItem;
+		await SetNote.submit({note, caption, content, type, sub}, waiting);
 		Note.resetCache(note);
 		let {items} = this.notesPager;
 		let index = items.findIndex(v => v.note===note);
@@ -44,9 +71,7 @@ export class CNote extends CUqBase {
 	}
 
 	async sendNoteTo(note:number, toList:number[]) {
-		let tos = toList.map(v => {
-			return {to: v}
-		});
+		let tos = toList.join('|');
 		await this.uqs.notes.SendNoteTo.submit({note, tos});
 	}
 
@@ -54,7 +79,12 @@ export class CNote extends CUqBase {
 		return this.renderView(VList);
 	}
 
-	showAddRNotePage = () => {
-		this.openVPage(VAddNotePage)
+	showAddNotePage = () => {
+		this.cTextNoteItem.showAddNotePage();
+		// this.openVPage(VAdd)
+	}
+
+	showTo(noteId:number) {
+		this.openVPage(VTo, noteId);
 	}
 }

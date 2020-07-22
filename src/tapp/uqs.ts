@@ -8,6 +8,7 @@ export interface Notes {
 	AddNote: Action;
 	SetNote: Action;
 	SendNoteTo: Action;
+	AddContact: Action;
 
 	GetNotes: Query;
 	GetMyContacts: Query;

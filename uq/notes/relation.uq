@@ -1,23 +1,47 @@
+ENUM EnumContactState (OK=0, Asking=1, Asked=2, Blocking=3, Blocked=4, Removing=5, Removed=6);
+
 MAP MyContact (
 	KEY me ID [$User],
 	KEY contact ID [$User],
 	assigned CHAR(100),
-	stamp TIMESTAMP DEFAULT ONUPDATE,
+	state TINYINT,
+	stamp TIMESTAMP DEFAULT ONUPDATE,	
 	INDEX me_stamp(me, stamp),
 );
 
-ACTION AddContact(
+ACTION AddContact ver 1.0 (
 	contact ID [$User]
+)
+RETURNS ret (
+	state TINYINT,
 ) {
-	BOOK MyContact AT($user, contact);
+	VAR state TINYINT, retState TINYINT;
+	IF contact<>$user {
+		SET state = a.state FROM MyContact as a WHERE a.me=contact AND a.contact=$user;
+		SET retState=EnumContactState.OK;
+		IF state=EnumContactState.OK {
+		}
+		ELSEIF state=EnumContactState.Asking {
+			BOOK MyContact AT(contact, $user) SET state=EnumContactState.OK;
+		}
+		ELSE {
+			SET retState=EnumContactState.Asking;
+			IF state IS NULL OR (state<>EnumContactState.Blocking AND state<>EnumContactState.OK) {
+				BOOK MyContact AT(contact, $user) SET state=EnumContactState.Asked;
+			}
+		}
+		BOOK MyContact AT($user, contact) SET state=retState;
+	}
+	INTO ret SELECT retState as state;
 };
 
 QUERY GetMyContacts()
 PAGE (
 	contact ID [$User] ASC,
-	assigned TEXT(TINY)
+	assigned TEXT(TINY),
+	state TINYINT,
 ) {
-	PAGE SELECT contact, assigned
+	PAGE SELECT contact, assigned, state
 		FROM MyContact 
 		WHERE me=$user AND contact>$pageStart
 		ORDER BY contact ASC

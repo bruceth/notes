@@ -4,6 +4,8 @@ import { CHome } from "home";
 import { CRelation } from "relation";
 import { CMe } from "me";
 import { CDiscover } from "discover";
+import { computed } from "mobx";
+import { Contact } from "model";
 
 export class CApp extends CUqApp {
 	cHome: CHome;
@@ -18,6 +20,12 @@ export class CApp extends CUqApp {
 		this.cMe = this.newC(CMe);		
 		this.cHome.load();
 		this.showMain();
+	}
+
+	@computed get contacts(): Contact[] {return this.cRelation.contacts;};
+
+	async loadRelation() {
+		await this.cRelation.load();
 	}
 
     private showMain(initTabName?: string) {

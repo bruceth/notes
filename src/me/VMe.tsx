@@ -1,6 +1,6 @@
 import React from 'react';
 import { CMe } from './CMe';
-import { VPage, Page, FA } from 'tonva';
+import { VPage } from 'tonva';
 
 export class VMe extends VPage<CMe> {
 	header() {return  '我'}

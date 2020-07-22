@@ -5,14 +5,6 @@ TUID Folder (
 	index owner_id (owner, id) UNIQUE,
 );
 
-MAP FolderNote (
-	KEY folder ID Folder,
-	KEY note ID Note,
-	seconds INT,								-- seconds since 2020-1-1
-	index folder_seconds(folder, seconds),
-	index note_folder(note, folder) unique,
-);
-
 ENUM EnumSpecFolder (notes=1, good=2);
 
 MAP SpecFolder (
@@ -28,6 +20,8 @@ PAGE (
 	seconds INT DESC, 
 	owner ID [$User],
 	note ID Note,
+	type SMALLINT,
+	sub SMALLINT,
 ) {
 	-- 第一次如果没有notes folder，则创建
 	IF folderId = -EnumSpecFolder.notes {
@@ -41,7 +35,7 @@ PAGE (
 			SET folderId = fid;
 		}
 	}
-	PAGE SELECT a.seconds, b.owner, a.note
+	PAGE SELECT a.seconds, b.owner, a.note, a.type, a.sub
 		FROM FolderNote as a
 			LEFT JOIN Note as b ON a.note=b.id
 		WHERE a.folder=folderId and a.seconds<$pageStart

@@ -3,15 +3,6 @@ import { VBasePage } from "./VBasePage";
 import { Page } from 'tonva';
 
 export class VActions extends VBasePage {
-	//private noteId: number;
-	//private contacts: Contact[];
-	/*
-	init({contacts, noteId}:{contacts: Contact[], noteId:number}) {
-		this.contacts = contacts;
-		this.noteId = noteId;
-	}
-	*/
-
 	header() {return '操作'}
 	content() {
 		return <div className="d-flex my-3 p-3 border bg-white">

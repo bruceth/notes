@@ -110,7 +110,10 @@ export class IdCache {
     async cacheIds():Promise<void> {
         if (this.waitingIds.length === 0) return;
 		let tuidValues = await this.loadIds();
-		if (tuidValues === undefined) return;
+		if (tuidValues === undefined || tuidValues.length === 0) {
+			this.waitingIds.splice(0, this.waitingIds.length);
+			return;
+		}
         this.cacheIdValues(tuidValues);
     }
 

@@ -11,7 +11,7 @@ export interface CheckItem {
 }
 
 export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
-	private parsed: boolean = false;
+	protected parsed: boolean = false;
 
 	protected param: NoteItem;
 	init(param: NoteItem):void {this.param = param;}
@@ -47,6 +47,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			let obj = JSON.parse(content);
 			this.checkable = obj.check;
 			if (this.checkable === true) {
+				this.items.splice(0, this.items.length);
 				this.itemKey = obj.itemKey;
 				this.items.push(...obj.items);
 			}
@@ -61,8 +62,9 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected renderContent() {
-		return <div className="px-3">{(this.noteContent as string).split('\n').map((v, index) => {
-			return <div key={index}>{v}</div>;
+		return <div className="px-3">{(this.noteContent).split('\n').map((v, index) => {
+			let c = !v? <>&nbsp;</>: v;
+			return <div key={index}>{c}</div>;
 		})}</div>;
 	}
 }

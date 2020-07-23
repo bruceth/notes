@@ -1,11 +1,12 @@
 import React from 'react';
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { VNoteBase, CheckItem } from '../item';
 import { FA } from 'tonva';
 import { CTextNoteItem } from './CTextNoteItem';
 
 export abstract class VNoteForm extends VNoteBase<CTextNoteItem> {
+	@observable private changed: boolean = false;
 	private inputAdd: HTMLInputElement;
 
 	protected onTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,6 +18,7 @@ export abstract class VNoteForm extends VNoteBase<CTextNoteItem> {
 	}
 
 	@computed protected get btnSaveDisabled():boolean {
+		if (this.changed === true) return false;
 		return this.getSaveDisabled();
 	}
 
@@ -25,6 +27,7 @@ export abstract class VNoteForm extends VNoteBase<CTextNoteItem> {
 	protected abstract onButtonSave(): Promise<void>;
 
 	private onCheckableChanged = (evt:React.ChangeEvent<HTMLInputElement>) => {
+		this.changed = true;
 		this.checkable = evt.target.checked;
 		if (this.checkable === true) {
 			let content = this.changedNoteContent || this.noteContent;
@@ -158,6 +161,7 @@ export abstract class VNoteForm extends VNoteBase<CTextNoteItem> {
 		let key = Number(t.getAttribute('data-key'));
 		let item = this.items.find(v => v.key === key);
 		if (item) item.text = t.value;
+		this.changed = true;
 	}
 
 	private onItemKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {

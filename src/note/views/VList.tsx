@@ -6,7 +6,7 @@ import { NoteItem } from '../model';
 export class VList extends VBasePage {
 	render() {
 		return <List items={this.controller.notesPager} 
-			item={{render: this.renderNote, key: this.noteKey, onClick: this.onNoteClick}} />
+			item={{render: this.renderNote, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
 	}
 
 	private noteKey = (item: NoteItem) => {
@@ -22,6 +22,7 @@ export class VList extends VBasePage {
 	}
 
 	private onNoteClick = (item: NoteItem) => {
+		this.controller.noteItem = item;
 		let {type} = item;
 		let cNoteItem = this.controller.getCNoteItem(type);
 		return cNoteItem.onClickItem(item);

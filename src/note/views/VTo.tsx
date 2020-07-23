@@ -9,14 +9,12 @@ import { VActions } from './VActions';
 export class VTo extends VBasePage {
 	@observable private anySelected:boolean = false;
 	private list: List;
-	private currentNoteId:number;
-	init(currentNoteId:number):void {this.currentNoteId = currentNoteId;}
 
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 
 	header() {return '收件人'}
 	right() {
-		let c = observer(() => <button className="btn btn-primary" onClick={this.onNext} disabled={!this.anySelected}>
+		let c = observer(() => <button className="btn btn-sm btn-primary mr-1" onClick={this.onNext} disabled={!this.anySelected}>
 			下一步 <FA name="angle-right" />
 		</button>);
 		return React.createElement(c);
@@ -47,6 +45,7 @@ export class VTo extends VBasePage {
 
 	private onNext = () => {
 		let contacts = this.list.selectedItems;
-		this.openVPage(VActions, {contacts, noteId: this.currentNoteId});
+		this.controller.contacts = contacts;
+		this.openVPage(VActions); //, {contacts, noteId: this.currentNoteId});
 	}
 }

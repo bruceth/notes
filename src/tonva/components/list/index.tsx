@@ -41,13 +41,13 @@ export class List extends React.Component<ListProps> {
 	private selectable: Selectable;
     constructor(props:ListProps) {
 		super(props);
-        this.buildBase();
+        this.buildBase(props);
     }
     _$scroll = (direct: 'top'|'bottom') => {
         console.log('############### items scroll to ' + direct);
     }
-    private buildBase() {
-        let {item} = this.props;
+    private buildBase(props: ListProps) {
+        let {item} = props;
         let {onClick, onSelect} = item;
         if (onSelect !== undefined)
             this.selectable = this.listBase = new Selectable(this);
@@ -55,12 +55,10 @@ export class List extends React.Component<ListProps> {
             this.listBase = new Clickable(this);
         else
             this.listBase = new Static(this);
-    }
-    /*
-    componentWillUpdate(nextProps:ListProps, nextState, nextContext) {
-        //this.listBase.updateProps(nextProps);
-    }
-    */
+	}
+	componentWillUpdate(nextProps:ListProps) {
+		this.buildBase(nextProps);
+	}
     componentWillUnmount() {
         this.listBase.dispose();
     }

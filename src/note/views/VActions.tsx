@@ -1,8 +1,6 @@
 import React from 'react';
 import { VBasePage } from "./VBasePage";
-import { Contact } from 'model';
 import { Page } from 'tonva';
-import { NoteItem } from 'note/model';
 
 export class VActions extends VBasePage {
 	//private noteId: number;

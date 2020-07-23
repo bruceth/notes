@@ -37,6 +37,6 @@
   }
 }
 
-ul.va-list>li {
+ul.va-list>li.notes {
 	background-color: transparent;
 }

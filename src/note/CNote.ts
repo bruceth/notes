@@ -1,17 +1,21 @@
 import { CUqBase, EnumSpecFolder } from "tapp";
 import { QueryPager } from "tonva";
-import { VList } from "./views";
+import { VList, VSelectContact, SelectContactOptions } from "./views";
 import { CTextNoteItem } from "./text";
 import { EnumNoteItemType, NoteItem } from "./model";
 import { CNoteItem } from "./item/CNoteItem";
 import { VTo } from "./views/VTo";
 import { CTaskNoteItem } from "./task/CTaskNoteItem";
+import { Contact } from "model";
+import { observable } from "mobx";
 
 export class CNote extends CUqBase {	
 	notesPager: QueryPager<any>;
 	cTextNoteItem: CTextNoteItem;
 	cTaskNoteItem: CTaskNoteItem;
 	private cNoteItems: {[key in EnumNoteItemType]: CNoteItem};
+	@observable contacts: Contact[];
+	noteItem: NoteItem;
 
     protected async internalStart() {
 	}
@@ -86,5 +90,9 @@ export class CNote extends CUqBase {
 
 	showTo(noteId:number) {
 		this.openVPage(VTo, noteId);
+	}
+
+	async callSelectContact(options: SelectContactOptions): Promise<Contact[]> {
+		return await this.vCall(VSelectContact, options);
 	}
 }

@@ -2,7 +2,7 @@ import { CNoteItem } from "../item";
 import { NoteItem } from '../model';
 import { VView } from './VView';
 import { VTaskNoteItem } from "./VTaskNoteItem";
-import { Contact } from "model";
+import { VTaskParams } from "./VTaskParams";
 
 export class CTaskNoteItem extends CNoteItem {
 	renderItem(noteItem: NoteItem, index:number): JSX.Element {
@@ -15,7 +15,7 @@ export class CTaskNoteItem extends CNoteItem {
 		this.openVPage(VView, noteItem);
 	}
 
-	assignTask(noteItem: NoteItem, contacts: Contact[]) {
-		alert('assign task');
+	assignTask() {
+		this.openVPage(VTaskParams, {contacts: this.owner.contacts}, () => this.closePage());
 	}
 }

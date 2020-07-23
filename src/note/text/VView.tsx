@@ -47,6 +47,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	}
 
 	private onEdit = () => {
+		this.parsed = false;
 		this.openVPage(VEdit, this.param);
 	}
 

@@ -21,5 +21,6 @@ export class CRelation extends CUqBase {
 
 	async AddContact(contact: number) {
 		await this.uqs.notes.AddContact.submit({contact});
+		this.contacts.unshift({contact, assigned:undefined});
 	}
 }

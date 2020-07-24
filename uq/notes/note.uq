@@ -127,7 +127,7 @@ ACTION SendNoteTo (
 			BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
 		}
 		BOOK FolderNote AT(folderId, note) SET seconds=seconds;
-		BOOK NoteX AT(note) SET to=tos; -- type=0, 
+		-- BOOK NoteX AT(note) SET to=tos; -- type=0, 
 		BOOK NoteAccess AT (note, to) SET access=1;
 	};
 };

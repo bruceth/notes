@@ -1,5 +1,5 @@
 import { CNoteItem } from "../item";
-import { NoteItem, NoteModel, replaceAll } from '../model';
+import { NoteItem, NoteModel } from '../model';
 import { VView } from './VView';
 import { VTaskNoteItem } from "./VTaskNoteItem";
 import { VTaskParams } from "./VTaskParams";

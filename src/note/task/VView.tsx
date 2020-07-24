@@ -1,5 +1,5 @@
 import React from 'react';
-import { VPage, tv, FA } from "tonva";
+import { tv, FA } from "tonva";
 import { CTaskNoteItem } from "./CTaskNoteItem";
 import { VNoteBase, CheckItem } from 'note/item';
 import { observer } from 'mobx-react';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { VPage, FA, UserView, Image, User, Tuid } from "tonva";
+import { VPage, FA, UserView, Image, User } from "tonva";
 import { CTaskNoteItem } from "./CTaskNoteItem";
 import { Contact } from 'model';
 import { SelectContactOptions } from 'note/views';

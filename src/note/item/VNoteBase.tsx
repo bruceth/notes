@@ -1,10 +1,9 @@
 import React from "react";
-import { VPage, User, Image, UserView, BoxId } from "tonva";
+import { VPage, User, Image, UserView } from "tonva";
 import { NoteItem, replaceAll } from "../model";
 import { observable } from "mobx";
 import { CNoteItem } from "./CNoteItem";
 import { observer } from "mobx-react";
-import { Contact } from "model";
 
 export interface CheckItem {
 	key: number;

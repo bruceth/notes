@@ -1,3 +1,5 @@
+ENUM EnumTaskState (Start=0, Done=1, Pass=2, Fail=3, Rated=4);
+
 MAP Task (
 	KEY note ID Note,
 	checker ID [$User],
@@ -42,8 +44,8 @@ ACTION DoneTask (
 
 	VAR flowId SMALLINT, checker ID, rater ID, point INT, folderId ID;
 	SET checker=a.checker, rater=a.rater, point=a.point FROM Task as a WHERE a.note=note;
-	BOOK NoteX AT(note) SET state=1;
-	SET flowId=(SELECT nullif(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
+	BOOK NoteX AT(note) SET state=EnumTaskState.Done;
+	SET flowId=(SELECT ifnull(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
 	BOOK Flow AT(note, flowId) SET attach=comment;
 	IF NOT checker IS NULL {
 		SET folderId = folder FROM SpecFolder WHERE owner=checker AND spec=EnumSpecFolder.notes;
@@ -66,15 +68,15 @@ ACTION CheckTask (
 
 	VAR flowId SMALLINT, checker ID, rater ID, point INT, folderId ID, state INT;
 	IF act=1 {
-		SET state=2;
+		SET state=EnumTaskState.Pass;
 	}
 	else {
-		SET state=3;
+		SET state=EnumTaskState.Fail;
 	}
 	SET checker=a.checker, rater=a.rater, point=a.point FROM Task as a WHERE a.note=note;
 	IF NOT checker IS NULL {
 		BOOK NoteX AT(note) SET state=state;
-		SET flowId=(SELECT nullif(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
+		SET flowId=(SELECT ifnull(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
 		BOOK Flow AT(note, flowId) SET attach=comment;
 		IF NOT rater IS NULL {
 			SET folderId = folder FROM SpecFolder WHERE owner=rater AND spec=EnumSpecFolder.notes;
@@ -96,8 +98,8 @@ ACTION RateTask (
 	VAR flowId SMALLINT, checker ID, rater ID, point INT, folderId ID;
 	SET checker=a.checker, rater=a.rater, point=a.point FROM Task as a WHERE a.note=note;
 	IF NOT checker IS NULL {
-		BOOK NoteX AT(note) SET state=state;
-		SET flowId=(SELECT nullif(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
+		BOOK NoteX AT(note) SET state=EnumTaskState.Rated;
+		SET flowId=(SELECT ifnull(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
 		BOOK Flow AT(note, flowId) SET attach=comment;
 		IF NOT rater IS NULL {
 			SET folderId = folder FROM SpecFolder WHERE owner=rater AND spec=EnumSpecFolder.notes;

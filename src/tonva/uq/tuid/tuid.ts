@@ -34,7 +34,7 @@ export abstract class Tuid extends Entity {
     abstract boxId(id:number):BoxId;
     abstract valueFromId(id:number):any;
 	abstract resetCache(id:number|BoxId):void;
-    abstract async assureBox<T> (id:number): Promise<T>;
+    abstract async assureBox<T> (id:number|BoxId): Promise<T>;
     static equ(id1:BoxId|number, id2:BoxId|number): boolean {
         if (id1 === undefined) return false;
         if (id2 === undefined) return false;
@@ -108,7 +108,9 @@ export class TuidInner extends Tuid {
 		if (typeof id === 'object') id = id.id;
 		this.idCache.resetCache(id);
 	}
-    async assureBox<T> (id:number):Promise<T> {
+    async assureBox<T> (id:number|BoxId):Promise<T> {
+		if (!id) return;
+		if (typeof id === 'object') id = id.id;
 		await this.idCache.assureObj(id);
 		return this.idCache.getValue(id);
     }

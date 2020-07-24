@@ -8,6 +8,7 @@ import { VTo } from "./views/VTo";
 import { CTaskNoteItem } from "./task/CTaskNoteItem";
 import { Contact } from "model";
 import { observable } from "mobx";
+import { VSent } from "./views/VSent";
 
 export class CNote extends CUqBase {	
 	notesPager: QueryPager<any>;
@@ -63,8 +64,8 @@ export class CNote extends CUqBase {
 
 	async setNote(waiting:boolean, noteItem:NoteItem, caption:string, content:string) {
 		let {SetNote, Note} = this.uqs.notes;
-		let {note, type, sub} = noteItem;
-		await SetNote.submit({note, caption, content, type, sub}, waiting);
+		let {note, type} = noteItem;
+		await SetNote.submit({note, caption, content, type}, waiting);
 		Note.resetCache(note);
 		let {items} = this.notesPager;
 		let index = items.findIndex(v => v.note===note);
@@ -90,6 +91,10 @@ export class CNote extends CUqBase {
 
 	showTo(noteId:number) {
 		this.openVPage(VTo, noteId);
+	}
+
+	showSentPage() {
+		this.openVPage(VSent);
 	}
 
 	async callSelectContact(options: SelectContactOptions): Promise<Contact[]> {

@@ -1,6 +1,5 @@
 import React from 'react';
 import { VBasePage } from "./VBasePage";
-import { Page } from 'tonva';
 
 export class VActions extends VBasePage {
 	header() {return '操作'}
@@ -21,18 +20,11 @@ export class VActions extends VBasePage {
 		});
 		await this.controller.sendNoteTo(noteItem.note, toList);
 		this.closePage(3);
-		this.openPageElement(<Page header="已发送" back="close">
-			<div className="m-5 border rounded bg-white">
-				<div className="p-5 text-center border-bottom">已发送</div>
-				<div className="text-center py-3">
-					<button className="btn btn-outline-info" onClick={()=>this.backPage()}>返回</button>
-				</div>
-			</div>
-		</Page>);
+		this.controller.showSentPage();
 	}
 
 	private onAssign = () => {
 		this.closePage();
-		this.controller.cTaskNoteItem.assignTask();
+		this.controller.cTaskNoteItem.showAssignTaskPage();
 	}
 }

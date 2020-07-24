@@ -31,19 +31,32 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	}
 
 	protected renderBottomCommands() {
-		return <div className="py-2 px-3 bg-light border-top d-flex">
-			<div className="mr-auto" />
-			<button onClick={this.onSendNote}
-				className="btn btn-outline-primary ml-3">
-				发给
-			</button>
-			{
-				this.isMe(this.param.owner) === true &&
+		let {owner, assigned} = this.param;
+		let left:any, right:any;
+		let isMe = this.isMe(owner);
+		if (isMe === true) {
+			left = undefined;
+			right = <>
+				<button onClick={this.onSendNote}
+					className="btn btn-outline-primary ml-3">
+					发给
+				</button>
 				<div onClick={this.onEdit} className="px-3 py-2 cursor-pointer text-primary ml-3">
 					<FA name="pencil-square-o" />
 				</div>
-			}
-		</div>
+			</>;
+		}
+		else {
+			left = <div className="px-2 text-muted small">
+				来自：{this.renderContact(owner as number, assigned)}
+			</div>;
+			right = undefined;
+		}
+		return <div className="py-2 px-3 bg-light border-top d-flex">
+			{left}
+			<div className="mr-auto" />
+			{right}
+		</div>;
 	}
 
 	private onEdit = () => {
@@ -56,7 +69,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 		this.controller.showTo(this.param.note)
 	}
 
-	private renderItem(v:CheckItem) {
+	protected renderItem(v:CheckItem) {
 		let {key, text, checked} = v;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;

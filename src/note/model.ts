@@ -3,11 +3,12 @@ import { BoxId } from "tonva";
 export enum EnumNoteItemType {text=0, task=1}
 
 export interface NoteItem {
-	seconds: number, 
-	owner: number | BoxId,
-	note: any,
-	type: EnumNoteItemType,
-	sub: number,
+	seconds: number;
+	owner: number | BoxId;
+	note: any;
+	type: EnumNoteItemType;
+	assigned: string;
+	state: string;
 }
 
 export interface NoteModel {
@@ -15,7 +16,11 @@ export interface NoteModel {
 	caption: string;
 	content: string;
 	type: EnumNoteItemType,
-	sub: number,
 	$create: Date;
 	$update: Date;
+}
+
+export function replaceAll(str:string, findStr:string, repStr:string):string {
+	if (!str) return str;
+	return str.split(findStr).join(repStr);
 }

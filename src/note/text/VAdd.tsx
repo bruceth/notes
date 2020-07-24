@@ -1,6 +1,7 @@
-import { VNoteForm } from './VNoteForm';
+import { VNoteForm } from '../item/VNoteForm';
+import { CTextNoteItem } from './CTextNoteItem';
 
-export class VAdd extends VNoteForm {
+export class VAdd extends VNoteForm<CTextNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '记事';}
 	content() {

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import {observer} from 'mobx-react';
+import _ from 'lodash';
 import {PageItems} from '../../tool/pageItems';
 import {ListBase} from './base';
 import {Clickable} from './clickable';
@@ -12,17 +13,18 @@ import { resLang } from '../../res/res';
 import { ListRes, listRes } from '../../res';
 
 type StaticRow = string|JSX.Element|(()=>string|JSX.Element);
+interface ItemProps {
+	className?: string|string[];
+	render?: (item:any, index:number) => JSX.Element;
+	onSelect?: (item:any, isSelected:boolean, anySelected:boolean)=>void;
+	onClick?: (item:any)=>void;
+	key?: (item:any)=>string|number;
+}
 
 export interface ListProps {
     className?: string|string[];
     items: any[] | IObservableArray<any> | PageItems<any>;
-    item: {
-        className?: string|string[];
-        render?: (item:any, index:number) => JSX.Element;
-        onSelect?: (item:any, isSelected:boolean, anySelected:boolean)=>void;
-        onClick?: (item:any)=>void;
-        key?: (item:any)=>string|number;
-    };
+    item: ItemProps;
     compare?:(item:any, selectItem:any)=>boolean;
     selectedItems?:any[];
     header?: StaticRow;
@@ -37,17 +39,17 @@ export interface ListProps {
 export class List extends React.Component<ListProps> {
 	private static res:ListRes = resLang<ListRes>(listRes);
 
-    private listBase: ListBase;
+	private listBase: ListBase;
 	private selectable: Selectable;
     constructor(props:ListProps) {
 		super(props);
-        this.buildBase(props);
+        this.buildBase();
     }
     _$scroll = (direct: 'top'|'bottom') => {
         console.log('############### items scroll to ' + direct);
     }
-    private buildBase(props: ListProps) {
-        let {item} = props;
+    private buildBase() {
+        let {item} = this.props;
         let {onClick, onSelect} = item;
         if (onSelect !== undefined)
             this.selectable = this.listBase = new Selectable(this);
@@ -56,8 +58,11 @@ export class List extends React.Component<ListProps> {
         else
             this.listBase = new Static(this);
 	}
-	componentWillUpdate(nextProps:ListProps) {
-		this.buildBase(nextProps);
+	componentDidUpdate(prevProps: Readonly<ListProps>, prevState: Readonly<any>) {
+		if (_.isEqual(this.props.item, prevProps.item) === false) {
+			this.buildBase();
+			this.forceUpdate();
+		}
 	}
     componentWillUnmount() {
         this.listBase.dispose();

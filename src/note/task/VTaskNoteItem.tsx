@@ -29,11 +29,13 @@ export class VTaskNoteItem extends VNoteBase<CTaskNoteItem> {
 					</small>
 				</div>;
 			}
-			return <div className="d-block border rounded m-2 bg-white">
+			return <div className="d-block">
 				{caption && <div className="px-3 py-2 text-success"><b>{caption}</b></div>}
 				<div>
 					{
-						<div className="my-2">{this.renderContent()}</div>
+						this.checkable===false? 
+						<div className="py-3">{this.renderContent()}</div>
+						: this.renderItems()
 					}
 				</div>
 				{divChanged}

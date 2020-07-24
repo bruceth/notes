@@ -5,7 +5,7 @@ import { NoteItem } from '../model';
 
 export class VList extends VBasePage {
 	render() {
-		return <List items={this.controller.notesPager} 
+		return <List className="my-1" items={this.controller.notesPager} 
 			item={{render: this.renderNote, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
 	}
 
@@ -18,7 +18,9 @@ export class VList extends VBasePage {
 	private renderNote = (item: NoteItem, index:number) => {
 		let {type} = item;
 		let cNoteItem = this.controller.getCNoteItem(type);
-		return cNoteItem.renderItem(item, index);
+		return <div className="d-block border rounded mx-2 my-1 bg-white">
+			{cNoteItem.renderItem(item, index)}
+		</div>;
 	}
 
 	private onNoteClick = (item: NoteItem) => {

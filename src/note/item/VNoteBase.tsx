@@ -1,8 +1,9 @@
 import React from "react";
-import { VPage } from "tonva";
-import { NoteItem } from "../model";
+import { VPage, User, Image, UserView } from "tonva";
+import { NoteItem, replaceAll } from "../model";
 import { observable } from "mobx";
 import { CNoteItem } from "./CNoteItem";
+import { observer } from "mobx-react";
 
 export interface CheckItem {
 	key: number;
@@ -67,9 +68,56 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			return <div key={index}>{c}</div>;
 		})}</div>;
 	}
-}
 
-function replaceAll(str:string, findStr:string, repStr:string):string {
-	if (!str) return str;
-	return str.split(findStr).join(repStr);
+	protected renderItems() {
+		return React.createElement(observer(() => {
+			let uncheckedItems:CheckItem[] = [];
+			let checkedItems:CheckItem[] = [];
+			for (let ci of this.items) {
+				let {checked} = ci;
+				if (checked === true) checkedItems.push(ci);
+				else uncheckedItems.push(ci);
+			}			
+			return <div className="">
+				{uncheckedItems.map((v, index) => this.renderItem(v))}
+				{
+					checkedItems.length > 0 && <div className="border-top pt2">
+						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
+						{checkedItems.map((v, index) => this.renderItem(v))}
+					</div>
+				}
+			</div>;
+		}));
+	}
+
+	protected renderItem(v:CheckItem) {
+		let {key, text, checked} = v;
+		let cn = 'form-control-plaintext ml-3 ';
+		let content: any;
+		if (checked === true) {
+			cn += 'text-muted';
+			content = <del>{text}</del>;
+		}
+		else {
+			content = text;
+		}
+		return <div key={key} className="d-flex mx-3 my-0 align-items-center form-group form-check">
+			<input className="form-check-input mr-3 mt-0" type="checkbox"
+				defaultChecked={checked}
+				data-key={key}
+				disabled={true} />
+			<div className={cn}>{content}</div>
+		</div>;
+	}
+
+	protected renderContact = (userId:number, assigned:string) => {
+		let renderUser = (user:User) => {
+			let {name, nick, icon} = user;
+			return <>
+				<Image className="w-1-5c h-1-5c mr-2" src={icon} />
+				{name} {nick} {assigned}
+			</>
+		}
+		return <UserView user={userId as number} render={renderUser} />;
+	}
 }

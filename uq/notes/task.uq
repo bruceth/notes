@@ -1,0 +1,111 @@
+MAP Task (
+	KEY note ID Note,
+	checker ID [$User],
+	rater ID [$User],
+	point INT,
+);
+
+ACTION AssignTask ver 1.0 (
+	note ID NOTE,
+	caption CHAR(200),
+	content TEXT,
+	checker ID [$User],
+	rater ID [$User],
+	point INT,
+	ARR tos (
+		to ID [$User]
+	),
+) {
+	VAR seconds INT;
+	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+	FOREACH tos {
+		VAR taskId ID, folderId ID;
+		SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
+		IF folderId IS NULL {
+			TUID Folder INTO folderId SET owner=to;
+			BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
+		}
+		TUID Note INTO taskId SET type=EnumNoteType.task, caption=caption, content=content, owner=to, from=$user;
+		BOOK Task AT(taskId) SET checker=checker, rater=rater, point=point;
+		BOOK FolderNote AT(folderId, taskId) SET seconds=seconds, type=EnumNoteType.task;
+		BOOK Note2Note AT(note, taskId) SET type=EnumNoteMapType.Spawn;
+		BOOK Note2Note AT(taskId, note) SET type=EnumNoteMapType.Born;
+	};
+};
+
+ACTION DoneTask (
+	note ID NOTE,
+	comment TEXT,		-- json
+) {
+	VAR seconds INT;
+	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+
+	VAR flowId SMALLINT, checker ID, rater ID, point INT, folderId ID;
+	SET checker=a.checker, rater=a.rater, point=a.point FROM Task as a WHERE a.note=note;
+	BOOK NoteX AT(note) SET state=1;
+	SET flowId=(SELECT nullif(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
+	BOOK Flow AT(note, flowId) SET attach=comment;
+	IF NOT checker IS NULL {
+		SET folderId = folder FROM SpecFolder WHERE owner=checker AND spec=EnumSpecFolder.notes;
+	}
+	ELSEIF NOT rater IS NULL {
+		SET folderId = folder FROM SpecFolder WHERE owner=rater AND spec=EnumSpecFolder.notes;
+	}
+	IF NOT folderId IS NULL {
+		BOOK FolderNote AT(folderId, note) SET seconds=seconds, type=EnumNoteType.task;
+	}
+};
+
+ACTION CheckTask (
+	note ID Note,
+	act TINYINT,		-- 1: pass，2: fail
+	comment TEXT,  		-- json
+) {
+	VAR seconds INT;
+	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+
+	VAR flowId SMALLINT, checker ID, rater ID, point INT, folderId ID, state INT;
+	IF act=1 {
+		SET state=2;
+	}
+	else {
+		SET state=3;
+	}
+	SET checker=a.checker, rater=a.rater, point=a.point FROM Task as a WHERE a.note=note;
+	IF NOT checker IS NULL {
+		BOOK NoteX AT(note) SET state=state;
+		SET flowId=(SELECT nullif(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
+		BOOK Flow AT(note, flowId) SET attach=comment;
+		IF NOT rater IS NULL {
+			SET folderId = folder FROM SpecFolder WHERE owner=rater AND spec=EnumSpecFolder.notes;
+			BOOK FolderNote AT(folderId, note) SET seconds=seconds, type=EnumNoteType.task;
+		}
+		-- Task owner Folder 需要更新
+		-- SET folderId = folder FROM SpecFolder WHERE owner= AND spec=EnumSpecFolder.notes;
+	}
+};
+
+ACTION RateTask (
+	note ID Note,
+	value INT,			-- 分值
+	comment TEXT,  		-- json
+) {
+	VAR seconds INT;
+	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+
+	VAR flowId SMALLINT, checker ID, rater ID, point INT, folderId ID;
+	SET checker=a.checker, rater=a.rater, point=a.point FROM Task as a WHERE a.note=note;
+	IF NOT checker IS NULL {
+		BOOK NoteX AT(note) SET state=state;
+		SET flowId=(SELECT nullif(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
+		BOOK Flow AT(note, flowId) SET attach=comment;
+		IF NOT rater IS NULL {
+			SET folderId = folder FROM SpecFolder WHERE owner=rater AND spec=EnumSpecFolder.notes;
+			BOOK FolderNote AT(folderId, note) SET seconds=seconds, type=EnumNoteType.task;
+		}
+		-- Task owner Folder 需要更新
+		-- SET folderId = folder FROM SpecFolder WHERE owner= AND spec=EnumSpecFolder.notes;
+		-- Task checker Folder 需要更新
+		-- SET folderId = folder FROM SpecFolder WHERE owner= AND spec=EnumSpecFolder.notes;
+	}
+};

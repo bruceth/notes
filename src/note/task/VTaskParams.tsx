@@ -1,5 +1,5 @@
 import React from 'react';
-import { VPage, FA, Muted, UserView, Image, User } from "tonva";
+import { VPage, FA, UserView, Image, User } from "tonva";
 import { CTaskNoteItem } from "./CTaskNoteItem";
 import { Contact } from 'model';
 import { SelectContactOptions } from 'note/views';
@@ -47,9 +47,19 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 		return <div className="py-2">
 			{owner.cTextNoteItem.renderItem(owner.noteItem, 0)}
 			{rows.map(v => this.renderParam(v))}
+			<div className="px-3 py-2"><button className="btn btn-primary" onClick={this.onSendTask}>发送</button></div>
 		</div>;
 	}
 
+	private onSendTask = async () => {
+		await this.controller.assignTask({
+			contacts: this.contacts,
+			checker: this.checker,
+			rater: this.rater,
+		});
+		this.closePage(2);
+		this.controller.owner.showSentPage();
+	}
 
 	private renderContact = (item:Contact, index?:number) => {
 		if (!item) return none;

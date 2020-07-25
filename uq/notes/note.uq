@@ -92,8 +92,8 @@ RETURNS flow (
 		SET folder = a.folder FROM SpecFolder as a WHERE a.owner=$user AND a.spec=-folder;
 	}
 	BOOK FolderNote AT (folder, note) SET unread=0;
-	INTO ret SELECT a.id, a.type, a.caption, a.content, a.owner, a.x, a.from, a.[$create], a.[$update], a.state
-		FROM Note as a
+	INTO ret SELECT a.id, a.type, a.caption, a.content, a.owner, a.x, a.from, a.[$create], a.[$update], b.state
+		FROM Note as a LEFT JOIN NoteX as b ON a.id=b.note
 		WHERE a.id=note;
 	INTO flow SELECT a.flow, a.operator, a.action, a.stamp, a.content
 		FROM Flow as a

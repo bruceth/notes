@@ -2,7 +2,7 @@ import { CUqBase, EnumSpecFolder } from "tapp";
 import { QueryPager } from "tonva";
 import { VList, VSelectContact, SelectContactOptions } from "./views";
 import { CTextNoteItem } from "./text";
-import { EnumNoteItemType, NoteItem } from "./model";
+import { EnumNoteItemType, NoteItem, NoteModel } from "./model";
 import { CNoteItem } from "./item/CNoteItem";
 import { VTo } from "./views/VTo";
 import { CTaskNoteItem } from "./task/CTaskNoteItem";
@@ -10,20 +10,24 @@ import { Contact } from "model";
 import { observable } from "mobx";
 import { VSent } from "./views/VSent";
 
-export class CNote extends CUqBase {	
+export class CNote extends CUqBase {
+	folderId: number;
 	notesPager: QueryPager<any>;
 	cTextNoteItem: CTextNoteItem;
 	cTaskNoteItem: CTaskNoteItem;
 	private cNoteItems: {[key in EnumNoteItemType]: CNoteItem};
 	@observable contacts: Contact[];
 	noteItem: NoteItem;
+	noteModel: NoteModel;
 
     protected async internalStart() {
 	}
 
-	init() {
+	init(folderId?: number) {
+		if (!folderId) this.folderId = -EnumSpecFolder.notes;
+		else this.folderId = folderId;
 		let {notes} = this.uqs;
-		this.notesPager = new QueryPager<any>(notes.GetNotes);
+		this.notesPager = new QueryPager<any>(notes.GetNotes, undefined, undefined, true);
 		this.cTextNoteItem = this.newSub(CTextNoteItem);
 		this.cTaskNoteItem = this.newSub(CTaskNoteItem);
 		this.cNoteItems = {
@@ -42,7 +46,12 @@ export class CNote extends CUqBase {
 	}
 
 	async load() {
-		await this.notesPager.first({folderId: -EnumSpecFolder.notes});
+		await this.notesPager.first({folderId: this.folderId});
+	}
+
+	async getNote(id: number): Promise<NoteModel> {
+		let ret = await this.uqs.notes.GetNote.query({folder: this.folderId, note: id});
+		return ret.ret[0];
 	}
 
 	async addNote(caption:string, content:string) {

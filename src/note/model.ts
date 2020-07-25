@@ -9,6 +9,7 @@ export interface NoteItem {
 	type: EnumNoteItemType;
 	assigned: string;
 	state: string;
+	unread: number;
 }
 
 export interface NoteModel {

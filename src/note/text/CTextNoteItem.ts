@@ -1,5 +1,5 @@
 import { CNoteItem } from "../item";
-import { NoteItem } from '../model';
+import { NoteItem, NoteModel } from '../model';
 import { VView } from './VView';
 import { VAdd } from './VAdd';
 import { VTextNoteItem } from './VTextNoteItem';
@@ -11,7 +11,7 @@ export class CTextNoteItem extends CNoteItem {
 		return vNoteItem.render();
 	}
 
-	onClickItem(noteItem: NoteItem) {
+	onClickItem(noteItem: NoteItem, noteModel: NoteModel) {
 		this.openVPage(VView, noteItem);
 	}
 

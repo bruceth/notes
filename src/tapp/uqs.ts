@@ -13,6 +13,7 @@ export interface Notes {
 
 	GetNotes: Query;
 	GetMyContacts: Query;
+	GetNote: Query;
 };
 
 export interface UQs {

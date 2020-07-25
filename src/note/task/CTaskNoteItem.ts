@@ -19,7 +19,7 @@ export class CTaskNoteItem extends CNoteItem {
 		return v.render();
 	}
 
-	onClickItem(noteItem: NoteItem) {
+	onClickItem(noteItem: NoteItem, noteModel: NoteModel) {
 		this.openVPage(VView, noteItem);
 	}
 

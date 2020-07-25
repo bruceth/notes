@@ -31,7 +31,7 @@ export class VTextNoteItem extends VNoteBase<CTextNoteItem> {
 			}
 			let divFrom:any;
 			if (this.isMe(owner) === false) {
-				divFrom = <div className="mr-auto small text-muted">
+				divFrom = <div className="small text-muted">
 					来自：{this.renderContact(owner as number, assigned)}
 				</div>;
 			}
@@ -47,6 +47,7 @@ export class VTextNoteItem extends VNoteBase<CTextNoteItem> {
 				{
 					(divFrom || divChanged) && <div className="d-flex align-items-center px-3 py-1">
 						{divFrom}
+						<div className="mr-auto" />
 						{divChanged}
 					</div>
 				}

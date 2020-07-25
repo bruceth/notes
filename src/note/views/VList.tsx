@@ -16,17 +16,22 @@ export class VList extends VBasePage {
 	}
 
 	private renderNote = (item: NoteItem, index:number) => {
-		let {type} = item;
+		let {type, unread} = item;
 		let cNoteItem = this.controller.getCNoteItem(type);
-		return <div className="d-block border rounded mx-2 my-1 bg-white">
+		let cn = 'd-block rounded mx-2 my-1 bg-white border ';
+		if (unread>0) cn += 'border-info shadow';
+		return <div className={cn}>
 			{cNoteItem.renderItem(item, index)}
 		</div>;
 	}
 
-	private onNoteClick = (item: NoteItem) => {
+	private onNoteClick = async (item: NoteItem) => {
+		let noteModel = await this.controller.getNote(item.note);
+		item.unread = 0;
+		this.controller.noteModel = noteModel;
 		this.controller.noteItem = item;
 		let {type} = item;
 		let cNoteItem = this.controller.getCNoteItem(type);
-		return cNoteItem.onClickItem(item);
+		return cNoteItem.onClickItem(item, noteModel);
 	}
 }

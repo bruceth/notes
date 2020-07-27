@@ -91,10 +91,5 @@ export class VSelectContact extends VBasePage {
 
 	private onNext = () => {
 		this.returnCall(this.list.selectedItems);
-		/*
-		let contacts = this.list.selectedItems;
-		this.controller.contacts = contacts;
-		this.openVPage(VActions); //, {contacts, noteId: this.currentNoteId});
-		*/
 	}
 }

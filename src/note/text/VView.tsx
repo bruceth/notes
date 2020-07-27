@@ -22,7 +22,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 					{
 						this.checkable===false? 
 						<div className="py-3">{this.renderContent()}</div>
-						: this.renderItems()
+						: this.renderCheckItems()
 					}
 				</div>
 				{this.renderBottomCommands()}
@@ -69,7 +69,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 		this.controller.showTo(this.param.note)
 	}
 
-	protected renderItem(v:CheckItem) {
+	protected renderCheckItem(v:CheckItem) {
 		let {key, text, checked} = v;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;
@@ -89,7 +89,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 		</label>;
 	}
 
-	protected renderItems() {
+	protected renderCheckItems() {
 		return React.createElement(observer(() => {
 			let uncheckedItems:CheckItem[] = [];
 			let checkedItems:CheckItem[] = [];
@@ -99,11 +99,11 @@ export class VView extends VNoteBase<CTextNoteItem> {
 				else uncheckedItems.push(ci);
 			}			
 			return <div className="">
-				{uncheckedItems.map((v, index) => this.renderItem(v))}
+				{uncheckedItems.map((v, index) => this.renderCheckItem(v))}
 				{
 					checkedItems.length > 0 && <div className="border-top mt-2 pt2">
 						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
-						{checkedItems.map((v, index) => this.renderItem(v))}
+						{checkedItems.map((v, index) => this.renderCheckItem(v))}
 					</div>
 				}
 			</div>;

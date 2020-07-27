@@ -69,7 +69,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		})}</div>;
 	}
 
-	protected renderItems() {
+	protected renderCheckItems() {
 		return React.createElement(observer(() => {
 			let uncheckedItems:CheckItem[] = [];
 			let checkedItems:CheckItem[] = [];
@@ -79,18 +79,18 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 				else uncheckedItems.push(ci);
 			}			
 			return <div className="">
-				{uncheckedItems.map((v, index) => this.renderItem(v))}
+				{uncheckedItems.map((v, index) => this.renderCheckItem(v))}
 				{
 					checkedItems.length > 0 && <div className="border-top pt2">
 						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
-						{checkedItems.map((v, index) => this.renderItem(v))}
+						{checkedItems.map((v, index) => this.renderCheckItem(v))}
 					</div>
 				}
 			</div>;
 		}));
 	}
 
-	protected renderItem(v:CheckItem) {
+	protected renderCheckItem(v:CheckItem) {
 		let {key, text, checked} = v;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;

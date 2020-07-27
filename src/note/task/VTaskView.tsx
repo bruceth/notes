@@ -1,12 +1,11 @@
 import React from 'react';
-import { tv, FA } from "tonva";
-import { CTaskNoteItem } from "./CTaskNoteItem";
+import { tv, FA, EasyTime } from "tonva";
+import { CTaskNoteItem, EnumTaskState } from "./CTaskNoteItem";
 import { VNoteBase, CheckItem } from 'note/item';
 import { observer } from 'mobx-react';
 import { VEdit } from './VEdit';
 
-
-export class VView extends VNoteBase<CTaskNoteItem> {
+abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '任务'}
 	content() {
@@ -23,7 +22,7 @@ export class VView extends VNoteBase<CTaskNoteItem> {
 					{
 						this.checkable===false? 
 						<div className="py-3">{this.renderContent()}</div>
-						: this.renderItems()
+						: this.renderCheckItems()
 					}
 				</div>
 				{this.renderBottomCommands()}
@@ -68,7 +67,7 @@ export class VView extends VNoteBase<CTaskNoteItem> {
 		alert('提交完成');
 	}
 
-	protected renderItem(v:CheckItem) {
+	protected renderCheckItem(v:CheckItem) {
 		let {key, text, checked} = v;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;
@@ -79,16 +78,16 @@ export class VView extends VNoteBase<CTaskNoteItem> {
 		else {
 			content = text;
 		}
-		return <label key={key} className="d-flex mx-3 my-0 align-items-center form-group form-check">
+		return <div key={key} className="d-flex mx-3 my-0 align-items-center form-group form-check">
 			<input className="form-check-input mr-3 mt-0" type="checkbox"
 				defaultChecked={checked}
 				onChange={this.onCheckChange}
 				data-key={key} />
 			<div className={cn}>{content}</div>
-		</label>;
+		</div>;
 	}
 
-	protected renderItems() {
+	protected renderCheckItems() {
 		return React.createElement(observer(() => {
 			let uncheckedItems:CheckItem[] = [];
 			let checkedItems:CheckItem[] = [];
@@ -98,11 +97,11 @@ export class VView extends VNoteBase<CTaskNoteItem> {
 				else uncheckedItems.push(ci);
 			}			
 			return <div className="">
-				{uncheckedItems.map((v, index) => this.renderItem(v))}
+				{uncheckedItems.map((v, index) => this.renderCheckItem(v))}
 				{
 					checkedItems.length > 0 && <div className="border-top mt-2 pt2">
 						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
-						{checkedItems.map((v, index) => this.renderItem(v))}
+						{checkedItems.map((v, index) => this.renderCheckItem(v))}
 					</div>
 				}
 			</div>;
@@ -120,5 +119,81 @@ export class VView extends VNoteBase<CTaskNoteItem> {
 			this.param,
 			this.title, 
 			noteContent);
+	}
+
+	renderListItem() {
+		let {note} = this.param;
+		return tv(note, (values) => {
+			let {caption, content, $create, $update} = values;
+			if (!this.title) this.title = caption;
+			this.parseContent(content);
+			let divChanged:any = undefined;
+			let create:Date = $create;
+			let update:Date = $update;
+			if (create && update) {
+				let time:Date, action:any;
+				if (update.getTime() - create.getTime() > 60*1000) {
+					action = <FA name="pencil-square-o" />;
+					time = update;
+				}
+				else {
+					time = create;
+				}
+				divChanged = <div className="text-right small text-muted px-3 pb-1">
+					<small>
+						{action}
+						<span className="text-info"><EasyTime date={time} /></span>
+					</small>
+				</div>;
+			}
+			return <div className="d-block">
+				{caption && <div className="px-3 py-2 text-success"><b>{caption}</b></div>}
+				<div>
+					{
+						this.checkable===false? 
+						<div className="py-3">{this.renderContent()}</div>
+						: this.renderCheckItems()
+					}
+				</div>
+				{divChanged}
+			</div>;
+		});
+	}
+}
+
+class VTaskStart extends VTaskView {
+}
+
+class VTaskDone extends VTaskView {
+}
+
+class VTaskPass extends VTaskView {
+}
+
+class VTaskFail extends VTaskView {
+}
+
+class VTaskRated extends VTaskView {
+}
+
+class VTaskCanceled extends VTaskView {
+}
+
+export class TaskViewFactory {
+	private stateViews:{[type in EnumTaskState]: new (controller: CTaskNoteItem)=>VTaskView} = {
+		[EnumTaskState.Start]: VTaskStart,
+		[EnumTaskState.Done]: VTaskDone,
+		[EnumTaskState.Pass]: VTaskPass,
+		[EnumTaskState.Fail]: VTaskFail,
+		[EnumTaskState.Rated]: VTaskRated,
+		[EnumTaskState.Canceled]: VTaskCanceled,
+	}
+
+	getView = (enumTaskState: EnumTaskState) => {
+		let TaskView = this.stateViews[enumTaskState];
+		if (!TaskView) {
+			TaskView = VTaskStart;
+		}
+		return TaskView;
 	}
 }

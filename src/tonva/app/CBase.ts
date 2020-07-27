@@ -26,8 +26,10 @@ export abstract class CBase extends Controller {
 		return c;
     }
 
-    protected newSub<O extends CBase, T extends CSub<O>>(type: IConstructor<T>):T {
-        return new type(this);
+    protected newSub<O extends CBase, T extends CSub<O>>(type: IConstructor<T>, param?:any):T {
+		let s = new type(this);
+		s.init(param);
+		return s;
     }
 }
 

@@ -41,7 +41,7 @@ export class VTextNoteItem extends VNoteBase<CTextNoteItem> {
 					{
 						this.checkable===false? 
 						<div className="my-2">{this.renderContent()}</div>
-						: this.renderItems()
+						: this.renderCheckItems()
 					}
 				</div>
 				{

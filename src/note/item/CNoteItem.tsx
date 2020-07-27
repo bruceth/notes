@@ -6,8 +6,6 @@ import { CUqSub } from '../../tapp/CBase';
 export abstract class CNoteItem extends CUqSub<CNote> {
 	protected async internalStart() {}
 
-	//abstract defaultAct(): NoteItemAct;
-	//subAct(subType:number): NoteItemAct {debugger; throw new Error('not implemented')}
 	abstract renderItem(noteItem: NoteItem, index:number): JSX.Element;
 	abstract onClickItem(noteItem: NoteItem, noteModel: NoteModel): void;
 

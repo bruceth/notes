@@ -8,7 +8,7 @@ export interface NoteItem {
 	note: any;
 	type: EnumNoteItemType;
 	assigned: string;
-	state: string;
+	state: number;
 	unread: number;
 }
 

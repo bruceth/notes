@@ -1,10 +1,10 @@
 import React from 'react';
+import { observer } from 'mobx-react';
+import { observable } from 'mobx';
 import { VPage, FA, UserView, Image, User } from "tonva";
 import { CTaskNoteItem } from "./CTaskNoteItem";
 import { Contact } from 'model';
 import { SelectContactOptions } from 'note/views';
-import { observer } from 'mobx-react';
-import { observable } from 'mobx';
 
 interface Param {
 	label: string;

@@ -1,9 +1,8 @@
 import { CNoteItem } from "../item";
 import { NoteItem, NoteModel } from '../model';
-import { VView } from './VView';
-import { VTaskNoteItem } from "./VTaskNoteItem";
 import { VTaskParams } from "./VTaskParams";
 import { Contact } from "model";
+import { TaskViewFactory } from "./VTaskView";
 
 export interface AssignTaskParam {
 	contacts: Contact[];
@@ -15,14 +14,18 @@ export interface AssignTaskParam {
 export enum EnumTaskState {Start=0, Done=1, Pass=2, Fail=3, Rated=4, Canceled=5};
 
 export class CTaskNoteItem extends CNoteItem {
+	private getTaskView = new TaskViewFactory().getView;
+
 	renderItem(noteItem: NoteItem, index:number): JSX.Element {
-		let v = new VTaskNoteItem(this);
+		let TaskView = this.getTaskView(noteItem.state as EnumTaskState);
+		let v = new TaskView(this);
 		v.init(noteItem);
-		return v.render();
+		return v.renderListItem();
 	}
 
 	onClickItem(noteItem: NoteItem, noteModel: NoteModel) {
-		this.openVPage(VView, noteItem);
+		let TaskView = this.getTaskView(noteItem.state as EnumTaskState);
+		this.openVPage(TaskView, noteItem);
 	}
 
 	showAssignTaskPage() {

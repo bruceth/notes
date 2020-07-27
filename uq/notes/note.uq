@@ -36,7 +36,7 @@ MAP FLOW (
 -- state由特定程序定义，是json
 MAP NoteX (
 	KEY note ID Note,
-	state TINYINT,						-- 由特定程序自己定义的特定的当前状态
+	state TINYINT DEFAULT 0,				-- 由特定程序自己定义的特定的当前状态
 	-- end TINYINT DEFAULT 0,				-- 1: end, can be archive
 );
 

@@ -1,4 +1,4 @@
-ENUM EnumTaskState (Start=0, Done=1, Pass=2, Fail=3, Rated=4);
+ENUM EnumTaskState (Start=0, Done=1, Pass=2, Fail=3, Rated=4, Canceled=5);
 
 MAP Task (
 	KEY note ID Note,

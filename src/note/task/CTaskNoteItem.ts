@@ -2,7 +2,7 @@ import { CNoteItem } from "../item";
 import { NoteItem, NoteModel } from '../model';
 import { VTaskParams } from "./VTaskParams";
 import { Contact } from "model";
-import { TaskViewFactory } from "./VTaskView";
+import { TaskViewFactory } from "./state";
 
 export interface AssignTaskParam {
 	contacts: Contact[];

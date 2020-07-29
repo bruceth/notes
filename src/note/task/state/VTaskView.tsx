@@ -1,9 +1,9 @@
 import React from 'react';
-import { tv, FA, EasyTime } from "tonva";
-import { CTaskNoteItem, EnumTaskState } from "./CTaskNoteItem";
-import { VNoteBase, CheckItem } from 'note/item';
 import { observer } from 'mobx-react';
-import { VEdit } from './VEdit';
+import { tv, FA, EasyTime } from "tonva";
+import { CTaskNoteItem, EnumTaskState } from "../CTaskNoteItem";
+import { VNoteBase, CheckItem } from '../../item';
+import { VEdit } from '../VEdit';
 
 abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
@@ -14,10 +14,12 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			let {caption, content} = values;
 			if (!this.title) this.title = caption;
 			this.parseContent(content);
+			let divState = this.renderState();
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
-					{caption && <div className="px-3 py-2 border-bottom">
-						<div><b>{caption}</b></div>
+					{(divState || caption) && <div className="px-3 py-2 border-bottom">
+						<b>{caption}</b>
+						&nbsp; <span className="small text-danger">{divState}</span>
 					</div>}
 					{
 						this.checkable===false? 
@@ -30,14 +32,16 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		});
 	}
 
+	protected onEdit = () => {
+		this.parsed = false;
+		this.openVPage(VEdit, this.param);
+	}
+
 	protected renderBottomCommands() {
-		let {owner, assigned} = this.param;
+		let {owner, assigned, state} = this.param;
 		let left:any, right:any;
 		let isMe = this.isMe(owner);
-		if (isMe === true) {
-			left = <button onClick={this.onDone} className="btn btn-primary mx-3">
-				完成
-			</button>;
+		if (isMe === true && state === EnumTaskState.Start) {
 			right = <>
 				<div onClick={this.onEdit} className="px-3 py-2 cursor-pointer text-primary ml-3">
 					<FA name="pencil-square-o" />
@@ -54,17 +58,6 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			<div className="mr-auto" />
 			{right}
 		</div>;
-	}
-
-	private onEdit = () => {
-		this.parsed = false;
-		this.openVPage(VEdit, this.param);
-	}
-
-	private onDone = async () => {
-		//await this.controller.cApp.loadRelation();
-		//this.controller.showTo(this.param.note)
-		alert('提交完成');
 	}
 
 	protected renderCheckItem(v:CheckItem) {
@@ -121,6 +114,10 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			noteContent);
 	}
 
+	protected renderState():JSX.Element {
+		return <>state</>;
+	}
+
 	renderListItem() {
 		let {note} = this.param;
 		return tv(note, (values) => {
@@ -146,8 +143,12 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 					</small>
 				</div>;
 			}
+			let divState = this.renderState();
 			return <div className="d-block">
-				{caption && <div className="px-3 py-2 text-success"><b>{caption}</b></div>}
+				{(caption || divState) && <div className="px-3 py-2 text-success">
+					<b>{caption}</b> 
+					&nbsp; <span className="small text-danger">{divState}</span>
+				</div>}
 				<div>
 					{
 						this.checkable===false? 
@@ -162,21 +163,71 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 }
 
 class VTaskStart extends VTaskView {
+	protected renderState():JSX.Element {
+		return <>待办</>;
+	}
+
+	protected renderBottomCommands() {
+		let {owner, assigned} = this.param;
+		let left:any, right:any;
+		let isMe = this.isMe(owner);
+		if (isMe === true) {
+			left = <button onClick={this.onDone} className="btn btn-primary mx-3">
+				完成
+			</button>;
+			right = <>
+				<div onClick={this.onEdit} className="px-3 py-2 cursor-pointer text-primary ml-3">
+					<FA name="pencil-square-o" />
+				</div>
+			</>;
+		}
+		else {
+			right = <div className="px-2 text-muted small">
+				来自：{this.renderContact(owner as number, assigned)}
+			</div>;
+		}
+		return <div className="py-2 bg-light border-top d-flex">
+			{left}
+			<div className="mr-auto" />
+			{right}
+		</div>;
+	}
+
+	private onDone = async () => {
+		//await this.controller.cApp.loadRelation();
+		//this.controller.showTo(this.param.note)
+		alert('提交完成');
+	}
 }
 
 class VTaskDone extends VTaskView {
+	protected renderState() {
+		return <>已完成</>;
+	}
 }
 
 class VTaskPass extends VTaskView {
+	protected renderState() {
+		return <>已验收</>;
+	}
 }
 
 class VTaskFail extends VTaskView {
+	protected renderState() {
+		return <>拒签</>;
+	}
 }
 
 class VTaskRated extends VTaskView {
+	protected renderState() {
+		return <>已评价</>;
+	}
 }
 
 class VTaskCanceled extends VTaskView {
+	protected renderState() {
+		return <>已取消</>;
+	}
 }
 
 export class TaskViewFactory {

@@ -1,7 +1,7 @@
 import { nav, t, setGlobalRes } from "../components";
 import { Controller } from '../vm';
 import { UQsMan, TVs } from "../uq";
-import { appInFrame, loadAppUqs, UqAppData } from "../net";
+import { appInFrame } from "../net";
 import { centerApi } from "./centerApi";
 import { VUnitSelect, VErrorsPage, VStartError, VUnsupportedUnit } from "./vMain";
 
@@ -29,23 +29,24 @@ export abstract class CAppBase extends Controller {
     protected _uqs: any;
 
     protected readonly name: string;
-	protected readonly version: string;
+	//protected readonly version: string;
 	protected readonly noUnit: boolean;
 
-    readonly uqsMan: UQsMan;
+    //readonly uqsMan: UQsMan;
     appUnits:any[];
 
     // appName: owner/name
     constructor(config: AppConfig) {
         super(undefined);
-        let {appName, version, tvs, noUnit} = config;
+        let {appName, noUnit} = config;
         this.name = appName;
         if (appName === undefined) {
             throw new Error('appName like "owner/app" must be defined in MainConfig');
         }
-		this.version = version;
 		this.noUnit = noUnit;
-        this.uqsMan = new UQsMan(this.name, tvs);
+		this._uqs = UQsMan._uqs;
+		//this.version = version;
+        //this.uqsMan = new UQsMan(this.name, tvs);
     }
 
     get uqs(): any {return this._uqs;}
@@ -72,14 +73,15 @@ export abstract class CAppBase extends Controller {
 	
     protected async beforeStart():Promise<boolean> {
         try {
-            let retErrors = await this.load();
+            //let retErrors = await this.load();
             //let app = await loadAppUqs(this.appOwner, this.appName);
             // if (isDevelopment === true) {
-            // 这段代码原本打算只是在程序员调试方式下使用，实际上，也可以开放给普通用户，production方式下
+			// 这段代码原本打算只是在程序员调试方式下使用，实际上，也可以开放给普通用户，production方式下
+			let retErrors = UQsMan.errors;
             let {predefinedUnit} = appInFrame;
             let {user} = nav;
             if (user !== undefined && user.id > 0) {
-				this.appUnits = await centerApi.userAppUnits(this.uqsMan.id);
+				this.appUnits = await centerApi.userAppUnits(UQsMan.value.id);
 				if (this.noUnit === true) return true;
                 switch (this.appUnits.length) {
                     case 0:
@@ -120,6 +122,7 @@ export abstract class CAppBase extends Controller {
         return await centerApi.userFromId(userId);
     }
 
+	/*
     private async load(): Promise<string[]> {
         let {appOwner, appName} = this.uqsMan;
         let {localData} = this.uqsMan;
@@ -148,7 +151,8 @@ export abstract class CAppBase extends Controller {
             }
         }
         return retErrors;
-    }
+	}
+	*/
 
     private showUnsupport(predefinedUnit: number) {
         nav.clear();

@@ -131,7 +131,7 @@ export abstract class Controller {
     protected abstract internalStart(param?:any, ...params:any[]):Promise<void>;
     async start(param?:any, ...params:any[]):Promise<void> {
         this.disposer = this.dispose;
-        this.registerReceiveHandler();
+		this.registerReceiveHandler();
         let ret = await this.beforeStart();
         if (ret === false) return;
 		await this.internalStart(param, ...params);

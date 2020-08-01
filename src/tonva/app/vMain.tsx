@@ -3,6 +3,7 @@ import { Page, FA, nav, LMR, List } from "../components";
 import { VPage } from '../vm';
 import { appInFrame } from '../net';
 import { CAppBase } from "./CAppBase";
+import { UQsMan } from 'tonva/uq';
 
 /*
 export class VAppMain extends VPage<CMainBase> {
@@ -44,7 +45,7 @@ export class VUnsupportedUnit extends VPage<CAppBase> {
     private page = ({predefinedUnit}:{predefinedUnit: number}) => {
         let {user} = nav;
         let userName:string = user? user.name : '[未登录]';
-        let {appOwner, appName} = this.controller.uqsMan;
+        let {appOwner, appName} = UQsMan.value;
         return <Page header="APP无法运行" logout={true}>
             <div className="m-3 text-danger container">
                 <div className="form-group row">

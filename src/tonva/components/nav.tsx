@@ -73,11 +73,11 @@ export class NavView extends React.Component<Props, NavViewState> {
             wait: 0,
             fetchError: undefined
         };
+        nav.set(this);
     }
     async componentDidMount()
     {
         window.addEventListener('popstate', this.navBack);
-        nav.set(this);
         await nav.start();
     }
 
@@ -438,8 +438,12 @@ export class Nav {
 		}
 	}
 
-    private async getPredefinedUnitName() {
-		let el = document.getElementById('unit.json');
+    private async getPredefinedUnitName() {		
+		let el = document.getElementById('unit');
+		if (el) {
+			return el.innerText;
+		}
+		el = document.getElementById('unit.json');
 		if (!el) {
 			return await this.loadUnitJson();
 		}
@@ -490,8 +494,7 @@ export class Nav {
     private arrs = ['/test', '/test/'];
     private unitJsonPath():string {
         let {origin, pathname} = document.location;
-        //href = href.toLowerCase();
-        pathname = pathname.toLowerCase();
+		pathname = pathname.toLowerCase();
         for (let item of this.arrs) {
             if (pathname.endsWith(item) === true) {
                 pathname = pathname.substr(0, pathname.length - item.length);
@@ -504,10 +507,12 @@ export class Nav {
         return origin + pathname + '/unit.json';
     }
     private windowOnError = (event: Event | string, source?: string, lineno?: number, colno?: number, error?: Error) => {
+		debugger;
         console.error('windowOnError');
         console.error(error);
     }
     private windowOnUnhandledRejection = (ev: PromiseRejectionEvent) => {
+		debugger;
         console.error('windowOnUnhandledRejection');
         console.error(ev.reason);
     }
@@ -520,10 +525,53 @@ export class Nav {
     }
     private windowOnScroll = (ev: Event) => {
         console.log('scroll event');
-    }
+	}
+	
+	async init() {
+		let guest:Guest = this.local.guest.get();
+		if (guest === undefined) {
+			guest = await guestApi.guest();
+		}
+		nav.setGuest(guest);
+		
+		this.testing = env.testing;
+		await host.start(this.testing);
+		let hash = document.location.hash;
+		if (hash !== undefined && hash.length > 0) {
+			let pos = getExHashPos();
+			if (pos < 0) pos = undefined;
+			this.hashParam = hash.substring(1, pos);
+		}
+		let {url, ws, resHost} = host;
+		this.centerHost = url;
+		this.resUrl = resUrlFromHost( resHost);
+		this.wsHost = ws;
+		setCenterUrl(url);
+
+		let exHash = getExHash();
+		let appInFrame = setAppInFrame(exHash);
+		if (exHash !== undefined && window !== window.parent) {
+			// is in frame
+			if (appInFrame !== undefined) {
+				this.ws = wsBridge;
+				console.log('this.ws = wsBridge in sub frame');
+				//nav.user = {id:0} as User;
+				if (window.self !== window.parent) {
+					window.parent.postMessage({type:'sub-frame-started', hash: appInFrame.hash}, '*');
+				}
+				// 下面这一句，已经移到 appBridge.ts 里面的 initSubWin，也就是响应从main frame获得user之后开始。
+				//await this.showAppView();
+				return;
+			}
+		}
+
+		let predefinedUnit = await this.loadPredefinedUnit();
+		appInFrame.predefinedUnit = predefinedUnit;
+	}
+
     async start() {
         try {
-            window.onerror = this.windowOnError;
+			window.onerror = this.windowOnError;
             window.onunhandledrejection = this.windowOnUnhandledRejection;
             //window.addEventListener('click', this.windowOnClick);
             //window.addEventListener('mousemove', this.windowOnMouseMove);
@@ -534,48 +582,9 @@ export class Nav {
                 document.oncontextmenu = function() {return false;}
             }
             //window.setInterval(()=>console.error('tick every 5 seconds'), 5000);
-            this.testing = env.testing;
-            await host.start(this.testing);
-            let hash = document.location.hash;
-            if (hash !== undefined && hash.length > 0) {
-                let pos = getExHashPos();
-                if (pos < 0) pos = undefined;
-                this.hashParam = hash.substring(1, pos);
-            }
-            nav.clear();
-            this.startWait();
-            let {url, ws, resHost} = host;
-            this.centerHost = url;
-            this.resUrl = resUrlFromHost( resHost);
-            this.wsHost = ws;
-            setCenterUrl(url);
+			nav.clear();
+			this.startWait();
             
-            let guest:Guest = this.local.guest.get();
-            if (guest === undefined) {
-                guest = await guestApi.guest();
-            }
-            nav.setGuest(guest);
-
-            let exHash = getExHash();
-            let appInFrame = setAppInFrame(exHash);
-            if (exHash !== undefined && window !== window.parent) {
-                // is in frame
-                if (appInFrame !== undefined) {
-                    this.ws = wsBridge;
-                    console.log('this.ws = wsBridge in sub frame');
-                    //nav.user = {id:0} as User;
-                    if (window.self !== window.parent) {
-                        window.parent.postMessage({type:'sub-frame-started', hash: appInFrame.hash}, '*');
-                    }
-                    // 下面这一句，已经移到 appBridge.ts 里面的 initSubWin，也就是响应从main frame获得user之后开始。
-                    //await this.showAppView();
-                    return;
-                }
-            }
-
-            let predefinedUnit = await this.loadPredefinedUnit();
-            appInFrame.predefinedUnit = predefinedUnit;
-
             let user: User = this.local.user.get();
             if (user === undefined) {
                 let {notLogined} = this.nav.props;
@@ -765,10 +774,10 @@ export class Nav {
         return this.nav.level;
     }
     startWait() {
-        this.nav.startWait();
+        this.nav?.startWait();
     }
     endWait() {
-        this.nav.endWait();
+        this.nav?.endWait();
     }
     async onError(error: FetchError) {
         await this.nav.onError(error);
@@ -796,7 +805,7 @@ export class Nav {
         this.nav.popTo(key);
     }
     clear() {
-        this.nav.clear();
+        this.nav?.clear();
     }
     navBack() {
         this.nav.navBack();

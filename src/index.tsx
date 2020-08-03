@@ -5,28 +5,54 @@ import './index.css';
 //import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import { nav, NavView, start } from 'tonva';
+import { NavView, start, nav, AppConfig, CAppBase, UQsMan } from 'tonva';
 //import logo from './logo.svg';
 import './App.css';
 import { CApp, appConfig } from './tapp';
+import { navigo } from 'navigo';
+import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
 
-nav.setSettings(appConfig);
+(async function() {
+	nav.setSettings(appConfig);
+	const onLogined = async () => {
+		await start(CAppCreator, appConfig);
+	}
+	let navView = <NavView onLogined={onLogined} />;
 
-const App: React.FC = () => {
-    const onLogined = async () => {
-		await start(CApp, appConfig);
-    }
-    return <NavView onLogined={onLogined} />;
-}
+	await nav.init();
+	//let n = nav;
+	//let af = appInFrame;
+	let {appName, version, tvs} = appConfig;
+	await UQsMan.load(appName, version, tvs);
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+	let CAppCreator: new (config: AppConfig) => CAppBase = CApp;
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+	navigo.on({
+		'/a/b': () => CAppCreator = CAppAB,
+		'/c/d': () => CAppCreator = CAppCD,
+		'/bbbb/cccc': () => {
+			CAppCreator = CAppBBBBCCCC;
+			console.log('CAppBBBBCCCC');
+			start(CAppCreator, appConfig);
+			return;
+		},
+	}).resolve();
+	navigo.on(() => {
+		CAppCreator = CApp
+	}).resolve();
+
+
+	const App: React.FC = () => navView;
+
+	ReactDOM.render(
+	<React.StrictMode>
+		<App />
+	</React.StrictMode>,
+	document.getElementById('root')
+	);
+
+	// If you want your app to work offline and load faster, you can change
+	// unregister() to register() below. Note this comes with some pitfalls.
+	// Learn more about service workers: https://bit.ly/CRA-PWA
+	serviceWorker.unregister();
+})();

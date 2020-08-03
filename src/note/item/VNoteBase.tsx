@@ -63,7 +63,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected renderContent() {
-		return <div className="px-3">{(this.noteContent).split('\n').map((v, index) => {
+		return <div className="px-3">{this.noteContent&&(this.noteContent).split('\n').map((v, index) => {
 			let c = !v? <>&nbsp;</>: v;
 			return <div key={index}>{c}</div>;
 		})}</div>;

@@ -77,7 +77,7 @@ export class NavView extends React.Component<Props, NavViewState> {
     }
     async componentDidMount()
     {
-        window.addEventListener('popstate', this.navBack);
+        //window.addEventListener('popstate', this.navBack);
         await nav.start();
     }
 
@@ -528,12 +528,6 @@ export class Nav {
 	}
 	
 	async init() {
-		let guest:Guest = this.local.guest.get();
-		if (guest === undefined) {
-			guest = await guestApi.guest();
-		}
-		nav.setGuest(guest);
-		
 		this.testing = env.testing;
 		await host.start(this.testing);
 		let hash = document.location.hash;
@@ -547,6 +541,16 @@ export class Nav {
 		this.resUrl = resUrlFromHost( resHost);
 		this.wsHost = ws;
 		setCenterUrl(url);
+
+		let guest:Guest = this.local.guest.get();
+		if (guest === undefined) {
+			guest = await guestApi.guest();
+		}
+		if (!guest) {
+			debugger;
+			throw Error('guest can not be undefined');
+		}
+		nav.setGuest(guest);
 
 		let exHash = getExHash();
 		let appInFrame = setAppInFrame(exHash);

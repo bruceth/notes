@@ -153,7 +153,7 @@ export class Navigo {
 		return onlyURL;
 	}
 	  
-	private static manageHooks(handler:RouteFunc, hooks:Hooks, params?:any, query?:any) {
+	private static manageHooks(handler:RouteFunc, hooks:Hooks, params?:any, exHooks?:Hooks) {
 		if (hooks && typeof hooks === 'object') {
 			if (hooks.before) {
 				hooks.before((shouldRoute = true) => {
@@ -234,7 +234,7 @@ export class Navigo {
 	}
   
 	navigate(path:string, absolute:boolean = false):Navigo {
-		let to;
+		let to:string;
 		path = path || '';
 		if (this._usePushState) {
 			to = (!absolute ? this._getRoot() + '/' : '') + path.replace(/^\/+/, '/');
@@ -320,13 +320,27 @@ export class Navigo {
 			GETParameters === this._lastRouteResolved.query
 		) {
 			if (this._lastRouteResolved.hooks && this._lastRouteResolved.hooks.already) {
-			this._lastRouteResolved.hooks.already(this._lastRouteResolved.params);
+				this._lastRouteResolved.hooks.already(this._lastRouteResolved.params);
 			}
 			return false;
 		}
 	
 		let matched = Navigo.match(onlyURL, this._routes);
 	
+		let manageHooks = (handler:Handler) => {
+			Navigo.manageHooks(() => {
+				Navigo.manageHooks(() => {
+					this._callLeave();
+					this._lastRouteResolved = {
+						url: onlyURL,
+						query: GETParameters, 
+						hooks: handler.hooks
+					};
+					handler.handler(GETParameters);
+				}, handler.hooks);
+			}, this._genericHooks);
+		}
+
 		if (matched === false) {
 			if (this._defaultHandler && (
 				onlyURL === '' ||
@@ -334,6 +348,7 @@ export class Navigo {
 				onlyURL === this._hash ||
 				Navigo.isHashedRoot(onlyURL, this._useHash, this._hash)
 			)) {
+				/*
 				Navigo.manageHooks(() => {
 					Navigo.manageHooks(() => {
 						this._callLeave();
@@ -345,9 +360,12 @@ export class Navigo {
 						this._defaultHandler.handler(GETParameters);
 					}, this._defaultHandler.hooks);
 				}, this._genericHooks);
+				*/
+				manageHooks(this._defaultHandler);
 				return true;
 			}
 			else if (this._notFoundHandler) {
+				/*
 				Navigo.manageHooks(() => {
 					Navigo.manageHooks(() => {
 						this._callLeave();
@@ -359,6 +377,8 @@ export class Navigo {
 						this._notFoundHandler.handler(GETParameters);
 					}, this._notFoundHandler.hooks);
 				}, this._genericHooks);
+				*/
+				manageHooks(this._notFoundHandler);
 			}
 			return false;	
 		}

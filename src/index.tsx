@@ -19,6 +19,15 @@ import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
 	}
 	let navView = <NavView onLogined={onLogined} />;
 
+	function renderDom(div:any) {
+		ReactDOM.render(
+			<React.StrictMode>
+				{div}
+			</React.StrictMode>,
+			document.getElementById('root')
+		);
+	}
+
 	await nav.init();
 	//let n = nav;
 	//let af = appInFrame;
@@ -28,8 +37,16 @@ import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
 	let CAppCreator: new (config: AppConfig) => CAppBase = CApp;
 
 	navigo.on({
-		'/a/b': () => CAppCreator = CAppAB,
-		'/c/d': () => CAppCreator = CAppCD,
+		'/a/b': () => {
+			//CAppCreator = CAppAB;
+			//start(CAppCreator, appConfig);
+			renderDom(<div>/a/b <button onClick={()=>navigo.navigate('/c/d')}>test</button></div>)
+		},
+		'/c/d': () => {
+			//CAppCreator = CAppCD;
+			//start(CAppCreator, appConfig);
+			renderDom(<div>/c/d</div>)
+		},
 		'/bbbb/cccc': () => {
 			CAppCreator = CAppBBBBCCCC;
 			console.log('CAppBBBBCCCC');
@@ -38,9 +55,10 @@ import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
 		},
 	}).resolve();
 	navigo.on(() => {
+		//renderDom(<div>hello</div>)
 		CAppCreator = CApp
+		start(CAppCreator, appConfig);
 	}).resolve();
-
 
 	const App: React.FC = () => navView;
 

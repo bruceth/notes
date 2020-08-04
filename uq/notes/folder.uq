@@ -38,7 +38,7 @@ PAGE (
 	PAGE SELECT a.seconds, b.owner, a.note, a.type, c.assigned, d.state, a.unread
 		FROM FolderNote as a
 			LEFT JOIN Note as b ON a.note=b.id
-			LEFT JOIN MyContact as c ON c.me=$user
+			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact
 			LEFT JOIN NoteX as d ON a.note=d.note
 		WHERE a.folder=folderId and a.seconds<$pageStart
 		ORDER BY a.seconds desc

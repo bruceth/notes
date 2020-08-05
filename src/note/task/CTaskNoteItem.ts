@@ -48,4 +48,16 @@ export class CTaskNoteItem extends CNoteItem {
 		}
 		await this.uqs.notes.AssignTask.submit(data);
 	}
+
+	async DoneTask() {
+		let {note:noteId} = this.owner.noteItem;
+		let note:NoteModel = await this.uqs.notes.Note.assureBox(noteId);
+		let {content} = note;
+		let data = {
+			note: (noteId as any)?.id,
+			content: content
+		}
+
+		let ret = await this.uqs.notes.DoneTask.submit(data);
+	}
 }

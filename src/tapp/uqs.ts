@@ -11,6 +11,10 @@ export interface Notes {
 	AddContact: Action;
 	AssignTask: Action;
 
+	DoneTask: Action;
+	CheckTask: Action;
+	RateTask: Action;
+
 	GetNotes: Query;
 	GetMyContacts: Query;
 	GetNote: Query;

@@ -194,9 +194,8 @@ class VTaskStart extends VTaskView {
 	}
 
 	private onDone = async () => {
-		//await this.controller.cApp.loadRelation();
-		//this.controller.showTo(this.param.note)
-		alert('提交完成');
+		await this.controller.DoneTask();
+		this.closePage();
 	}
 }
 

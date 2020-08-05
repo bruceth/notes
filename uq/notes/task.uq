@@ -29,6 +29,7 @@ ACTION AssignTask ver 1.0 (
 		}
 		TUID Note INTO taskId SET type=EnumNoteType.task, caption=caption, content=content, owner=to, from=$user;
 		BOOK Task AT(taskId) SET checker=checker, rater=rater, point=point;
+		BOOK NoteX AT(taskId) SET state=EnumTaskState.Start;
 		BOOK FolderNote AT(folderId, taskId) SET seconds=seconds, type=EnumNoteType.task, unread=1;
 		BOOK Note2Note AT(note, taskId) SET type=EnumNoteMapType.Spawn;
 		BOOK Note2Note AT(taskId, note) SET type=EnumNoteMapType.Born;

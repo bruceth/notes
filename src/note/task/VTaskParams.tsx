@@ -39,7 +39,7 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 	content() {
 		let rows: Param[] = [
 			{label: '执行人', values: this.renderContacts(), onClick: this.onClickContacts}, 
-			{label: '分值', values: this.renderPoint(), onClick: this.onClickContacts}, 
+			{label: '分值', values: this.renderPoint()}, 
 			{label: '检查人', values: this.renderChecker(), onClick: this.onClickChecker}, 
 			{label: '评价人', values: this.renderRater(), onClick: this.onClickRater}, 
 		];
@@ -92,7 +92,7 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 	}
 
 	private renderPoint() {
-
+		return <></>;
 	}
 
 	private renderChecker() {

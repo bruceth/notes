@@ -57,7 +57,7 @@ import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
 	navigo.on(() => {
 		//renderDom(<div>hello</div>)
 		CAppCreator = CApp
-		start(CAppCreator, appConfig);
+		//start(CAppCreator, appConfig);
 	}).resolve();
 
 	const App: React.FC = () => navView;

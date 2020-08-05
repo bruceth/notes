@@ -5,11 +5,11 @@ import { CTextNoteItem } from './CTextNoteItem';
 
 export class VTextNoteItem extends VNoteBase<CTextNoteItem> {
 	render() {
-		let {note, owner, assigned} = this.param;
-		return tv(note, (values) => {
-			let {caption, content, $create, $update} = values;
+		let {note, owner, assigned, caption, content, $create, $update} = this.param;
+		//return tv(note, (values) => {
+		//	let {caption, content, $create, $update} = values;
 			if (!this.title) this.title = caption;
-			this.parseContent(content);
+			//this.parseContent(content);
 			let divChanged:any = undefined;
 			let create:Date = $create;
 			let update:Date = $update;
@@ -31,9 +31,7 @@ export class VTextNoteItem extends VNoteBase<CTextNoteItem> {
 			}
 			let divFrom:any;
 			if (this.isMe(owner) === false) {
-				divFrom = <div className="small text-muted">
-					来自：{this.renderContact(owner as number, assigned)}
-				</div>;
+				divFrom = this.renderFrom(owner as number, assigned);
 			}
 			return <div className="d-block">
 				{caption && <div className="px-3 py-2"><b>{caption}</b></div>}
@@ -41,7 +39,7 @@ export class VTextNoteItem extends VNoteBase<CTextNoteItem> {
 					{
 						this.checkable===false? 
 						<div className="my-2">{this.renderContent()}</div>
-						: this.renderCheckItems()
+						: this.renderCheckItems(this.checkable)
 					}
 				</div>
 				{
@@ -52,6 +50,6 @@ export class VTextNoteItem extends VNoteBase<CTextNoteItem> {
 					</div>
 				}
 			</div>;
-		});
+		//});
 	}
 }

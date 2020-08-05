@@ -28,6 +28,13 @@ export class CTaskNoteItem extends CNoteItem {
 		this.openVPage(TaskView, noteItem);
 	}
 
+	// convert 可以在不同的继承中被重载
+	// task 里面是把content parse 成json，放到obj里面	
+	convert(noteItem: NoteItem): NoteItem {
+		noteItem.obj = JSON.parse(noteItem.content);
+		return noteItem;
+	}
+
 	showAssignTaskPage() {
 		this.openVPage(VTaskParams, {contacts: this.owner.contacts}, () => this.closePage());
 	}

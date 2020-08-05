@@ -5,11 +5,16 @@ export enum EnumNoteItemType {text=0, task=1}
 export interface NoteItem {
 	seconds: number;
 	owner: number | BoxId;
-	note: any;
+	note: number;
 	type: EnumNoteItemType;
+	caption: string;
+	content: string;
 	assigned: string;
 	state: number;
 	unread: number;
+	obj: any;
+	$create: Date;
+	$update: Date;
 }
 
 export interface NoteModel {

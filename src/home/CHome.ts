@@ -9,6 +9,7 @@ export class CHome extends CUqBase {
 	}
 
 	init() {
+
 		this.cNode = this.newC(CNote);
 	}
 

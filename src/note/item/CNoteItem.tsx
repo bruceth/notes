@@ -1,9 +1,27 @@
 import React from 'react';
-import { NoteItem, NoteModel } from '../model';
+import { observable } from "mobx";
+import { NoteItem, NoteModel, replaceAll } from '../model';
 import { CNote } from '../CNote';
 import { CUqSub } from '../../tapp/CBase';
 
+export interface INodeDatas {
+
+}
+
 export abstract class CNoteItem extends CUqSub<CNote> {
+
+	stringifyContentObj(fullObj:any, other?:(obj:any)=>void) {
+		if (other) {
+			other(fullObj);
+		}
+	}
+
+	parseContentObj(fullObj:any, parseOther?:(obj:any)=>void) {
+		if (parseOther) {
+			parseOther(fullObj);
+		}
+	}
+
 	protected async internalStart() {}
 
 	abstract renderItem(noteItem: NoteItem, index:number): JSX.Element;

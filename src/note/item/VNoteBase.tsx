@@ -13,10 +13,6 @@ export interface CheckItem {
 
 export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	protected parsed: boolean = false;
-
-	protected param: NoteItem;
-	init(param: NoteItem):void {this.param = param;}
-
 	@observable protected title: string;
 	@observable protected noteContent: string;
 	@observable protected checkable: boolean = false;
@@ -24,20 +20,34 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	@observable protected changedNoteContent: string;
 	protected itemKey:number = 1;
 
+	protected fullObj:any;
+
+	protected param: NoteItem;
+	init(param: NoteItem):void {this.param = param;}
+
+	protected stringifyContentObj() {
+		if (this.fullObj === undefined) {
+			this.fullObj = {};
+		}
+
+		if (this.checkable) {
+			this.fullObj.check = true;
+			this.fullObj.itemKey = this.itemKey;
+			this.fullObj.items = this.itemKey;
+			delete this.fullObj.content;
+		}
+		else {
+			this.fullObj.check = false;
+			this.fullObj.content = this.changedNoteContent || this.noteContent;
+			delete this.fullObj.itemKey;
+			delete this.fullObj.items;
+		}
+	}
+
 	protected stringifyContent() {
-		return JSON.stringify(
-			this.checkable === true?
-			{
-				check: true,
-				itemKey: this.itemKey,
-				items: this.items,
-			}
-			:
-			{
-				check: false,
-				content: this.changedNoteContent || this.noteContent
-			}
-		);
+		this.stringifyContentObj();
+		this.controller.stringifyContentObj(this.fullObj);
+		return JSON.stringify(this.fullObj);
 	}
 
 	protected parseContent(content:string) {
@@ -55,6 +65,8 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			else {
 				this.noteContent = obj.content;
 			}
+			this.fullObj = obj;
+			this.controller.parseContentObj(this.fullObj);
 		}
 		catch (err) {
 			console.error(err);

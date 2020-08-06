@@ -39,7 +39,7 @@ export class CTaskNoteItem extends CNoteItem {
 	}
 
 	async assignTask(param: AssignTaskParam) {
-		let {note:noteId} = this.owner.noteItem;
+		let {note:noteId} = this.noteItem;
 		let {contacts, checker, rater, point} = param;
 		let note:NoteModel = await this.uqs.notes.Note.assureBox(noteId);
 		let {caption, content} = note;
@@ -69,7 +69,7 @@ export class CTaskNoteItem extends CNoteItem {
 	}
 
 	async DoneTask() {
-		let {note:noteId} = this.owner.noteItem;
+		let {note:noteId} = this.noteItem;
 		let note:NoteModel = await this.uqs.notes.Note.assureBox(noteId);
 		let {content} = note;
 		let data = {

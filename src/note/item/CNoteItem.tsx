@@ -2,7 +2,7 @@ import React from 'react';
 import { observable } from "mobx";
 import { NoteItem, NoteModel, replaceAll } from '../model';
 import { CNote } from '../CNote';
-import { CUqSub } from '../../tapp/CBase';
+import { CUqSub } from '../../tapp';
 
 export interface CheckItem {
 	key: number;
@@ -73,6 +73,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 
 	parseContent(content:string):any {
 		try {
+			content = CNoteItem.replaceAll(content, '\\', '\\\\');
 			content = CNoteItem.replaceAll(content, '\n', '\\n');
 			let obj = content?JSON.parse(content):{};
 			return obj;

@@ -10,10 +10,10 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	header() {return '记事'}
 	content() {
 		return React.createElement(observer(() => {
-		let {note, caption, content} = this.param;
+		let {note, caption, content} = this.controller.noteItem;
 		//return tv(note, (values) => {
 			//let {caption, content} = values;
-			if (!this.title) this.title = caption;
+			if (!this.controller.title) this.controller.title = caption;
 			//this.parseContent(content);
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
@@ -21,7 +21,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 						<div><b>{caption}</b></div>
 					</div>}
 					{
-						this.checkable===false? 
+						this.controller.checkable===false? 
 						<div className="py-3">{this.renderContent()}</div>
 						: this.renderCheckItems()
 					}
@@ -33,7 +33,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	}
 
 	protected renderBottomCommands() {
-		let {owner, assigned} = this.param;
+		let {owner, assigned} = this.controller.noteItem;
 		let left:any, right:any;
 		let isMe = this.isMe(owner);
 		if (isMe === true) {
@@ -60,12 +60,12 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	}
 
 	private onEdit = () => {
-		this.openVPage(VEdit, this.param);
+		this.openVPage(VEdit);
 	}
 
 	private onSendNote = async () => {
 		await this.controller.cApp.loadRelation();
-		this.controller.showTo(this.param.note)
+		this.controller.showTo(this.controller.noteItem.note)
 	}
 
 	protected renderCheckItem(v:CheckItem, checkable:boolean) {
@@ -93,7 +93,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 		return React.createElement(observer(() => {
 			let uncheckedItems:CheckItem[] = [];
 			let checkedItems:CheckItem[] = [];
-			for (let ci of this.items) {
+			for (let ci of this.controller.items) {
 				let {checked} = ci;
 				if (checked === true) checkedItems.push(ci);
 				else uncheckedItems.push(ci);
@@ -113,14 +113,14 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	private onCheckChange = async (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;
 		let key = Number(t.getAttribute('data-key'));
-		let item = this.items.find(v => v.key === key);
+		let item = this.controller.items.find(v => v.key === key);
 		if (item) item.checked = t.checked;
 
-		let noteContent = this.stringifyContent();
+		let noteContent = this.controller.stringifyContent();
 		await this.controller.owner.setNote(false,
-			this.param,
-			this.title, 
+			this.controller.noteItem,
+			this.controller.title, 
 			noteContent,
-			this.buildObj());
+			this.controller.buildObj());
 	}
 }

@@ -10,11 +10,11 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	header() {return '任务'}
 	protected get allowCheck() {return true;}
 	content() {
-		let {note, caption, content, obj} = this.param;
+		let {note, caption, content, obj} = this.controller.noteItem;
 		let allowCheck = this.allowCheck;
 		//return tv(note, (values) => {
 		//	let {caption, content} = values;
-			if (!this.title) this.title = caption;
+			if (!this.controller.title) this.controller.title = caption;
 			//this.parseContent(content);
 			let divState = this.renderState();
 			let divCaption = caption? <b className="text-success">{caption}</b> : <span className="text-info">任务</span>;
@@ -25,7 +25,7 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 						<span className="small text-danger">{divState}</span>
 					</div>
 					{
-						this.checkable===false? 
+						this.controller.checkable===false? 
 						<div className="py-3">{this.renderContent()}</div>
 						: this.renderCheckItems(allowCheck)
 					}
@@ -36,11 +36,11 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	}
 
 	protected onEdit = () => {
-		this.openVPage(VEdit, this.param);
+		this.openVPage(VEdit);
 	}
 
 	protected renderBottomCommands() {
-		let {owner, assigned, state} = this.param;
+		let {owner, assigned, state} = this.controller.noteItem;
 		let left:any, right:any;
 		let isMe = this.isMe(owner);
 		if (isMe === true && state === EnumTaskState.Start) {
@@ -85,7 +85,7 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		return React.createElement(observer(() => {
 			let uncheckedItems:CheckItem[] = [];
 			let checkedItems:CheckItem[] = [];
-			for (let ci of this.items) {
+			for (let ci of this.controller.items) {
 				let {checked} = ci;
 				if (checked === true) checkedItems.push(ci);
 				else uncheckedItems.push(ci);
@@ -105,15 +105,15 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	private onCheckChange = async (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;
 		let key = Number(t.getAttribute('data-key'));
-		let item = this.items.find(v => v.key === key);
+		let item = this.controller.items.find(v => v.key === key);
 		if (item) item.checked = t.checked;
 
-		let noteContent = this.stringifyContent();
+		let noteContent = this.controller.stringifyContent();
 		await this.controller.owner.setNote(false,
-			this.param,
-			this.title, 
+			this.controller.noteItem,
+			this.controller.title, 
 			noteContent,
-			this.buildObj());
+			this.controller.buildObj());
 	}
 
 	protected renderState():JSX.Element {
@@ -121,10 +121,10 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	}
 
 	renderListItem() {
-		let {note, caption, content, $create, $update} = this.param;
+		let {note, caption, content, $create, $update} = this.controller.noteItem;
 		//return tv(note, (values) => {
 		//	let {caption, content, $create, $update} = values;
-			if (!this.title) this.title = caption;
+			if (!this.controller.title) this.controller.title = caption;
 			//this.parseContent(content);
 			let divChanged:any = undefined;
 			let create:Date = $create;
@@ -155,7 +155,7 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 				</div>
 				<div>
 					{
-						this.checkable===false? 
+						this.controller.checkable===false? 
 						<div className="py-3">{this.renderContent()}</div>
 						: this.renderCheckItems(this.allowCheck)
 					}
@@ -167,14 +167,14 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 }
 
 class VTaskStart extends VTaskView {
-	protected get allowCheck() {return this.isMe(this.param.owner);}
+	protected get allowCheck() {return this.isMe(this.controller.noteItem.owner);}
 
 	protected renderState():JSX.Element {
 		return <>待办</>;
 	}
 
 	protected renderBottomCommands() {
-		let {owner, assigned} = this.param;
+		let {owner, assigned} = this.controller.noteItem;
 		let left:any, right:any;
 		let isMe = this.isMe(owner);
 		if (isMe === true) {

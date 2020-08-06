@@ -5,11 +5,8 @@ import { CTextNoteItem } from './CTextNoteItem';
 
 export class VTextNoteItem extends VNoteBase<CTextNoteItem> {
 	render() {
-		let {note, owner, assigned, caption, content, $create, $update} = this.param;
-		//return tv(note, (values) => {
-		//	let {caption, content, $create, $update} = values;
-			if (!this.title) this.title = caption;
-			//this.parseContent(content);
+		let {note, owner, assigned, caption, content, $create, $update} = this.controller.noteItem;
+			if (!this.controller.title) this.controller.title = caption;
 			let divChanged:any = undefined;
 			let create:Date = $create;
 			let update:Date = $update;
@@ -37,9 +34,9 @@ export class VTextNoteItem extends VNoteBase<CTextNoteItem> {
 				{caption && <div className="px-3 py-2"><b>{caption}</b></div>}
 				<div>
 					{
-						this.checkable===false? 
+						this.controller.checkable===false? 
 						<div className="my-2">{this.renderContent()}</div>
-						: this.renderCheckItems(this.checkable)
+						: this.renderCheckItems(this.controller.checkable)
 					}
 				</div>
 				{
@@ -50,6 +47,5 @@ export class VTextNoteItem extends VNoteBase<CTextNoteItem> {
 					</div>
 				}
 			</div>;
-		//});
 	}
 }

@@ -6,26 +6,26 @@ export class VEdit extends VNoteForm<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '记事'}
 	content() {
-		let {note, caption} = this.param;
+		let {note, caption} = this.controller.noteItem;
 		//return tv(note, (values) => {
 			//let {caption, content} = values;
-			if (!this.title) this.title = caption;
+			if (!this.controller.title) this.controller.title = caption;
 			//this.parseContent(content);
 			return this.renderEdit();
 		//});
 	}
 
 	protected getSaveDisabled():boolean {
-		return (this.title === undefined && this.changedNoteContent === undefined);
+		return (this.controller.title === undefined && this.controller.changedNoteContent === undefined);
 	}
 
 	protected async onButtonSave(): Promise<void> {
-		let noteContent = this.stringifyContent();
+		let noteContent = this.controller.stringifyContent();
 		await this.controller.owner.setNote(true,
-			this.param,
-			this.title, 
+			this.controller.noteItem,
+			this.controller.title, 
 			noteContent,
-			this.buildObj());
+			this.controller.buildObj());
 		this.closePage();
 	}
 }

@@ -12,10 +12,10 @@ import { VSent } from "./views/VSent";
 
 export class CNote extends CUqBase {
 	folderId: number;
-	notesPager: QueryPager<NoteItem>;
+	notesPager: QueryPager<CNoteItem>;
 	cTextNoteItem: CTextNoteItem;
 	cTaskNoteItem: CTaskNoteItem;
-	private cNoteItems: {[key in EnumNoteItemType]: CNoteItem};
+	private cNoteItems: {[key in EnumNoteItemType]: new (...args: any[])=> CNoteItem};
 	@observable contacts: Contact[];
 	noteItem: NoteItem;
 	noteModel: NoteModel;
@@ -27,21 +27,21 @@ export class CNote extends CUqBase {
 		if (!folderId) this.folderId = -EnumSpecFolder.notes;
 		else this.folderId = folderId;
 		let {notes} = this.uqs;
-		this.notesPager = new QueryPager<NoteItem>(notes.GetNotes, undefined, undefined, true);
+		this.notesPager = new QueryPager<CNoteItem>(notes.GetNotes, undefined, undefined, true);
 		this.notesPager.setItemConverter(this.noteItemConverter);
 		this.cTextNoteItem = this.newSub(CTextNoteItem);
 		this.cTaskNoteItem = this.newSub(CTaskNoteItem);
 		this.cNoteItems = {
-			[EnumNoteItemType.text]: this.cTextNoteItem,
-			[EnumNoteItemType.task]: this.cTaskNoteItem,
+			[EnumNoteItemType.text]: CTextNoteItem,
+			[EnumNoteItemType.task]: CTaskNoteItem,
 		}
 	}
 
-	private noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):NoteItem => {
+	private noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteItem => {
 		let cNoteItem = this.getCNoteItem(item.type);
-		// cNoteItem.convert(item);
 		item.obj = cNoteItem.parseContent(item.content);
-		return item;
+		cNoteItem.init(item);
+		return cNoteItem;
 	}
 
 	getCNoteItem(type: EnumNoteItemType): CNoteItem {
@@ -50,7 +50,7 @@ export class CNote extends CUqBase {
 			debugger;
 			throw new Error(`type ${type} CNoteItem not defined`);
 		}
-		return ret;
+		return this.newSub(ret);
 	}
 
 	async load() {
@@ -69,7 +69,7 @@ export class CNote extends CUqBase {
 		let {note} = ret;
 		//let {Note} = this.uqs.notes;
 		let date = new Date();
-		this.notesPager.items.unshift({
+		let noteItem:NoteItem = {
 			seconds: undefined,
 			owner: this.user.id,
 			note: note as number,
@@ -82,7 +82,10 @@ export class CNote extends CUqBase {
 			obj: undefined,
 			$create: date,
 			$update: date,
-		});
+		}
+		let cNoteItem = this.getCNoteItem(EnumNoteItemType.text);
+		cNoteItem.init(noteItem);
+		this.notesPager.items.unshift(cNoteItem);
 		return ret;
 	}
 
@@ -92,13 +95,13 @@ export class CNote extends CUqBase {
 		await SetNote.submit({note, caption, content, type}, waiting);
 		Note.resetCache(note);
 		let {items} = this.notesPager;
-		let index = items.findIndex(v => v.note===note);
+		let index = items.findIndex(v => v.noteItem.note===note);
 		if (index >= 0) {
 			let theItems = items.splice(index, 1);
 			let theItem = theItems[0];
-			theItem.caption = caption;
-			theItem.content = content;
-			theItem.obj = obj;
+			theItem.noteItem.caption = caption;
+			theItem.noteItem.content = content;
+			theItem.noteItem.obj = obj;
 			items.unshift(theItem);
 		}
 	}

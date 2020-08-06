@@ -14,7 +14,6 @@ export class CNote extends CUqBase {
 	folderId: number;
 	notesPager: QueryPager<CNoteItem>;
 	cTextNoteItem: CTextNoteItem;
-	cTaskNoteItem: CTaskNoteItem;
 	private cNoteItems: {[key in EnumNoteItemType]: new (...args: any[])=> CNoteItem};
 	@observable contacts: Contact[];
 	noteItem: NoteItem;
@@ -30,7 +29,6 @@ export class CNote extends CUqBase {
 		this.notesPager = new QueryPager<CNoteItem>(notes.GetNotes, undefined, undefined, true);
 		this.notesPager.setItemConverter(this.noteItemConverter);
 		this.cTextNoteItem = this.newSub(CTextNoteItem);
-		this.cTaskNoteItem = this.newSub(CTaskNoteItem);
 		this.cNoteItems = {
 			[EnumNoteItemType.text]: CTextNoteItem,
 			[EnumNoteItemType.task]: CTaskNoteItem,
@@ -44,7 +42,7 @@ export class CNote extends CUqBase {
 		return cNoteItem;
 	}
 
-	getCNoteItem(type: EnumNoteItemType): CNoteItem {
+	private getCNoteItem(type: EnumNoteItemType): CNoteItem {
 		let ret = this.cNoteItems[type];
 		if (ret === undefined) {
 			debugger;
@@ -130,5 +128,10 @@ export class CNote extends CUqBase {
 
 	async callSelectContact(options: SelectContactOptions): Promise<Contact[]> {
 		return await this.vCall(VSelectContact, options);
+	}
+
+	showAssignTaskPage() {
+		let cTaskNoteItem = this.newSub(CTaskNoteItem);
+		cTaskNoteItem.showAssignTaskPage();
 	}
 }

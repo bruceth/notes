@@ -9,7 +9,7 @@ export class VEdit extends VNoteForm<CTaskNoteItem> {
 		let {note, caption} = this.controller.noteItem;
 		//return tv(note, (values) => {
 			//let {caption, content} = values;
-			if (!this.controller.title) this.controller.title = caption;
+			//if (!this.controller.title) this.controller.title = caption;
 			//this.parseContent(content);
 			return this.renderEdit();
 		//});

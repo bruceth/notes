@@ -15,6 +15,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	init(param: NoteItem):void {
 		this.noteItem = param;
 		if (!param) return;
+		this.title = param.caption;
 		let {obj} = param;
 		if (obj) {
 			this.checkable = obj.check;

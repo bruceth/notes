@@ -8,32 +8,34 @@ import { VEdit } from '../VEdit';
 abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '任务'}
+	protected get allowCheck() {return true;}
 	content() {
-		let {note} = this.param;
-		return tv(note, (values) => {
-			let {caption, content} = values;
+		let {note, caption, content, obj} = this.param;
+		let allowCheck = this.allowCheck;
+		//return tv(note, (values) => {
+		//	let {caption, content} = values;
 			if (!this.title) this.title = caption;
-			this.parseContent(content);
+			//this.parseContent(content);
 			let divState = this.renderState();
+			let divCaption = caption? <b className="text-success">{caption}</b> : <span className="text-info">任务</span>;
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
-					{(divState || caption) && <div className="px-3 py-2 border-bottom">
-						<b>{caption}</b>
-						&nbsp; <span className="small text-danger">{divState}</span>
-					</div>}
+					<div className="px-3 py-2 border-bottom">
+						{divCaption} &nbsp; 
+						<span className="small text-danger">{divState}</span>
+					</div>
 					{
 						this.checkable===false? 
 						<div className="py-3">{this.renderContent()}</div>
-						: this.renderCheckItems()
+						: this.renderCheckItems(allowCheck)
 					}
 				</div>
 				{this.renderBottomCommands()}
 			</div>;
-		});
+		//});
 	}
 
 	protected onEdit = () => {
-		this.parsed = false;
 		this.openVPage(VEdit, this.param);
 	}
 
@@ -49,9 +51,7 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			</>;
 		}
 		else {
-			right = <div className="px-2 text-muted small">
-				来自：{this.renderContact(owner as number, assigned)}
-			</div>;
+			right = this.renderFrom(owner as number, assigned, 'px-2');
 		}
 		return <div className="py-2 bg-light border-top d-flex">
 			{left}
@@ -60,7 +60,7 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		</div>;
 	}
 
-	protected renderCheckItem(v:CheckItem) {
+	protected renderCheckItem(v:CheckItem, allowCheck:boolean) {
 		let {key, text, checked} = v;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;
@@ -75,12 +75,13 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			<input className="form-check-input mr-3 mt-0" type="checkbox"
 				defaultChecked={checked}
 				onChange={this.onCheckChange}
-				data-key={key} />
+				data-key={key}
+				disabled={!allowCheck} />
 			<div className={cn}>{content}</div>
 		</div>;
 	}
 
-	protected renderCheckItems() {
+	protected renderCheckItems(allowCheck:boolean) {
 		return React.createElement(observer(() => {
 			let uncheckedItems:CheckItem[] = [];
 			let checkedItems:CheckItem[] = [];
@@ -90,11 +91,11 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 				else uncheckedItems.push(ci);
 			}			
 			return <div className="">
-				{uncheckedItems.map((v, index) => this.renderCheckItem(v))}
+				{uncheckedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
 				{
 					checkedItems.length > 0 && <div className="border-top mt-2 pt2">
 						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
-						{checkedItems.map((v, index) => this.renderCheckItem(v))}
+						{checkedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
 					</div>
 				}
 			</div>;
@@ -111,7 +112,8 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		await this.controller.owner.setNote(false,
 			this.param,
 			this.title, 
-			noteContent);
+			noteContent,
+			this.buildObj());
 	}
 
 	protected renderState():JSX.Element {
@@ -119,11 +121,11 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	}
 
 	renderListItem() {
-		let {note} = this.param;
-		return tv(note, (values) => {
-			let {caption, content, $create, $update} = values;
+		let {note, caption, content, $create, $update} = this.param;
+		//return tv(note, (values) => {
+		//	let {caption, content, $create, $update} = values;
 			if (!this.title) this.title = caption;
-			this.parseContent(content);
+			//this.parseContent(content);
 			let divChanged:any = undefined;
 			let create:Date = $create;
 			let update:Date = $update;
@@ -143,26 +145,30 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 					</small>
 				</div>;
 			}
+
 			let divState = this.renderState();
+			let divCaption = caption? <b className="text-success">{caption}</b> : <span className="text-info">任务</span>;
 			return <div className="d-block">
-				{(caption || divState) && <div className="px-3 py-2 text-success">
-					<b>{caption}</b> 
-					&nbsp; <span className="small text-danger">{divState}</span>
-				</div>}
+				<div className="px-3 py-2">
+					{divCaption} &nbsp; 
+					<span className="small text-danger">{divState}</span>
+				</div>
 				<div>
 					{
 						this.checkable===false? 
 						<div className="py-3">{this.renderContent()}</div>
-						: this.renderCheckItems()
+						: this.renderCheckItems(this.allowCheck)
 					}
 				</div>
 				{divChanged}
 			</div>;
-		});
+		//});
 	}
 }
 
 class VTaskStart extends VTaskView {
+	protected get allowCheck() {return this.isMe(this.param.owner);}
+
 	protected renderState():JSX.Element {
 		return <>待办</>;
 	}
@@ -182,9 +188,7 @@ class VTaskStart extends VTaskView {
 			</>;
 		}
 		else {
-			right = <div className="px-2 text-muted small">
-				来自：{this.renderContact(owner as number, assigned)}
-			</div>;
+			right = this.renderFrom(owner as number, assigned, 'px-2');
 		}
 		return <div className="py-2 bg-light border-top d-flex">
 			{left}
@@ -200,30 +204,35 @@ class VTaskStart extends VTaskView {
 }
 
 class VTaskDone extends VTaskView {
+	protected get allowCheck() {return false;}
 	protected renderState() {
 		return <>已完成</>;
 	}
 }
 
 class VTaskPass extends VTaskView {
+	protected get allowCheck() {return false;}
 	protected renderState() {
 		return <>已验收</>;
 	}
 }
 
 class VTaskFail extends VTaskView {
+	protected get allowCheck() {return false;}
 	protected renderState() {
 		return <>拒签</>;
 	}
 }
 
 class VTaskRated extends VTaskView {
+	protected get allowCheck() {return false;}
 	protected renderState() {
 		return <>已评价</>;
 	}
 }
 
 class VTaskCanceled extends VTaskView {
+	protected get allowCheck() {return false;}
 	protected renderState() {
 		return <>已取消</>;
 	}

@@ -11,7 +11,7 @@ export class VList extends VBasePage {
 
 	private noteKey = (item: NoteItem) => {
 		let {note} = item;
-		if (typeof note === "object") return note.id;
+		//if (typeof note === "object") return note.id;
 		return note;
 	}
 

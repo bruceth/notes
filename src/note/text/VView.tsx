@@ -9,11 +9,12 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '记事'}
 	content() {
-		let {note} = this.param;
-		return tv(note, (values) => {
-			let {caption, content} = values;
+		return React.createElement(observer(() => {
+		let {note, caption, content} = this.param;
+		//return tv(note, (values) => {
+			//let {caption, content} = values;
 			if (!this.title) this.title = caption;
-			this.parseContent(content);
+			//this.parseContent(content);
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
 					{caption && <div className="px-3 py-2 border-bottom">
@@ -27,7 +28,8 @@ export class VView extends VNoteBase<CTextNoteItem> {
 				</div>
 				{this.renderBottomCommands()}
 			</div>;
-		});
+		//});
+		}));
 	}
 
 	protected renderBottomCommands() {
@@ -47,9 +49,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 			</>;
 		}
 		else {
-			left = <div className="px-2 text-muted small">
-				来自：{this.renderContact(owner as number, assigned)}
-			</div>;
+			left = this.renderFrom(owner as number, assigned, 'px-2');
 			right = undefined;
 		}
 		return <div className="py-2 px-3 bg-light border-top d-flex">
@@ -60,7 +60,6 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	}
 
 	private onEdit = () => {
-		this.parsed = false;
 		this.openVPage(VEdit, this.param);
 	}
 
@@ -69,7 +68,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 		this.controller.showTo(this.param.note)
 	}
 
-	protected renderCheckItem(v:CheckItem) {
+	protected renderCheckItem(v:CheckItem, checkable:boolean) {
 		let {key, text, checked} = v;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;
@@ -84,7 +83,8 @@ export class VView extends VNoteBase<CTextNoteItem> {
 			<input className="form-check-input mr-3 mt-0" type="checkbox"
 				defaultChecked={checked}
 				onChange={this.onCheckChange}
-				data-key={key} />
+				data-key={key}
+				disabled={!checkable} />
 			<div className={cn}>{content}</div>
 		</label>;
 	}
@@ -99,11 +99,11 @@ export class VView extends VNoteBase<CTextNoteItem> {
 				else uncheckedItems.push(ci);
 			}			
 			return <div className="">
-				{uncheckedItems.map((v, index) => this.renderCheckItem(v))}
+				{uncheckedItems.map((v, index) => this.renderCheckItem(v, true))}
 				{
 					checkedItems.length > 0 && <div className="border-top mt-2 pt2">
 						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
-						{checkedItems.map((v, index) => this.renderCheckItem(v))}
+						{checkedItems.map((v, index) => this.renderCheckItem(v, true))}
 					</div>
 				}
 			</div>;
@@ -120,6 +120,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 		await this.controller.owner.setNote(false,
 			this.param,
 			this.title, 
-			noteContent);
+			noteContent,
+			this.buildObj());
 	}
 }

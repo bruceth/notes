@@ -1,13 +1,45 @@
 import React from 'react';
-import { NoteItem, NoteModel } from '../model';
+import { observable } from "mobx";
+import { NoteItem, NoteModel, replaceAll } from '../model';
 import { CNote } from '../CNote';
 import { CUqSub } from '../../tapp';
 
+export interface CheckItem {
+	key: number;
+	text: string;
+	checked: boolean;
+}
+
 export abstract class CNoteItem extends CUqSub<CNote> {
+	noteItem: NoteItem;
+	init(param: NoteItem):void {
+		this.noteItem = param;
+		if (!param) return;
+		let {obj} = param;
+		if (obj) {
+			this.checkable = obj.check;
+			if (this.checkable === true) {
+				this.items.splice(0, this.items.length);
+				this.itemKey = obj.itemKey;
+				this.items.push(...obj.items);
+			}
+			else {
+				this.noteContent = obj.content;
+			}
+		}
+	}
+
+	@observable title: string;
+	@observable noteContent: string;
+	@observable checkable: boolean = false;
+	@observable items: CheckItem[] = [];
+	@observable changedNoteContent: string;
+	itemKey:number = 1;
+
 	protected async internalStart() {}
 
-	abstract renderItem(noteItem: NoteItem, index:number): JSX.Element;
-	abstract onClickItem(noteItem: NoteItem, noteModel: NoteModel): void;
+	abstract renderItem(index:number): JSX.Element;
+	abstract onClickItem(noteModel: NoteModel): void;
 
 	/*
 	// convert 可以在不同的继承中被重载
@@ -17,31 +49,31 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	}
 	*/
 
-	/*
-	// 数据转换，放到 CNoteItem中
-	stringifyContent(obj:any):string {
-		return JSON.stringify(obj);
-			this.checkable === true?
-			{
-				check: true,
-				itemKey: this.itemKey,
-				items: this.items,
-			}
-			:
-			{
-				check: false,
-				content: this.changedNoteContent || this.noteContent
-			}
-		);
+	stringifyContent() {
+		return JSON.stringify(this.buildObj());
 	}
-	*/
+
+	buildObj():any {
+		let obj = this.noteItem?{...this.noteItem.obj}:{};
+		if (this.checkable) {
+			obj.check = true;
+			obj.itemKey = this.itemKey;
+			obj.items = this.items;
+			delete obj.content;
+		}
+		else {
+			obj.check = false;
+			obj.content = this.changedNoteContent || this.noteContent;
+			delete obj.itemKey;
+			delete obj.items;
+		}
+		return obj;
+	}
 
 	parseContent(content:string):any {
-		//if (this.parsed === true) return;
-		//this.parsed = true;
 		try {
 			content = CNoteItem.replaceAll(content, '\n', '\\n');
-			let obj = JSON.parse(content);
+			let obj = content?JSON.parse(content):{};
 			return obj;
 			/*
 			this.checkable = obj.check;
@@ -57,7 +89,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		}
 		catch (err) {
 			console.error(err);
-			return content;
+			return undefined;
 		}
 	}
 	

@@ -39,13 +39,13 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 	content() {
 		let rows: Param[] = [
 			{label: '执行人', values: this.renderContacts(), onClick: this.onClickContacts}, 
-			{label: '分值', values: this.renderPoint(), onClick: this.onClickContacts}, 
+			{label: '分值', values: this.renderPoint()}, 
 			{label: '检查人', values: this.renderChecker(), onClick: this.onClickChecker}, 
 			{label: '评价人', values: this.renderRater(), onClick: this.onClickRater}, 
 		];
 		let {owner} = this.controller;
 		return <div className="py-2">
-			{owner.cTextNoteItem.renderItem(owner.noteItem, 0)}
+			{owner.cTextNoteItem.renderItem(0)}
 			{rows.map(v => this.renderParam(v))}
 			<div className="px-3 py-2"><button className="btn btn-primary" onClick={this.onSendTask}>发送</button></div>
 		</div>;
@@ -92,7 +92,7 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 	}
 
 	private renderPoint() {
-
+		return <></>;
 	}
 
 	private renderChecker() {

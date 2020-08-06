@@ -30,3 +30,14 @@ export function replaceAll(str:string, findStr:string, repStr:string):string {
 	if (!str) return str;
 	return str.split(findStr).join(repStr);
 }
+
+export function numberFromId(id:number|BoxId):number {
+	let _id:number;
+	switch (typeof id) {
+			case 'object': _id = (id as BoxId).id; break;
+			case 'number': _id = id as number; break;
+			default: return;
+	}
+	return _id;
+}
+

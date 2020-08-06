@@ -10,11 +10,11 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	private inputAdd: HTMLInputElement;
 
 	protected onTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-		this.title = evt.target.value.trim();
+		this.controller.title = evt.target.value.trim();
 	}
 
 	protected onContentChange = (evt:React.ChangeEvent<HTMLTextAreaElement>) => {
-		this.changedNoteContent = evt.target.value;
+		this.controller.changedNoteContent = evt.target.value;
 	}
 
 	@computed protected get btnSaveDisabled():boolean {
@@ -28,14 +28,14 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 
 	private onCheckableChanged = (evt:React.ChangeEvent<HTMLInputElement>) => {
 		this.changed = true;
-		this.checkable = evt.target.checked;
-		if (this.checkable === true) {
-			let content = this.changedNoteContent || this.noteContent;
+		this.controller.checkable = evt.target.checked;
+		if (this.controller.checkable === true) {
+			let content = this.controller.changedNoteContent || this.controller.noteContent;
 			if (content) {
-				this.items.splice(0, this.items.length);
-				this.items.push(...content.split('\n').map((v, index) => {
+				this.controller.items.splice(0, this.controller.items.length);
+				this.controller.items.push(...content.split('\n').map((v, index) => {
 					return {
-						key: this.itemKey++,
+						key: this.controller.itemKey++,
 						text: v,
 						checked: false
 					}
@@ -43,9 +43,9 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 			}
 		}
 		else {
-			this.noteContent = this.items.map(v => v.text).join('\n');
+			this.controller.noteContent = this.controller.items.map(v => v.text).join('\n');
 		}
-		this.changedNoteContent = undefined;
+		this.controller.changedNoteContent = undefined;
 	}
 
 	protected renderEdit() {
@@ -55,10 +55,10 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 					<div className="py-1 px-1 border-bottom">
 						<input type="text" className="w-100 border-0 form-control" placeholder="标题" maxLength={80}
 							onChange={this.onTitleChange}
-							defaultValue={this.title} />
+							defaultValue={this.controller.title} />
 					</div>
 					<div className="py-1 px-1">
-						{React.createElement(observer(() => this.checkable===false? 
+						{React.createElement(observer(() => this.controller.checkable===false? 
 							this.renderContentTextArea()
 							: this.renderContentList()))}
 					</div>
@@ -75,7 +75,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 				<label>
 					<input type="checkbox" className="form-check-input" 
 						onChange={this.onCheckableChanged}
-						defaultChecked={this.checkable} /> 勾选条目
+						defaultChecked={this.controller.checkable} /> 勾选条目
 				</label>
 			</div>
 		</div>;
@@ -85,14 +85,14 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 		return <textarea rows={10} 
 			className="w-100 border-0 form-control" 
 			placeholder="记事" maxLength={20000}
-			defaultValue={this.noteContent}
+			defaultValue={this.controller.noteContent}
 			onChange={this.onContentChange} />;
 	}
 
 	private renderContentList() {
 		let uncheckedItems:CheckItem[] = [];
 		let checkedItems:CheckItem[] = [];
-		for (let ci of this.items) {
+		for (let ci of this.controller.items) {
 			let {checked} = ci;
 			if (checked === true) checkedItems.push(ci);
 			else uncheckedItems.push(ci);
@@ -140,8 +140,8 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 		if (evt.keyCode === 13) {
 			let {value} = evt.currentTarget;
 			if (value.trim().length === 0) return;
-			this.items.push({
-				key: this.itemKey++,
+			this.controller.items.push({
+				key: this.controller.itemKey++,
 				text: value,
 				checked: false,
 			});
@@ -152,14 +152,14 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	private onCheckChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;
 		let key = Number(t.getAttribute('data-key'));
-		let item = this.items.find(v => v.key === key);
+		let item = this.controller.items.find(v => v.key === key);
 		if (item) item.checked = t.checked;
 	}
 
 	private onItemChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;
 		let key = Number(t.getAttribute('data-key'));
-		let item = this.items.find(v => v.key === key);
+		let item = this.controller.items.find(v => v.key === key);
 		if (item) item.text = t.value;
 		this.changed = true;
 	}

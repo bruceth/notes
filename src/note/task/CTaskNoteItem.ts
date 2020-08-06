@@ -1,5 +1,5 @@
 import { CNoteItem } from "../item";
-import { NoteItem, NoteModel } from '../model';
+import { NoteItem, NoteModel, numberFromId } from '../model';
 import { VTaskParams } from "./VTaskParams";
 import { Contact } from "model";
 import { TaskViewFactory } from "./state";
@@ -16,16 +16,15 @@ export enum EnumTaskState {Start=0, Done=1, Pass=2, Fail=3, Rated=4, Canceled=5}
 export class CTaskNoteItem extends CNoteItem {
 	private getTaskView = new TaskViewFactory().getView;
 
-	renderItem(noteItem: NoteItem, index:number): JSX.Element {
-		let TaskView = this.getTaskView(noteItem.state as EnumTaskState);
+	renderItem(index:number): JSX.Element {
+		let TaskView = this.getTaskView(this.noteItem.state as EnumTaskState);
 		let v = new TaskView(this);
-		v.init(noteItem);
 		return v.renderListItem();
 	}
 
-	onClickItem(noteItem: NoteItem, noteModel: NoteModel) {
-		let TaskView = this.getTaskView(noteItem.state as EnumTaskState);
-		this.openVPage(TaskView, noteItem);
+	onClickItem(noteModel: NoteModel) {
+		let TaskView = this.getTaskView(this.noteItem.state as EnumTaskState);
+		this.openVPage(TaskView);
 	}
 
 	// convert 可以在不同的继承中被重载
@@ -40,19 +39,44 @@ export class CTaskNoteItem extends CNoteItem {
 	}
 
 	async assignTask(param: AssignTaskParam) {
-		let {note:noteId} = this.owner.noteItem;
+		let {note:noteId} = this.noteItem;
 		let {contacts, checker, rater, point} = param;
 		let note:NoteModel = await this.uqs.notes.Note.assureBox(noteId);
 		let {caption, content} = note;
+		let cObj = JSON.parse(content);
+		if (checker) {
+			cObj.checker = numberFromId(checker.contact);
+		}
+		else {
+			delete cObj.checker;
+		}
+		if (rater) {
+			cObj.rater = numberFromId(rater.contact);
+		}
+		else {
+			delete cObj.rater;
+		}
 		let data = {
-			note: (noteId as any)?.id,
+			note: numberFromId(noteId),
 			caption,
-			content,
+			content: JSON.stringify(cObj),
 			tos: contacts.map(v => {return {to: v.contact}}),
 			checker: checker?.contact,
 			rater: rater?.contact,
 			point,
 		}
 		await this.uqs.notes.AssignTask.submit(data);
+	}
+
+	async DoneTask() {
+		let {note:noteId} = this.noteItem;
+		let note:NoteModel = await this.uqs.notes.Note.assureBox(noteId);
+		let {content} = note;
+		let data = {
+			note: numberFromId(noteId),
+			content: content
+		}
+
+		let ret = await this.uqs.notes.DoneTask.submit(data);
 	}
 }

@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+/uq/notes/uq.uq
+/uq/todo/uq.uq
+/src/tapp/appName.ts
 # dependencies
 /node_modules
 /.pnp

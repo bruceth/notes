@@ -6,13 +6,13 @@ export class VEdit extends VNoteForm<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '记事'}
 	content() {
-		let {note} = this.param;
-		return tv(note, (values) => {
-			let {caption, content} = values;
+		let {note, caption} = this.param;
+		//return tv(note, (values) => {
+			//let {caption, content} = values;
 			if (!this.title) this.title = caption;
-			this.parseContent(content);
+			//this.parseContent(content);
 			return this.renderEdit();
-		});
+		//});
 	}
 
 	protected getSaveDisabled():boolean {
@@ -24,7 +24,8 @@ export class VEdit extends VNoteForm<CTaskNoteItem> {
 		await this.controller.owner.setNote(true,
 			this.param,
 			this.title, 
-			noteContent);
+			noteContent,
+			this.buildObj());
 		this.closePage();
 	}
 }

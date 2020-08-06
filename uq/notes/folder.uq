@@ -19,11 +19,15 @@ QUERY GetNotes(
 PAGE (
 	seconds INT DESC, 
 	owner ID [$User],
-	note ID Note,
+	note ID, 						--- Note,
 	type SMALLINT,
-	-- assigned CHAR(100),
+	caption CHAR(200),
+	content TEXT,
+	assigned CHAR(100),
 	state TEXT,
 	unread TINYINT,
+	[$create] TIMESTAMP,
+	[$update] TIMESTAMP,
 ) {
 	-- 第一次如果没有notes folder，则创建
 	IF folderId < 0 {
@@ -35,7 +39,7 @@ PAGE (
 		}
 		SET folderId = fid;
 	}
-	PAGE SELECT a.seconds, b.owner, a.note, a.type, d.state, a.unread
+	PAGE SELECT a.seconds, b.owner, a.note, a.type, b.caption, b.content, c.assigned, d.state, a.unread, b.[$create], b.[$update]
 		FROM FolderNote as a
 			LEFT JOIN Note as b ON a.note=b.id
 			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact

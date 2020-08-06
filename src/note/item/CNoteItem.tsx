@@ -10,6 +10,11 @@ export interface CheckItem {
 	checked: boolean;
 }
 
+const backSlashNT = '\\\n\t';
+const backSlashCode = backSlashNT.charCodeAt(0);
+const backSlashN = backSlashNT.charCodeAt(1);
+const backSlashT = backSlashNT.charCodeAt(2);
+
 export abstract class CNoteItem extends CUqSub<CNote> {
 	noteItem: NoteItem;
 	init(param: NoteItem):void {
@@ -72,7 +77,9 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 
 	parseContent(content:string):any {
 		try {
-			content = CNoteItem.replaceAll(content, '\n', '\\n');
+			//content = CNoteItem.replaceAll(content, '\n', '\\n');
+			//content = CNoteItem.replaceAll(content, '\\', '\\\\');
+			content = CNoteItem.replaceBacksplash(content);
 			let obj = content?JSON.parse(content):{};
 			return obj;
 			/*
@@ -96,6 +103,26 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	private static replaceAll(str:string, findStr:string, repStr:string):string {
 		if (!str) return str;
 		return str.split(findStr).join(repStr);
+	}
+
+	//content = CNoteItem.replaceAll(content, '\n', '\\n');
+	//content = CNoteItem.replaceAll(content, '\\', '\\\\');
+	private static replaceBacksplash(str:string):string {
+		if (!str) return str;
+		let ret = '';
+		let len = str.length;
+		for (let i=0; i<len; i++) {
+			let c = str.charCodeAt(i);
+			let ch:string;
+			switch (c) {
+				case backSlashN: ch = '\\n'; break;
+				case backSlashT: ch = '\\t'; break;
+				case backSlashCode: ch = '\\\\'; break;
+				default: ch = String.fromCharCode(c); break;
+			}
+			ret += ch;
+		}
+		return ret;
 	}
 
 	protected renderNoteContent(content:string):JSX.Element {

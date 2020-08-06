@@ -14,7 +14,7 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		let allowCheck = this.allowCheck;
 		//return tv(note, (values) => {
 		//	let {caption, content} = values;
-			if (!this.controller.title) this.controller.title = caption;
+			//if (!this.controller.title) this.controller.title = caption;
 			//this.parseContent(content);
 			let divState = this.renderState();
 			let divCaption = caption? <b className="text-success">{caption}</b> : <span className="text-info">任务</span>;
@@ -124,7 +124,7 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		let {note, caption, content, $create, $update} = this.controller.noteItem;
 		//return tv(note, (values) => {
 		//	let {caption, content, $create, $update} = values;
-			if (!this.controller.title) this.controller.title = caption;
+			//if (!this.controller.title) this.controller.title = caption;
 			//this.parseContent(content);
 			let divChanged:any = undefined;
 			let create:Date = $create;

@@ -25,6 +25,6 @@ export class VActions extends VBasePage {
 
 	private onAssign = () => {
 		this.closePage();
-		this.controller.cTaskNoteItem.showAssignTaskPage();
+		this.controller.showAssignTaskPage();
 	}
 }

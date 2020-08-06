@@ -6,7 +6,7 @@ import { CTextNoteItem } from './CTextNoteItem';
 export class VTextNoteItem extends VNoteBase<CTextNoteItem> {
 	render() {
 		let {note, owner, assigned, caption, content, $create, $update} = this.controller.noteItem;
-			if (!this.controller.title) this.controller.title = caption;
+			//if (!this.controller.title) this.controller.title = caption;
 			let divChanged:any = undefined;
 			let create:Date = $create;
 			let update:Date = $update;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NoteItem, NoteModel } from '../model';
 import { CNote } from '../CNote';
-import { CUqSub } from '../../tapp/CBase';
+import { CUqSub } from '../../tapp';
 
 export abstract class CNoteItem extends CUqSub<CNote> {
 	protected async internalStart() {}

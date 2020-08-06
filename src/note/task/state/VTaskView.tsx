@@ -206,6 +206,18 @@ class VTaskStart extends VTaskView {
 class VTaskDone extends VTaskView {
 	protected get allowCheck() {return false;}
 	protected renderState() {
+		let {noteItem} = this.controller;
+		let obj = noteItem.obj;
+		if (obj) {
+			let checker = obj.checker;
+			if (checker) {
+				return <>待验收</>;
+			}
+			let rater = obj.rater;
+			if (rater) {
+				return <>待评分</>
+			}
+		}
 		return <>已完成</>;
 	}
 }
@@ -213,6 +225,14 @@ class VTaskDone extends VTaskView {
 class VTaskPass extends VTaskView {
 	protected get allowCheck() {return false;}
 	protected renderState() {
+		let {noteItem} = this.controller;
+		let obj = noteItem.obj;
+		if (obj) {
+			let rater = obj.rater;
+			if (rater) {
+				return <>待评价</>
+			}
+		}
 		return <>已验收</>;
 	}
 }

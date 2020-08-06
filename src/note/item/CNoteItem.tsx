@@ -73,7 +73,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	parseContent(content:string):any {
 		try {
 			content = CNoteItem.replaceAll(content, '\n', '\\n');
-			let obj = JSON.parse(content);
+			let obj = content?JSON.parse(content):{};
 			return obj;
 			/*
 			this.checkable = obj.check;
@@ -89,7 +89,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		}
 		catch (err) {
 			console.error(err);
-			return content;
+			return undefined;
 		}
 	}
 	

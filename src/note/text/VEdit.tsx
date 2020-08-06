@@ -6,10 +6,10 @@ export class VEdit extends VNoteForm<CTextNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '记事'}
 	content() {
-		let {note, caption, content} = this.controller.noteItem;
+		//let {note, caption, content} = this.controller.noteItem;
 		//return tv(note, (values) => {
 			//let {caption, content} = values;
-			if (!this.controller.title) this.controller.title = caption;
+			//if (!this.controller.title) this.controller.title = caption;
 			//this.parseContent(content);
 			return this.renderEdit();
 		//});

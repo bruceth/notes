@@ -10,12 +10,16 @@ import { Contact } from "model";
 import { observable } from "mobx";
 import { VSent } from "./views/VSent";
 
+const cNoteItems: {[key in EnumNoteItemType]: new (...args: any[])=> CNoteItem} = {
+	[EnumNoteItemType.text]: CTextNoteItem,
+	[EnumNoteItemType.task]: CTaskNoteItem,
+};
+
 export class CNote extends CUqBase {
 	folderId: number;
 	notesPager: QueryPager<CNoteItem>;
-	cTextNoteItem: CTextNoteItem;
-	cTaskNoteItem: CTaskNoteItem;
-	private cNoteItems: {[key in EnumNoteItemType]: new (...args: any[])=> CNoteItem};
+	//cTextNoteItem: CTextNoteItem;
+	//cTaskNoteItem: CTaskNoteItem;
 	@observable contacts: Contact[];
 	noteItem: NoteItem;
 	noteModel: NoteModel;
@@ -29,12 +33,14 @@ export class CNote extends CUqBase {
 		let {notes} = this.uqs;
 		this.notesPager = new QueryPager<CNoteItem>(notes.GetNotes, undefined, undefined, true);
 		this.notesPager.setItemConverter(this.noteItemConverter);
-		this.cTextNoteItem = this.newSub(CTextNoteItem);
-		this.cTaskNoteItem = this.newSub(CTaskNoteItem);
+		//this.cTextNoteItem = this.newSub(CTextNoteItem);
+		//this.cTaskNoteItem = this.newSub(CTaskNoteItem);
+		/*
 		this.cNoteItems = {
 			[EnumNoteItemType.text]: CTextNoteItem,
 			[EnumNoteItemType.task]: CTaskNoteItem,
 		}
+		*/
 	}
 
 	private noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteItem => {
@@ -44,8 +50,8 @@ export class CNote extends CUqBase {
 		return cNoteItem;
 	}
 
-	getCNoteItem(type: EnumNoteItemType): CNoteItem {
-		let ret = this.cNoteItems[type];
+	private getCNoteItem(type: EnumNoteItemType): CNoteItem {
+		let ret = cNoteItems[type];
 		if (ret === undefined) {
 			debugger;
 			throw new Error(`type ${type} CNoteItem not defined`);
@@ -116,7 +122,8 @@ export class CNote extends CUqBase {
 	}
 
 	showAddNotePage = () => {
-		this.cTextNoteItem.showAddNotePage();
+		let cTextNoteItem = this.newSub(CTextNoteItem);
+		cTextNoteItem.showAddNotePage();
 		// this.openVPage(VAdd)
 	}
 
@@ -130,5 +137,10 @@ export class CNote extends CUqBase {
 
 	async callSelectContact(options: SelectContactOptions): Promise<Contact[]> {
 		return await this.vCall(VSelectContact, options);
+	}
+
+	showAssignTaskPage() {
+		let cTaskNoteItem = this.newSub(CTaskNoteItem);
+		cTaskNoteItem.showAssignTaskPage();
 	}
 }

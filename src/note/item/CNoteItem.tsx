@@ -2,7 +2,7 @@ import React from 'react';
 import { observable } from "mobx";
 import { NoteItem, NoteModel, replaceAll } from '../model';
 import { CNote } from '../CNote';
-import { CUqSub } from '../../tapp/CBase';
+import { CUqSub } from '../../tapp';
 
 export interface CheckItem {
 	key: number;

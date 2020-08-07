@@ -55,7 +55,8 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	*/
 
 	stringifyContent() {
-		return JSON.stringify(this.buildObj());
+		let ret = JSON.stringify(this.buildObj());
+		return ret;
 	}
 
 	buildObj():any {

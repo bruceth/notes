@@ -3,6 +3,7 @@ import { observable } from "mobx";
 import { NoteItem, NoteModel, replaceAll } from '../model';
 import { CNote } from '../CNote';
 import { CUqSub } from '../../tapp';
+import { VNoteItem } from './VNoteItem';
 
 export interface CheckItem {
 	key: number;
@@ -20,6 +21,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	init(param: NoteItem):void {
 		this.noteItem = param;
 		if (!param) return;
+		this.title = param.caption;
 		let {obj} = param;
 		if (obj) {
 			this.checkable = obj.check;
@@ -43,7 +45,11 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 
 	protected async internalStart() {}
 
-	abstract renderItem(index:number): JSX.Element;
+	renderItem(index:number): JSX.Element {
+		let vNoteItem = new VNoteItem(this);
+		return vNoteItem.render();
+	}
+
 	abstract onClickItem(noteModel: NoteModel): void;
 
 	/*
@@ -137,7 +143,27 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		})}</>;
 	}
 
-	showTo(noteId:number) {
-		this.owner.showTo(noteId)
+	showTo() {
+		this.owner.showTo(this.noteItem);
+	}
+
+	async onCheckChange(key:number, checked:boolean) {
+		let item = this.items.find(v => v.key === key);
+		if (item) item.checked = checked;
+		await this.SetNote(false);
+	}
+
+	async SetNote(waiting:boolean) {
+		let noteContent = this.stringifyContent();
+		await this.owner.setNote(waiting,
+			this.noteItem,
+			this.title, 
+			noteContent,
+			this.buildObj());
+	}
+
+	async AddNote() {
+		let noteContent = this.stringifyContent();
+		await this.owner.addNote(this.title, noteContent)
 	}
 }

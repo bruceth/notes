@@ -18,8 +18,6 @@ const cNoteItems: {[key in EnumNoteItemType]: new (...args: any[])=> CNoteItem} 
 export class CNote extends CUqBase {
 	folderId: number;
 	notesPager: QueryPager<CNoteItem>;
-	//cTextNoteItem: CTextNoteItem;
-	//cTaskNoteItem: CTaskNoteItem;
 	@observable contacts: Contact[];
 	noteItem: NoteItem;
 	noteModel: NoteModel;
@@ -33,14 +31,6 @@ export class CNote extends CUqBase {
 		let {notes} = this.uqs;
 		this.notesPager = new QueryPager<CNoteItem>(notes.GetNotes, undefined, undefined, true);
 		this.notesPager.setItemConverter(this.noteItemConverter);
-		//this.cTextNoteItem = this.newSub(CTextNoteItem);
-		//this.cTaskNoteItem = this.newSub(CTaskNoteItem);
-		/*
-		this.cNoteItems = {
-			[EnumNoteItemType.text]: CTextNoteItem,
-			[EnumNoteItemType.task]: CTaskNoteItem,
-		}
-		*/
 	}
 
 	private noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteItem => {
@@ -124,11 +114,11 @@ export class CNote extends CUqBase {
 	showAddNotePage = () => {
 		let cTextNoteItem = this.newSub(CTextNoteItem);
 		cTextNoteItem.showAddNotePage();
-		// this.openVPage(VAdd)
 	}
 
-	showTo(noteId:number) {
-		this.openVPage(VTo, noteId);
+	showTo(noteItem:NoteItem) {
+		this.noteItem = noteItem;
+		this.openVPage(VTo);
 	}
 
 	showSentPage() {
@@ -141,6 +131,7 @@ export class CNote extends CUqBase {
 
 	showAssignTaskPage() {
 		let cTaskNoteItem = this.newSub(CTaskNoteItem);
+		cTaskNoteItem.init(this.noteItem);
 		cTaskNoteItem.showAssignTaskPage();
 	}
 }

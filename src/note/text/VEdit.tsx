@@ -20,12 +20,7 @@ export class VEdit extends VNoteForm<CTextNoteItem> {
 	}
 
 	protected async onButtonSave(): Promise<void> {
-		let noteContent = this.controller.stringifyContent();
-		await this.controller.owner.setNote(true,
-			this.controller.noteItem,
-			this.controller.title, 
-			noteContent,
-			this.controller.buildObj());
+		await this.controller.SetNote(true);
 		this.closePage();
 	}
 }

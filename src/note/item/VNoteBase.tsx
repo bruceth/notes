@@ -1,13 +1,10 @@
 import React from "react";
 import classNames from 'classnames';
 import { VPage, User, Image, UserView } from "tonva";
-import { NoteItem } from "../model";
-import { observable } from "mobx";
 import { CNoteItem, CheckItem } from "./CNoteItem";
 import { observer } from "mobx-react";
 
 export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
-
 	protected renderContent() {
 		return <div className="px-3">{this.controller.noteContent?.split('\n').map((v, index) => {
 			let c = !v? <>&nbsp;</>: v;
@@ -67,9 +64,11 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		return <UserView user={userId as number} render={renderUser} />;
 	}
 
-	protected renderFrom = (userId:number, assigned:string, className?:string) => {
+	protected renderFrom = (className?:string) => {
+		let {owner, assigned, from} = this.controller.noteItem;
+		let contact = (from? from : owner) as number;
 		return <div className={classNames('d-flex assign-items-center small text-muted', className)}>
-			来自：{this.renderSmallContact(userId as number, assigned)}
+			来自：{this.renderSmallContact(contact, assigned)}
 		</div>;
 	}
 

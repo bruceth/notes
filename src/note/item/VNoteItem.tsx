@@ -5,7 +5,7 @@ import { CNoteItem } from './CNoteItem';
 
 export class VNoteItem extends VNoteBase<CNoteItem> {
 	render() {
-		let {owner, assigned, caption, $create, $update} = this.controller.noteItem;
+		let {owner, caption, $create, $update} = this.controller.noteItem;
 			let divChanged:any = undefined;
 			let create:Date = $create;
 			let update:Date = $update;
@@ -27,7 +27,7 @@ export class VNoteItem extends VNoteBase<CNoteItem> {
 			}
 			let divFrom:any;
 			if (this.isMe(owner) === false) {
-				divFrom = this.renderFrom(owner as number, assigned);
+				divFrom = this.renderFrom();
 			}
 			return <div className="d-block">
 				{caption && <div className="px-3 py-2"><b>{caption}</b></div>}

@@ -60,12 +60,12 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	}
 	*/
 
-	stringifyContent() {
+	private stringifyContent() {
 		let ret = JSON.stringify(this.buildObj());
 		return ret;
 	}
 
-	buildObj():any {
+	private buildObj():any {
 		let obj = this.noteItem?{...this.noteItem.obj}:{};
 		if (this.checkable) {
 			obj.check = true;
@@ -155,16 +155,16 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	}
 
 	async SetNote(waiting:boolean) {
-		let noteContent = this.stringifyContent();
+		this.noteContent = this.stringifyContent();
 		await this.owner.setNote(waiting,
 			this.noteItem,
 			this.title, 
-			noteContent,
+			this.noteContent,
 			this.buildObj());
 	}
 
 	async AddNote() {
-		let noteContent = this.stringifyContent();
-		await this.owner.addNote(this.title, noteContent)
+		this.noteContent = this.stringifyContent();
+		await this.owner.addNote(this.title, this.noteContent, this.buildObj());
 	}
 }

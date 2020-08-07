@@ -7,6 +7,7 @@ export interface NoteItem {
 	owner: number | BoxId;
 	note: number;
 	type: EnumNoteItemType;
+	from: number | BoxId;
 	caption: string;
 	content: string;
 	assigned: string;

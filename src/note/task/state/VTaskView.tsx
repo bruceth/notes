@@ -5,7 +5,7 @@ import { CTaskNoteItem, EnumTaskState } from "../CTaskNoteItem";
 import { VNoteBase, CheckItem } from '../../item';
 import { VEdit } from '../VEdit';
 
-abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
+export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '任务'}
 	protected get allowCheck() {return true;}
@@ -105,15 +105,7 @@ abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	private onCheckChange = async (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;
 		let key = Number(t.getAttribute('data-key'));
-		let item = this.controller.items.find(v => v.key === key);
-		if (item) item.checked = t.checked;
-
-		let noteContent = this.controller.stringifyContent();
-		await this.controller.owner.setNote(false,
-			this.controller.noteItem,
-			this.controller.title, 
-			noteContent,
-			this.controller.buildObj());
+		await this.controller.onCheckChange(key, t.checked);
 	}
 
 	protected renderState():JSX.Element {

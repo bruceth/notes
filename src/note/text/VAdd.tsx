@@ -19,8 +19,7 @@ export class VAdd extends VNoteForm<CTextNoteItem> {
     }
 
 	protected async onButtonSave(): Promise<void> {
-		let noteContent = this.controller.stringifyContent();
-		await this.controller.owner.addNote(this.controller.title, noteContent)
+		await this.controller.AddNote();
 		this.closePage();
 		return;
 	}

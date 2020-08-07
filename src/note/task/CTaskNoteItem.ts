@@ -22,6 +22,10 @@ export class CTaskNoteItem extends CNoteItem {
 		return v.renderListItem();
 	}
 
+	renderBaseItem(index:number): JSX.Element {
+		return super.renderItem(index);
+	}
+
 	onClickItem(noteModel: NoteModel) {
 		let TaskView = this.getTaskView(this.noteItem.state as EnumTaskState);
 		this.openVPage(TaskView);

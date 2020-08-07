@@ -65,7 +65,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 
 	private onSendNote = async () => {
 		await this.controller.cApp.loadRelation();
-		this.controller.showTo(this.controller.noteItem.note)
+		this.controller.showTo();
 	}
 
 	protected renderCheckItem(v:CheckItem, checkable:boolean) {
@@ -113,14 +113,6 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	private onCheckChange = async (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;
 		let key = Number(t.getAttribute('data-key'));
-		let item = this.controller.items.find(v => v.key === key);
-		if (item) item.checked = t.checked;
-
-		let noteContent = this.controller.stringifyContent();
-		await this.controller.owner.setNote(false,
-			this.controller.noteItem,
-			this.controller.title, 
-			noteContent,
-			this.controller.buildObj());
+		await this.controller.onCheckChange(key, t.checked);
 	}
 }

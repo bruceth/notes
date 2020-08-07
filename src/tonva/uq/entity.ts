@@ -426,7 +426,8 @@ export abstract class Entity {
 					case backSlashT: ch = '\t'; break;
 				}
 				r += text.substring(p, i) + ch;
-				p = i+2;
+                p = i+2;
+                ++i; //跳过第二个字符
 			}
 		}
 		r += text.substring(p, len);

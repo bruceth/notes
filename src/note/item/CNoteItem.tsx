@@ -11,10 +11,10 @@ export interface CheckItem {
 	checked: boolean;
 }
 
-const backSlashNT = '\\\n\t';
-const backSlashCode = backSlashNT.charCodeAt(0);
-const backSlashN = backSlashNT.charCodeAt(1);
-const backSlashT = backSlashNT.charCodeAt(2);
+//const backSlashNT = '\\\n\t';
+//const backSlashCode = backSlashNT.charCodeAt(0);
+//const backSlashN = backSlashNT.charCodeAt(1);
+//const backSlashT = backSlashNT.charCodeAt(2);
 
 export abstract class CNoteItem extends CUqSub<CNote> {
 	noteItem: NoteItem;
@@ -83,11 +83,12 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 
 	parseContent(content:string):any {
 		try {
+			//if (!content) return content;
 			//content = CNoteItem.replaceAll(content, '\n', '\\n');
 			//content = CNoteItem.replaceAll(content, '\\', '\\\\');
-			content = CNoteItem.replaceBacksplash(content);
-			let obj = content?JSON.parse(content):{};
-			return obj;
+			//let c = CNoteItem.replaceBacksplash(content);
+			return JSON.parse(content);
+			//return obj;
 			/*
 			this.checkable = obj.check;
 			if (this.checkable === true) {
@@ -102,20 +103,22 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		}
 		catch (err) {
 			console.error(err);
-			return undefined;
+			return content;
 		}
 	}
-	
+	/*
 	private static replaceAll(str:string, findStr:string, repStr:string):string {
 		if (!str) return str;
 		return str.split(findStr).join(repStr);
 	}
+	*/
 
 	//content = CNoteItem.replaceAll(content, '\n', '\\n');
 	//content = CNoteItem.replaceAll(content, '\\', '\\\\');
+	/*
 	private static replaceBacksplash(str:string):string {
 		if (!str) return str;
-		let ret = '';
+		let ret = '', p = 0;
 		let len = str.length;
 		for (let i=0; i<len; i++) {
 			let c = str.charCodeAt(i);
@@ -124,12 +127,15 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 				case backSlashN: ch = '\\n'; break;
 				case backSlashT: ch = '\\t'; break;
 				case backSlashCode: ch = '\\\\'; break;
-				default: ch = String.fromCharCode(c); break;
+				default: continue;
 			}
-			ret += ch;
+			ret += str.substring(p, i) + ch;
+			p = i+1;
 		}
+		ret += str.substring(p, len);
 		return ret;
 	}
+	*/
 
 	protected renderNoteContent(content:string):JSX.Element {
 		return <>{(content as string).split('\n').map((v, index) => {

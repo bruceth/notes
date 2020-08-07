@@ -77,7 +77,7 @@ export class NavView extends React.Component<Props, NavViewState> {
     }
     async componentDidMount()
     {
-        //window.addEventListener('popstate', this.navBack);
+        window.addEventListener('popstate', this.navBack);
         await nav.start();
     }
 

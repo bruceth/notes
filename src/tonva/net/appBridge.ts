@@ -216,7 +216,7 @@ interface UqTokenAction {
 const uqTokenActions:{[uq:string]: UqTokenAction} = {};
 export async function buildAppUq(uq:string, uqOwner:string, uqName:string, appOwner:string, appName:string):Promise<void> {
     if (!isBridged()) {
-        let unit = await getUnit();
+        let unit = getUnit();
         let uqToken = await uqTokenApi.uq({unit,  uqOwner, uqName, appOwner, appName});
         if (uqToken.token === undefined) uqToken.token = centerToken;
         let {db, url, urlTest} = uqToken;

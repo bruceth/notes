@@ -5,10 +5,22 @@ import { Tuid } from './tuid';
 
 const tab = '\t';
 const ln = '\n';
-const backSlashNT = '\\nt';
-const backSlashCode = backSlashNT.charCodeAt(0);
-const backSlashN = backSlashNT.charCodeAt(1);
-const backSlashT = backSlashNT.charCodeAt(2);
+const chars = '\\ntbfvr';
+const codeBackSlash = chars.charCodeAt(0);
+const codeN = chars.charCodeAt(1);
+const codeT = chars.charCodeAt(2);
+const codeB = chars.charCodeAt(3);
+const codeF = chars.charCodeAt(4);
+const codeV = chars.charCodeAt(5);
+const codeR = chars.charCodeAt(6);
+
+const codes = '\n\t\b\f\v\r';
+const codeBN = codes.charCodeAt(0);
+const codeBT = codes.charCodeAt(1);
+const codeBB = codes.charCodeAt(2);
+const codeBF = codes.charCodeAt(3);
+const codeBV = codes.charCodeAt(4);
+const codeBR = codes.charCodeAt(5);
 
 export abstract class Entity {
     private jName: string;
@@ -229,12 +241,19 @@ export abstract class Entity {
                         let len = d.length;
                         let r = '', p = 0;
                         for (let i=0;i<len;i++) {
-                            let c:number = d.charCodeAt(i);
+                            let c:number = d.charCodeAt(i), ch:string;
                             switch(c) {
-                                case 9: r += d.substring(p, i) + '\\t'; p = i+1; break;
-								case 10: r += d.substring(p, i) + '\\n'; p = i+1; break;
-								case 92: r += d.substring(p, i) + '\\\\'; p = i+1; break;
-                            }
+								default: continue;
+								case codeBackSlash: ch = '\\\\'; break;
+                                case codeBT: ch = '\\t'; break;
+								case codeBN: ch = '\\n'; break;
+								case codeBF: ch = '\\f'; break;
+								case codeBV: ch = '\\v'; break;
+								case codeBB: ch = '\\b'; break;
+								case codeBR: ch = '\\r'; break;
+							}
+							r += d.substring(p, i) + ch;
+							p = i+1;
                         }
                         return r + d.substring(p);
                     case 'undefined': return '';
@@ -415,18 +434,23 @@ export abstract class Entity {
 		let p = 0;
 		for (let i=0; i<len; i++) {
 			let c = text.charCodeAt(i);
-			if (c === backSlashCode) {
+			if (c === codeBackSlash) {
 				if (i===len-1) break;
 				let c1 = text.charCodeAt(i+1);
 				let ch:string;
 				switch (c1) {
 					default: continue;
-					case backSlashCode: ch = '\\'; break;
-					case backSlashN: ch = '\n'; break;
-					case backSlashT: ch = '\t'; break;
+					case codeBackSlash: ch = '\\'; break;
+					case codeN: ch = '\n'; break;
+					case codeT: ch = '\t'; break;
+					case codeB: ch = '\b'; break;
+					case codeF: ch = '\f'; break;
+					case codeV: ch = '\v'; break;
+					case codeR: ch = '\r'; break;
 				}
 				r += text.substring(p, i) + ch;
 				p = i+2;
+				++i;
 			}
 		}
 		r += text.substring(p, len);

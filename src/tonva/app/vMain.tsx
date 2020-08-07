@@ -3,7 +3,7 @@ import { Page, FA, nav, LMR, List } from "../components";
 import { VPage } from '../vm';
 import { appInFrame } from '../net';
 import { CAppBase } from "./CAppBase";
-import { UQsMan } from 'tonva/uq';
+import { UQsMan } from '../uq';
 
 /*
 export class VAppMain extends VPage<CMainBase> {

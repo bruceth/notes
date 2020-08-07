@@ -5,7 +5,7 @@ import { CTaskNoteItem, EnumTaskState } from "../CTaskNoteItem";
 import { VNoteBase, CheckItem } from '../../item';
 import { VEdit } from '../VEdit';
 
-abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
+export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '任务'}
 	protected get allowCheck() {return true;}

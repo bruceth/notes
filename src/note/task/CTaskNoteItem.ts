@@ -2,7 +2,7 @@ import { CNoteItem } from "../item";
 import { NoteItem, NoteModel, numberFromId } from '../model';
 import { VTaskParams } from "./VTaskParams";
 import { Contact } from "model";
-import { TaskViewFactory } from "./state";
+import { TaskViewFactory, VCheckTask, VRateTask } from "./state";
 
 export interface AssignTaskParam {
 	contacts: Contact[];
@@ -16,6 +16,22 @@ export enum EnumTaskState {Start=0, Done=1, Pass=2, Fail=3, Rated=4, Canceled=5}
 export class CTaskNoteItem extends CNoteItem {
 	private getTaskView = new TaskViewFactory().getView;
 
+	private getView() {
+		let state = this.noteItem.state as EnumTaskState;
+		if (state == EnumTaskState.Done) {
+			if (this.noteItem.obj && this.isMe(this.noteItem.obj.checker)) {
+				return VCheckTask;
+			}
+		}
+		else if (state == EnumTaskState.Pass) {
+			if (this.noteItem.obj && this.isMe(this.noteItem.obj.rater)) {
+				return VRateTask;
+			}
+		}
+
+		return this.getTaskView(state);
+	}
+
 	renderItem(index:number): JSX.Element {
 		let TaskView = this.getTaskView(this.noteItem.state as EnumTaskState);
 		let v = new TaskView(this);
@@ -27,7 +43,7 @@ export class CTaskNoteItem extends CNoteItem {
 	}
 
 	onClickItem(noteModel: NoteModel) {
-		let TaskView = this.getTaskView(this.noteItem.state as EnumTaskState);
+		let TaskView = this.getView();
 		this.openVPage(TaskView);
 	}
 
@@ -82,5 +98,31 @@ export class CTaskNoteItem extends CNoteItem {
 		}
 
 		let ret = await this.uqs.notes.DoneTask.submit(data);
+	}
+
+	async CheckTask(pass:boolean) {
+		let {note:noteId} = this.noteItem;
+		let note:NoteModel = await this.uqs.notes.Note.assureBox(noteId);
+		let {content} = note;
+		let data = {
+			note: numberFromId(noteId),
+			action: pass?1:2,
+			content: content
+		}
+		
+		let ret = await this.uqs.notes.CheckTask.submit(data);
+	}
+
+	async RateTask(value: number) {
+		let {note:noteId} = this.noteItem;
+		let note:NoteModel = await this.uqs.notes.Note.assureBox(noteId);
+		let {content} = note;
+		let data = {
+			note: numberFromId(noteId),
+			value: value,
+			content: content
+		}
+		
+		let ret = await this.uqs.notes.RateTask.submit(data);
 	}
 }

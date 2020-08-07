@@ -98,6 +98,7 @@ export class CTaskNoteItem extends CNoteItem {
 		}
 
 		let ret = await this.uqs.notes.DoneTask.submit(data);
+		this.noteItem.state = Number(EnumTaskState.Done);
 	}
 
 	async CheckTask(pass:boolean) {
@@ -111,6 +112,7 @@ export class CTaskNoteItem extends CNoteItem {
 		}
 		
 		let ret = await this.uqs.notes.CheckTask.submit(data);
+		this.noteItem.state = Number(pass?EnumTaskState.Pass:EnumTaskState.Fail);
 	}
 
 	async RateTask(value: number) {
@@ -124,5 +126,6 @@ export class CTaskNoteItem extends CNoteItem {
 		}
 		
 		let ret = await this.uqs.notes.RateTask.submit(data);
+		this.noteItem.state = Number(EnumTaskState.Rated);
 	}
 }

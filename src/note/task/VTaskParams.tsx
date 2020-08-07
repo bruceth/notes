@@ -19,6 +19,8 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 	@observable checker: Contact;
 	@observable rater: Contact;
 
+	private point:number = 100;
+
 	init(param:{contacts:Contact[]}) {
 		let {contacts} = param;
 		this.contacts = contacts;
@@ -31,7 +33,7 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 		let {label, values, onClick} = param;
 		return <div key={label} className="px-3 py-2 bg-white d-flex cursor-pointer align-items-center border-bottom" onClick={onClick}>
 			<div className="text-muted mr-3 w-5c">{label}</div>
-			<div>{values || none}</div>
+			<div className="flex-fill mr-3 ">{values || none}</div>
 			<FA className="ml-auto" name="angle-right" />
 		</div>
 	}
@@ -56,6 +58,7 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 			contacts: this.contacts,
 			checker: this.checker,
 			rater: this.rater,
+			point: this.point,
 		});
 		this.closePage(2);
 		this.controller.owner.showSentPage();
@@ -92,8 +95,19 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 	}
 
 	private renderPoint() {
-		return <></>;
+		return <input className="flex-fill form-control border-0"
+				type="number" step="1" min="1" defaultValue={this.point}
+				onChange={this.onItemChange}
+				onKeyDown={this.onItemKeyDown}/>;
 	}
+
+	private onItemChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
+		this.point = Number(evt.currentTarget.value);
+	}
+
+	private onItemKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {
+	}
+
 
 	private renderChecker() {
 		return React.createElement(observer(() => this.renderContact(this.checker)));

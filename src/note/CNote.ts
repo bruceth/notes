@@ -58,7 +58,7 @@ export class CNote extends CUqBase {
 		return ret.ret[0];
 	}
 
-	async addNote(caption:string, content:string) {
+	async addNote(caption:string, content:string, obj:any) {
 		let type = EnumNoteItemType.text;
 		let sub = 0;
 		let ret = await this.uqs.notes.AddNote.submit({caption, content, type, sub});
@@ -70,12 +70,13 @@ export class CNote extends CUqBase {
 			owner: this.user.id,
 			note: note as number,
 			type: EnumNoteItemType.text,
+			from: undefined,
 			caption,
 			content,
 			assigned: undefined,
 			state: undefined,
 			unread: undefined,
-			obj: undefined,
+			obj,
 			$create: date,
 			$update: date,
 		}

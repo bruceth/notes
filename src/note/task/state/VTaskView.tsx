@@ -40,7 +40,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	}
 
 	protected renderBottomCommands() {
-		let {owner, assigned, state} = this.controller.noteItem;
+		let {owner, state} = this.controller.noteItem;
 		let left:any, right:any;
 		let isMe = this.isMe(owner);
 		if (isMe === true && state === EnumTaskState.Start) {
@@ -51,7 +51,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			</>;
 		}
 		else {
-			right = this.renderFrom(owner as number, assigned, 'px-2');
+			right = this.renderFrom('px-2');
 		}
 		return <div className="py-2 bg-light border-top d-flex">
 			{left}
@@ -166,7 +166,7 @@ class VTaskStart extends VTaskView {
 	}
 
 	protected renderBottomCommands() {
-		let {owner, assigned} = this.controller.noteItem;
+		let {owner} = this.controller.noteItem;
 		let left:any, right:any;
 		let isMe = this.isMe(owner);
 		if (isMe === true) {
@@ -180,7 +180,7 @@ class VTaskStart extends VTaskView {
 			</>;
 		}
 		else {
-			right = this.renderFrom(owner as number, assigned, 'px-2');
+			right = this.renderFrom('px-2');
 		}
 		return <div className="py-2 bg-light border-top d-flex">
 			{left}

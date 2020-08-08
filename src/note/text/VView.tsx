@@ -33,7 +33,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	}
 
 	protected renderBottomCommands() {
-		let {owner, assigned} = this.controller.noteItem;
+		let {owner} = this.controller.noteItem;
 		let left:any, right:any;
 		let isMe = this.isMe(owner);
 		if (isMe === true) {
@@ -49,7 +49,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 			</>;
 		}
 		else {
-			left = this.renderFrom(owner as number, assigned, 'px-2');
+			left = this.renderFrom('px-2');
 			right = undefined;
 		}
 		return <div className="py-2 px-3 bg-light border-top d-flex">

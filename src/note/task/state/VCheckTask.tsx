@@ -24,7 +24,7 @@ export class VCheckTask extends VTaskView {
     </button>
     </div>;
 
-    right = this.renderFrom(owner as number, assigned, 'px-2');
+    right = this.renderFrom('px-2');
 		return <div className="py-2 bg-light border-top d-flex">
 			{left}
 			<div className="mr-auto" />

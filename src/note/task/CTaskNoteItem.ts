@@ -18,12 +18,12 @@ export class CTaskNoteItem extends CNoteItem {
 
 	private getView() {
 		let state = this.noteItem.state as EnumTaskState;
-		if (state == EnumTaskState.Done) {
+		if (state === EnumTaskState.Done) {
 			if (this.noteItem.obj && this.isMe(this.noteItem.obj.checker)) {
 				return VCheckTask;
 			}
 		}
-		else if (state == EnumTaskState.Pass) {
+		else if (state === EnumTaskState.Pass) {
 			if (this.noteItem.obj && this.isMe(this.noteItem.obj.rater)) {
 				return VRateTask;
 			}

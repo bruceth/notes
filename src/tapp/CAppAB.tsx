@@ -1,6 +1,6 @@
 import React from 'react';
 import { CUqApp } from "./CBase";
-import { navigo } from 'navigo';
+import { navigo } from 'tonva/components/navigo';
 
 export class CAppAB extends CUqApp {
 	protected async internalStart() {

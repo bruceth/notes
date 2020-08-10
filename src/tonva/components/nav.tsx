@@ -12,6 +12,7 @@ import {guestApi, logoutApis, setCenterUrl, setCenterToken, WSChannel, appInFram
 import { WsBase, wsBridge } from '../net/wsChannel';
 import { resOptions } from '../res/res';
 import { Loading } from './loading';
+import { Navigo, RouteFunc, Hooks, NamedRoute } from './navigo';
 
 import 'font-awesome/css/font-awesome.min.css';
 import '../css/va-form.css';
@@ -77,7 +78,8 @@ export class NavView extends React.Component<Props, NavViewState> {
     }
     async componentDidMount()
     {
-        window.addEventListener('popstate', this.navBack);
+		window.addEventListener('popstate', this.navBack);
+		if (!nav.isRouting) await nav.init();
         await nav.start();
     }
 
@@ -382,7 +384,9 @@ export class Nav {
     private ws: WsBase;
     private wsHost: string;
     private local: LocalData = new LocalData();
-    private navSettings: NavSettings;
+	private navigo: Navigo;
+	isRouting: boolean;
+	navSettings: NavSettings;
     @observable user: User/*InNav*/ = undefined;
     testing: boolean;
     language: string;
@@ -393,7 +397,9 @@ export class Nav {
         let {lang, district} = resOptions;
         this.language = lang;
         this.culture = district;
-        this.testing = false;
+		this.testing = false;
+		this.navigo = new Navigo();
+		this.isRouting = false;
     }
 
     get guest(): number {
@@ -407,8 +413,8 @@ export class Nav {
     set(nav:NavView) {
         //this.logo = logo;
         this.nav = nav;
-    }
-
+	}
+	
     registerReceiveHandler(handler: (message:any)=>Promise<void>):number {
         if (this.ws === undefined) return;
         return this.ws.onWsReceiveAny(handler);
@@ -610,7 +616,33 @@ export class Nav {
         finally {
             this.endWait();
         }
-    }
+	}
+
+	resolveRoute() {
+		this.isRouting = true;
+		this.navigo.resolve();
+	}
+
+	on(routeFunc:RouteFunc, hooks?:Hooks):Navigo;
+	on(url:string, routeFunc:RouteFunc, hooks?:Hooks):Navigo;
+	on(regex:RegExp, routeFunc:RouteFunc, hooks?:Hooks):Navigo;
+	on(options: {[url:string]: RouteFunc|NamedRoute}):Navigo;
+	on(...args:any[]):Navigo {
+		return this.navigo.on(args[0], args[1], args[2]);
+	}
+
+	navigate(url:string, absolute?:boolean) {
+		return this.navigo.navigate(url, absolute);
+	}
+
+	go(showPage:()=>void, url:string, absolute?:boolean) {
+		if (this.isRouting) {
+			this.navigate(url, absolute);
+		}
+		else {
+			showPage();
+		}
+	}
 
     async showAppView() {
         let {onLogined} = this.nav.props;

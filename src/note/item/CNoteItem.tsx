@@ -155,16 +155,24 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	}
 
 	async SetNote(waiting:boolean) {
-		this.noteContent = this.stringifyContent();
+		if (this.changedNoteContent) {
+			this.noteContent = this.changedNoteContent;
+			this.changedNoteContent = undefined;
+		}
+		let noteContent = this.stringifyContent();
 		await this.owner.setNote(waiting,
 			this.noteItem,
 			this.title, 
-			this.noteContent,
+			noteContent,
 			this.buildObj());
 	}
 
 	async AddNote() {
-		this.noteContent = this.stringifyContent();
-		await this.owner.addNote(this.title, this.noteContent, this.buildObj());
+		if (this.changedNoteContent) {
+			this.noteContent = this.changedNoteContent;
+			this.changedNoteContent = undefined;
+		}
+		let noteContent = this.stringifyContent();
+		await this.owner.addNote(this.title, noteContent, this.buildObj());
 	}
 }

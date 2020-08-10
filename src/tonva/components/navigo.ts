@@ -1,14 +1,13 @@
 // typescript version of krasimir/navigo
 
-type RouteFunc = (params?:string|{[name:string]:string}, query?:string) => void;
-type HistoryUpdateMethod = (data: any, title: string, url?: string | null) => void;
+export type RouteFunc = (params?:string|{[name:string]:string}, query?:string) => void;
 
-interface NamedRoute {
+export interface NamedRoute {
 	as: string;
 	uses: RouteFunc;
 	hooks?: Hooks;
 }
-interface Hooks {
+export interface Hooks {
 	before: (done:()=>void, params:object) => void;
 	after: (params:object) => void;
 	leave: (params:object) => void;
@@ -108,22 +107,29 @@ export class Navigo {
 	}
 	  
 	private static root(url:string, routes:Route[]) {
-		const exp = '($|\\/)';  // 单\，编译报错 ($|\/)
+		const colonExp = RegExp('\\/:\\D(\\w*)', 'g');
+		const exp = ''; // '($|\\/)';  // 单\，编译报错 ($|\/)
 		let matched = routes.map(
-			route => route.route === '' || route.route === '*' ? url : url.split(new RegExp(route.route + exp))[0]
+			route => {
+				let r = route.route;
+				if (r === '' || r === '*') return url;
+				if (typeof r === 'string') {
+					r = r.replace(colonExp, '\\/\\w+');
+				}
+				let routeExp = r + exp;
+				let ret = url.split(new RegExp(routeExp))[0];
+				return ret;
+			}
 		);
 		let fallbackURL = Navigo.cleanUrl(url);
-	  
-		if (matched.length > 1) {
-			return matched.reduce((result, url) => {
-				if (result.length > url.length) result = url;
-				return result;
-			}, matched[0]);
-		}
-		else if (matched.length === 1) {
-			return matched[0];
-		}
-		return fallbackURL;
+		let len = matched.length;
+		if (len === 0) return fallbackURL;
+		let matched0 = matched[0];
+		if (len === 1) return matched0;
+		return matched.reduce((result, url) => {
+			if (result.length > url.length) result = url;
+			return result;
+		}, matched0);
 	}
 	  
 	private static isHashChangeAPIAvailable() {
@@ -262,6 +268,9 @@ export class Navigo {
 		switch (typeof arg0) {
 			case 'function':
 				this._defaultHandler = { handler: arg0, hooks: arg1 };
+				if (!this._notFoundHandler) {
+					this._notFoundHandler = this._defaultHandler;
+				}
 				break;
 			case 'object':
 				let orderedRoutes = Object.keys(arg0).sort(Navigo.compareUrlDepth);
@@ -302,7 +311,9 @@ export class Navigo {
 	}
 
 	resolve(current?:string) {
-		let url = (current || this._cLoc()).replace(this._getRoot(), '');
+		let c = current || this._cLoc();
+		let root = this._getRoot();
+		let url = c.replace(root, '');
 	
 		if (this._useHash) {
 			const exp = '^\\/';  // 单\，编译报错 ^\/
@@ -524,7 +535,9 @@ export class Navigo {
 
 	private _getRoot() {
 		if (this.root !== null) return this.root;
-		this.root = Navigo.root(this._cLoc().split('?')[0], this._routes);
+		let cLoc = this._cLoc();
+		let cLocRoot = cLoc.split('?')[0];
+		this.root = Navigo.root(cLocRoot, this._routes);
 		return this.root;
 	}
 
@@ -583,5 +596,5 @@ export class Navigo {
 	}
 }
 
-export default Navigo;
+//export default Navigo;
 export const navigo = new Navigo();

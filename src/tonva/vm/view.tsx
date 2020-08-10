@@ -31,7 +31,11 @@ export abstract class View<C extends Controller> {
 
     protected async event(type:string, value?:any) {
         await this.controller.event(type, value);
-    }
+	}
+	
+	protected go(showPage:()=>void, url:string, absolute?:boolean) {
+		this.controller.go(showPage, url, absolute);
+	}
 
     async vCall<C extends Controller>(vp: new (controller: C)=>VPage<C>, param?:any):Promise<any> {
         return await this.controller.vCall(vp, param);

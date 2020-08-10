@@ -1,3 +1,4 @@
+export * from './navigo';
 export * from './nav';
 export * from './page';
 export * from './schema';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { tv, FA, EasyTime } from "tonva";
+import { FA, EasyTime } from "tonva";
 import { CTaskNoteItem, EnumTaskState } from "../CTaskNoteItem";
 import { VNoteBase, CheckItem } from '../../item';
 import { VEdit } from '../VEdit';
@@ -10,7 +10,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	header() {return '任务'}
 	protected get allowCheck() {return true;}
 	content() {
-		let {note, caption, content, obj} = this.controller.noteItem;
+		let {caption} = this.controller.noteItem;
 		let allowCheck = this.allowCheck;
 		//return tv(note, (values) => {
 		//	let {caption, content} = values;
@@ -113,7 +113,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	}
 
 	renderListItem() {
-		let {note, caption, content, $create, $update} = this.controller.noteItem;
+		let {caption, $create, $update} = this.controller.noteItem;
 		//return tv(note, (values) => {
 		//	let {caption, content, $create, $update} = values;
 			//if (!this.controller.title) this.controller.title = caption;

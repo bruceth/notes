@@ -3,6 +3,7 @@ import { NoteItem, NoteModel, numberFromId } from '../model';
 import { VTaskParams } from "./VTaskParams";
 import { Contact } from "model";
 import { TaskViewFactory, VCheckTask, VRateTask } from "./state";
+import { computed } from "mobx";
 
 export interface AssignTaskParam {
 	contacts: Contact[];

@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { tv, FA, EasyTime } from "tonva";
+import { FA, EasyTime, Page } from "tonva";
 import { CTaskNoteItem, EnumTaskState } from "../CTaskNoteItem";
 import { VNoteBase, CheckItem } from '../../item';
 import { VEdit } from '../VEdit';
@@ -38,7 +38,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		let {owner, state} = this.controller.noteItem;
 		let left:any, right:any;
 		let isMe = this.isMe(owner);
-		if (isMe === true && state === EnumTaskState.Start) {
+		if (isMe === true && state == EnumTaskState.Start) {
 			right = <>
 				<div onClick={this.onEdit} className="px-3 py-2 cursor-pointer text-primary ml-3">
 					<FA name="pencil-square-o" />
@@ -182,6 +182,14 @@ class VTaskStart extends VTaskView {
 	private onDone = async () => {
 		await this.controller.DoneTask();
 		this.closePage();
+		this.openPage(this.resultPage)
+	}
+
+	protected resultPage = () => {
+		let {title} = this.controller;
+		return <Page header={title} back="close">
+				完成！
+		</Page>;
 	}
 }
 

@@ -26,6 +26,7 @@ export interface Elements {
 }
 
 export abstract class CAppBase extends Controller {
+	private appConfig: AppConfig;
     protected _uqs: any;
 
     protected readonly name: string;
@@ -36,15 +37,16 @@ export abstract class CAppBase extends Controller {
     appUnits:any[];
 
     // appName: owner/name
-    constructor(config: AppConfig) {
-        super(undefined);
-        let {appName, noUnit} = config;
+    constructor(config?: AppConfig) {
+		super(undefined);
+		this.appConfig = config || (nav.navSettings as AppConfig);
+        let {appName, noUnit} = this.appConfig;
         this.name = appName;
         if (appName === undefined) {
             throw new Error('appName like "owner/app" must be defined in MainConfig');
         }
 		this.noUnit = noUnit;
-		this._uqs = UQsMan._uqs;
+		//this._uqs = UQsMan._uqs;
 		//this.version = version;
         //this.uqsMan = new UQsMan(this.name, tvs);
     }
@@ -73,6 +75,13 @@ export abstract class CAppBase extends Controller {
 	
     protected async beforeStart():Promise<boolean> {
         try {
+			if (!nav.isRouting) {
+				//await nav.init();
+				let {appName, version, tvs} = this.appConfig;
+				await UQsMan.load(appName, version, tvs);
+			}
+			this._uqs = UQsMan._uqs;
+		
             //let retErrors = await this.load();
             //let app = await loadAppUqs(this.appOwner, this.appName);
             // if (isDevelopment === true) {

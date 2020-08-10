@@ -195,7 +195,11 @@ export abstract class Controller {
 
     ceasePage(level?:number) {
         nav.ceaseTop(level);
-    }
+	}
+	
+	go(showPage:()=>void, url:string, absolute?:boolean) {
+		nav.go(showPage, url, absolute);
+	}
 
     removeCeased() {
         nav.removeCeased();

@@ -1,5 +1,6 @@
 import React from 'react';
 import { VTaskView } from './VTaskView';
+import { Page } from 'tonva';
 
 export class VRateTask extends VTaskView {
   protected rateValue:number = 5;
@@ -61,5 +62,13 @@ export class VRateTask extends VTaskView {
   private onRate = async () => {
 		await this.controller.RateTask(this.rateValue);
 		this.closePage();
+		this.openPage(this.resultPage)
+	}
+
+	protected resultPage = () => {
+		let {title} = this.controller;
+		return <Page header={title} back="close">
+				评分完成！
+		</Page>;
 	}
 }

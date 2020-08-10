@@ -4,7 +4,6 @@ import { NoteItem, NoteModel, replaceAll } from '../model';
 import { CNote } from '../CNote';
 import { CUqSub } from '../../tapp';
 import { VNoteItem } from './VNoteItem';
-import { threadId } from 'worker_threads';
 
 export interface CheckItem {
 	key: number;
@@ -13,7 +12,7 @@ export interface CheckItem {
 }
 
 export abstract class CNoteItem extends CUqSub<CNote> {
-	noteItem: NoteItem;
+	@observable noteItem: NoteItem;
 	
 	init(param: NoteItem):void {
 		this.noteItem = param;

@@ -1,6 +1,6 @@
 import { AppConfig, CAppBase } from './CAppBase';
 
-export async function start(CApp: new (config: AppConfig) => CAppBase, appConfig: AppConfig) {
+export async function start(CApp: new (config: AppConfig) => CAppBase, appConfig: AppConfig) {	
 	let {htmlTitle} = appConfig;
 	if (htmlTitle) {
 		document.title = htmlTitle;
@@ -11,6 +11,7 @@ export async function start(CApp: new (config: AppConfig) => CAppBase, appConfig
 		let version = html0?.getAttribute('data-version');
 		if (version) appConfig.version = version;
 	}
-    let cApp = new CApp(appConfig);
+
+	let cApp = new CApp(appConfig);
     await cApp.start();
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { VTaskView } from './VTaskView';
+import { Page } from 'tonva';
 
 export class VCheckTask extends VTaskView {
 	protected get allowCheck() {return false;}
@@ -30,5 +31,13 @@ export class VCheckTask extends VTaskView {
   private onCheck = async (pass:boolean) => {
 		await this.controller.CheckTask(pass);
 		this.closePage();
+		this.openPage(this.resultPage)
+	}
+
+	protected resultPage = () => {
+		let {title} = this.controller;
+		return <Page header={title} back="close">
+				检查完成！
+		</Page>;
 	}
 }

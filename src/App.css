@@ -40,3 +40,6 @@
 ul.va-list>li.notes {
 	background-color: transparent;
 }
+li.notes>div {
+	background-color: #f6f6f6;
+}

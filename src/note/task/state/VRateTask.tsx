@@ -1,6 +1,5 @@
 import React from 'react';
 import { VTaskView } from './VTaskView';
-import { Page } from 'tonva';
 
 export class VRateTask extends VTaskView {
   protected rateValue:number = 5;
@@ -11,10 +10,9 @@ export class VRateTask extends VTaskView {
 		return this.renderStateSpan('待评分');
 	}
 
-  private onChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
-    this.rateValue = Number(evt.target.value);
-  };
-
+  	private onChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
+		this.rateValue = Number(evt.target.value);
+	};
 
 	protected renderBottomCommands() {
 		let {owner, assigned} = this.controller.noteItem;

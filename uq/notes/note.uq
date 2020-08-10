@@ -86,6 +86,39 @@ RETURNS flow (
 	action TINYINT,					-- 由特别Note自定义
 	stamp TIMESTAMP,
 	content TEXT,
+)
+RETURNS to (
+	user ID [$User],
+	access TINYINT,
+	assigned CHAR(100),
+)
+RETURNS spawn (
+	seconds INT, 
+	owner ID [$User],
+	note ID, 						--- Note,
+	type SMALLINT,
+	from ID [$User],
+	caption CHAR(200),
+	content TEXT,
+	assigned CHAR(100),
+	state TEXT,
+	unread TINYINT,
+	[$create] TIMESTAMP,
+	[$update] TIMESTAMP,
+)
+RETURNS contain (
+	seconds INT, 
+	owner ID [$User],
+	note ID, 						--- Note,
+	type SMALLINT,
+	from ID [$User],
+	caption CHAR(200),
+	content TEXT,
+	assigned CHAR(100),
+	state TEXT,
+	unread TINYINT,
+	[$create] TIMESTAMP,
+	[$update] TIMESTAMP,
 ) {
 	IF folder < 0 {
 		VAR fid ID;
@@ -98,6 +131,31 @@ RETURNS flow (
 	INTO flow SELECT a.flow, a.operator, a.action, a.stamp, a.content
 		FROM Flow as a
 		WHERE a.note=note;
+	INTO [to] SELECT a.user, a.access, c.assigned
+		FROM NoteAccess as a LEFT JOIN MyContact as c ON c.me=$user and a.user=c.contact
+		WHERE a.note=note;
+	INTO spawn SELECT a.note1 as seconds, b.owner, a.note1 as note, a.type
+		, b.[from]
+		, b.caption, b.content, c.assigned, d.state, 0 as unread
+		, b.[$create], b.[$update]
+		FROM Note2Note as a
+			LEFT JOIN Note as b ON a.note1=b.id
+			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact
+			LEFT JOIN NoteX as d ON a.note1=d.note
+		WHERE a.note0=note and a.type=EnumNoteMapType.spawn
+		ORDER BY a.note1 desc
+		LIMIT 20;
+	INTO contain SELECT a.note1 as seconds, b.owner, a.note1 as note, a.type
+		, b.[from]
+		, b.caption, b.content, c.assigned, d.state, 0 as unread
+		, b.[$create], b.[$update]
+		FROM Note2Note as a
+			LEFT JOIN Note as b ON a.note1=b.id
+			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact
+			LEFT JOIN NoteX as d ON a.note1=d.note
+		WHERE a.note0=note and a.type=EnumNoteMapType.contain
+		ORDER BY a.note1 desc
+		LIMIT 20;
 };
 
 ACTION AddNote (
@@ -127,15 +185,17 @@ ACTION SetNote (
 	caption CHAR(200),
 	content TEXT,
 ) {
-	VAR noteId ID, folderId ID, seconds INT;
-	TUID Note ID note SET caption=caption, content=content;
-	SET noteId = note;
-	SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
-	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
-	BOOK FolderNote AT(folderId, noteId) SET seconds=seconds; -- , type=type, sub=sub;
-	FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
-		IF noteFolderId<>folderId {
-			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds;
+	IF exists(SELECT id FROM Note WHERE id=note and owner=$user) {
+		VAR noteId ID, folderId ID, seconds INT;
+		TUID Note ID note SET caption=caption, content=content;
+		SET noteId = note;
+		SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
+		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+		BOOK FolderNote AT(folderId, noteId) SET seconds=seconds; -- , type=type, sub=sub;
+		FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
+			IF noteFolderId<>folderId {
+				BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds;
+			}
 		}
 	}
 };
@@ -144,19 +204,30 @@ ACTION SendNoteTo (
 	note ID,
 	tos TEXT,
 ) {
-	VAR seconds INT;
-	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
-	TABLE tblTo(to ID);
-	TEXT tos sep=',' ln='|' INTO tblTo;
-	BOOK NoteAccess AT (note, *) SET access=0;
-	FOREACH (var to ID OF SELECT to FROM tblTo) {
-		VAR folderId ID;
-		SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
-		IF folderId IS NULL {
-			TUID Folder INTO folderId SET owner=to;
-			BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
-		}
-		BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
-		BOOK NoteAccess AT (note, to) SET access=1;
-	};
+	IF exists(SELECT id FROM Note WHERE id=note and owner=$user) {
+		VAR seconds INT;
+		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+		TABLE tblTo(to ID);
+		TEXT tos sep=',' ln='|' INTO tblTo;
+		BOOK NoteAccess AT (note, *) SET access=0;
+		FOREACH (var to ID OF SELECT to FROM tblTo) {
+			VAR folderId ID;
+			SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
+			IF folderId IS NULL {
+				TUID Folder INTO folderId SET owner=to;
+				BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
+			}
+			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
+			BOOK NoteAccess AT (note, to) SET access=1;
+		};
+	}
+};
+
+ACTION HideNote (
+	note ID,
+	x TINYINT,
+) {
+	IF exists(SELECT id FROM Note WHERE id=note and owner=$user) {
+		TUID Note ID note SET x=x;
+	}
 };

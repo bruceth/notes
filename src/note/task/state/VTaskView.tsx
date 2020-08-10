@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { FA, EasyTime, Page } from "tonva";
+import { FA, EasyTime } from "tonva";
 import { CTaskNoteItem, EnumTaskState } from "../CTaskNoteItem";
 import { VNoteBase, CheckItem } from '../../item';
 import { VEdit } from '../VEdit';
@@ -25,6 +25,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 					}
 				</div>
 				{this.renderBottomCommands()}
+				{this.renderRelatives()}
 			</div>;
 	}
 

@@ -24,6 +24,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 					}
 				</div>
 				{this.renderBottomCommands()}
+				{this.renderRelatives()}
 			</div>;
 		}));
 	}

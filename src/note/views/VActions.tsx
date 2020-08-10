@@ -1,12 +1,27 @@
 import React from 'react';
 import { VBasePage } from "./VBasePage";
+import { LMR, FA } from 'tonva';
 
 export class VActions extends VBasePage {
 	header() {return '操作'}
 	content() {
-		return <div className="d-flex my-3 p-3 border bg-white">
-			<button className="btn btn-primary" onClick={this.onSend}>发送</button>
-			<button className="btn btn-primary ml-3" onClick={this.onAssign}>任务</button>
+		let cn = 'px-3 py-2 cursor-pointer bg-white mt-1';
+		return <div className="">
+			<div className="text-muted small px-3 py-1 mt-2">收件人</div>
+			<div className="border rounded p-3 mb-3">
+				{this.controller.contacts.map(c => {
+					let {contact, assigned} = c;
+					return <span className="mr-3">{this.renderContact(contact, assigned)}</span>;
+				})}
+			</div>
+			<div className={cn} onClick={this.onSend}>
+				分享内容
+			</div>
+			<div className={cn} onClick={this.onAssign}>
+				<LMR right={<FA name="angle-right" />}>
+					分派任务
+				</LMR>
+			</div>
 		</div>;
 	}
 

@@ -54,30 +54,18 @@ export class VSelectContact extends VBasePage {
 			if (this.multiple === true) {
 				list = <List ref={v => this.list = v}
 					items={items} 
-					item={{render:this.renderContact, onSelect:this.onContactSelect}} />
+					item={{render:this.renderContactItem, onSelect:this.onContactSelect}} />
 			}
 			else {
 				list = <List ref={v => this.list = v}
 					items={items} 
-					item={{render:this.renderContact, onClick:this.onContactClick}} />
+					item={{render:this.renderContactItem, onClick:this.onContactClick}} />
 			}
 			return <div className="">
 				{list}
 			</div>;
 		}
 		return React.createElement(observer(render));
-	}
-
-	private renderContact = (item:Contact, index:number) => {
-		let {contact, assigned} = item;
-		let renderUser = (user:User) => {
-			let {name, nick, icon} = user;
-			return <div className="px-3 py-2">
-				<Image className="w-2c h-2c mr-3" src={icon} />
-				{name} {nick} {assigned}
-			</div>
-		}
-		return <UserView user={contact} render={renderUser} />;
 	}
 
 	private onContactSelect = (item:Contact, isSelected:boolean, anySelected:boolean):void => {

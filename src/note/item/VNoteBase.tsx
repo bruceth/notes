@@ -1,8 +1,9 @@
 import React from "react";
 import classNames from 'classnames';
-import { VPage, User, Image, UserView, Page } from "tonva";
+import { VPage, User, Image, UserView, Page, List, LMR, EasyTime } from "tonva";
 import { CNoteItem, CheckItem } from "./CNoteItem";
 import { observer } from "mobx-react";
+import { NoteItem } from "note/model";
 
 export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	protected renderContent() {
@@ -81,6 +82,61 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			</>
 		}
 		return <UserView user={userId as number} render={renderUser} />;
+	}
+
+	protected renderTo() {
+		let {to} = this.controller.noteModel;
+		if (!to || to.length === 0) return;
+		return <div className="px-3 py-2">
+			<small className="text-muted mr-3">已分享给: </small>
+			{to.map(t => {
+				let {user, assigned} = t;
+				return <span key={user} className="mr-3">{this.renderContact(user, assigned)}</span>;
+			})}
+		</div>
+	}
+
+	protected renderFlow() {
+		let {flow} = this.controller.noteModel;
+		if (!flow || flow.length === 0) return;
+		return <div>flow: {flow.length}</div>
+	}
+
+	private renderSpawnItem = (item:NoteItem, index:number):JSX.Element => {
+		let {caption, $create, $update, owner, assigned} = item;
+		let divOwner = this.renderContact(owner as number, assigned);
+		let right = <small className="text-muted"><EasyTime date={$update} /></small>;
+		return <div className="px-3 py-2 d-block">
+			<LMR right={right}>
+				<span className="mr-3">{divOwner}</span>{caption}
+			</LMR>
+		</div>;
+	}
+
+	protected renderSpawn() {
+		let {spawn} = this.controller.noteModel;
+		if (!spawn || spawn.length === 0) return;
+		return <div className="pb-3">
+			<div className="px-3 pt-2 pb-1 text-muted small">派发任务</div>
+			<List
+				items={spawn} 
+				item={{render: this.renderSpawnItem,  className: "notes"}} />
+		</div>
+	}
+
+	protected renderContain() {
+		let {contain} = this.controller.noteModel;
+		if (!contain || contain.length === 0) return;
+		return <div>contain: {contain.length}</div>
+	}
+
+	protected renderRelatives() {
+		return <div>
+			{this.renderTo()}
+			{this.renderFlow()}
+			{this.renderSpawn()}
+			{this.renderContain()}
+		</div>
 	}
 
 	protected showActionEndPage({content, onClick}:{content:any; onClick?:()=>void}) {

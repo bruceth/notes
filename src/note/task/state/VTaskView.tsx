@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { FA, EasyTime } from "tonva";
+import { FA, EasyTime, Page } from "tonva";
 import { CTaskNoteItem, EnumTaskState } from "../CTaskNoteItem";
 import { VNoteBase, CheckItem } from '../../item';
 import { VEdit } from '../VEdit';
@@ -10,14 +10,10 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	header() {return '任务'}
 	protected get allowCheck() {return true;}
 	content() {
-		let {caption} = this.controller.noteItem;
+		let {title} = this.controller;
 		let allowCheck = this.allowCheck;
-		//return tv(note, (values) => {
-		//	let {caption, content} = values;
-			//if (!this.controller.title) this.controller.title = caption;
-			//this.parseContent(content);
 			let divState = this.renderState();
-			let divCaption = caption? <b className="text-success">{caption}</b> : <span className="text-info">任务</span>;
+			let divCaption = title? <b className="text-success">{title}</b> : <span className="text-info">任务</span>;
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
 					<div className="px-3 py-2 border-bottom">
@@ -32,7 +28,6 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 				</div>
 				{this.renderBottomCommands()}
 			</div>;
-		//});
 	}
 
 	protected onEdit = () => {
@@ -43,7 +38,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		let {owner, state} = this.controller.noteItem;
 		let left:any, right:any;
 		let isMe = this.isMe(owner);
-		if (isMe === true && state === EnumTaskState.Start) {
+		if (isMe === true && state == EnumTaskState.Start) {
 			right = <>
 				<div onClick={this.onEdit} className="px-3 py-2 cursor-pointer text-primary ml-3">
 					<FA name="pencil-square-o" />
@@ -114,10 +109,6 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 
 	renderListItem() {
 		let {caption, $create, $update} = this.controller.noteItem;
-		//return tv(note, (values) => {
-		//	let {caption, content, $create, $update} = values;
-			//if (!this.controller.title) this.controller.title = caption;
-			//this.parseContent(content);
 			let divChanged:any = undefined;
 			let create:Date = $create;
 			let update:Date = $update;
@@ -154,7 +145,6 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 				</div>
 				{divChanged}
 			</div>;
-		//});
 	}
 }
 
@@ -192,6 +182,14 @@ class VTaskStart extends VTaskView {
 	private onDone = async () => {
 		await this.controller.DoneTask();
 		this.closePage();
+		this.openPage(this.resultPage)
+	}
+
+	protected resultPage = () => {
+		let {title} = this.controller;
+		return <Page header={title} back="close">
+				完成！
+		</Page>;
 	}
 }
 

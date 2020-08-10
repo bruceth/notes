@@ -1,11 +1,6 @@
 import React from 'react';
-import { observer } from 'mobx-react';
-import { observable } from "mobx";
-import { tv, FA, EasyTime } from "tonva";
-import { CTaskNoteItem, EnumTaskState } from "../CTaskNoteItem";
-import { VNoteBase, CheckItem } from '../../item';
-import { VEdit } from '../VEdit';
 import { VTaskView } from './VTaskView';
+import { Page } from 'tonva';
 
 export class VRateTask extends VTaskView {
   protected rateValue:number = 5;
@@ -67,5 +62,13 @@ export class VRateTask extends VTaskView {
   private onRate = async () => {
 		await this.controller.RateTask(this.rateValue);
 		this.closePage();
+		this.openPage(this.resultPage)
+	}
+
+	protected resultPage = () => {
+		let {title} = this.controller;
+		return <Page header={title} back="close">
+				评分完成！
+		</Page>;
 	}
 }

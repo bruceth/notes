@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from 'classnames';
-import { VPage, User, Image, UserView } from "tonva";
+import { VPage, User, Image, UserView, Page } from "tonva";
 import { CNoteItem, CheckItem } from "./CNoteItem";
 import { observer } from "mobx-react";
 
@@ -81,5 +81,22 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			</>
 		}
 		return <UserView user={userId as number} render={renderUser} />;
+	}
+
+	protected showActionEndPage({content, onClick}:{content:any; onClick?:()=>void}) {
+		this.openPage(() => {
+			onClick = onClick || (()=>this.closePage());
+			let {title} = this.controller;
+			return <Page header={title} back="close">
+				<div className="border bg-white rounded m-5">
+					<div className="py-5 text-center">
+						{content}
+					</div>
+					<div className="border-top text-center py-3">
+						<button className="btn btn-outline-info" onClick={onClick}>返回</button>
+					</div>
+				</div>
+			</Page>;
+		});
 	}
 }

@@ -7,5 +7,5 @@ export const appConfig: AppConfig = {
 	noUnit: true,
     tvs: {},
 	oem: undefined,
-	htmlTitle: '手条 - 记事和做事',
+	htmlTitle: '小单 - 记录和协作',
 };

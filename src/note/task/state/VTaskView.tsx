@@ -12,13 +12,11 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	content() {
 		let {title} = this.controller;
 		let allowCheck = this.allowCheck;
-			let divState = this.renderState();
-			let divCaption = title? <b className="text-success">{title}</b> : <span className="text-info">任务</span>;
+			let divCaption = this.renderCaption(title);
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
 					<div className="px-3 py-2 border-bottom">
-						{divCaption} &nbsp; 
-						<span className="small text-danger">{divState}</span>
+						{divCaption}
 					</div>
 					{
 						this.controller.checkable===false? 
@@ -32,6 +30,11 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 
 	protected onEdit = () => {
 		this.openVPage(VEdit);
+	}
+
+	private renderCaption(title:string) {
+		let divCaption = title? <b className="text-primary">{title}</b> : <span className="text-info">任务</span>;
+		return <>{this.renderState()} &nbsp; {divCaption}</>;
 	}
 
 	protected renderBottomCommands() {
@@ -107,6 +110,13 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		return <>state</>;
 	}
 
+	protected renderStateSpan(content:string, isEnd:boolean = false) {
+		if (isEnd === true) {
+			return <span className="small text-danger"><FA className="small mr-1" name="stop" />{content}</span>;
+		}
+		return <span className="small text-success border border-success rounded px-2">{content}</span>;
+	}
+
 	renderListItem() {
 		let {caption, $create, $update} = this.controller.noteItem;
 			let divChanged:any = undefined;
@@ -129,12 +139,10 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 				</div>;
 			}
 
-			let divState = this.renderState();
-			let divCaption = caption? <b className="text-success">{caption}</b> : <span className="text-info">任务</span>;
+			let divCaption = this.renderCaption(caption);
 			return <div className="d-block">
 				<div className="px-3 py-2">
-					{divCaption} &nbsp; 
-					<span className="small text-danger">{divState}</span>
+					{divCaption}
 				</div>
 				<div>
 					{
@@ -152,7 +160,7 @@ class VTaskStart extends VTaskView {
 	protected get allowCheck() {return this.isMe(this.controller.noteItem.owner);}
 
 	protected renderState():JSX.Element {
-		return <>待办</>;
+		return this.renderStateSpan('待办');
 	}
 
 	protected renderBottomCommands() {
@@ -182,15 +190,23 @@ class VTaskStart extends VTaskView {
 	private onDone = async () => {
 		await this.controller.DoneTask();
 		this.closePage();
-		this.openPage(this.resultPage)
-	}
+		//this.openPage(this.resultPage);
 
+		// 这个地方应该要显示，下一步是由谁来做什么。比如谁来验收，或者谁来评价
+		// 这些信息应该在nodeModel里面
+		// 如果没有后续操作，显示成红色，加一个终止标志 #
+		// 如果由后续操作，显示成绿色，并且显示下一步什么操作，由谁来操作
+		let content = <>任务完成</>;
+		this.showActionEndPage({content});
+	}
+	/*
 	protected resultPage = () => {
 		let {title} = this.controller;
 		return <Page header={title} back="close">
 				完成！
 		</Page>;
 	}
+	*/
 }
 
 class VTaskDone extends VTaskView {
@@ -199,16 +215,16 @@ class VTaskDone extends VTaskView {
 		let {noteItem} = this.controller;
 		let obj = noteItem.obj;
 		if (obj) {
-			let checker = obj.checker;
+			let {checker} = obj;
 			if (checker) {
-				return <>待验收</>;
+				return this.renderStateSpan('待验收');
 			}
-			let rater = obj.rater;
+			let {rater} = obj;
 			if (rater) {
-				return <>待评分</>
+				return this.renderStateSpan('待评分');
 			}
 		}
-		return <>已完成</>;
+		return this.renderStateSpan('已完成', true);
 	}
 }
 
@@ -218,33 +234,33 @@ class VTaskPass extends VTaskView {
 		let {noteItem} = this.controller;
 		let obj = noteItem.obj;
 		if (obj) {
-			let rater = obj.rater;
+			let {rater} = obj;
 			if (rater) {
-				return <>待评价</>
+				return this.renderStateSpan('待评价');
 			}
 		}
-		return <>已验收</>;
+		return this.renderStateSpan('已验收', true);
 	}
 }
 
 class VTaskFail extends VTaskView {
 	protected get allowCheck() {return false;}
 	protected renderState() {
-		return <>拒签</>;
+		return this.renderStateSpan('拒签', true);
 	}
 }
 
 class VTaskRated extends VTaskView {
 	protected get allowCheck() {return false;}
 	protected renderState() {
-		return <>已评价</>;
+		return this.renderStateSpan('已评价', true);
 	}
 }
 
 class VTaskCanceled extends VTaskView {
 	protected get allowCheck() {return false;}
 	protected renderState() {
-		return <>已取消</>;
+		return this.renderStateSpan('已取消', true);
 	}
 }
 

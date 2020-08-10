@@ -1,5 +1,7 @@
 import { BoxId } from "tonva";
 
+export const notesName = '小单';
+
 export enum EnumNoteItemType {text=0, task=1}
 
 export interface NoteItem {

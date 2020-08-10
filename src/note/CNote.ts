@@ -20,7 +20,7 @@ export class CNote extends CUqBase {
 	notesPager: QueryPager<CNoteItem>;
 	@observable contacts: Contact[];
 	noteItem: NoteItem;
-	noteModel: NoteModel;
+	//noteModel: NoteModel;
 
     protected async internalStart() {
 	}

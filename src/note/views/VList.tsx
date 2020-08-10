@@ -29,7 +29,8 @@ export class VList extends VBasePage {
 		let noteItem = item.noteItem;
 		let noteModel = await this.controller.getNote(noteItem.note);
 		noteItem.unread = 0;
-		this.controller.noteModel = noteModel;
+		//this.controller.noteModel = noteModel;
+		item.noteModel = noteModel;
 		return item.onClickItem(noteModel);
 	}
 }

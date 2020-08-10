@@ -7,8 +7,8 @@ export class VRateTask extends VTaskView {
 
 	protected get allowCheck() {return false;}
 
-  protected renderState():JSX.Element {
-		return <>待评分</>;
+  	protected renderState():JSX.Element {
+		return this.renderStateSpan('待评分');
 	}
 
   private onChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
@@ -59,16 +59,20 @@ export class VRateTask extends VTaskView {
 	}
 
   
-  private onRate = async () => {
+  	private onRate = async () => {
 		await this.controller.RateTask(this.rateValue);
 		this.closePage();
-		this.openPage(this.resultPage)
+		//this.openPage(this.resultPage)
+		let content = <>评价完成</>;
+		this.showActionEndPage({content});
 	}
 
+	/*
 	protected resultPage = () => {
 		let {title} = this.controller;
 		return <Page header={title} back="close">
 				评分完成！
 		</Page>;
 	}
+	*/
 }

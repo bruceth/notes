@@ -12,6 +12,7 @@ export interface CheckItem {
 }
 
 export abstract class CNoteItem extends CUqSub<CNote> {
+	noteModel: NoteModel;
 	@observable noteItem: NoteItem;
 	
 	init(param: NoteItem):void {

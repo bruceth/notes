@@ -4,10 +4,13 @@ import { observer } from 'mobx-react';
 import { VNoteBase, CheckItem } from '.';
 import { FA } from 'tonva';
 import { CNoteItem } from './CNoteItem';
+import { notesName } from '../../note';
 
 export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	@observable private changed: boolean = false;
 	private inputAdd: HTMLInputElement;
+
+	header() {return notesName}
 
 	protected onTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
 		this.controller.title = evt.target.value.trim();
@@ -84,7 +87,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	private renderContentTextArea() {
 		return <textarea rows={10} 
 			className="w-100 border-0 form-control" 
-			placeholder="记事" maxLength={20000}
+			placeholder={notesName} maxLength={20000}
 			defaultValue={this.controller.noteContent}
 			onChange={this.onContentChange} />;
 	}

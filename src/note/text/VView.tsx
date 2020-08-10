@@ -10,15 +10,11 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	header() {return '记事'}
 	content() {
 		return React.createElement(observer(() => {
-		let {note, caption, content} = this.controller.noteItem;
-		//return tv(note, (values) => {
-			//let {caption, content} = values;
-			//if (!this.controller.title) this.controller.title = caption;
-			//this.parseContent(content);
+		let {title} = this.controller;
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
-					{caption && <div className="px-3 py-2 border-bottom">
-						<div><b>{caption}</b></div>
+					{title && <div className="px-3 py-2 border-bottom">
+						<div><b>{title}</b></div>
 					</div>}
 					{
 						this.controller.checkable===false? 
@@ -28,7 +24,6 @@ export class VView extends VNoteBase<CTextNoteItem> {
 				</div>
 				{this.renderBottomCommands()}
 			</div>;
-		//});
 		}));
 	}
 

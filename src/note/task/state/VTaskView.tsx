@@ -10,14 +10,10 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	header() {return '任务'}
 	protected get allowCheck() {return true;}
 	content() {
-		let {note, caption, content, obj} = this.controller.noteItem;
+		let {title} = this.controller;
 		let allowCheck = this.allowCheck;
-		//return tv(note, (values) => {
-		//	let {caption, content} = values;
-			//if (!this.controller.title) this.controller.title = caption;
-			//this.parseContent(content);
 			let divState = this.renderState();
-			let divCaption = caption? <b className="text-success">{caption}</b> : <span className="text-info">任务</span>;
+			let divCaption = title? <b className="text-success">{title}</b> : <span className="text-info">任务</span>;
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
 					<div className="px-3 py-2 border-bottom">
@@ -32,7 +28,6 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 				</div>
 				{this.renderBottomCommands()}
 			</div>;
-		//});
 	}
 
 	protected onEdit = () => {
@@ -113,11 +108,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	}
 
 	renderListItem() {
-		let {note, caption, content, $create, $update} = this.controller.noteItem;
-		//return tv(note, (values) => {
-		//	let {caption, content, $create, $update} = values;
-			//if (!this.controller.title) this.controller.title = caption;
-			//this.parseContent(content);
+		let {caption, $create, $update} = this.controller.noteItem;
 			let divChanged:any = undefined;
 			let create:Date = $create;
 			let update:Date = $update;
@@ -154,7 +145,6 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 				</div>
 				{divChanged}
 			</div>;
-		//});
 	}
 }
 

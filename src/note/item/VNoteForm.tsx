@@ -2,12 +2,15 @@ import React from 'react';
 import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { VNoteBase, CheckItem } from '.';
-import { FA } from 'tonva';
+import { FA, ConfirmOptions } from 'tonva';
 import { CNoteItem } from './CNoteItem';
+import { notesName } from '../../note';
 
 export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	@observable private changed: boolean = false;
 	private inputAdd: HTMLInputElement;
+
+	header() {return notesName}
 
 	protected onTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
 		this.controller.title = evt.target.value.trim();
@@ -25,6 +28,19 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	protected abstract getSaveDisabled():boolean;
 
 	protected abstract onButtonSave(): Promise<void>;
+
+	protected async onDelete(): Promise<void> {
+		let options: ConfirmOptions = {
+			caption: '请确认',
+			message: '真的要删除这个小单吗？',
+			yes: '确认删除',
+			no: '不删除'
+		};
+		if (await this.controller.confirm(options) === 'yes') {
+			await this.controller.owner.hideNote(this.controller.noteItem.note, 1);
+			this.closePage(2);
+		}
+	}
 
 	private onCheckableChanged = (evt:React.ChangeEvent<HTMLInputElement>) => {
 		this.changed = true;
@@ -66,9 +82,12 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 				<div className="py-2 px-3 bg-light border-top d-flex">
 					<div className="mr-auto" />
 					{React.createElement(observer(() => <button onClick={() => this.onButtonSave()}
-						className="btn btn-primary" disabled={this.btnSaveDisabled}>
+						className="btn btn-primary mr-3" disabled={this.btnSaveDisabled}>
 						保存
 					</button>))}
+					<button className="btn btn-outline-secondary" onClick={() => this.onDelete()}>
+						删除
+					</button>
 				</div>
 			</div>
 			<div className="m-2 form-group form-check">
@@ -84,7 +103,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	private renderContentTextArea() {
 		return <textarea rows={10} 
 			className="w-100 border-0 form-control" 
-			placeholder="记事" maxLength={20000}
+			placeholder={notesName} maxLength={20000}
 			defaultValue={this.controller.noteContent}
 			onChange={this.onContentChange} />;
 	}

@@ -23,10 +23,10 @@ export class VTo extends VBasePage {
 		return <div className="">
 			<List ref={v => this.list = v}
 				items={this.controller.cApp.contacts} 
-				item={{render:this.renderContact, onSelect:this.onContactSelect}} />
+				item={{render:this.renderContactItem, onSelect:this.onContactSelect}} />
 		</div>
 	}
-
+/*
 	private renderContact = (item:Contact, index:number) => {
 		let {contact, assigned} = item;
 		let renderUser = (user:User) => {
@@ -38,7 +38,7 @@ export class VTo extends VBasePage {
 		}
 		return <UserView user={contact} render={renderUser} />;
 	}
-
+*/
 	private onContactSelect = (item:Contact, isSelected:boolean, anySelected:boolean):void => {
 		this.anySelected = anySelected;
 	}

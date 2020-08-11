@@ -20,7 +20,7 @@ export class CNote extends CUqBase {
 	notesPager: QueryPager<CNoteItem>;
 	@observable contacts: Contact[];
 	noteItem: NoteItem;
-	noteModel: NoteModel;
+	//noteModel: NoteModel;
 
     protected async internalStart() {
 	}
@@ -55,7 +55,12 @@ export class CNote extends CUqBase {
 
 	async getNote(id: number): Promise<NoteModel> {
 		let ret = await this.uqs.notes.GetNote.query({folder: this.folderId, note: id});
-		return ret.ret[0];
+		let noteModel:NoteModel = ret.ret[0];
+		noteModel.to = ret.to;
+		noteModel.flow = ret.flow;
+		noteModel.spawn = ret.spawn;
+		noteModel.contain = ret.contain;
+		return noteModel;
 	}
 
 	async addNote(caption:string, content:string, obj:any) {
@@ -106,6 +111,12 @@ export class CNote extends CUqBase {
 	async sendNoteTo(note:number, toList:number[]) {
 		let tos = toList.join('|');
 		await this.uqs.notes.SendNoteTo.submit({note, tos});
+	}
+
+	async hideNote(note:number, x:number) {
+		await this.uqs.notes.HideNote.submit({note, x});
+		let index = this.notesPager.items.findIndex(v => v.noteItem.note === note);
+		if (index >= 0) this.notesPager.items.splice(index, 1);
 	}
 
 	renderListView() {

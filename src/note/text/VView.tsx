@@ -4,10 +4,11 @@ import { VEdit } from './VEdit';
 import { observer } from 'mobx-react';
 import { VNoteBase, CheckItem } from '../item';
 import { CTextNoteItem } from './CTextNoteItem';
+import { notesName } from '../../note';
 
 export class VView extends VNoteBase<CTextNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
-	header() {return '记事'}
+	header() {return notesName}
 	content() {
 		return React.createElement(observer(() => {
 		let {title, checkable} = this.controller;
@@ -23,6 +24,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 					}
 				</div>
 				{this.renderBottomCommands()}
+				{this.renderRelatives()}
 			</div>;
 		}));
 	}

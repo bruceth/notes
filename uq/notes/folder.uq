@@ -48,7 +48,7 @@ PAGE (
 			LEFT JOIN Note as b ON a.note=b.id
 			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact
 			LEFT JOIN NoteX as d ON a.note=d.note
-		WHERE a.folder=folderId and a.seconds<$pageStart
+		WHERE a.folder=folderId and a.seconds<$pageStart and b.x=0
 		ORDER BY a.seconds desc
 		LIMIT $pageSize;
 };

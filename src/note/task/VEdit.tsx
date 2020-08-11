@@ -4,7 +4,6 @@ import { CTaskNoteItem } from "./CTaskNoteItem";
 
 export class VEdit extends VNoteForm<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
-	header() {return '记事'}
 	content() {
 		return this.renderEdit();
 	}

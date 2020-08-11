@@ -1,5 +1,7 @@
 import { BoxId } from "tonva";
 
+export const notesName = '小单';
+
 export enum EnumNoteItemType {text=0, task=1}
 
 export interface NoteItem {
@@ -18,6 +20,15 @@ export interface NoteItem {
 	$update: Date;
 }
 
+export interface NoteFlow {	
+}
+
+export interface Access {
+	user: number;
+	access: number;
+	assigned: string;
+}
+
 export interface NoteModel {
 	id: number;
 	caption: string;
@@ -25,6 +36,10 @@ export interface NoteModel {
 	type: EnumNoteItemType,
 	$create: Date;
 	$update: Date;
+	to: Access[];
+	flow: NoteFlow[];
+	spawn: NoteItem[];
+	contain: NoteItem[];
 }
 
 export function replaceAll(str:string, findStr:string, repStr:string):string {

@@ -7,7 +7,7 @@ export class VRateTask extends VTaskView {
 	protected get allowCheck() {return false;}
 
   	protected renderState():JSX.Element {
-		return this.renderStateSpan('待评分');
+		return this.renderStateSpan('待评价');
 	}
 
   	private onChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
@@ -19,7 +19,7 @@ export class VRateTask extends VTaskView {
 		let left:any, right:any;
 		left = 
 		<div><button onClick={()=>this.onRate()} className="btn btn-success mx-3">
-		评分
+		评价
 		</button>
 		</div>;
 

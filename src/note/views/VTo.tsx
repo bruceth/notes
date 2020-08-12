@@ -20,9 +20,9 @@ export class VTo extends VBasePage {
 		return React.createElement(c);
 	}
 	content() {
-		//let items = this.controller.cApp.contacts;
+		let items = this.controller.cApp.contacts;
 		console.log('vto content 1');
-		let items = ['a', 'b', 'c'];
+		//let items = ['a', 'b', 'c'];
 		console.log('vto content 2');
 		return <div className="">
 			<List ref={v => this.list = v}
@@ -32,11 +32,11 @@ export class VTo extends VBasePage {
 	}
 
 	protected renderContactItem = (item:Contact, index:number) => {
-		return <>联系人</>
-		// let {contact, assigned} = item;
-		// return <div className="px-3 py-2">
-		// 	{this.renderContact(contact, assigned)}
-		// </div>;
+		//return <>联系人</>
+		let {contact, assigned} = item;
+		return <div className="px-3 py-2">
+			{this.renderContact(contact, assigned)}
+		</div>;
 	}
 
 /*

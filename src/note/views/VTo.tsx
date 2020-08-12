@@ -20,13 +20,21 @@ export class VTo extends VBasePage {
 		return React.createElement(c);
 	}
 	content() {
-		return <></>;
-		// return <div className="">
-		// 	<List ref={v => this.list = v}
-		// 		items={this.controller.cApp.contacts} 
-		// 		item={{render:this.renderContactItem, onSelect:this.onContactSelect}} />
-		// </div>
+		return <div className="">
+			<List ref={v => this.list = v}
+				items={this.controller.cApp.contacts} 
+				item={{render:this.renderContactItem, onSelect:this.onContactSelect}} />
+		</div>
 	}
+
+	protected renderContactItem = (item:Contact, index:number) => {
+		return <>联系人</>
+		// let {contact, assigned} = item;
+		// return <div className="px-3 py-2">
+		// 	{this.renderContact(contact, assigned)}
+		// </div>;
+	}
+
 /*
 	private renderContact = (item:Contact, index:number) => {
 		let {contact, assigned} = item;

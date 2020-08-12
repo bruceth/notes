@@ -16,7 +16,6 @@ export interface TaskCheckItem extends CheckItem {
 	rateInfo?: string;
 }
 
-
 export enum EnumTaskState {Start=0, Done=1, Pass=2, Fail=3, Rated=4, Canceled=5};
 
 export class CTaskNoteItem extends CNoteItem {

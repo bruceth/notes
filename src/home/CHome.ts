@@ -5,7 +5,11 @@ import { VHome } from "./VHome";
 export class CHome extends CUqBase {
 	cNode: CNote;
 
-  protected async internalStart() {
+  	protected async internalStart() {
+	}
+
+	async refresh() {
+		await this.cNode.refresh();
 	}
 
 	init() {

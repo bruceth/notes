@@ -61,11 +61,8 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	}
 
 	private onSendNote = async () => {
-		console.log('SendNote 1');
 		await this.controller.cApp.loadRelation();
-		console.log('SendNote 2');
 		this.controller.showTo();
-		console.log('SendNote 3');
 	}
 
 	protected renderCheckItem(v:CheckItem, checkable:boolean) {

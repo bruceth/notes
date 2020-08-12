@@ -53,6 +53,27 @@ export class CNote extends CUqBase {
 		await this.notesPager.first({folderId: this.folderId});
 	}
 
+	async refresh() {
+		//这里要用一个新的pager每次只取5个。
+		let newnotes = new QueryPager<NoteItem>(this.uqs.notes.GetNotes, 5, 5, false);
+		await newnotes.first({folderId: this.folderId});
+		let newitems = newnotes.items;
+		if (newitems) {
+			let len = newitems.length;
+			let items = this.notesPager.items;
+			for (let i = len - 1; i >=0; --i) {
+				let item = newitems[i];
+				let note = item.note;
+				let index = items.findIndex(v => v.noteItem.note===note);
+				if (index >= 0) {
+					items.splice(index, 1);
+				}
+				let cNoteItem = this.noteItemConverter(item, undefined);
+				items.unshift(cNoteItem);
+			}
+		}
+	}
+
 	async getNote(id: number): Promise<NoteModel> {
 		let ret = await this.uqs.notes.GetNote.query({folder: this.folderId, note: id});
 		let noteModel:NoteModel = ret.ret[0];
@@ -129,10 +150,8 @@ export class CNote extends CUqBase {
 	}
 
 	showTo(noteItem:NoteItem) {
-		console.log('showTo 1')
 		this.noteItem = noteItem;
 		this.openVPage(VTo);
-		console.log('showTo 2')
 	}
 
 	showSentPage() {

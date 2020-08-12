@@ -24,7 +24,7 @@ export class VRelation extends VPage<CRelation> {
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;
 			return <div className="px-3 py-2">
-				<Image className="w-2c h-2c mr-3" src={icon} />
+				<Image className="w-2c h-2c mr-3" src={icon || '.user-o'} />
 				{name} {nick} {assigned}
 			</div>
 		}

@@ -58,7 +58,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;
 			return <>
-				<Image className="w-1-5c h-1-5c mr-2" src={icon} />
+				<Image className="w-1-5c h-1-5c mr-2" src={icon || '.user-o'} />
 				{name} {nick} {assigned}
 			</>
 		}
@@ -89,9 +89,9 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		if (!to || to.length === 0) return;
 		return <div className="px-3 py-2">
 			<small className="text-muted mr-3">已分享给: </small>
-			{to.map(t => {
+			{to.map((t, index) => {
 				let {user, assigned} = t;
-				return <span key={user} className="mr-3">{this.renderContact(user, assigned)}</span>;
+				return <span key={index} className="mr-3">{this.renderContact(user, assigned)}</span>;
 			})}
 		</div>
 	}

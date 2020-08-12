@@ -16,6 +16,7 @@ export interface Notes {
 	CheckTask: Action;
 	RateTask: Action;
 
+	$Poked: Query;
 	GetNotes: Query;
 	GetMyContacts: Query;
 	GetNote: Query;

@@ -204,17 +204,8 @@ export class Navigo {
 	private _usePushState:boolean;
 	private _genericHooks:Hooks;
 	private _historyUpdateMethod: 'pushState' | 'replaceState'; // HistoryUpdateMethod;
-	private timout: NodeJS.Timeout;
+	private timout: any; //NodeJS.Timeout;
 
-	/*
-	private helpers = {
-		match,
-		root,
-		clean,
-		getOnlyURL
-	};
-	*/
-  
 	constructor(r:string = null, useHash:boolean = false, hash:string = '#') {
 		this.root = null;
 		this._useHash = useHash;

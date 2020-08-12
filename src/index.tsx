@@ -5,12 +5,11 @@ import './index.css';
 //import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import { NavView, start, startRoute, nav, AppConfig, CAppBase, UQsMan } from 'tonva';
+import { NavView, start, startRoute, nav, CAppBase } from 'tonva';
 //import logo from './logo.svg';
 import './App.css';
 import { CApp, appConfig } from './tapp';
 import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
-import {  } from 'tonva';
 
 let {location} = document;
 if (location.host) {

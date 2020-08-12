@@ -2,10 +2,12 @@ import React from 'react';
 import { VNoteBase } from '../item';
 import { EasyTime, FA } from 'tonva';
 import { CNoteItem } from './CNoteItem';
+import { observer } from 'mobx-react';
 
 export class VNoteItem extends VNoteBase<CNoteItem> {
 	render() {
-		let {owner, caption, $create, $update} = this.controller.noteItem;
+		return React.createElement(observer(() => {
+			let {owner, caption, $create, $update} = this.controller.noteItem;
 			let divChanged:any = undefined;
 			let create:Date = $create;
 			let update:Date = $update;
@@ -46,5 +48,6 @@ export class VNoteItem extends VNoteBase<CNoteItem> {
 					</div>
 				}
 			</div>;
+		}));
 	}
 }

@@ -9,9 +9,10 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '任务'}
 	protected get allowCheck() {return true;}
-	content() {
-		let {title} = this.controller;
-		let allowCheck = this.allowCheck;
+	content()  {
+		return React.createElement(observer(() => {
+			let {title} = this.controller;
+			let allowCheck = this.allowCheck;
 			let divCaption = this.renderCaption(title);
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
@@ -27,6 +28,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}
 			</div>;
+		}));
 	}
 
 	protected onEdit = () => {

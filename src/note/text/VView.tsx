@@ -11,7 +11,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	header() {return notesName}
 	content() {
 		return React.createElement(observer(() => {
-		let {title, checkable} = this.controller;
+			let {title, checkable} = this.controller;
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
 					{title && <div className="px-3 py-2 border-bottom">

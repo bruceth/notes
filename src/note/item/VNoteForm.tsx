@@ -44,24 +44,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 
 	private onCheckableChanged = (evt:React.ChangeEvent<HTMLInputElement>) => {
 		this.changed = true;
-		this.controller.checkable = evt.target.checked;
-		if (this.controller.checkable === true) {
-			let content = this.controller.changedNoteContent || this.controller.noteContent;
-			if (content) {
-				this.controller.items.splice(0, this.controller.items.length);
-				this.controller.items.push(...content.split('\n').map((v, index) => {
-					return {
-						key: this.controller.itemKey++,
-						text: v,
-						checked: false
-					}
-				}));
-			}
-		}
-		else {
-			this.controller.noteContent = this.controller.items.map(v => v.text).join('\n');
-		}
-		this.controller.changedNoteContent = undefined;
+		this.controller.onCheckableChanged(evt.target.checked);
 	}
 
 	protected renderEdit() {

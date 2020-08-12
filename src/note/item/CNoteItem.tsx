@@ -99,6 +99,27 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		this.owner.showTo(this.noteItem);
 	}
 
+	onCheckableChanged(checkable:boolean) {
+		this.checkable = checkable;
+		if (this.checkable === true) {
+			let content = this.changedNoteContent || this.noteContent;
+			if (content) {
+				this.items.splice(0, this.items.length);
+				this.items.push(...content.split('\n').map((v, index) => {
+					return {
+						key: this.itemKey++,
+						text: v,
+						checked: false
+					}
+				}));
+			}
+		}
+		else {
+			this.noteContent = this.items.map(v => v.text).join('\n');
+		}
+		this.changedNoteContent = undefined;
+	}
+
 	async onCheckChange(key:number, checked:boolean) {
 		let item = this.items.find(v => v.key === key);
 		if (item) item.checked = checked;

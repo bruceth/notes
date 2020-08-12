@@ -51,7 +51,7 @@ RETURNS ret (
 		FROM Task as a LEFT JOIN NoteX as b ON a.note=b.note
 		WHERE a.note=note;
 	IF state=EnumTaskState.Start {
-		BOOK NoteX AT(note) SET state=EnumTaskState.Done;
+		BOOK NoteX AT(note) SET state=EnumTaskState.Done, flowContent=content;
 		SET flowId=(SELECT ifnull(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
 		BOOK Flow AT(note, flowId) SET content=content;
 		IF NOT checker IS NULL {
@@ -93,7 +93,7 @@ RETURNS ret (
 			SET state=EnumTaskState.Fail;
 		}
 		IF NOT checker IS NULL {
-			BOOK NoteX AT(note) SET state=state;
+			BOOK NoteX AT(note) SET state=state, flowContent=content;
 			SET flowId=(SELECT ifnull(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
 			BOOK Flow AT(note, flowId) SET content=content;
 			IF NOT rater IS NULL {
@@ -121,7 +121,7 @@ ACTION RateTask (
 	VAR flowId SMALLINT, checker ID, rater ID, point INT, folderId ID;
 	SET checker=a.checker, rater=a.rater, point=a.point FROM Task as a WHERE a.note=note;
 	IF NOT checker IS NULL {
-		BOOK NoteX AT(note) SET state=EnumTaskState.Rated;
+		BOOK NoteX AT(note) SET state=EnumTaskState.Rated, flowContent=content;
 		SET flowId=(SELECT ifnull(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
 		BOOK Flow AT(note, flowId) SET content=content;
 		IF NOT rater IS NULL {

@@ -35,7 +35,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		this.openVPage(VEdit);
 	}
 
-	private renderCaption(title:string) {
+	protected renderCaption(title:string) {
 		let divCaption = title? <b className="text-primary">{title}</b> : <span className="text-info">任务</span>;
 		return <>{this.renderState()} &nbsp; {divCaption}</>;
 	}

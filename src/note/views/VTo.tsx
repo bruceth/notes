@@ -27,12 +27,11 @@ export class VTo extends VBasePage {
 		return <div className="">
 			<List 
 				items={items} 
-				item={{render:this.renderContactItem}} />
+				item={{render:this.renderContactItem, onSelect:this.onContactSelect}} />
 		</div>
 	}
 
 	protected renderContactItem = (item:Contact, index:number) => {
-		console.log('vto content 3');
 		return <>联系人</>
 		// let {contact, assigned} = item;
 		// return <div className="px-3 py-2">

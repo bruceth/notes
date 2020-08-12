@@ -14,11 +14,10 @@ export class VTo extends VBasePage {
 
 	header() {return '收件人'}
 	right():any {
-		return undefined;
-		// let c = observer(() => <button className="btn btn-sm btn-primary mr-1" onClick={this.onNext} disabled={!this.anySelected}>
-		// 	下一步 <FA name="angle-right" />
-		// </button>);
-		// return React.createElement(c);
+		let c = observer(() => <button className="btn btn-sm btn-primary mr-1" onClick={this.onNext} disabled={!this.anySelected}>
+			下一步 <FA name="angle-right" />
+		</button>);
+		return React.createElement(c);
 	}
 	content() {
 		return <></>;

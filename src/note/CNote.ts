@@ -129,8 +129,10 @@ export class CNote extends CUqBase {
 	}
 
 	showTo(noteItem:NoteItem) {
+		console.log('showTo 1')
 		this.noteItem = noteItem;
 		this.openVPage(VTo);
+		console.log('showTo 2')
 	}
 
 	showSentPage() {

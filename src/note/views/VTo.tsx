@@ -13,18 +13,20 @@ export class VTo extends VBasePage {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 
 	header() {return '收件人'}
-	right() {
-		let c = observer(() => <button className="btn btn-sm btn-primary mr-1" onClick={this.onNext} disabled={!this.anySelected}>
-			下一步 <FA name="angle-right" />
-		</button>);
-		return React.createElement(c);
+	right():any {
+		return undefined;
+		// let c = observer(() => <button className="btn btn-sm btn-primary mr-1" onClick={this.onNext} disabled={!this.anySelected}>
+		// 	下一步 <FA name="angle-right" />
+		// </button>);
+		// return React.createElement(c);
 	}
 	content() {
-		return <div className="">
-			<List ref={v => this.list = v}
-				items={this.controller.cApp.contacts} 
-				item={{render:this.renderContactItem, onSelect:this.onContactSelect}} />
-		</div>
+		return <></>;
+		// return <div className="">
+		// 	<List ref={v => this.list = v}
+		// 		items={this.controller.cApp.contacts} 
+		// 		item={{render:this.renderContactItem, onSelect:this.onContactSelect}} />
+		// </div>
 	}
 /*
 	private renderContact = (item:Contact, index:number) => {

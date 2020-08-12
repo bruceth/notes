@@ -25,9 +25,9 @@ export class VTo extends VBasePage {
 		let items = ['a', 'b', 'c'];
 		console.log('vto content 2');
 		return <div className="">
-			<List 
+			<List ref={v => this.list = v}
 				items={items} 
-				item={{render:this.renderContactItem, onSelect:this.onContactSelect}} />
+				item={{render:this.renderContactItem}} />
 		</div>
 	}
 

@@ -127,13 +127,17 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	}
 
 	async SetNote(waiting:boolean) {
+		console.log('SetNote 1');
 		let noteContent = this.stringifyContent();
+		console.log('SetNote 2');
 		await this.owner.setNote(waiting,
 			this.noteItem,
 			this.title, 
 			noteContent,
 			this.buildObj());
+		console.log('SetNote 3');
 		this.updateChange();
+		console.log('SetNote 4');
 	}
 
 	private updateChange() {

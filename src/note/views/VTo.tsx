@@ -21,15 +21,18 @@ export class VTo extends VBasePage {
 	}
 	content() {
 		//let items = this.controller.cApp.contacts;
+		console.log('vto content 1');
 		let items = ['a', 'b', 'c'];
+		console.log('vto content 2');
 		return <div className="">
-			<List ref={v => this.list = v}
+			<List 
 				items={items} 
-				item={{render:this.renderContactItem, onSelect:this.onContactSelect}} />
+				item={{render:this.renderContactItem}} />
 		</div>
 	}
 
 	protected renderContactItem = (item:Contact, index:number) => {
+		console.log('vto content 3');
 		return <>联系人</>
 		// let {contact, assigned} = item;
 		// return <div className="px-3 py-2">

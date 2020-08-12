@@ -20,9 +20,11 @@ export class VTo extends VBasePage {
 		return React.createElement(c);
 	}
 	content() {
+		//let items = this.controller.cApp.contacts;
+		let items = ['a', 'b', 'c'];
 		return <div className="">
 			<List ref={v => this.list = v}
-				items={this.controller.cApp.contacts} 
+				items={items} 
 				item={{render:this.renderContactItem, onSelect:this.onContactSelect}} />
 		</div>
 	}

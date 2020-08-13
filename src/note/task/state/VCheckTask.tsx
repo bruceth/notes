@@ -1,6 +1,8 @@
 import React from 'react';
 import { VTaskView } from './VTaskView';
 import { Page, FA } from 'tonva';
+import { observer } from 'mobx-react';
+import { TaskCheckItem } from '../CTaskNoteItem';
 
 export class VCheckTask extends VTaskView {
 	protected get allowCheck() {return false;}
@@ -9,8 +11,65 @@ export class VCheckTask extends VTaskView {
 		return this.renderStateSpan('待验收');
 	}
 
+	protected renderCheckItems(allowCheck:boolean) {
+		return React.createElement(observer(() => {
+			let uncheckedItems:TaskCheckItem[] = [];
+			let checkedItems:TaskCheckItem[] = [];
+			for (let ci of this.controller.items) {
+				let {checked} = ci;
+				if (checked === true) checkedItems.push(ci);
+				else uncheckedItems.push(ci);
+			}			
+			return <div className="">
+				{uncheckedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
+				{
+					checkedItems.length > 0 && <div className="border-top mt-2 pt2">
+						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
+						{checkedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
+					</div>
+				}
+			</div>;
+		}));
+	}
+
+	protected renderCheckItem(v:TaskCheckItem, allowCheck:boolean) {
+		let {key, text, checked} = v;
+		let cn = 'form-control-plaintext ml-3 ';
+		let content: any;
+		if (checked === true) {
+			cn += 'text-muted';
+			content = <del>{text}</del>;
+		}
+		else {
+			content = text;
+		}
+		return <div key={key} className="d-flex mx-3 my-0 align-items-center form-group form-check">
+			<input className="form-check-input mr-3 mt-0" type="checkbox"
+				defaultChecked={checked}
+				data-key={key}
+				disabled={!allowCheck} />
+			<div className={cn}>{content}</div>
+		</div>;
+	}
+
+	protected renderOrtherContent() {
+		return <div className="px-3 py-2 d-flex align-items-center border-bottom" >
+		<div className="text-muted mr-1 w-5c">验收意见</div>
+		<div className="flex-fill mr-3 ">
+			<input className="flex-fill form-control border-0"
+				type="text" step="1" min="1"
+				onChange={this.onDiscribeChange}
+				onKeyDown={this.onDiscribeKeyDown}/></div>
+		</div>
+	}
+
+	private onDiscribeChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
+	}
+
+	private onDiscribeKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {
+	}
+
 	protected renderBottomCommands() {
-		let {owner, assigned} = this.controller.noteItem;
 		let left:any, right:any;
 		left = <div>
 			<button onClick={()=>this.onCheck(true)} className="btn btn-success mx-3">
@@ -22,14 +81,16 @@ export class VCheckTask extends VTaskView {
 		</div>;
 
     	right = this.renderFrom('px-2');
-		return <div className="py-2 bg-light border-top d-flex">
+		return <>
+		{this.renderOrtherContent()}
+		<div className="py-2 bg-light border-top d-flex">
 			{left}
 			<div className="mr-auto" />
 			{right}
-		</div>;
+		</div></>;
 	}
   
-	private onCheck = async (pass:boolean) => {
+	protected onCheck = async (pass:boolean) => {
 		await this.controller.CheckTask(pass);
 		this.closePage();
 		let content = pass?

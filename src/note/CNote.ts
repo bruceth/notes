@@ -35,7 +35,7 @@ export class CNote extends CUqBase {
 
 	private noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteItem => {
 		let cNoteItem = this.getCNoteItem(item.type);
-		item.obj = cNoteItem.parseContent(item.content);
+		cNoteItem.parseItemObj(item);
 		cNoteItem.init(item);
 		return cNoteItem;
 	}
@@ -51,6 +51,27 @@ export class CNote extends CUqBase {
 
 	async load() {
 		await this.notesPager.first({folderId: this.folderId});
+	}
+
+	async refresh() {
+		//每次刷新取5个。
+		let newnotes = new QueryPager<NoteItem>(this.uqs.notes.GetNotes, 5, 5, false);
+		await newnotes.first({folderId: this.folderId});
+		let newitems = newnotes.items;
+		if (newitems) {
+			let len = newitems.length;
+			let items = this.notesPager.items;
+			for (let i = len - 1; i >= 0; --i) {
+				let item = newitems[i];
+				let note = item.note;
+				let index = items.findIndex(v => v.noteItem.note===note);
+				if (index >= 0) {
+					items.splice(index, 1);
+				}
+				let cNoteItem = this.noteItemConverter(item, undefined);
+				items.unshift(cNoteItem);
+			}
+		}
 	}
 
 	async getNote(id: number): Promise<NoteModel> {
@@ -88,7 +109,7 @@ export class CNote extends CUqBase {
 		let cNoteItem = this.getCNoteItem(EnumNoteItemType.text);
 		cNoteItem.init(noteItem);
 		this.notesPager.items.unshift(cNoteItem);
-		return ret;
+		return cNoteItem;
 	}
 
 	async setNote(waiting:boolean, noteItem:NoteItem, caption:string, content:string, obj:any) {
@@ -128,9 +149,9 @@ export class CNote extends CUqBase {
 		cTextNoteItem.showAddNotePage();
 	}
 
-	showTo(noteItem:NoteItem) {
+	showTo(noteItem:NoteItem, backPageCount:Number) {
 		this.noteItem = noteItem;
-		this.openVPage(VTo);
+		this.openVPage(VTo, backPageCount);
 	}
 
 	showSentPage() {

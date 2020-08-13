@@ -37,6 +37,7 @@ MAP FLOW (
 MAP NoteX (
 	KEY note ID Note,
 	state TINYINT DEFAULT 0,				-- 由特定程序自己定义的特定的当前状态
+	flowContent TEXT,
 	-- end TINYINT DEFAULT 0,				-- 1: end, can be archive
 );
 
@@ -78,7 +79,8 @@ RETURNS ret (
 	from ID [$User],				-- 派生来源人
 	[$create] TIMESTAMP,
 	[$update] TIMESTAMP,
-	state TINYINT,	
+	state TINYINT,
+	flowContent TEXT,	
 )
 RETURNS flow (
 	flow SMALLINT,					-- 不断附加的id，跟操作相关
@@ -125,7 +127,7 @@ RETURNS contain (
 		SET folder = a.folder FROM SpecFolder as a WHERE a.owner=$user AND a.spec=-folder;
 	}
 	BOOK FolderNote AT (folder, note) SET unread=0;
-	INTO ret SELECT a.id, a.type, a.caption, a.content, a.owner, a.x, a.from, a.[$create], a.[$update], b.state
+	INTO ret SELECT a.id, a.type, a.caption, a.content, a.owner, a.x, a.from, a.[$create], a.[$update], b.state, b.flowContent
 		FROM Note as a LEFT JOIN NoteX as b ON a.id=b.note
 		WHERE a.id=note;
 	INTO flow SELECT a.flow, a.operator, a.action, a.stamp, a.content
@@ -200,6 +202,15 @@ ACTION SetNote (
 	}
 };
 
+ACTION SetNoteX (
+	note ID,
+	content TEXT,
+) {
+	IF exists(SELECT id FROM Note WHERE id=note) {
+		BOOK NoteX AT(note) SET flowContent=content;
+	}
+};
+
 ACTION SendNoteTo (
 	note ID,
 	tos TEXT,
@@ -219,6 +230,7 @@ ACTION SendNoteTo (
 			}
 			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
 			BOOK NoteAccess AT (note, to) SET access=1;
+			TUID [$User] ID (to) SET poke=1;
 		};
 	}
 };

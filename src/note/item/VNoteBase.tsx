@@ -118,7 +118,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		let {spawn} = this.controller.noteModel;
 		if (!spawn || spawn.length === 0) return;
 		return <div className="pb-3">
-			<div className="px-3 pt-2 pb-1 text-muted small">派发任务</div>
+			<div className="px-3 pt-2 pb-1 text-muted small">已派发任务</div>
 			<List
 				items={spawn} 
 				item={{render: this.renderSpawnItem,  className: "notes"}} />
@@ -166,7 +166,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 
 	private onSendNote = async () => {
 		await this.controller.cApp.loadRelation();
-		this.controller.showTo();
+		this.controller.showTo(2);
 	}
 
 	protected renderEditButton() {

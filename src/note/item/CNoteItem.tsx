@@ -49,12 +49,12 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 
 	abstract onClickItem(noteModel: NoteModel): void;
 
-	private stringifyContent() {
+	protected stringifyContent() {
 		let ret = JSON.stringify(this.buildObj());
 		return ret;
 	}
 
-	private buildObj():any {
+	protected buildObj():any {
 		let obj = this.noteItem?{...this.noteItem.obj}:{};
 		if (this.checkable) {
 			obj.check = true;
@@ -71,7 +71,11 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		return obj;
 	}
 
-	parseContent(content:string):any {
+	parseItemObj(item:NoteItem) {
+		item.obj = this.parseContent(item.content);
+	}
+
+	protected parseContent(content:string):any {
 		try {
 			if (!content) return undefined;
 			return JSON.parse(content);
@@ -95,8 +99,8 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		})}</>;
 	}
 
-	showTo() {
-		this.owner.showTo(this.noteItem);
+	showTo(backPageCount:number) {
+		this.owner.showTo(this.noteItem, backPageCount);
 	}
 
 	onCheckableChanged(checkable:boolean) {
@@ -141,14 +145,15 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 			this.noteContent = this.changedNoteContent;
 			this.changedNoteContent = undefined;
 		}
-		if (this.title && this.title !== this.noteItem.caption) {
+		if (this.noteItem && this.title && this.title !== this.noteItem.caption) {
 			this.noteItem.caption = this.title;
 		}
 	}
 
 	async AddNote() {
 		let noteContent = this.stringifyContent();
-		await this.owner.addNote(this.title, noteContent, this.buildObj());
+		let ret = await this.owner.addNote(this.title, noteContent, this.buildObj());
 		this.updateChange();
+		return ret;
 	}
 }

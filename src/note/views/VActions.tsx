@@ -3,6 +3,14 @@ import { VBasePage } from "./VBasePage";
 import { LMR, FA } from 'tonva';
 
 export class VActions extends VBasePage {
+	protected backPageCount = 3;
+
+	init(param?:any):void {
+		if (param) {
+			this.backPageCount = Number(param);
+		}	
+	}
+
 	header() {return '操作'}
 	content() {
 		let cn = 'px-3 py-2 cursor-pointer bg-white mt-1';
@@ -34,7 +42,7 @@ export class VActions extends VBasePage {
 			return contact;
 		});
 		await this.controller.sendNoteTo(noteItem.note, toList);
-		this.closePage(3);
+		this.closePage(this.backPageCount);
 		this.controller.showSentPage();
 	}
 

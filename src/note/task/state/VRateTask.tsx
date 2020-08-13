@@ -2,7 +2,7 @@ import React from 'react';
 import { VTaskView } from './VTaskView';
 
 export class VRateTask extends VTaskView {
-  protected rateValue:number = 5;
+  protected rateValue:number = 0;
 
 	protected get allowCheck() {return false;}
 
@@ -36,12 +36,8 @@ export class VRateTask extends VTaskView {
 
   protected renderValueRadio(): JSX.Element {
 		let radios = [
-			{val:5, text:'5分'},
-			{val:4, text:'4分'},
-			{val:3, text:'3分'},
-			{val:2, text:'2分'},
-			{val:1, text:'1分'},
-			{val:0, text:'0分'},
+			{val:2, text:'卓越'},
+			{val:1, text:'谢谢'},
 		];
 
 		return <div className="my-3">

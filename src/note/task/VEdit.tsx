@@ -13,6 +13,7 @@ export class VEdit extends VNoteForm<CTaskNoteItem> {
 	}
 
 	protected async onButtonSave(): Promise<void> {
+		this.checkInputAdd();
 		await this.controller.SetNote(true);
 		this.closePage();
 	}

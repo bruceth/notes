@@ -43,7 +43,7 @@ export class CApp extends CUqApp {
 			if (!this.user) return;
 			++this.tick;
 			if (this.tick<gaps[this.gapIndex]) return;
-			console.error('tick ', new Date());
+			//console.error('tick ', new Date());
 			this.tick = 0;
 			if (this.gapIndex < gaps.length - 1) ++this.gapIndex;
 			let ret = await this.uqs.notes.$Poked.query(undefined, false);
@@ -55,7 +55,7 @@ export class CApp extends CUqApp {
 			// uq 里面加入这一句，会让相应的$Poked查询返回poke=1：
 			// TUID [$User] ID (member) SET poke=1;
 			// 这个地方重新调入的数据
-			// this.cGroup.refresh();
+			this.cHome.refresh();
 		}
 		catch {
 		}

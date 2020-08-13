@@ -1,4 +1,4 @@
-import { CNoteItem } from "../item";
+import { CNoteItem, CheckItem } from "../item";
 import { NoteItem, NoteModel, numberFromId } from '../model';
 import { VTaskParams } from "./VTaskParams";
 import { Contact } from "model";
@@ -11,10 +11,23 @@ export interface AssignTaskParam {
 	point?: number;
 }
 
+export interface TaskCheckItem extends CheckItem {
+	checkInfo?: string;
+	rateInfo?: string;
+}
+
 export enum EnumTaskState {Start=0, Done=1, Pass=2, Fail=3, Rated=4, Canceled=5};
 
 export class CTaskNoteItem extends CNoteItem {
 	private getTaskView = new TaskViewFactory().getView;
+
+	parseItemObj(item:NoteItem) {
+		let content = item.flowContent;
+		if (!content) {
+			content = item.content;
+		}
+		item.obj = this.parseContent(content);
+	}
 
 	private getView() {
 		let state = this.noteItem.state as EnumTaskState;

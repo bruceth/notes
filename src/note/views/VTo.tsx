@@ -7,25 +7,35 @@ import { Contact } from 'model';
 import { VActions } from './VActions';
 
 export class VTo extends VBasePage {
+	protected backPageCount = 2;
+
+	init(param?:any):void {
+		if (param) {
+			this.backPageCount = Number(param);
+		}	
+	}
+
 	@observable private anySelected:boolean = false;
 	private list: List;
 
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 
 	header() {return '收件人'}
-	right() {
+	right():any {
 		let c = observer(() => <button className="btn btn-sm btn-primary mr-1" onClick={this.onNext} disabled={!this.anySelected}>
 			下一步 <FA name="angle-right" />
 		</button>);
 		return React.createElement(c);
 	}
 	content() {
+		let items = this.controller.cApp.contacts;
 		return <div className="">
 			<List ref={v => this.list = v}
-				items={this.controller.cApp.contacts} 
+				items={items} 
 				item={{render:this.renderContactItem, onSelect:this.onContactSelect}} />
 		</div>
 	}
+
 /*
 	private renderContact = (item:Contact, index:number) => {
 		let {contact, assigned} = item;
@@ -46,6 +56,6 @@ export class VTo extends VBasePage {
 	private onNext = () => {
 		let contacts = this.list.selectedItems;
 		this.controller.contacts = contacts;
-		this.openVPage(VActions); //, {contacts, noteId: this.currentNoteId});
+		this.openVPage(VActions, this.backPageCount + 1); //, {contacts, noteId: this.currentNoteId});
 	}
 }

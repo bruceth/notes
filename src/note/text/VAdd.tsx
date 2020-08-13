@@ -36,6 +36,7 @@ export class VAdd extends VNoteForm<CTextNoteItem> {
 	}
 
 	private onSaveAndSendNote = async () => {
+		this.checkInputAdd();
 		let cnewNote = await this.controller.AddNote();
 		this.closePage();
 		await cnewNote.cApp.loadRelation();

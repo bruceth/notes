@@ -158,6 +158,19 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 			evt.currentTarget.value = '';
 		}
 	}
+
+	protected checkInputAdd() {
+		if (this.controller.checkable && this.inputAdd) {
+			let {value} = this.inputAdd;
+			if (value.trim().length === 0) return;
+			this.controller.items.push({
+				key: this.controller.itemKey++,
+				text: value,
+				checked: false,
+			});
+			this.inputAdd.value = '';
+		}
+	}
 	
 	private onCheckChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;

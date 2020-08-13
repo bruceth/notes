@@ -16,4 +16,8 @@ export class VEdit extends VNoteForm<CTaskNoteItem> {
 		await this.controller.SetNote(true);
 		this.closePage();
 	}
+
+	protected renderExButtons():JSX.Element {
+		return;
+	}
 }

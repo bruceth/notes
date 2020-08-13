@@ -1,9 +1,10 @@
 import React from "react";
 import classNames from 'classnames';
-import { VPage, User, Image, UserView, Page, List, LMR, EasyTime } from "tonva";
+import { VPage, User, Image, UserView, Page, List, LMR, EasyTime, FA } from "tonva";
 import { CNoteItem, CheckItem } from "./CNoteItem";
 import { observer } from "mobx-react";
 import { NoteItem } from "note/model";
+import { VEdit } from "note/text/VEdit";
 
 export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	protected renderContent() {
@@ -155,4 +156,24 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			</Page>;
 		});
 	}
+
+	protected renderSendToButton() {
+		return <button onClick={this.onSendNote}
+			className="btn btn-outline-primary mr-3">
+			发给
+		</button>;
+	}
+
+	private onSendNote = async () => {
+		await this.controller.cApp.loadRelation();
+		this.controller.showTo();
+	}
+
+	protected renderEditButton() {
+		return <div onClick={()=>this.onEdit()} className="px-1 py-2 cursor-pointer text-primary mr-3">
+			<FA name="pencil-square-o" />
+		</div>;
+	}
+
+	protected onEdit() {}
 }

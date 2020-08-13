@@ -36,33 +36,23 @@ export class VView extends VNoteBase<CTextNoteItem> {
 		if (isMe === true) {
 			left = undefined;
 			right = <>
-				<button onClick={this.onSendNote}
-					className="btn btn-outline-primary ml-3">
-					发给
-				</button>
-				<div onClick={this.onEdit} className="px-3 py-2 cursor-pointer text-primary ml-3">
-					<FA name="pencil-square-o" />
-				</div>
+				{this.renderSendToButton()}
+				{this.renderEditButton()}
 			</>;
 		}
 		else {
 			left = this.renderFrom('px-2');
 			right = undefined;
 		}
-		return <div className="py-2 px-3 bg-light border-top d-flex">
+		return <div className="py-2 pl-3 bg-light border-top d-flex">
 			{left}
 			<div className="mr-auto" />
 			{right}
 		</div>;
 	}
 
-	private onEdit = () => {
+	protected onEdit() {
 		this.openVPage(VEdit);
-	}
-
-	private onSendNote = async () => {
-		await this.controller.cApp.loadRelation();
-		this.controller.showTo();
 	}
 
 	protected renderCheckItem(v:CheckItem, checkable:boolean) {

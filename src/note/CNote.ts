@@ -149,9 +149,9 @@ export class CNote extends CUqBase {
 		cTextNoteItem.showAddNotePage();
 	}
 
-	showTo(noteItem:NoteItem, backCount:Number) {
+	showTo(noteItem:NoteItem, backPageCount:Number) {
 		this.noteItem = noteItem;
-		this.openVPage(VTo, backCount);
+		this.openVPage(VTo, backPageCount);
 	}
 
 	showSentPage() {

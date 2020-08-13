@@ -99,8 +99,8 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		})}</>;
 	}
 
-	showTo(backCount:number) {
-		this.owner.showTo(this.noteItem, backCount);
+	showTo(backPageCount:number) {
+		this.owner.showTo(this.noteItem, backPageCount);
 	}
 
 	onCheckableChanged(checkable:boolean) {

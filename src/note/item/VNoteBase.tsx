@@ -166,7 +166,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 
 	private onSendNote = async () => {
 		await this.controller.cApp.loadRelation();
-		this.controller.showTo(3);
+		this.controller.showTo(2);
 	}
 
 	protected renderEditButton() {

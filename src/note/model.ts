@@ -14,6 +14,7 @@ export interface NoteItem {
 	content: string;
 	assigned: string;
 	state: number;
+	flowContent?: string;
 	unread: number;
 	obj: any;
 	$create: Date;

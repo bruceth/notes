@@ -49,12 +49,12 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 
 	abstract onClickItem(noteModel: NoteModel): void;
 
-	private stringifyContent() {
+	protected stringifyContent() {
 		let ret = JSON.stringify(this.buildObj());
 		return ret;
 	}
 
-	private buildObj():any {
+	protected buildObj():any {
 		let obj = this.noteItem?{...this.noteItem.obj}:{};
 		if (this.checkable) {
 			obj.check = true;
@@ -71,7 +71,11 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		return obj;
 	}
 
-	parseContent(content:string):any {
+	parseItemObj(item:NoteItem) {
+		item.obj = this.parseContent(item.content);
+	}
+
+	protected parseContent(content:string):any {
 		try {
 			if (!content) return undefined;
 			return JSON.parse(content);

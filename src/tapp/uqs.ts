@@ -7,6 +7,7 @@ export interface Notes {
 
 	AddNote: Action;
 	SetNote: Action;
+	SetNoteX: Action;
 	SendNoteTo: Action;
 	HideNote: Action;
 	AddContact: Action;

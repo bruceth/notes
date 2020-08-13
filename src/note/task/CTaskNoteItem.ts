@@ -21,6 +21,14 @@ export enum EnumTaskState {Start=0, Done=1, Pass=2, Fail=3, Rated=4, Canceled=5}
 export class CTaskNoteItem extends CNoteItem {
 	private getTaskView = new TaskViewFactory().getView;
 
+	parseItemObj(item:NoteItem) {
+		let content = item.flowContent;
+		if (!content) {
+			content = item.content;
+		}
+		item.obj = this.parseContent(content);
+	}
+
 	private getView() {
 		let state = this.noteItem.state as EnumTaskState;
 		if (state == EnumTaskState.Done) {

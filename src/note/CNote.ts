@@ -35,7 +35,7 @@ export class CNote extends CUqBase {
 
 	private noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteItem => {
 		let cNoteItem = this.getCNoteItem(item.type);
-		item.obj = cNoteItem.parseContent(item.content);
+		cNoteItem.parseItemObj(item);
 		cNoteItem.init(item);
 		return cNoteItem;
 	}

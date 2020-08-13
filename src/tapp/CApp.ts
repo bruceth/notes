@@ -6,6 +6,9 @@ import { CMe } from "me";
 import { CDiscover } from "discover";
 import { computed } from "mobx";
 import { Contact } from "model";
+import { nav } from "tonva";
+import { VTestMe } from "./VTestMe";
+import { VTestAB } from "./VTestAB";
 
 const gaps = [10, 3,3,3,3,3,5,5,5,5,5,5,5,5,10,10,10,10,15,15,15,30,30,60];
 
@@ -16,15 +19,63 @@ export class CApp extends CUqApp {
 	cMe: CMe;
 
 	protected async internalStart() {
+		if (nav.isInAppRouting) return;
+		await this.startHome();
+	}
+
+	protected async startHome() {
 		this.cHome = this.newC(CHome);
 		this.cRelation = this.newC(CRelation);
 		this.cDiscover = this.newC(CDiscover);
-		this.cMe = this.newC(CMe);		
+		this.cMe = this.newC(CMe);
 		this.cHome.load();
 		this.showMain();
 
 		setInterval(this.callTick, 1000);
 	}
+
+	protected async startMe() {
+		this.openVPage(VTestMe);
+	}
+
+	protected async startAB() {
+		this.openVPage(VTestAB);
+	}
+
+	protected onRoute() {
+		this.on({
+			'/a/b': () => {
+				// renderDom(<div>/a/b <button onClick={()=>nav.navigate('/c/d')}>test</button></div>)
+				this.startAB();
+			},
+			'/c/d': () => {
+				/*
+				renderDom(<div>
+					/c/d
+					<button onClick={()=>nav.navigate('/eeee/a/1?c=1 & d=3')}>test</button>
+				</div>)
+				*/
+			},
+			'/eeee/:action/:id': (params:any, queryStr:any) => {
+				/*
+				let span:any;
+				if (queryStr) {
+					span = <span>{queryStr}</span>
+				}
+				renderDom(<div>/e query:{span}  params:{JSON.stringify(params)}</div>)
+				*/
+			},
+			'/bbbb/cccc': () => {
+				//renderCApp(new CAppBBBBCCCC());
+				this.startMe();
+			},
+		});
+		this.on(() => {
+			//renderCApp(new CApp());
+			this.startHome();
+		});
+	}
+
 
 	@computed get contacts(): Contact[] {return this.cRelation.contacts;};
 

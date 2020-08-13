@@ -79,7 +79,7 @@ export class NavView extends React.Component<Props, NavViewState> {
     async componentDidMount()
     {
 		window.addEventListener('popstate', this.navBack);
-		if (!nav.isRouting) await nav.init();
+		if (nav.isInAppRouting || !nav.isRouting) await nav.init();
         await nav.start();
     }
 
@@ -266,7 +266,10 @@ export class NavView extends React.Component<Props, NavViewState> {
     private popAndDispose() {
         this.removeCeased();
         let item = this.stack.pop();
-        if (item === undefined) return;
+		if (item === undefined) return;
+		//if (nav.isRouting) {
+		//	window.history.back();
+		//}
         let {disposer} = item;
         this.dispose(disposer);
         this.removeCeased();
@@ -386,6 +389,7 @@ export class Nav {
     private local: LocalData = new LocalData();
 	private navigo: Navigo;
 	isRouting: boolean;
+	isInAppRouting: boolean;
 	navSettings: NavSettings;
     @observable user: User/*InNav*/ = undefined;
     testing: boolean;
@@ -400,6 +404,7 @@ export class Nav {
 		this.testing = false;
 		this.navigo = new Navigo();
 		this.isRouting = false;
+		this.isInAppRouting = false;
     }
 
     get guest(): number {
@@ -632,6 +637,7 @@ export class Nav {
 	}
 
 	navigate(url:string, absolute?:boolean) {
+		this.clear();
 		return this.navigo.navigate(url, absolute);
 	}
 

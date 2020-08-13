@@ -109,7 +109,7 @@ export class CNote extends CUqBase {
 		let cNoteItem = this.getCNoteItem(EnumNoteItemType.text);
 		cNoteItem.init(noteItem);
 		this.notesPager.items.unshift(cNoteItem);
-		return ret;
+		return cNoteItem;
 	}
 
 	async setNote(waiting:boolean, noteItem:NoteItem, caption:string, content:string, obj:any) {

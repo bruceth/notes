@@ -1,3 +1,4 @@
+import React from "react";
 import { VNoteForm } from '../item/VNoteForm';
 import { CTextNoteItem } from './CTextNoteItem';
 
@@ -26,4 +27,18 @@ export class VAdd extends VNoteForm<CTextNoteItem> {
 	protected renderExButtons():JSX.Element {
 		return this.renderSendToButton();
 	}
+
+	protected renderSendToButton() {
+		return <button onClick={this.onSaveAndSendNote}
+			className="btn btn-outline-primary mr-3">
+			发给
+		</button>;
+	}
+
+	private onSaveAndSendNote = async () => {
+		let cnewNote = await this.controller.AddNote();
+		await cnewNote.cApp.loadRelation();
+		cnewNote.showTo();
+	}
+
 }

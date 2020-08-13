@@ -34,7 +34,7 @@ export class VActions extends VBasePage {
 			return contact;
 		});
 		await this.controller.sendNoteTo(noteItem.note, toList);
-		this.closePage(3);
+		this.closePage(2);
 		this.controller.showSentPage();
 	}
 

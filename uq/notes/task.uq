@@ -33,6 +33,7 @@ ACTION AssignTask ver 1.0 (
 		BOOK FolderNote AT(folderId, taskId) SET seconds=seconds, type=EnumNoteType.task, unread=1;
 		BOOK Note2Note AT(note, taskId) SET type=EnumNoteMapType.Spawn;
 		BOOK Note2Note AT(taskId, note) SET type=EnumNoteMapType.Born;
+		TUID [$User] ID (to) SET poke=1;
 	};
 };
 
@@ -56,9 +57,11 @@ RETURNS ret (
 		BOOK Flow AT(note, flowId) SET content=content;
 		IF NOT checker IS NULL {
 			SET folderId = folder FROM SpecFolder WHERE owner=checker AND spec=EnumSpecFolder.notes;
+			TUID [$User] ID (checker) SET poke=1;
 		}
 		ELSEIF NOT rater IS NULL {
 			SET folderId = folder FROM SpecFolder WHERE owner=rater AND spec=EnumSpecFolder.notes;
+			TUID [$User] ID (rater) SET poke=1;
 		}
 		IF NOT folderId IS NULL {
 			BOOK FolderNote AT(folderId, note) SET seconds=seconds, type=EnumNoteType.task, unread=1;
@@ -99,6 +102,7 @@ RETURNS ret (
 			IF NOT rater IS NULL {
 				SET folderId = folder FROM SpecFolder WHERE owner=rater AND spec=EnumSpecFolder.notes;
 				BOOK FolderNote AT(folderId, note) SET seconds=seconds, type=EnumNoteType.task, unread=1;
+				TUID [$User] ID (rater) SET poke=1;
 			}
 			-- Task owner Folder 需要更新
 			-- SET folderId = folder FROM SpecFolder WHERE owner= AND spec=EnumSpecFolder.notes;

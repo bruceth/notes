@@ -54,14 +54,14 @@ export class CNote extends CUqBase {
 	}
 
 	async refresh() {
-		//这里要用一个新的pager每次只取5个。
+		//每次刷新取5个。
 		let newnotes = new QueryPager<NoteItem>(this.uqs.notes.GetNotes, 5, 5, false);
 		await newnotes.first({folderId: this.folderId});
 		let newitems = newnotes.items;
 		if (newitems) {
 			let len = newitems.length;
 			let items = this.notesPager.items;
-			for (let i = len - 1; i >=0; --i) {
+			for (let i = len - 1; i >= 0; --i) {
 				let item = newitems[i];
 				let note = item.note;
 				let index = items.findIndex(v => v.noteItem.note===note);

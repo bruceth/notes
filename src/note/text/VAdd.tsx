@@ -40,7 +40,7 @@ export class VAdd extends VNoteForm<CTextNoteItem> {
 		let cnewNote = await this.controller.AddNote();
 		this.closePage();
 		await cnewNote.cApp.loadRelation();
-		cnewNote.showTo();
+		cnewNote.showTo(2);
 	}
 
 }

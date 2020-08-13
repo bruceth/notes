@@ -7,6 +7,14 @@ import { Contact } from 'model';
 import { VActions } from './VActions';
 
 export class VTo extends VBasePage {
+	protected backPageCount = 3;
+
+	init(param?:any):void {
+		if (param) {
+			this.backPageCount = Number(param);
+		}	
+	}
+
 	@observable private anySelected:boolean = false;
 	private list: List;
 
@@ -48,6 +56,6 @@ export class VTo extends VBasePage {
 	private onNext = () => {
 		let contacts = this.list.selectedItems;
 		this.controller.contacts = contacts;
-		this.openVPage(VActions); //, {contacts, noteId: this.currentNoteId});
+		this.openVPage(VActions, this.backPageCount); //, {contacts, noteId: this.currentNoteId});
 	}
 }

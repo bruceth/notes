@@ -22,4 +22,8 @@ export class VAdd extends VNoteForm<CTextNoteItem> {
 		this.closePage();
 		return;
 	}
+
+	protected renderExButtons():JSX.Element {
+		return this.renderSendToButton();
+	}
 }

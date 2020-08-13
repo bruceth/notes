@@ -16,4 +16,8 @@ export class VEdit extends VNoteForm<CTextNoteItem> {
 		await this.controller.SetNote(true);
 		this.closePage();
 	}
+
+	protected renderExButtons():JSX.Element {
+		return this.renderDeleteButton();
+	}
 }

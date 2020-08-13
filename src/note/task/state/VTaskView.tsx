@@ -31,10 +31,6 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		}));
 	}
 
-	protected onEdit = () => {
-		this.openVPage(VEdit);
-	}
-
 	private renderCaption(title:string) {
 		let divCaption = title? <b className="text-primary">{title}</b> : <span className="text-info">任务</span>;
 		return <>{this.renderState()} &nbsp; {divCaption}</>;
@@ -45,11 +41,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		let left:any, right:any;
 		let isMe = this.isMe(owner);
 		if (isMe === true && state == EnumTaskState.Start) {
-			right = <>
-				<div onClick={this.onEdit} className="px-3 py-2 cursor-pointer text-primary ml-3">
-					<FA name="pencil-square-o" />
-				</div>
-			</>;
+			right = <>{this.renderEditButton()}</>;
 		}
 		else {
 			right = this.renderFrom('px-2');
@@ -120,6 +112,10 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		return <span className="small text-success border border-success rounded px-2">{content}</span>;
 	}
 
+	protected onEdit() {
+		this.openVPage(VEdit);
+	}
+
 	renderListItem() {
 		let {caption, $create, $update} = this.controller.noteItem;
 			let divChanged:any = undefined;
@@ -174,11 +170,7 @@ class VTaskStart extends VTaskView {
 			left = <button onClick={this.onDone} className="btn btn-primary mx-3">
 				完成
 			</button>;
-			right = <>
-				<div onClick={this.onEdit} className="px-3 py-2 cursor-pointer text-primary ml-3">
-					<FA name="pencil-square-o" />
-				</div>
-			</>;
+			right = <>{this.renderEditButton()}</>;
 		}
 		else {
 			right = this.renderFrom('px-2');

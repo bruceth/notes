@@ -47,6 +47,14 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 		this.controller.onCheckableChanged(evt.target.checked);
 	}
 
+	protected renderDeleteButton() {
+		return <button className="btn btn-outline-secondary mr-3" onClick={() => this.onDelete()}>
+			删除
+		</button>;
+	}
+
+	protected abstract renderExButtons():JSX.Element;
+
 	protected renderEdit() {
 		return <div className="m-2">
 			<div className="border rounded">
@@ -62,15 +70,15 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 							: this.renderContentList()))}
 					</div>
 				</div>
-				<div className="py-2 px-3 bg-light border-top d-flex">
+				<div className="py-2 pl-3 bg-light border-top d-flex">
 					<div className="mr-auto" />
-					{React.createElement(observer(() => <button onClick={() => this.onButtonSave()}
-						className="btn btn-primary mr-3" disabled={this.btnSaveDisabled}>
-						保存
-					</button>))}
-					<button className="btn btn-outline-secondary" onClick={() => this.onDelete()}>
-						删除
-					</button>
+					{React.createElement(observer(() => <>
+						<button onClick={() => this.onButtonSave()}
+							className="btn btn-primary mr-3" disabled={this.btnSaveDisabled}>
+							保存
+						</button>
+					</>))}
+					{this.renderExButtons()}
 				</div>
 			</div>
 			<div className="m-2 form-group form-check">

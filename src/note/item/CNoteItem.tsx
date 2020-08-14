@@ -71,8 +71,10 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		return obj;
 	}
 
-	parseItemObj(item:NoteItem) {
+	// convertObj 可以在不同的继承中被重载
+	convertObj(item:NoteItem):NoteItem {
 		item.obj = this.parseContent(item.content);
+		return item;
 	}
 
 	protected parseContent(content:string):any {

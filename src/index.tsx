@@ -11,6 +11,7 @@ import './App.css';
 import { CApp, appConfig } from './tapp';
 import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
 
+/*
 let {location} = document;
 if (location.host) {
 	(async function() {
@@ -66,6 +67,7 @@ if (location.host) {
 	})();
 }
 else {
+*/
 	(async function() {
 		nav.setSettings(appConfig);
 		const App: React.FC = () => {
@@ -87,4 +89,4 @@ else {
 		// Learn more about service workers: https://bit.ly/CRA-PWA
 		serviceWorker.unregister();
 	})();
-}
+//}

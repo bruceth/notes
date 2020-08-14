@@ -1,4 +1,4 @@
-import { nav, t, setGlobalRes } from "../components";
+import { nav, t, setGlobalRes, RouteFunc, Hooks, Navigo, NamedRoute } from "../components";
 import { Controller } from '../vm';
 import { UQsMan, TVs } from "../uq";
 import { appInFrame } from "../net";
@@ -75,7 +75,8 @@ export abstract class CAppBase extends Controller {
 	
     protected async beforeStart():Promise<boolean> {
         try {
-			if (!nav.isRouting) {
+			this.onRoute();
+			if (nav.isInAppRouting === true || !nav.isRouting) {
 				//await nav.init();
 				let {appName, version, tvs} = this.appConfig;
 				await UQsMan.load(appName, version, tvs);
@@ -126,10 +127,25 @@ export abstract class CAppBase extends Controller {
             return false;
         }
     }
+	protected async afterStart():Promise<void> {
+		if (nav.isInAppRouting) nav.resolveRoute();
+	}
 
     async userFromId(userId:number):Promise<any> {
         return await centerApi.userFromId(userId);
     }
+
+	protected on(routeFunc:RouteFunc, hooks?:Hooks):Navigo;
+	protected on(url:string, routeFunc:RouteFunc, hooks?:Hooks):Navigo;
+	protected on(regex:RegExp, routeFunc:RouteFunc, hooks?:Hooks):Navigo;
+	protected on(options: {[url:string]: RouteFunc|NamedRoute}):Navigo;
+	protected on(...args:any[]):Navigo {
+		nav.isInAppRouting = true;
+		return nav.on(args[0], args[1], args[2]);
+	}
+
+	protected onRoute() {		
+	}
 
 	/*
     private async load(): Promise<string[]> {

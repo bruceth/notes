@@ -44,7 +44,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 
 	private onCheckableChanged = (evt:React.ChangeEvent<HTMLInputElement>) => {
 		this.changed = true;
-		this.controller.onCheckableChanged(evt.target.checked);
+		this.controller.onCheckableChanged(Number(evt.target.value));
 	}
 
 	protected renderDeleteButton() {
@@ -56,6 +56,14 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	protected abstract renderExButtons():JSX.Element;
 
 	protected renderEdit() {
+		let radios = [
+			{ val: 0, text: '文字' },
+			{ val: 1, text: '可勾选事项' },
+			{ val: 2, text: '分段落' },
+		];
+
+		let {checkType} = this.controller;
+
 		return <div className="m-2">
 			<div className="border rounded">
 				<div className="bg-white">
@@ -65,7 +73,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 							defaultValue={this.controller.title} />
 					</div>
 					<div className="py-1 px-1">
-						{React.createElement(observer(() => this.controller.checkable===false? 
+						{React.createElement(observer(() => checkType !==1 ? 
 							this.renderContentTextArea()
 							: this.renderContentList()))}
 					</div>
@@ -82,11 +90,14 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 				</div>
 			</div>
 			<div className="m-2 form-group form-check">
-				<label>
-					<input type="checkbox" className="form-check-input" 
-						onChange={this.onCheckableChanged}
-						defaultChecked={this.controller.checkable} /> 勾选条目
+				{radios.map((v, index) => {
+					let { val, text } = v;
+					return <label key={index} className="mb-0 mx-2">
+						<input className="mr-1" type="radio" value={val}
+							defaultChecked={checkType === val} name={'checktype'} onChange={this.onCheckableChanged} />
+						{text}
 				</label>
+				})}
 			</div>
 		</div>;
 	}
@@ -160,7 +171,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	}
 
 	protected checkInputAdd() {
-		if (this.controller.checkable && this.inputAdd) {
+		if (this.controller.checkType === 1 && this.inputAdd) {
 			let {value} = this.inputAdd;
 			if (value.trim().length === 0) return;
 			this.controller.items.push({

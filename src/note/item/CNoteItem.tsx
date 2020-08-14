@@ -21,8 +21,8 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		this.title = param.caption;
 		let {obj} = param;
 		if (obj) {
-			this.checkable = obj.check;
-			if (this.checkable === true) {
+			this.checkType = Number(obj.check);
+			if (this.checkType === 1) {
 				this.items.splice(0, this.items.length);
 				this.itemKey = obj.itemKey;
 				this.items.push(...obj.items);
@@ -35,7 +35,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 
 	@observable title: string;
 	@observable noteContent: string;
-	@observable checkable: boolean = false;
+	@observable checkType: number = 0;
 	@observable items: CheckItem[] = [];
 	@observable changedNoteContent: string;
 	itemKey:number = 1;
@@ -56,7 +56,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 
 	protected buildObj():any {
 		let obj = this.noteItem?{...this.noteItem.obj}:{};
-		if (this.checkable) {
+		if (this.checkType === 1) {
 			obj.check = true;
 			obj.itemKey = this.itemKey;
 			obj.items = this.items;
@@ -105,9 +105,9 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		this.owner.showTo(this.noteItem, backPageCount);
 	}
 
-	onCheckableChanged(checkable:boolean) {
-		this.checkable = checkable;
-		if (this.checkable === true) {
+	onCheckableChanged(type:number) {
+		this.checkType = type;
+		if (this.checkType === 1) {
 			let content = this.changedNoteContent || this.noteContent;
 			if (content) {
 				this.items.splice(0, this.items.length);

@@ -35,9 +35,9 @@ export class VNoteItem extends VNoteBase<CNoteItem> {
 				{caption && <div className="px-3 py-2"><b>{caption}</b></div>}
 				<div>
 					{
-						this.controller.checkable===false? 
+						this.controller.checkType !== 1? 
 						<div className="my-2">{this.renderContent()}</div>
-						: this.renderCheckItems(this.controller.checkable)
+						: this.renderCheckItems(true)
 					}
 				</div>
 				{

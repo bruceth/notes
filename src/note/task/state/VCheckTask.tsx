@@ -1,7 +1,6 @@
 import React from 'react';
 import { VTaskView } from './VTaskView';
 import { Page, FA } from 'tonva';
-import { observer } from 'mobx-react';
 import { TaskCheckItem } from '../CTaskNoteItem';
 import { VEditTextItemInput, EditTextItemProps } from '../VEditTextItem';
 
@@ -10,27 +9,6 @@ export class VCheckTask extends VTaskView {
 
 	protected renderState(): JSX.Element {
 		return this.renderStateSpan('待验收');
-	}
-
-	protected renderCheckItems(allowCheck: boolean) {
-		return React.createElement(observer(() => {
-			let uncheckedItems: TaskCheckItem[] = [];
-			let checkedItems: TaskCheckItem[] = [];
-			for (let ci of this.controller.items) {
-				let { checked } = ci;
-				if (checked === true) checkedItems.push(ci);
-				else uncheckedItems.push(ci);
-			}
-			return <div className="">
-				{uncheckedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
-				{
-					checkedItems.length > 0 && <div className="border-top mt-2 pt2">
-						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
-						{checkedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
-					</div>
-				}
-			</div>;
-		}));
 	}
 
 	protected renderCheckItem(item: TaskCheckItem, allowCheck: boolean) {
@@ -45,9 +23,8 @@ export class VCheckTask extends VTaskView {
 			content = text;
 		}
 		let onUpdate = async (v: string) => {
-			//await this.controller.setCheckInfo(item, v);
+			await this.controller.setCheckInfo(item, v);
 		}
-		checkInfo = '----测试验收说明----';
 		let eprops: EditTextItemProps = { onUpdate: onUpdate, content: checkInfo, header: '验收事项说明' }
 		let vEdit = new VEditTextItemInput(this.controller, eprops);
 		return <div key={key} className={'d-flex'}>
@@ -71,20 +48,29 @@ export class VCheckTask extends VTaskView {
 	}
 
 	protected renderOrtherContent() {
+		let { checkInfo } = this.controller;
 		return <div className="px-3 py-2 d-flex align-items-center border-bottom" >
 			<div className="text-muted mr-1 w-5c">验收意见</div>
 			<div className="flex-fill mr-3 ">
 				<input className="flex-fill form-control border-0"
 					type="text" step="1" min="1"
+					defaultValue={checkInfo}
 					onChange={this.onDiscribeChange}
 					onKeyDown={this.onDiscribeKeyDown} /></div>
 		</div>
 	}
 
 	private onDiscribeChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+		let v = evt.target.value;
+		if (v.length <= 0)
+			v = undefined;
+		this.controller.updateCheckInfo(v);
 	}
 
 	private onDiscribeKeyDown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+		if (evt.keyCode === 13) {
+			this.controller.CheckSaveInfo();
+		}
 	}
 
 	protected renderBottomCommands() {

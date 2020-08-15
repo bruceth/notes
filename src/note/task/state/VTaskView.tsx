@@ -20,9 +20,10 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 						{divCaption}
 					</div>
 					{
-						this.controller.checkType !== 1 ?
+						this.controller.checkType === 0 ?
 							<div className="py-3">{this.renderContent()}</div>
-							: this.renderCheckItems(allowCheck)
+							: this.controller.checkType === 1 ? this.renderCheckItems(allowCheck)
+							: this.renderContentList()
 					}
 				</div>
 				{this.renderBottomCommands()}
@@ -145,9 +146,10 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			</div>
 			<div>
 				{
-					this.controller.checkType !== 1 ?
+					this.controller.checkType === 0 ?
 						<div className="py-3">{this.renderContent()}</div>
-						: this.renderCheckItems(this.allowCheck)
+						: this.controller.checkType === 1 ? this.renderCheckItems(this.allowCheck)
+						: this.renderContentList()
 				}
 			</div>
 			{divChanged}

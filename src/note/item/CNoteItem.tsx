@@ -8,7 +8,7 @@ import { VNoteItem } from './VNoteItem';
 export interface CheckItem {
 	key: number;
 	text: string;
-	checked: boolean;
+	checked?: boolean;
 }
 
 export abstract class CNoteItem extends CUqSub<CNote> {
@@ -22,13 +22,13 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		let {obj} = param;
 		if (obj) {
 			this.checkType = Number(obj.check);
-			if (this.checkType === 1) {
+			if (this.checkType === 0) {
+				this.noteContent = obj.content;
+			}
+			else {
 				this.items.splice(0, this.items.length);
 				this.itemKey = obj.itemKey;
 				this.items.push(...obj.items);
-			}
-			else {
-				this.noteContent = obj.content;
 			}
 		}
 	}
@@ -41,6 +41,23 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	itemKey:number = 1;
 
 	protected async internalStart() {}
+
+	addItem(value:string):boolean {
+		if (this.checkType === 1) {
+			this.items.push({
+				key: this.itemKey++,
+				text: value,
+				checked: false,
+			});
+		}
+		else if (this.checkType === 2) {
+			this.items.push({
+				key: this.itemKey++,
+				text: value,
+			});
+		}
+		return false;
+	}
 
 	renderItem(index:number): JSX.Element {
 		let vNoteItem = new VNoteItem(this);
@@ -56,17 +73,17 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 
 	protected buildObj():any {
 		let obj = this.noteItem?{...this.noteItem.obj}:{};
-		if (this.checkType === 1) {
-			obj.check = true;
-			obj.itemKey = this.itemKey;
-			obj.items = this.items;
-			delete obj.content;
-		}
-		else {
-			obj.check = false;
+		if (this.checkType === 0) {
+			obj.check = this.checkType;
 			obj.content = this.changedNoteContent || this.noteContent;
 			delete obj.itemKey;
 			delete obj.items;
+		}
+		else {
+			obj.check = this.checkType;
+			obj.itemKey = this.itemKey;
+			obj.items = this.items;
+			delete obj.content;
 		}
 		return obj;
 	}
@@ -106,22 +123,39 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	}
 
 	onCheckableChanged(type:number) {
+		let oldType = this.checkType;
 		this.checkType = type;
-		if (this.checkType === 1) {
+		if (oldType === 0) {
 			let content = this.changedNoteContent || this.noteContent;
 			if (content) {
 				this.items.splice(0, this.items.length);
 				this.items.push(...content.split('\n').map((v, index) => {
-					return {
-						key: this.itemKey++,
-						text: v,
-						checked: false
+					if (this.checkType === 1) {
+						return {
+							key: this.itemKey++,
+							text: v,
+							checked: false
+						}
+					}
+					else {
+						return {
+							key: this.itemKey++,
+							text: v,
+						}
 					}
 				}));
 			}
 		}
 		else {
-			this.noteContent = this.items.map(v => v.text).join('\n');
+			if (this.checkType === 0) {
+				this.noteContent = this.items.map(v => v.text).join('\n');
+			}
+			else if (this.checkType === 1) {
+				this.items.map(v => v.checked = false);
+			}
+			else if (this.checkType === 2) {
+				this.items.map(v => delete v.checked);
+			}
 		}
 		this.changedNoteContent = undefined;
 	}

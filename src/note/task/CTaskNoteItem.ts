@@ -3,6 +3,8 @@ import { NoteItem, NoteModel, numberFromId } from '../model';
 import { VTaskParams } from "./VTaskParams";
 import { Contact } from "model";
 import { TaskViewFactory, VCheckTask, VRateTask } from "./state";
+import { observable } from "mobx";
+import { threadId } from "worker_threads";
 
 export interface AssignTaskParam {
 	contacts: Contact[];
@@ -16,17 +18,73 @@ export interface TaskCheckItem extends CheckItem {
 	rateInfo?: string;
 }
 
-export enum EnumTaskState {Start=0, Done=1, Pass=2, Fail=3, Rated=4, Canceled=5};
+export enum EnumTaskState { Start = 0, Done = 1, Pass = 2, Fail = 3, Rated = 4, Canceled = 5 };
 
 export class CTaskNoteItem extends CNoteItem {
 	private getTaskView = new TaskViewFactory().getView;
 
-	parseItemObj(item:NoteItem) {
+	@observable checkInfo: string;
+	@observable rateInfo: string;
+
+	protected checkInfoInput: string;
+	protected rateInfoInput: string;
+	protected rateValue: number;
+	protected rateValueInput: number;
+
+	init(param: NoteItem):void {
+		super.init(param);
+		if (!param)
+			return;
+		let {obj} = param;
+		if (obj) {
+			this.checkInfo = obj.checkInfo;
+			this.checkInfoInput = this.checkInfo;
+			this.rateInfo = obj.rateInfo;
+			this.rateInfoInput = this.rateInfo;
+			this.rateValue = obj.rateValue;
+			this.rateValueInput = this.rateValue;
+		}
+	}
+
+	protected buildObj():any {
+		let obj = super.buildObj();
+		if (this.checkInfo) {
+			obj.checkInfo = this.checkInfo;
+		}
+		else {
+			delete obj.checkInfo;
+		}
+		if (this.rateInfo) {
+			obj.rateInfo = this.rateInfo;
+		}
+		else {
+			delete obj.rateInfo;
+		}
+		if (this.rateValue !== undefined) {
+			obj.rateValue = this.rateValue;
+		}
+		else {
+			delete obj.rateValue;
+		}
+
+		return obj;
+	}
+
+	updateCheckInfo(v:string) {
+		this.checkInfoInput = v;
+	}
+
+	updateRateInfo(v:string) {
+		this.rateInfoInput = v;
+	}
+
+	convertObj(item: NoteItem): NoteItem {
 		let content = item.flowContent;
 		if (!content) {
 			content = item.content;
 		}
 		item.obj = this.parseContent(content);
+		return item;
 	}
 
 	private getView() {
@@ -45,13 +103,13 @@ export class CTaskNoteItem extends CNoteItem {
 		return this.getTaskView(state);
 	}
 
-	renderItem(index:number): JSX.Element {
+	renderItem(index: number): JSX.Element {
 		let TaskView = this.getTaskView(this.noteItem.state as EnumTaskState);
 		let v = new TaskView(this);
 		return v.renderListItem();
 	}
 
-	renderBaseItem(index:number): JSX.Element {
+	renderBaseItem(index: number): JSX.Element {
 		return super.renderItem(index);
 	}
 
@@ -60,22 +118,15 @@ export class CTaskNoteItem extends CNoteItem {
 		this.openVPage(TaskView);
 	}
 
-	// convert 可以在不同的继承中被重载
-	// task 里面是把content parse 成json，放到obj里面	
-	convert(noteItem: NoteItem): NoteItem {
-		noteItem.obj = JSON.parse(noteItem.content);
-		return noteItem;
-	}
-
 	showAssignTaskPage() {
-		this.openVPage(VTaskParams, {contacts: this.owner.contacts}, () => this.closePage());
+		this.openVPage(VTaskParams, { contacts: this.owner.contacts }, () => this.closePage());
 	}
 
 	async assignTask(param: AssignTaskParam) {
-		let {note:noteId} = this.noteItem;
-		let {contacts, checker, rater, point} = param;
-		let note:NoteModel = await this.uqs.notes.Note.assureBox(noteId);
-		let {caption, content} = note;
+		let { note: noteId } = this.noteItem;
+		let { contacts, checker, rater, point } = param;
+		let note: NoteModel = await this.uqs.notes.Note.assureBox(noteId);
+		let { caption, content } = note;
 		let cObj = JSON.parse(content);
 		if (checker) {
 			cObj.checker = numberFromId(checker.contact);
@@ -93,7 +144,7 @@ export class CTaskNoteItem extends CNoteItem {
 			note: numberFromId(noteId),
 			caption,
 			content: JSON.stringify(cObj),
-			tos: contacts.map(v => {return {to: v.contact}}),
+			tos: contacts.map(v => { return { to: v.contact } }),
 			checker: checker?.contact,
 			rater: rater?.contact,
 			point,
@@ -102,9 +153,9 @@ export class CTaskNoteItem extends CNoteItem {
 	}
 
 	async DoneTask() {
-		let {note:noteId} = this.noteItem;
-		let note:NoteModel = await this.uqs.notes.Note.assureBox(noteId);
-		let {content} = note;
+		let { note: noteId } = this.noteItem;
+		let note: NoteModel = await this.uqs.notes.Note.assureBox(noteId);
+		let { content } = note;
 		let data = {
 			note: numberFromId(noteId),
 			content: content
@@ -114,31 +165,81 @@ export class CTaskNoteItem extends CNoteItem {
 		this.noteItem.state = Number(EnumTaskState.Done);
 	}
 
-	async CheckTask(pass:boolean) {
-		let {note:noteId} = this.noteItem;
-		let note:NoteModel = await this.uqs.notes.Note.assureBox(noteId);
-		let {content} = note;
+	async CheckSaveInfo() {
+		let change = false;
+		if (this.rateInfo !== this.rateInfoInput) {
+			this.rateInfo = this.rateInfoInput;
+			change = true;
+		}
+		if (this.checkInfo !== this.checkInfoInput) {
+			this.checkInfo = this.checkInfoInput;
+			change = true;
+		}
+		if (this.rateValue !== this.rateValueInput) {
+			this.rateValue = this.rateValueInput;
+			change = true;
+		}
+
+		if (change) {
+			await this.SaveX();
+		}
+	}
+
+	async CheckTask(pass: boolean) {
+		await this.CheckSaveInfo();
+
+		let { note: noteId } = this.noteItem;
+		let content = this.stringifyContent();
 		let data = {
 			note: numberFromId(noteId),
-			action: pass?1:2,
+			action: pass ? 1 : 2,
 			content: content
 		}
-		
+
 		let ret = await this.uqs.notes.CheckTask.submit(data);
-		this.noteItem.state = Number(pass?EnumTaskState.Pass:EnumTaskState.Fail);
+		this.noteItem.state = Number(pass ? EnumTaskState.Pass : EnumTaskState.Fail);
 	}
 
 	async RateTask(value: number) {
-		let {note:noteId} = this.noteItem;
-		let note:NoteModel = await this.uqs.notes.Note.assureBox(noteId);
-		let {content} = note;
+		this.rateValueInput = value;
+		await this.CheckSaveInfo();
+
+		let { note: noteId } = this.noteItem;
+		let content = this.stringifyContent();
 		let data = {
 			note: numberFromId(noteId),
 			value: value,
 			content: content
 		}
-		
+
 		let ret = await this.uqs.notes.RateTask.submit(data);
 		this.noteItem.state = Number(EnumTaskState.Rated);
+	}
+
+	async setCheckInfo(item: TaskCheckItem, v:string) {
+		if (v === undefined || v.length === 0) {
+			delete item.checkInfo;
+		}
+		else {
+			item.checkInfo = v;
+		}
+		await this.SaveX();
+	}
+
+	async setRateInfo(item: TaskCheckItem, v:string) {
+		if (v === undefined || v.length === 0) {
+			delete item.rateInfo;
+		}
+		else {
+			item.rateInfo = v;
+		}
+		await this.SaveX();
+	}
+
+	protected async SaveX() {
+		let { note: noteId } = this.noteItem;
+		let flowContent = this.stringifyContent();
+		let param = { note: noteId, content: flowContent };
+		await this.uqs.notes.SetNoteX.submit(param, false);
 	}
 }

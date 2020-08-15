@@ -199,6 +199,9 @@ ACTION SetNote (
 				BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds;
 			}
 		}
+		FOREACH (var to ID OF SELECT user as to FROM NoteAccess WHERE note=noteId and access=1) {
+			TUID [$User] ID (to) SET poke=1;
+		}
 	}
 };
 

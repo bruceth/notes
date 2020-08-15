@@ -1,39 +1,18 @@
 import React from 'react';
 import { VTaskView } from './VTaskView';
 import { Page, FA } from 'tonva';
-import { observer } from 'mobx-react';
 import { TaskCheckItem } from '../CTaskNoteItem';
+import { VEditTextItemInput, EditTextItemProps } from '../VEditTextItem';
 
 export class VCheckTask extends VTaskView {
-	protected get allowCheck() {return false;}
+	protected get allowCheck() { return false; }
 
-	protected renderState():JSX.Element {
+	protected renderState(): JSX.Element {
 		return this.renderStateSpan('待验收');
 	}
 
-	protected renderCheckItems(allowCheck:boolean) {
-		return React.createElement(observer(() => {
-			let uncheckedItems:TaskCheckItem[] = [];
-			let checkedItems:TaskCheckItem[] = [];
-			for (let ci of this.controller.items) {
-				let {checked} = ci;
-				if (checked === true) checkedItems.push(ci);
-				else uncheckedItems.push(ci);
-			}			
-			return <div className="">
-				{uncheckedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
-				{
-					checkedItems.length > 0 && <div className="border-top mt-2 pt2">
-						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
-						{checkedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
-					</div>
-				}
-			</div>;
-		}));
-	}
-
-	protected renderCheckItem(v:TaskCheckItem, allowCheck:boolean) {
-		let {key, text, checked} = v;
+	protected renderCheckItem(item: TaskCheckItem, allowCheck: boolean) {
+		let { key, text, checked, checkInfo } = item;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;
 		if (checked === true) {
@@ -43,30 +22,55 @@ export class VCheckTask extends VTaskView {
 		else {
 			content = text;
 		}
-		return <div key={key} className="d-flex mx-3 my-0 align-items-center form-group form-check">
-			<input className="form-check-input mr-3 mt-0" type="checkbox"
-				defaultChecked={checked}
-				data-key={key}
-				disabled={!allowCheck} />
-			<div className={cn}>{content}</div>
+		let onUpdate = async (v: string) => {
+			await this.controller.setCheckInfo(item, v);
+		}
+		let eprops: EditTextItemProps = { onUpdate: onUpdate, content: checkInfo, header: '验收事项说明' }
+		let vEdit = new VEditTextItemInput(this.controller, eprops);
+		return <div key={key} className={'d-flex'}>
+			<label className="flex-grow-1 d-flex mx-3 my-0 align-items-center form-group form-check">
+				<input className="form-check-input mr-3 mt-0" type="checkbox"
+					defaultChecked={checked}
+					data-key={key}
+					disabled={!allowCheck} />
+				<div className="flex-grow-1">
+					<div className={cn}>{content}</div>
+					{checkInfo && <div className="mt-1 ml-3 small">
+						<FA name="comment-o" className="mr-2 text-primary" />
+						<span className="text-info cursor-ponter" onClick={vEdit.onUpdate}>{checkInfo}</span>
+					</div>}
+				</div>
+			</label>
+			<div className="p-2 cursor-pointer" onClick={vEdit.onUpdate}>
+				<FA name="pencil-square-o text-info" />
+			</div>
 		</div>;
 	}
 
 	protected renderOrtherContent() {
+		let { checkInfo } = this.controller;
 		return <div className="px-3 py-2 d-flex align-items-center border-bottom" >
-		<div className="text-muted mr-1 w-5c">验收意见</div>
-		<div className="flex-fill mr-3 ">
-			<input className="flex-fill form-control border-0"
-				type="text" step="1" min="1"
-				onChange={this.onDiscribeChange}
-				onKeyDown={this.onDiscribeKeyDown}/></div>
+			<div className="text-muted mr-1 w-5c">验收意见</div>
+			<div className="flex-fill mr-3 ">
+				<input className="flex-fill form-control border-0"
+					type="text" step="1" min="1"
+					defaultValue={checkInfo}
+					onChange={this.onDiscribeChange}
+					onKeyDown={this.onDiscribeKeyDown} /></div>
 		</div>
 	}
 
-	private onDiscribeChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
+	private onDiscribeChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+		let v = evt.target.value;
+		if (v.length <= 0)
+			v = undefined;
+		this.controller.updateCheckInfo(v);
 	}
 
-	private onDiscribeKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {
+	private onDiscribeKeyDown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+		if (evt.keyCode === 13) {
+			this.controller.CheckSaveInfo();
+		}
 	}
 
 	protected renderBottomCommands() {
@@ -74,7 +78,7 @@ export class VCheckTask extends VTaskView {
 			<button onClick={()=>this.onCheck(true)} className="btn btn-success mx-3">
 				<FA name="check" /> 通过
 			</button>
-			<button onClick={()=>this.onCheck(false)} className="btn btn-outline-secondary mx-3">
+			<button onClick={() => this.onCheck(false)} className="btn btn-outline-secondary mx-3">
 				<FA name="times" /> 不通过
 			</button>
 		</div>;
@@ -88,21 +92,21 @@ export class VCheckTask extends VTaskView {
 			</div>
 		</>;
 	}
-  
-	protected onCheck = async (pass:boolean) => {
+
+	protected onCheck = async (pass: boolean) => {
 		await this.controller.CheckTask(pass);
 		this.closePage();
-		let content = pass?
+		let content = pass ?
 			<span className="text-success"><FA name="check" /> 验收通过</span>
 			:
 			<span className="text-secondary"><FA name="check" /> 验收不通过</span>
-		this.showActionEndPage({content});
+		this.showActionEndPage({ content });
 		//this.openPage(this.resultPage, {pass})
 	}
 
-	protected resultPage = ({pass}:{pass: boolean}) => {
-		let {title} = this.controller;
-		let content = pass?
+	protected resultPage = ({ pass }: { pass: boolean }) => {
+		let { title } = this.controller;
+		let content = pass ?
 			<span className="text-success"><FA name="check" /> 验收通过</span>
 			:
 			<span className="text-secondary"><FA name="check" /> 验收不通过</span>
@@ -112,7 +116,7 @@ export class VCheckTask extends VTaskView {
 					{content}
 				</div>
 				<div className="border-top text-center py-3">
-					<button className="btn btn-outline-info" onClick={()=>this.closePage()}>返回</button>
+					<button className="btn btn-outline-info" onClick={() => this.closePage()}>返回</button>
 				</div>
 			</div>
 		</Page>;

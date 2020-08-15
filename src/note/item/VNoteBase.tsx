@@ -14,6 +14,22 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		})}</div>;
 	}
 
+	protected renderContentList() {
+		return React.createElement(observer(() => {
+			let items = this.controller.items;
+			return <div className="">
+				<ul>
+				{items.map((v, index) => {
+					let {key, text} = v;
+					return <li key={key} className="mx-2 my-3 align-items-center">
+						{text}
+					</li>
+				})}
+				</ul>
+			</div>;
+		}));
+	}
+
 	protected renderCheckItems(checkable:boolean) {
 		return React.createElement(observer(() => {
 			let uncheckedItems:CheckItem[] = [];

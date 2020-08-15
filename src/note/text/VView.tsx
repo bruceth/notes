@@ -11,16 +11,17 @@ export class VView extends VNoteBase<CTextNoteItem> {
 	header() {return notesName}
 	content() {
 		return React.createElement(observer(() => {
-			let {title, checkable} = this.controller;
+			let {title, checkType} = this.controller;
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
 					{title && <div className="px-3 py-2 border-bottom">
 						<div><b>{title}</b></div>
 					</div>}
 					{
-						checkable===false? 
+						checkType === 0 ? 
 						<div className="py-3">{this.renderContent()}</div>
-						: this.renderCheckItems()
+						: checkType === 1 ? this.renderCheckItems()
+						: this.renderContentList()
 					}
 				</div>
 				{this.renderBottomCommands()}

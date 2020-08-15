@@ -41,7 +41,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 			</>;
 		}
 		else {
-			left = this.renderFrom('px-2');
+			left = this.renderFrom();
 			right = undefined;
 		}
 		return <div className="py-2 pl-3 bg-light border-top d-flex">

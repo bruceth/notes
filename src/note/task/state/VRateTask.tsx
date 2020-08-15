@@ -23,7 +23,7 @@ export class VRateTask extends VTaskView {
 		</button>
 		</div>;
 
-		right = this.renderFrom('px-2');
+		right = this.renderFrom();
 		return <div>
 			{this.renderValueRadio()}
 			<div className="py-2 bg-light border-top d-flex">

@@ -74,24 +74,23 @@ export class VCheckTask extends VTaskView {
 	}
 
 	protected renderBottomCommands() {
-		let left: any, right: any;
-		left = <div>
-			<button onClick={() => this.onCheck(true)} className="btn btn-success mx-3">
+		let left = <div>
+			<button onClick={()=>this.onCheck(true)} className="btn btn-success mx-3">
 				<FA name="check" /> 通过
 			</button>
 			<button onClick={() => this.onCheck(false)} className="btn btn-outline-secondary mx-3">
 				<FA name="times" /> 不通过
 			</button>
 		</div>;
-
-		right = this.renderFrom('px-2');
+    	let right = this.renderFrom();
 		return <>
 			{this.renderOrtherContent()}
 			<div className="py-2 bg-light border-top d-flex">
 				{left}
 				<div className="mr-auto" />
 				{right}
-			</div></>;
+			</div>
+		</>;
 	}
 
 	protected onCheck = async (pass: boolean) => {

@@ -45,7 +45,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			right = <>{this.renderEditButton()}</>;
 		}
 		else {
-			right = this.renderFrom('px-2');
+			right = this.renderFrom();
 		}
 		return <div className="py-2 bg-light border-top d-flex">
 			{left}
@@ -175,7 +175,7 @@ class VTaskStart extends VTaskView {
 			right = <>{this.renderEditButton()}</>;
 		}
 		else {
-			right = this.renderFrom('px-2');
+			right = this.renderFrom();
 		}
 		return <div className="py-2 bg-light border-top d-flex">
 			{left}

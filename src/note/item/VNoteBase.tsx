@@ -76,7 +76,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			let {name, nick, icon} = user;
 			return <>
 				<Image className="w-1-5c h-1-5c mr-2" src={icon || '.user-o'} />
-				{name} {nick} {assigned}
+				{assigned || nick || name}
 			</>
 		}
 		return <UserView user={userId as number} render={renderUser} />;
@@ -95,7 +95,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			let {name, nick, icon} = user;
 			return <>
 				<Image className="w-1c h-1c mr-2" src={icon || '.user-o'} />
-				{name} {nick} {assigned}
+				{assigned || nick || name}
 			</>
 		}
 		return <UserView user={userId as number} render={renderUser} />;

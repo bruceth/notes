@@ -71,7 +71,7 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 			let {name, nick, icon} = user;
 			return <>
 				<Image className="w-1c h-1c mr-1" src={icon} />
-				<span className="mr-3">{name} {nick} {assigned}</span>
+				<span className="mr-3">{assigned || nick || name}</span>
 			</>;
 		}
 		return <UserView user={contact} render={renderUser} />;

@@ -31,16 +31,14 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	protected renderContentList() {
 		return React.createElement(observer(() => {
 			let items = this.controller.items;
-			return <div className="">
-				<ul>
+			return <ul className="note-content-list px-3">
 				{items.map((v, index) => {
 					let {key, text} = v;
-					return <li key={key} className="mx-2 my-3 align-items-center">
+					return <li key={key} className="mx-3 my-2 align-items-center">
 						{text}
 					</li>
 				})}
-				</ul>
-			</div>;
+			</ul>;
 		}));
 	}
 

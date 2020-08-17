@@ -11,6 +11,7 @@ export interface Notes {
 	SendNoteTo: Action;
 	HideNote: Action;
 	AddContact: Action;
+	SetContactAssinged: Action;
 	AssignTask: Action;
 
 	DoneTask: Action;

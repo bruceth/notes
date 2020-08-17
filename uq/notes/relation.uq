@@ -35,6 +35,23 @@ RETURNS ret (
 	INTO ret SELECT retState as state;
 };
 
+ACTION SetContactAssinged (
+	contact ID [$User],
+	assigned CHAR(100),
+)
+RETURNS ret (
+	state TINYINT,
+) {
+	VAR retState TINYINT;
+	IF contact<>$user {
+		SET retState = a.state FROM MyContact as a WHERE a.me=$user AND a.contact=contact;
+		IF NOT retState IS NULL {
+			BOOK MyContact AT($user, contact) SET assigned=assigned;
+		}
+	}
+	INTO ret SELECT retState as state;
+};
+
 QUERY GetMyContacts()
 PAGE (
 	contact ID [$User] ASC,

@@ -34,7 +34,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			return <ul className="note-content-list px-3">
 				{items.map((v, index) => {
 					let {key, text} = v;
-					return <li key={key} className="mx-3 my-2 align-items-center">
+					return <li key={key} className="ml-3 py-2 align-items-center">
 						{text}
 					</li>
 				})}

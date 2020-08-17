@@ -113,7 +113,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	private renderContentEditList() {
 		let items = this.controller.items;
 		return <div className="">
-			<ul>
+			<ul className="note-content-list px-3">
 			{
 				items.map((v, index) => {
 					let {key, text} = v;
@@ -124,7 +124,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 						onUpdate: onItemUpdate,
 						content: text,
 					}
-					return <li key={key} className="mx-2 my-3 align-items-center">
+					return <li key={key} className="mx-3 my-2 align-items-center">
 						{this.renderVm(VItemInput, param)}
 					</li>
 				})

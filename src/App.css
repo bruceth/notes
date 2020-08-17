@@ -43,3 +43,12 @@ ul.va-list>li.notes {
 li.notes>div {
 	background-color: #f6f6f6;
 }
+ul.note-content-list {
+	padding: 0;
+	margin:0;
+	list-style-type: disc;
+}
+ul.note-content-list>li {
+	padding: 0;
+	margin: 0;
+}

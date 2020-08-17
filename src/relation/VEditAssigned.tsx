@@ -42,17 +42,19 @@ export class VEditAssigned extends VPage<CRelation> {
 	content() {
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;
-			return <>
+			return <div className="py-2">
 				<Image className="w-1-5c h-1-5c mr-2" src={icon} />
 				{nick || name}
-			</>
+			</div>
 		}
 		return <div className="m-2">
 			<UserView user={this.contact.contact as number} render={renderUser} />
 			<div className="border rounded">
 				<div className="bg-white">
-					<div className="py-1 px-1 border-bottom">
-						<input type="text" className="w-100 border-0 form-control" placeholder="备注名" maxLength={80}
+					<div className="px-3 py-2 bg-white d-flex align-items-center border-bottom">
+					<div className="text-muted mr-3 w-4c">备注名</div>
+						<input type="text" className="flex-fill w-100 border-0 form-control" maxLength={80}
+							autoFocus={true}
 							onChange={this.onChange}
 							onKeyDown={this.onKeyDown}
 							defaultValue={this.assigned} />

@@ -17,8 +17,9 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	protected renderContentList() {
 		return React.createElement(observer(() => {
 			let items = this.controller.items;
+			let listyle:React.CSSProperties = {listStyle:'disc'}
 			return <div className="">
-				<ul>
+				<ul style={listyle}>
 				{items.map((v, index) => {
 					let {key, text} = v;
 					return <li key={key} className="mx-2 my-3 align-items-center">

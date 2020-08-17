@@ -18,7 +18,7 @@ export class VList extends VBasePage {
 
 	private renderNote = (item: CNoteItem, index:number) => {
 		let {type, unread} = item.noteItem;
-		let cn = 'd-block rounded mx-2 my-1 border ';
+		let cn = 'd-block rounded mx-2 my-1 border';
 		if (unread>0) cn += 'border-info shadow';
 		return <div className={cn}>
 			{item.renderItem(index)}

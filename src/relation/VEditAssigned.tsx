@@ -44,7 +44,7 @@ export class VEditAssigned extends VPage<CRelation> {
 			let {name, nick, icon} = user;
 			return <>
 				<Image className="w-1-5c h-1-5c mr-2" src={icon} />
-				{name} {nick}
+				{nick || name}
 			</>
 		}
 		return <div className="m-2">

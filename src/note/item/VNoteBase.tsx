@@ -4,11 +4,25 @@ import { VPage, User, Image, UserView, Page, List, LMR, EasyTime, FA } from "ton
 import { CNoteItem, CheckItem } from "./CNoteItem";
 import { observer } from "mobx-react";
 import { NoteItem } from "note/model";
-import { VEdit } from "note/text/VEdit";
 
 export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	protected renderContent() {
-		return <div className="px-3">{this.controller.noteContent?.split('\n').map((v, index) => {
+		let {checkType} = this.controller;
+		return <div>
+		{
+			checkType === 0 ? 
+				this.renderContentText()
+				: 
+				checkType === 1 ? 
+					this.renderCheckItems(true)
+					:
+					this.renderContentList()
+		}
+		</div>;
+	}
+
+	protected renderContentText() {
+		return <div className="px-3 py-3">{this.controller.noteContent?.split('\n').map((v, index) => {
 			let c = !v? <>&nbsp;</>: v;
 			return <div key={index}>{c}</div>;
 		})}</div>;

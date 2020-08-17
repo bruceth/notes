@@ -17,12 +17,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 					{title && <div className="px-3 py-2 border-bottom">
 						<div><b>{title}</b></div>
 					</div>}
-					{
-						checkType === 0 ? 
-						<div className="py-3">{this.renderContent()}</div>
-						: checkType === 1 ? this.renderCheckItems()
-						: this.renderContentList()
-					}
+					{this.renderContent()}
 				</div>
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}

@@ -33,14 +33,7 @@ export class VNoteItem extends VNoteBase<CNoteItem> {
 			}
 			return <div className="d-block">
 				{caption && <div className="px-3 py-2"><b>{caption}</b></div>}
-				<div>
-					{
-						this.controller.checkType === 0 ? 
-						<div className="my-2">{this.renderContent()}</div>
-						: this.controller.checkType === 1 ? this.renderCheckItems(true)
-						: this.renderContentList()
-					}
-				</div>
+				{this.renderContent()}
 				{
 					(divFrom || divChanged) && <div className="d-flex align-items-center px-3 py-1">
 						{divFrom}

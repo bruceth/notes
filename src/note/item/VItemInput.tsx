@@ -33,7 +33,7 @@ export class VItemInput<T extends Controller> extends View<T> {
 				onBlur={this.onBlur}
 				onKeyDown={this.onKeyDown} onChange={this.onInputChange} />
 			:
-			<div className="cursor-pointer flex-fill border-0 ml-2 my-2"
+			<div className="cursor-pointer flex-fill border-0 py-2"
 				onClick={() => this.isFocused = true}>
 				{this.content}
 			</div>

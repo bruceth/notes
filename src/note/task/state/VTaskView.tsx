@@ -208,7 +208,7 @@ class VTaskDone extends VTaskView {
 				return this.renderStateSpan('待评分');
 			}
 		}
-		return this.renderStateSpan('已完成', true);
+		return this.renderStateSpan('已办', true);
 	}
 }
 

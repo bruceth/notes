@@ -12,7 +12,7 @@ export interface CheckItem {
 }
 
 export abstract class CNoteItem extends CUqSub<CNote> {
-	noteModel: NoteModel;
+	@observable noteModel: NoteModel;
 	@observable noteItem: NoteItem;
 	@observable toCount: number;
 	@observable spawnCount: number;
@@ -200,7 +200,17 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 
 	async AddComment(content:string) {		
 		let ret = await this.uqs.notes.AddComment.submit({note:this.noteModel.id, content});
-		let commentId = ret.comment;
+		let commentId = ret.comment;		
 		// 加入note界面，显示comment
+		if (commentId) {
+			this.noteModel.comments.unshift({
+				id: commentId,
+				content: content,
+				owner: this.user.id,
+				assigned: undefined,
+				$create: new Date(),
+				$update: new Date(),
+			});
+		}
 	}
 }

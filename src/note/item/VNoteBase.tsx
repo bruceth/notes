@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { VPage, User, Image, UserView, Page, List, LMR, EasyTime, FA } from "tonva";
 import { CNoteItem, CheckItem } from "./CNoteItem";
 import { observer } from "mobx-react";
-import { NoteItem } from "note/model";
+import { NoteItem, CommentItem } from "note/model";
 
 export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	protected renderContent() {
@@ -260,25 +260,28 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	protected renderComments() {
 		let {comments} = this.controller.noteModel;
 		return <div className="py-3">{
-			comments.map((v, index) => {
-				let {owner, assigned, content} = v;
-				let renderUser = (user:User) => {
-					let {name, nick, icon} = user;
-					return <div key={index} className="mt-1 d-flex bg-white py-2">
-						<Image className="w-2c h-2c mx-3" src={icon || '.user-o'} />
-						<div className="mr-3">
-							<div>{assigned || nick || name}</div>
-							<div className="mt-2">{
-								content?.split('\n').map((v, index) => {
-										let c = !v? <>&nbsp;</>: v;
-										return <div key={index}>{c}</div>;
-									})}
-							</div>
-						</div>
-					</div>
-				}
-				return <UserView key={index} user={owner} render={renderUser} />;
-			})
+			comments.map(v => this.renderComment(v))
 		}</div>;
+	}
+
+	protected renderComment(comment:CommentItem) {
+		let {id, owner, assigned, content, $update} = comment;
+		let renderUser = (user:User) => {
+			let {name, nick, icon} = user;
+			return <div className="mt-1 d-flex bg-white pt-2">
+				<Image className="w-2c h-2c mx-3" src={icon || '.user-o'} />
+				<div className="mr-3">
+					<div>{assigned || nick || name}</div>
+					<div className="mt-2">{
+						content?.split('\n').map((v, index) => {
+								let c = !v? <>&nbsp;</>: v;
+								return <div key={index}>{c}</div>;
+							})}
+					</div>
+					<div className="py-1 small text-muted"><EasyTime date={$update} /></div>
+				</div>
+			</div>
+		}
+		return <UserView key={id} user={owner} render={renderUser} />;
 	}
 }

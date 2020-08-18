@@ -81,6 +81,7 @@ export class CNote extends CUqBase {
 		noteModel.flow = ret.flow;
 		noteModel.spawn = ret.spawn;
 		noteModel.contain = ret.contain;
+		noteModel.comments = ret.comments;
 		return noteModel;
 	}
 
@@ -96,10 +97,11 @@ export class CNote extends CUqBase {
 			owner: this.user.id,
 			note: note as number,
 			type: EnumNoteItemType.text,
-			from: undefined,
 			caption,
 			content,
 			assigned: undefined,
+			from: undefined,
+			fromAssigned: undefined,
 			state: undefined,
 			unread: undefined,
 			obj,

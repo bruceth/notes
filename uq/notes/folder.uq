@@ -23,13 +23,14 @@ QUERY GetNotes(
 )
 PAGE (
 	seconds INT DESC, 
-	owner ID [$User],
+	owner ID,
 	note ID, 						--- Note,
 	type SMALLINT,
-	from ID [$User],
 	caption CHAR(200),
 	content TEXT,
 	assigned CHAR(100),
+	from ID,
+	fromAssigned CHAR(100),
 	state TEXT,
 	flowContent TEXT,
 	unread TINYINT,
@@ -47,13 +48,15 @@ PAGE (
 		SET folderId = fid;
 	}
 	PAGE SELECT a.seconds, b.owner, a.note, a.type
-		, b.[from]
-		, b.caption, b.content, c.assigned, d.state, d.flowContent, a.unread
+		, b.caption, b.content, c.assigned
+		, b.[from], e.assigned as fromAssigned
+		, d.state, d.flowContent, a.unread
 		, b.[$create], b.[$update]
 		FROM FolderNote as a
 			LEFT JOIN Note as b ON a.note=b.id
 			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact
 			LEFT JOIN NoteX as d ON a.note=d.note
+			LEFT JOIN MyContact as e ON e.me=$user and b.from=c.contact
 		WHERE a.folder=folderId and a.seconds<$pageStart and b.x=0
 		ORDER BY a.seconds desc
 		LIMIT $pageSize;

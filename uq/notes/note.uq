@@ -1,4 +1,4 @@
-ENUM EnumNoteType (Text=0, Task=1);
+ENUM EnumNoteType (Text=0, Task=1, Comment=2);
 
 -- type: 根据type，分配给特定的程序
 TUID Note (
@@ -52,7 +52,8 @@ MAP FolderNote (
 	index note_folder(note, folder) unique,
 );
 
-ENUM EnumNoteMapType (Spawn=0, Born=1, Contain=2)
+ENUM EnumNoteMapType (Spawn=0, Born=1, Contain=2, Comment=3);
+
 MAP Note2Note (
 	KEY note0 ID Note,
 	KEY note1 ID Note,
@@ -74,7 +75,7 @@ RETURNS ret (
 	type SMALLINT DEFAULT 0,		-- Note类, EnumNoteType
 	caption CHAR(200),				-- 标题
 	content TEXT,					-- 内容，格式根据type而定，json
-	owner ID [$User],				-- 所有者
+	owner ID,						-- 所有者
 	x TINYINT DEFAULT 0,			-- 删除标志
 	from ID [$User],				-- 派生来源人
 	[$create] TIMESTAMP,
@@ -93,6 +94,14 @@ RETURNS to (
 	user ID [$User],
 	access TINYINT,
 	assigned CHAR(100),
+)
+RETURNS comments (
+	id ID,
+	owner ID,						-- 所有者
+	content TEXT,
+	assigned CHAR(100),
+	[$create] TIMESTAMP,
+	[$update] TIMESTAMP,
 )
 RETURNS spawn (
 	seconds INT, 
@@ -136,6 +145,15 @@ RETURNS contain (
 	INTO [to] SELECT a.user, a.access, c.assigned
 		FROM NoteAccess as a LEFT JOIN MyContact as c ON c.me=$user and a.user=c.contact
 		WHERE a.note=note;
+	INTO comments SELECT a.note1 as id, b.owner
+		, b.content, c.assigned
+		, b.[$create], b.[$update]
+		FROM Note2Note as a
+			LEFT JOIN Note as b ON a.note1=b.id
+			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact
+		WHERE a.note0=note and a.type=EnumNoteMapType.Comment
+		ORDER BY a.note1 desc
+		LIMIT 20;
 	INTO spawn SELECT a.note1 as seconds, b.owner, a.note1 as note, a.type
 		, b.[from]
 		, b.caption, b.content, c.assigned, d.state, 0 as unread
@@ -173,13 +191,34 @@ RETURNS ret (
 	SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 	BOOK FolderNote AT (folderId, noteId) SET seconds=seconds, type=type;
-	-- BOOK NoteAccess AT (noteId, $user) SET access=1; access不应该包括owner
 	FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
 		IF noteFolderId<>folderId {
 			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds, type=type;
 		}
 	}
 	INTO ret SELECT noteId as note;
+};
+
+ACTION AddComment (
+	note ID,				-- comment on the note
+	content TEXT,
+)
+RETURNS ret (
+	comment ID,
+) {
+	VAR commentId ID, folderId ID, seconds INT;
+	IF exists(SELECT id FROM Note WHERE id=note AND owner=$user) OR
+	   exists(SELECT a.note FROM NoteAccess as a WHERE a.note=note AND a.user=$user)
+	{
+		TUID Note INTO commentId SET type=EnumNoteType.Comment, content=content, owner=$user;
+		SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
+		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+		FOREACH (var noteFolderId ID OF SELECT a.folder as noteFolderId FROM FolderNote as a WHERE a.note=note) {
+			BOOK FolderNote AT(noteFolderId, note) SET seconds=seconds;
+		}
+		BOOK Note2Note AT(note, commentId) SET type=EnumNoteMapType.Comment;
+	}
+	INTO ret SELECT commentId as comment;
 };
 
 ACTION SetNote (

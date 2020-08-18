@@ -68,7 +68,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 			<div className="border rounded">
 				<div className="bg-white">
 					<div className="py-1 px-1 border-bottom">
-						<input type="text" className="w-100 border-0 form-control" placeholder="标题" maxLength={80}
+						<input type="text" className="w-100 border-0 form-control font-weight-bold" placeholder="标题" maxLength={80}
 							onChange={this.onTitleChange}
 							defaultValue={this.controller.title} />
 					</div>

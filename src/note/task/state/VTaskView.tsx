@@ -21,6 +21,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 					</div>
 					{this.renderContent()}
 				</div>
+				<div className="px-3 py-2 bg-light">{this.renderFrom()}</div>
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}
 			</div>;
@@ -34,16 +35,12 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 
 	protected renderBottomCommands() {
 		let { owner, state } = this.controller.noteItem;
-		let left: any, right: any;
-		let isMe = this.isMe(owner);
+		let right: any;
+		let isMe = this.isMe(owner);		
 		if (isMe === true && state == EnumTaskState.Start) {
 			right = <>{this.renderEditButton()}</>;
 		}
-		else {
-			right = this.renderFrom();
-		}
 		return <div className="py-2 bg-light border-top d-flex">
-			{left}
 			<div className="mr-auto" />
 			{right}
 		</div>;
@@ -126,7 +123,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			else {
 				time = create;
 			}
-			divChanged = <div className="text-right small text-muted px-3 pb-1">
+			divChanged = <div className="small">
 				<small>
 					{action}
 					<span className="text-info"><EasyTime date={time} /></span>
@@ -135,12 +132,15 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		}
 
 		let divCaption = this.renderCaption(caption);
-		return <div className="d-block">
+		return <div className="d-block bg-white">
 			<div className="px-3 py-2">
 				{divCaption}
 			</div>
 			{this.renderContent()}
-			{divChanged}
+			<div className="d-flex px-3 py-2 bg-light">
+				<div className="mr-auto"/>
+				{divChanged}
+			</div>
 		</div>;
 	}
 }
@@ -161,9 +161,6 @@ class VTaskStart extends VTaskView {
 				完成
 			</button>;
 			right = <>{this.renderEditButton()}</>;
-		}
-		else {
-			right = this.renderFrom();
 		}
 		return <div className="py-2 bg-light border-top d-flex">
 			{left}

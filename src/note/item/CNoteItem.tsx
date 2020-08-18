@@ -181,8 +181,11 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 			this.noteContent = this.changedNoteContent;
 			this.changedNoteContent = undefined;
 		}
-		if (this.noteItem && this.title && this.title !== this.noteItem.caption) {
-			this.noteItem.caption = this.title;
+		if (this.noteItem) {
+			this.noteItem.$update = new Date();
+			if (this.title && this.title !== this.noteItem.caption) {
+				this.noteItem.caption = this.title;
+			}
 		}
 	}
 

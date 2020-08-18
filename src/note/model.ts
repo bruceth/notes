@@ -9,10 +9,11 @@ export interface NoteItem {
 	owner: number | BoxId;
 	note: number;
 	type: EnumNoteItemType;
-	from: number | BoxId;
 	caption: string;
 	content: string;
 	assigned: string;
+	from: number | BoxId;
+	fromAssigned: string;
 	state: number;
 	flowContent?: string;
 	unread: number;

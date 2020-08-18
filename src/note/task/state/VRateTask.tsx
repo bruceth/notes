@@ -2,7 +2,6 @@ import React from 'react';
 import { VTaskView } from './VTaskView';
 import { Page, FA } from 'tonva';
 import { TaskCheckItem } from '../CTaskNoteItem';
-import { VEditTextItemInput, EditTextItemProps } from '../VEditTextItem';
 
 export class VRateTask extends VTaskView {
 	protected rateValue: number = 0;
@@ -66,7 +65,6 @@ export class VRateTask extends VTaskView {
 	}
 
 	protected renderBottomCommands() {
-		let { owner, assigned } = this.controller.noteItem;
 		let left: any, right: any;
 		left =
 			<div><button onClick={() => this.onRate()} className="btn btn-success mx-3">
@@ -74,14 +72,12 @@ export class VRateTask extends VTaskView {
 		</button>
 			</div>;
 
-		right = this.renderFrom();
 		return <div>
 			{this.renderOrtherContent()}
 			{this.renderValueRadio()}
 			<div className="py-2 bg-light border-top d-flex">
 				{left}
 				<div className="mr-auto" />
-				{right}
 			</div>
 		</div>
 	}

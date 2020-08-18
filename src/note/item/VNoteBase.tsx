@@ -95,10 +95,19 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected renderFrom = (className?:string) => {
-		let {owner, assigned, from} = this.controller.noteItem;
-		let contact = (from? from : owner) as number;
+		let {owner, assigned, from, fromAssigned} = this.controller.noteItem;
+		let contact:number, contactAssigned:string;
+		if (from) {
+			contact = from as number;
+			contactAssigned = fromAssigned;
+		}
+		else {
+			contact = owner as number;
+			contactAssigned = assigned;
+		}
+		if (this.isMe(contact) === true) return;
 		return <div className={classNames('d-flex assign-items-center small text-muted', className)}>
-			来自：{this.renderSmallContact(contact, assigned)}
+			来自：{this.renderSmallContact(contact, contactAssigned)}
 		</div>;
 	}
 

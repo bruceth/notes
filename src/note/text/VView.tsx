@@ -21,27 +21,26 @@ export class VView extends VNoteBase<CTextNoteItem> {
 				</div>
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}
+				{this.renderComments()}
 			</div>;
 		}));
 	}
 
 	protected renderBottomCommands() {
 		let {owner} = this.controller.noteItem;
-		let left:any, right:any;
+		let left = this.renderFrom();
 		let isMe = this.isMe(owner);
+		let right:any;
 		if (isMe === true) {
 			left = undefined;
 			right = <>
 				{this.renderSendToButton()}
-				{this.renderEditButton()}
+				{this.renderEditButton()}				
 			</>;
 		}
-		else {
-			left = this.renderFrom();
-			right = undefined;
-		}
-		return <div className="py-2 pl-3 bg-light border-top d-flex">
+		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-end">
 			{left}
+			{this.renderCommentButton()}
 			<div className="mr-auto" />
 			{right}
 		</div>;

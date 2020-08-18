@@ -82,13 +82,11 @@ export class VCheckTask extends VTaskView {
 				<FA name="times" /> 不通过
 			</button>
 		</div>;
-    	let right = this.renderFrom();
 		return <>
 			{this.renderOrtherContent()}
 			<div className="py-2 bg-light border-top d-flex">
 				{left}
 				<div className="mr-auto" />
-				{right}
 			</div>
 		</>;
 	}

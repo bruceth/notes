@@ -94,7 +94,55 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		return <UserView user={userId as number} render={renderUser} />;
 	}
 
-	protected renderFrom = (className?:string) => {
+	protected renderFrom = () => {
+		let {owner, assigned, from, fromAssigned, $create, $update} = this.controller.noteItem;
+		let contact:number, contactAssigned:string;
+		if (from) {
+			contact = from as number;
+			contactAssigned = fromAssigned;
+		}
+		else {
+			contact = owner as number;
+			contactAssigned = assigned;
+		}
+		if (this.isMe(contact) === true) return;
+
+		let renderUser = (user:User) => {
+			let {name, nick, icon} = user;
+			return <div className="d-flex pt-t pb-3">
+				<div className="px-3 pt-1">
+					<Image className="w-2c h-2c" src={icon || '.user-o'} />
+				</div>
+				<div>
+					<div><b className="small font-weight-bolder">{assigned || nick || name}</b></div>
+					<div>{this.renderEditTime()}</div>
+				</div>
+			</div>
+		}
+		return <UserView user={contact} render={renderUser} />;
+	}
+
+	protected renderEditTime() {
+		let {$create, $update} = this.controller.noteItem;
+		let create:Date = $create;
+		let update:Date = $update;
+		if (create && update) {
+			let time:Date, action:any;
+			if (update.getTime() - create.getTime() > 60*1000) {
+				action = <FA className="mr-1" name="pencil-square-o" />;
+				time = update;
+			}
+			else {
+				time = create;
+			}
+			return <small className="text-muted">
+				{action}
+				<span><EasyTime date={time} /></span>
+			</small>
+		}
+	}
+
+	protected renderFromOld = (className?:string) => {
 		let {owner, assigned, from, fromAssigned} = this.controller.noteItem;
 		let contact:number, contactAssigned:string;
 		if (from) {
@@ -111,22 +159,22 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		</div>;
 	}
 
-	protected renderToCount = (className?:string) => {
+	protected renderToCount = () => {
 		let {toCount} = this.controller;
 		if (toCount === undefined || toCount <= 0)
 			return;
-		return <div className={classNames('d-flex assign-items-center small text-muted', className)}>
-			分享:{toCount}
-		</div>;
+		return <span className="mr-5 text-muted">
+			<FA className="mr-2" name="share"/><small className="">{toCount}</small> 
+		</span>;
 	}
 
-	protected renderSpawnCount = (className?:string) => {
+	protected renderSpawnCount = () => {
 		let {spawnCount} = this.controller;
 		if (spawnCount === undefined || spawnCount <= 0)
 			return;
-		return <div className={classNames('d-flex assign-items-center small text-muted', className)}>
-			任务:{spawnCount}
-		</div>;
+		return  <span className="mr-5 text-muted">
+			<FA className="mr-2" name="hand-pointer-o"/><small className="">{spawnCount}</small>
+		</span>;
 	}
 
 	private renderSmallContact = (userId:number, assigned:string) => {
@@ -213,10 +261,9 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected renderSendToButton() {
-		return <button onClick={this.onSendNote}
-			className="btn btn-outline-primary mr-3">
-			发给
-		</button>;
+		return <span onClick={this.onSendNote} className="cursor-pointer text-primary mr-5">
+			<FA name="share" />
+		</span>;
 	}
 
 	private onSendNote = async () => {
@@ -225,15 +272,15 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected renderEditButton() {
-		return <div onClick={()=>this.onEdit()} className="px-1 py-2 cursor-pointer text-primary mr-3">
+		return <span onClick={()=>this.onEdit()} className="cursor-pointer text-primary mr-3">
 			<FA name="pencil-square-o" />
-		</div>;
+		</span>;
 	}
 
 	protected onEdit() {}
 
 	protected renderCommentButton() {
-		return <span className="cursor-pointer text-primary" onClick={this.onComment}><FA name="comment-o" /></span>;
+		return <span className="cursor-pointer text-primary mr-5" onClick={this.onComment}><FA name="comment-o" /></span>;
 	}
 
 	private onComment = () => {

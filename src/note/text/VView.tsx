@@ -14,6 +14,7 @@ export class VView extends VNoteBase<CTextNoteItem> {
 			let {title, checkType} = this.controller;
 			return <div className="my-2 mx-1 border rounded">
 				<div className="bg-white">
+					{this.renderFrom()}
 					{title && <div className="px-3 py-2 border-bottom">
 						<div><b>{title}</b></div>
 					</div>}
@@ -28,18 +29,15 @@ export class VView extends VNoteBase<CTextNoteItem> {
 
 	protected renderBottomCommands() {
 		let {owner} = this.controller.noteItem;
-		let left = this.renderFrom();
 		let isMe = this.isMe(owner);
 		let right:any;
 		if (isMe === true) {
-			left = undefined;
 			right = <>
-				{this.renderSendToButton()}
 				{this.renderEditButton()}				
 			</>;
 		}
 		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-end">
-			{left}
+			{this.renderSendToButton()}
 			{this.renderCommentButton()}
 			<div className="mr-auto" />
 			{right}

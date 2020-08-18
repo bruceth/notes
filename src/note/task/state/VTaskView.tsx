@@ -15,13 +15,13 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			let allowCheck = this.allowCheck;
 			let divCaption = this.renderCaption(title);
 			return <div className="my-2 mx-1 border rounded">
+				{this.renderFrom()}
 				<div className="bg-white">
 					<div className="px-3 py-2 border-bottom">
 						{divCaption}
 					</div>
 					{this.renderContent()}
 				</div>
-				<div className="px-3 py-2 bg-light">{this.renderFrom()}</div>
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}
 				{this.renderComments()}

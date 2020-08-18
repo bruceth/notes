@@ -1,7 +1,6 @@
 import React from 'react';
 import { List } from "tonva";
 import { VBasePage } from './VBasePage';
-import { NoteItem } from '../model';
 import { CNoteItem } from 'note/item';
 
 export class VList extends VBasePage {

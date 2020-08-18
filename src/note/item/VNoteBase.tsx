@@ -111,6 +111,24 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		</div>;
 	}
 
+	protected renderToCount = (className?:string) => {
+		let {toCount} = this.controller;
+		if (toCount === undefined || toCount <= 0)
+			return;
+		return <div className={classNames('d-flex assign-items-center small text-muted', className)}>
+			分享:{toCount}
+		</div>;
+	}
+
+	protected renderSpawnCount = (className?:string) => {
+		let {spawnCount} = this.controller;
+		if (spawnCount === undefined || spawnCount <= 0)
+			return;
+		return <div className={classNames('d-flex assign-items-center small text-muted', className)}>
+			任务:{spawnCount}
+		</div>;
+	}
+
 	private renderSmallContact = (userId:number, assigned:string) => {
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;

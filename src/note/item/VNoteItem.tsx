@@ -28,11 +28,16 @@ export class VNoteItem extends VNoteBase<CNoteItem> {
 				</div>;
 			}
 			let divFrom = this.renderFrom();
+			let divToCount = this.renderToCount();
+			let divspawnCount = this.renderSpawnCount();
+
 			return <div className="d-block bg-white">
 				{caption && <div className="px-3 py-2"><b>{caption}</b></div>}
 				{this.renderContent()}
 				<div className="d-flex align-items-center px-3 py-2 bg-light">
-					{divFrom}
+				 	{divFrom}{divFrom&&<div className="small text-muted ml-3"></div>}
+					{divToCount}{divToCount&&<div className="small text-muted ml-3"></div>}
+					{divspawnCount}
 					<div className="mr-auto" />
 					{divChanged}
 				</div>

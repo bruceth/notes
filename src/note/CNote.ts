@@ -37,6 +37,9 @@ export class CNote extends CUqBase {
 		let cNoteItem = this.getCNoteItem(item.type);
 		item = cNoteItem.convertObj(item);
 		cNoteItem.init(item);
+
+		cNoteItem.getToAndSpawnCount(); //需要考虑加入队列排队获取吗
+
 		return cNoteItem;
 	}
 

@@ -2,7 +2,7 @@ import { CUqBase } from "tapp";
 import { VRelation } from "./VRelation";
 import { observable } from "mobx";
 import { Contact } from "model";
-import { VEditAssigned } from "./VEditAssigned";
+import { CContact } from "./contact";
 
 export class CRelation extends CUqBase {
 	private loaded: boolean = false;
@@ -25,8 +25,9 @@ export class CRelation extends CUqBase {
 		this.contacts.unshift({contact, assigned:undefined});
 	}
 
-	async onEditContactAssigned(item:Contact) {
-		this.openVPage(VEditAssigned, item);
+	async onShowContact(item:Contact) {
+		let cc = this.newSub(CContact, item);
+		cc.showContact();
 	}
 
 	async SaveContactAssign(item:Contact, value:string) {

@@ -9,6 +9,7 @@ import { Contact } from "model";
 import { nav } from "tonva";
 import { VTestMe } from "./VTestMe";
 import { VTestAB } from "./VTestAB";
+import { res } from "./res";
 
 const gaps = [10, 3,3,3,3,3,5,5,5,5,5,5,5,5,10,10,10,10,15,15,15,30,30,60];
 
@@ -19,6 +20,7 @@ export class CApp extends CUqApp {
 	cMe: CMe;
 
 	protected async internalStart() {
+		this.setRes(res);
 		if (nav.isInAppRouting) return;
 		await this.startHome();
 	}

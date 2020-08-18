@@ -1,7 +1,6 @@
-import { BoxId } from "tonva";
+import { BoxId, t } from "tonva";
 
-export const notesName = '小单';
-
+//export const notesName = t('notes');
 export enum EnumNoteItemType {text=0, task=1}
 
 export interface NoteItem {

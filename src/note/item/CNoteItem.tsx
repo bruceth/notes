@@ -113,12 +113,6 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 			return undefined;
 		}
 	}
-	
-	protected renderNoteContent(content:string):JSX.Element {
-		return <>{(content as string).split('\n').map((v, index) => {
-			return <div key={index}>{v}</div>;
-		})}</>;
-	}
 
 	showTo(backPageCount:number) {
 		this.owner.showTo(this.noteItem, backPageCount);

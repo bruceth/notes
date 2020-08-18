@@ -81,7 +81,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			return <div className="">
 				{uncheckedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
 				{
-					checkedItems.length > 0 && <div className="border-top mt-2 pt2">
+					checkedItems.length > 0 && <div className="border-top mt-2 py-2">
 						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
 						{checkedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
 					</div>

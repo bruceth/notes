@@ -5,7 +5,7 @@ import { VAdd } from './VAdd';
 import { Contact } from 'model';
 
 export class VRelation extends VPage<CRelation> {
-	header() {return '关系'}
+	header() {return this.t('relation')}
 
 	right() {
 		return <button className="btn btn-sm btn-primary mr-1" onClick={()=>this.openVPage(VAdd)}>

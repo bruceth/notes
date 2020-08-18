@@ -20,21 +20,40 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		}
 		</div>;
 	}
+	
+	protected renderParagraphs(content:string):JSX.Element {
+		if (!content) return;
+		return <>{content.split('\n').map((v, index) => {
+			let c:any;
+			if (!v) {
+				c = '\u00A0'; //<>&nbsp;</>;
+			}
+			else {
+				c = '';
+				let len = v.length, i=0;
+				for (; i<len; i++) {
+					switch(v.charCodeAt(i)) {
+						case 0x20: c +='\u2000'; continue;
+					}
+					break;
+				}
+				c += v.substr(i);
+			}
+			return <div key={index} className="mb-3">{c}</div>;
+		})}</>;
+	}
 
 	protected renderContentText() {
-		return <div className="px-3 py-3">{this.controller.noteContent?.split('\n').map((v, index) => {
-			let c = !v? <>&nbsp;</>: v;
-			return <div key={index}>{c}</div>;
-		})}</div>;
+		return <div className="px-3 py-3">{this.renderParagraphs(this.controller.noteContent)}</div>;
 	}
 
 	protected renderContentList() {
 		return React.createElement(observer(() => {
 			let items = this.controller.items;
-			return <ul className="note-content-list px-3">
+			return <ul className="note-content-list px-3 pb-2">
 				{items.map((v, index) => {
 					let {key, text} = v;
-					return <li key={key} className="ml-3 py-2 align-items-center">
+					return <li key={key} className="ml-3 pt-1 pb-2 align-items-center">
 						{text}
 					</li>
 				})}
@@ -54,7 +73,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			return <div className="">
 				{uncheckedItems.map((v, index) => this.renderCheckItem(v, checkable))}
 				{
-					checkedItems.length > 0 && <div className="border-top pt2">
+					checkedItems.length > 0 && <div className="border-top py-2">
 						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
 						{checkedItems.map((v, index) => this.renderCheckItem(v, checkable))}
 					</div>
@@ -142,6 +161,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		}
 	}
 
+	/*
 	protected renderFromOld = (className?:string) => {
 		let {owner, assigned, from, fromAssigned} = this.controller.noteItem;
 		let contact:number, contactAssigned:string;
@@ -158,6 +178,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			来自：{this.renderSmallContact(contact, contactAssigned)}
 		</div>;
 	}
+	*/
 
 	protected renderToCount = () => {
 		let {toCount} = this.controller;
@@ -177,6 +198,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		</span>;
 	}
 
+	/*
 	private renderSmallContact = (userId:number, assigned:string) => {
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;
@@ -187,6 +209,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		}
 		return <UserView user={userId as number} render={renderUser} />;
 	}
+	*/
 
 	protected renderTo() {
 		let {to} = this.controller.noteModel;
@@ -314,17 +337,20 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	protected renderComment(comment:CommentItem) {
 		let {id, owner, assigned, content, $update} = comment;
 		let renderUser = (user:User) => {
-			let {name, nick, icon} = user;
+			let {id, name, nick, icon} = user;
+			let isMe = this.isMe(id);
+			let divUserName:any;
+			if (isMe === true) {
+				divUserName = <span className="text-success">[自己]</span>
+			}
+			else {
+				divUserName = assigned || nick || name;
+			}
 			return <div className="mt-1 d-flex bg-white pt-2">
-				<Image className="w-2c h-2c mx-3" src={icon || '.user-o'} />
+				<Image className="w-1-5c h-1-5c mx-3" src={icon || '.user-o'} />
 				<div className="mr-3">
-					<div>{assigned || nick || name}</div>
-					<div className="mt-2">{
-						content?.split('\n').map((v, index) => {
-								let c = !v? <>&nbsp;</>: v;
-								return <div key={index}>{c}</div>;
-							})}
-					</div>
+					<div className="small mb-3">{divUserName}</div>
+					<div className="mt-2">{this.renderParagraphs(content)}</div>
 					<div className="py-1 small text-muted"><EasyTime date={$update} /></div>
 				</div>
 			</div>

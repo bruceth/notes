@@ -225,7 +225,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 				className="w-100 border-0 form-control" 
 				placeholder="请输入" maxLength={20000}
 				defaultValue={this.controller.noteContent}
-				onChange={this.onCommentChange} />;
+				onChange={this.onCommentChange} />
 		</Page>);
 	}
 

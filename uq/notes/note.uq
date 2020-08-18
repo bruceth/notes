@@ -285,3 +285,16 @@ ACTION HideNote (
 		TUID Note ID note SET x=x;
 	}
 };
+
+ACTION GetNoteToAndSpawnCount ver 1.0 (
+	note ID,
+)
+RETURNS ret (
+	to INT,
+	spawn INT,
+) {
+	VAR toCount INT, spawnCount INT;
+	SET toCount = Count(*) FROM NoteAccess WHERE note=note AND access=1;
+	SET spawnCount = Count(*) FROM Note2Note WHERE note0=note AND type=EnumNoteMapType.Spawn;
+	INTO ret SELECT toCount as to, spawnCount as spawn;
+};

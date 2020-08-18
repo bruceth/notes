@@ -14,6 +14,8 @@ export interface CheckItem {
 export abstract class CNoteItem extends CUqSub<CNote> {
 	noteModel: NoteModel;
 	@observable noteItem: NoteItem;
+	@observable toCount: number;
+	@observable spawnCount: number;
 	
 	init(param: NoteItem):void {
 		this.noteItem = param;
@@ -41,6 +43,13 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	itemKey:number = 1;
 
 	protected async internalStart() {}
+
+	async getToAndSpawnCount() {
+		let id = this.noteItem.note as number;
+		let ret = await this.uqs.notes.GetNoteToAndSpawnCount.submit({note:id});
+		this.toCount = ret.to as number;
+		this.spawnCount = ret.spawn as number;
+	}
 
 	addItem(value:string):boolean {
 		if (this.checkType === 1) {

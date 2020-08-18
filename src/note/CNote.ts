@@ -81,6 +81,7 @@ export class CNote extends CUqBase {
 		noteModel.flow = ret.flow;
 		noteModel.spawn = ret.spawn;
 		noteModel.contain = ret.contain;
+		noteModel.comments = ret.comments;
 		return noteModel;
 	}
 

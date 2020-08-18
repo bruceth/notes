@@ -24,6 +24,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 				<div className="px-3 py-2 bg-light">{this.renderFrom()}</div>
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}
+				{this.renderComments()}
 			</div>;
 		}));
 	}
@@ -40,7 +41,8 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 		if (isMe === true && state == EnumTaskState.Start) {
 			right = <>{this.renderEditButton()}</>;
 		}
-		return <div className="py-2 bg-light border-top d-flex">
+		return <div className="py-2 bg-light border-top d-flex align-items-end">
+			{this.renderCommentButton()}
 			<div className="mr-auto" />
 			{right}
 		</div>;

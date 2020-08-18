@@ -105,13 +105,6 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		}
 	}
 	
-	/*
-	private static replaceAll(str:string, findStr:string, repStr:string):string {
-		if (!str) return str;
-		return str.split(findStr).join(repStr);
-	}
-	*/
-
 	protected renderNoteContent(content:string):JSX.Element {
 		return <>{(content as string).split('\n').map((v, index) => {
 			return <div key={index}>{v}</div>;
@@ -194,5 +187,11 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		let ret = await this.owner.addNote(this.title, noteContent, this.buildObj());
 		this.updateChange();
 		return ret;
+	}
+
+	async AddComment(content:string) {		
+		let ret = await this.uqs.notes.AddComment.submit({note:this.noteModel.id, content});
+		let commentId = ret.comment;
+		// 加入note界面，显示comment
 	}
 }

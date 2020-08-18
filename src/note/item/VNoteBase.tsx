@@ -213,4 +213,54 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected onEdit() {}
+
+	protected renderCommentButton() {
+		return <span className="cursor-pointer text-primary" onClick={this.onComment}><FA name="comment-o" /></span>;
+	}
+
+	private onComment = () => {
+		let right = <button className="btn btn-sm btn-success mr-1" onClick={this.onCommentSubmit}>提交</button>;
+		this.openPageElement(<Page header="说明" right={right}>
+			<textarea rows={10} 
+				className="w-100 border-0 form-control" 
+				placeholder="请输入" maxLength={20000}
+				defaultValue={this.controller.noteContent}
+				onChange={this.onCommentChange} />;
+		</Page>);
+	}
+
+	private comment:string;
+	private onCommentChange = (evt:React.ChangeEvent<HTMLTextAreaElement>) => {
+		this.comment = evt.target.value;
+	}
+
+	private onCommentSubmit = async () => {
+		await this.controller.AddComment(this.comment);
+		this.closePage();
+	}
+
+	protected renderComments() {
+		let {comments} = this.controller.noteModel;
+		return <div className="py-3">{
+			comments.map((v, index) => {
+				let {owner, assigned, content} = v;
+				let renderUser = (user:User) => {
+					let {name, nick, icon} = user;
+					return <div key={index} className="mt-1 d-flex bg-white py-2">
+						<Image className="w-2c h-2c mx-3" src={icon || '.user-o'} />
+						<div className="mr-3">
+							<div>{assigned || nick || name}</div>
+							<div className="mt-2">{
+								content?.split('\n').map((v, index) => {
+										let c = !v? <>&nbsp;</>: v;
+										return <div key={index}>{c}</div>;
+									})}
+							</div>
+						</div>
+					</div>
+				}
+				return <UserView key={index} user={owner} render={renderUser} />;
+			})
+		}</div>;
+	}
 }

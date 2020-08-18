@@ -31,6 +31,15 @@ export interface Access {
 	assigned: string;
 }
 
+export interface CommentItem {
+	id: number;
+	content: string;
+	owner: number;
+	assigned: string;
+	$create: Date;
+	$update: Date;
+}
+
 export interface NoteModel {
 	id: number;
 	caption: string;
@@ -42,6 +51,7 @@ export interface NoteModel {
 	flow: NoteFlow[];
 	spawn: NoteItem[];
 	contain: NoteItem[];
+	comments: CommentItem[];
 }
 
 export function replaceAll(str:string, findStr:string, repStr:string):string {

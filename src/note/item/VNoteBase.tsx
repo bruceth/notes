@@ -1,9 +1,7 @@
 import React from "react";
-import classNames from 'classnames';
-import { VPage, User, Image, UserView, Page, List, LMR, EasyTime, FA } from "tonva";
+import { VPage, User, Image, UserView, Page, EasyTime, FA } from "tonva";
 import { CNoteItem, CheckItem } from "./CNoteItem";
 import { observer } from "mobx-react";
-import { NoteItem, CommentItem } from "note/model";
 
 export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	protected renderContent() {
@@ -102,17 +100,6 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		</div>;
 	}
 
-	protected renderContact = (userId:number, assigned:string) => {
-		let renderUser = (user:User) => {
-			let {name, nick, icon} = user;
-			return <>
-				<Image className="w-1-5c h-1-5c mr-2" src={icon || '.user-o'} />
-				{assigned || nick || name}
-			</>
-		}
-		return <UserView user={userId as number} render={renderUser} />;
-	}
-
 	protected renderFrom = () => {
 		let {owner, assigned, from, fromAssigned, $create, $update} = this.controller.noteItem;
 		let contact:number, contactAssigned:string;
@@ -124,17 +111,19 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			contact = owner as number;
 			contactAssigned = assigned;
 		}
-		if (this.isMe(contact) === true) return;
+		if (this.isMe(contact) === true) {
+			return <div className="px-3 pt-2 pb-1 small">{this.renderEditTime()}</div>
+		}
 
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;
-			return <div className="d-flex pt-t pb-3">
+			return <div className="d-flex pt-2 pb-3">
 				<div className="px-3 pt-1">
-					<Image className="w-2c h-2c" src={icon || '.user-o'} />
+					<Image className="w-2-5c h-2-5c" src={icon || '.user-o'} />
 				</div>
 				<div>
 					<div><b className="small font-weight-bolder">{assigned || nick || name}</b></div>
-					<div>{this.renderEditTime()}</div>
+					<div className="small">{this.renderEditTime()}</div>
 				</div>
 			</div>
 		}
@@ -161,25 +150,6 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		}
 	}
 
-	/*
-	protected renderFromOld = (className?:string) => {
-		let {owner, assigned, from, fromAssigned} = this.controller.noteItem;
-		let contact:number, contactAssigned:string;
-		if (from) {
-			contact = from as number;
-			contactAssigned = fromAssigned;
-		}
-		else {
-			contact = owner as number;
-			contactAssigned = assigned;
-		}
-		if (this.isMe(contact) === true) return;
-		return <div className={classNames('d-flex assign-items-center small text-muted', className)}>
-			来自：{this.renderSmallContact(contact, contactAssigned)}
-		</div>;
-	}
-	*/
-
 	protected renderToCount = () => {
 		let {toCount} = this.controller;
 		if (toCount === undefined || toCount <= 0)
@@ -196,74 +166,6 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		return  <span className="mr-5 text-muted">
 			<FA className="mr-2" name="hand-pointer-o"/><small className="">{spawnCount}</small>
 		</span>;
-	}
-
-	/*
-	private renderSmallContact = (userId:number, assigned:string) => {
-		let renderUser = (user:User) => {
-			let {name, nick, icon} = user;
-			return <>
-				<Image className="w-1c h-1c mr-2" src={icon || '.user-o'} />
-				{assigned || nick || name}
-			</>
-		}
-		return <UserView user={userId as number} render={renderUser} />;
-	}
-	*/
-
-	protected renderTo() {
-		let {to} = this.controller.noteModel;
-		if (!to || to.length === 0) return;
-		return <div className="px-3 py-2">
-			<small className="text-muted mr-3">已分享给: </small>
-			{to.map((t, index) => {
-				let {user, assigned} = t;
-				return <span key={index} className="mr-3">{this.renderContact(user, assigned)}</span>;
-			})}
-		</div>
-	}
-
-	protected renderFlow() {
-		let {flow} = this.controller.noteModel;
-		if (!flow || flow.length === 0) return;
-		return <div>flow: {flow.length}</div>
-	}
-
-	private renderSpawnItem = (item:NoteItem, index:number):JSX.Element => {
-		let {caption, $create, $update, owner, assigned} = item;
-		let divOwner = this.renderContact(owner as number, assigned);
-		let right = <small className="text-muted"><EasyTime date={$update} /></small>;
-		return <div className="px-3 py-2 d-block">
-			<LMR right={right}>
-				<span className="mr-3">{divOwner}</span>{caption}
-			</LMR>
-		</div>;
-	}
-
-	protected renderSpawn() {
-		let {spawn} = this.controller.noteModel;
-		if (!spawn || spawn.length === 0) return;
-		return <div className="pb-3">
-			<div className="px-3 pt-2 pb-1 text-muted small">已派发任务</div>
-			<List
-				items={spawn} 
-				item={{render: this.renderSpawnItem,  className: "notes"}} />
-		</div>
-	}
-
-	protected renderContain() {
-		let {contain} = this.controller.noteModel;
-		if (!contain || contain.length === 0) return;
-		return <div>contain: {contain.length}</div>
-	}
-
-	protected renderRelatives() {
-		return <div>
-			{this.renderTo()}
-			{this.renderFlow()}
-			{this.renderSpawn()}
-			{this.renderContain()}
-		</div>
 	}
 
 	protected showActionEndPage({content, onClick}:{content:any; onClick?:()=>void}) {
@@ -316,7 +218,6 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 				onChange={this.onCommentChange} />
 		</Page>);
 	}
-
 	private comment:string;
 	private onCommentChange = (evt:React.ChangeEvent<HTMLTextAreaElement>) => {
 		this.comment = evt.target.value;
@@ -325,36 +226,5 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	private onCommentSubmit = async () => {
 		await this.controller.AddComment(this.comment);
 		this.closePage();
-	}
-
-	protected renderComments() {
-		let {comments} = this.controller.noteModel;
-		return <div className="py-3">{
-			comments.map(v => this.renderComment(v))
-		}</div>;
-	}
-
-	protected renderComment(comment:CommentItem) {
-		let {id, owner, assigned, content, $update} = comment;
-		let renderUser = (user:User) => {
-			let {id, name, nick, icon} = user;
-			let isMe = this.isMe(id);
-			let divUserName:any;
-			if (isMe === true) {
-				divUserName = <span className="text-success">[自己]</span>
-			}
-			else {
-				divUserName = assigned || nick || name;
-			}
-			return <div className="mt-1 d-flex bg-white pt-2">
-				<Image className="w-1-5c h-1-5c mx-3" src={icon || '.user-o'} />
-				<div className="mr-3">
-					<div className="small mb-3">{divUserName}</div>
-					<div className="mt-2">{this.renderParagraphs(content)}</div>
-					<div className="py-1 small text-muted"><EasyTime date={$update} /></div>
-				</div>
-			</div>
-		}
-		return <UserView key={id} user={owner} render={renderUser} />;
 	}
 }

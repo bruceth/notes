@@ -1,14 +1,14 @@
 import React from 'react';
-import { VNoteBase } from '../item';
-import { EasyTime, FA } from 'tonva';
+import { VNoteView } from '../item';
+import { FA } from 'tonva';
 import { CNoteItem } from './CNoteItem';
 import { observer } from 'mobx-react';
 
-export class VNoteItem extends VNoteBase<CNoteItem> {
+export class VNoteItem extends VNoteView<CNoteItem> {
 	render() {
 		return React.createElement(observer(() => {
 			let {owner, caption, $create, $update} = this.controller.noteItem;
-			let divChanged:any = undefined;
+			//let divChanged:any = undefined;
 			let create:Date = $create;
 			let update:Date = $update;
 			if (create && update) {
@@ -20,12 +20,14 @@ export class VNoteItem extends VNoteBase<CNoteItem> {
 				else {
 					time = create;
 				}
+				/*
 				divChanged = <div className="small text-muted">
 					<small>
 						{action}
 						<span className="text-info"><EasyTime date={time} /></span>
 					</small>
 				</div>;
+				*/
 			}
 			//let divFrom = this.renderFromOld();
 			let divToCount = this.renderToCount();
@@ -35,11 +37,10 @@ export class VNoteItem extends VNoteBase<CNoteItem> {
 				{this.renderFrom()}
 				{caption && <div className="px-3 py-2"><b>{caption}</b></div>}
 				{this.renderContent()}
-				<div className="d-flex align-items-center px-3 py-2 bg-light">
+				<div className="d-flex align-items-center px-3 py-2">
 					{divToCount}
 					{divspawnCount}
 					<div className="mr-auto" />
-					{divChanged}
 				</div>
 			</div>;
 		}));

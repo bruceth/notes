@@ -1,12 +1,10 @@
 import React from 'react';
-import { tv, FA } from "tonva";
 import { VEdit } from './VEdit';
 import { observer } from 'mobx-react';
-import { VNoteBase, CheckItem } from '../item';
+import { VNoteView, CheckItem } from '../item';
 import { CTextNoteItem } from './CTextNoteItem';
-//import { notesName } from '../../note';
 
-export class VView extends VNoteBase<CTextNoteItem> {
+export class VView extends VNoteView<CTextNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return this.t('notes')}
 	content() {
@@ -22,7 +20,6 @@ export class VView extends VNoteBase<CTextNoteItem> {
 				</div>
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}
-				{this.renderComments()}
 			</div>;
 		}));
 	}

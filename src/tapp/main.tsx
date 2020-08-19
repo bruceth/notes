@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { VPage, TabCaptionComponent, Page, TabProp } from 'tonva';
+import { VPage, TabCaptionComponent, Page, TabProp, t } from 'tonva';
 import { CApp } from './CApp';
 
 const color = (selected: boolean) => selected === true ? 'text-primary' : 'text-muted';
@@ -31,10 +31,10 @@ export class VMain extends VPage<CApp> {
 		});
 		*/
 		let tabs: TabProp[] = [
-			{name: 'home', caption: caption('首页', 'home'), content: cHome.tab},
-			{name: 'relation', caption: caption('关系', 'user-plus'), content: cRelation.tab, onShown: cRelation.load},
-			{name: 'discover', caption: caption('发现', 'arrows-alt'), content: cDiscover.tab},
-			{name: 'me', caption: caption('我', 'user-o'), content: cMe.tab},
+			{name: 'home', caption: caption(t('home'), 'home'), content: cHome.tab},
+			{name: 'relation', caption: caption(t('relation'), 'user-plus'), content: cRelation.tab, onShown: cRelation.load},
+			{name: 'discover', caption: caption(t('discover'), 'arrows-alt'), content: cDiscover.tab},
+			{name: 'me', caption: caption(t('me'), 'user-o'), content: cMe.tab},
 		];
 		return <Page tabsProps={{tabs}} />;
     }

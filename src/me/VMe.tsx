@@ -6,9 +6,7 @@ import { VEditMe } from './VEditMe';
 import { appConfig } from 'tapp';
 
 export class VMe extends VPage<CMe> {
-	header() {return  '我'}
-
-	// logout(): boolean | (()=>Promise<void>) {return true;}
+	header() {return this.t('me')}
 
 	content() {
         const { user } = nav;
@@ -17,7 +15,7 @@ export class VMe extends VPage<CMe> {
             {
                 type: 'component',
                 component: <div className="w-100 d-flex justify-content-between">
-                    <IconText iconClass="text-info mr-2" icon="smile-o" text="关于本APP" />
+                    <IconText iconClass="text-info mr-2" icon="smile-o" text={this.t('aboutTheApp')} />
                     <div className="py-2 small">V{appConfig.version}</div>
                 </div>,
             }
@@ -30,7 +28,7 @@ export class VMe extends VPage<CMe> {
                 {
                     type: 'component',
                     component: <button className="btn btn-success w-100 my-2" onClick={() => nav.showLogin(undefined, true)}>
-                        <FA name="sign-out" size="lg" /> 请登录
+                        <FA name="sign-out" size="lg" /> {this.t('pleaseLogin')}
                     </button>
                 },
             );
@@ -42,7 +40,7 @@ export class VMe extends VPage<CMe> {
                     type: 'component',
                     bk: '',
                     component: <button className="btn btn-danger w-100" onClick={this.onExit}>
-                        <FA name="sign-out" size="lg" /> 退出登录
+                        <FA name="sign-out" size="lg" /> {this.t('logout')}
                 </button>
                 },
             ];
@@ -56,7 +54,7 @@ export class VMe extends VPage<CMe> {
                 '',
                 {
                     type: 'component',
-                    component: <IconText iconClass="text-info mr-2" icon="key" text="修改密码" />,
+                    component: <IconText iconClass="text-info mr-2" icon="key" text={this.t('changePassword')} />,
                     onClick: this.changePassword
                 },
             ]

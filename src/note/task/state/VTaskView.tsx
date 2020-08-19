@@ -15,13 +15,13 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			let allowCheck = this.allowCheck;
 			let divCaption = this.renderCaption(title);
 			return <div className="my-2 mx-1 border rounded">
+				{this.renderFrom()}
 				<div className="bg-white">
 					<div className="px-3 py-2 border-bottom">
 						{divCaption}
 					</div>
 					{this.renderContent()}
 				</div>
-				<div className="px-3 py-2 bg-light">{this.renderFrom()}</div>
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}
 				{this.renderComments()}
@@ -81,7 +81,7 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 			return <div className="">
 				{uncheckedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
 				{
-					checkedItems.length > 0 && <div className="border-top mt-2 pt2">
+					checkedItems.length > 0 && <div className="border-top mt-2 py-2">
 						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
 						{checkedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
 					</div>

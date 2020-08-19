@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { VNoteBase, CheckItem } from '.';
 import { FA, ConfirmOptions } from 'tonva';
 import { CNoteItem } from './CNoteItem';
-import { notesName } from '../../note';
+//import { notesName } from '../../note';
 import { threadId } from 'worker_threads';
 import { VItemInput, ItemInputProps } from './VItemInput';
 
@@ -12,7 +12,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	@observable private changed: boolean = false;
 	private inputAdd: HTMLInputElement;
 
-	header() {return notesName}
+	header() {return this.t('notes')}
 
 	protected onTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
 		this.controller.title = evt.target.value.trim();
@@ -105,7 +105,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 	private renderContentTextArea() {
 		return <textarea rows={10} 
 			className="w-100 border-0 form-control" 
-			placeholder={notesName} maxLength={20000}
+			placeholder={this.t('notes')} maxLength={20000}
 			defaultValue={this.controller.noteContent}
 			onChange={this.onContentChange} />;
 	}
@@ -170,7 +170,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
 				<input ref={t => this.inputAdd = t} className="flex-fill form-control" type="text" placeholder="新增" onKeyDown={this.onAddEnter} />
 			</div>
 			{
-				checkedItems.length > 0 && <div className="border-top mt-2 pt2">
+				checkedItems.length > 0 && <div className="border-top mt-2 py-2">
 					<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
 					{checkedItems.map((v, index) => {
 						let {key, text, checked} = v;

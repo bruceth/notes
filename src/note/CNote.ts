@@ -1,6 +1,5 @@
-import { CUqBase, EnumSpecFolder } from "tapp";
-import { QueryPager } from "tonva";
-import { VList, VSelectContact, SelectContactOptions } from "./views";
+import { CUqBase } from "tapp";
+import { VSelectContact, SelectContactOptions } from "./views";
 import { CTextNoteItem } from "./text";
 import { EnumNoteItemType, NoteItem, NoteModel } from "./model";
 import { CNoteItem } from "./item/CNoteItem";

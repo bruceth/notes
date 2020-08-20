@@ -58,7 +58,7 @@ export class VAdd extends VPage<CRelation> {
 			}
 			return <div className="my-3 mx-3 border rounded">
 				<div className="p-4 d-flex bg-white rounded-top">
-					<Image className="w-3c h-3c mr-3" src={icon} />
+					<Image className="w-3c h-3c mr-3" src={icon || '.user-o'} />
 					{div}
 				</div>
 				<div className="py-3 px-4">

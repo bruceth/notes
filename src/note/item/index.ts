@@ -1,2 +1,2 @@
-export * from './VNoteBase';
+export * from './VNoteView';
 export * from './CNoteItem';

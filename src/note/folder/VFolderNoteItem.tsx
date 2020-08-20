@@ -1,8 +1,8 @@
 import React from 'react';
-import { VNoteBase } from '../item';
 import { EasyTime, FA } from 'tonva';
 import { CFolderNoteItem } from './CFolderNoteItem';
 import { observer } from 'mobx-react';
+import { VNoteBase } from '../item/VNoteBase';
 
 export class VFolderNoteItem extends VNoteBase<CFolderNoteItem> {
 	render() {

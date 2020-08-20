@@ -1,19 +1,17 @@
 import React from 'react';
-import { tv, FA } from "tonva";
 import { VEdit } from './VEdit';
 import { observer } from 'mobx-react';
-import { VNoteBase, CheckItem } from '../item';
+import { VNoteView, CheckItem } from '../item';
 import { CTextNoteItem } from './CTextNoteItem';
-//import { notesName } from '../../note';
 
-export class VView extends VNoteBase<CTextNoteItem> {
+export class VTextView extends VNoteView<CTextNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return this.t('notes')}
 
 	content() {
 		return React.createElement(observer(() => {
-			let {title, checkType} = this.controller;
-			return <div className="my-2 mx-1 border rounded">
+			let {title} = this.controller;
+			return <div className="">
 				<div className="bg-white">
 					{this.renderFrom()}
 					{title && <div className="px-3 py-2 border-bottom">
@@ -23,7 +21,6 @@ export class VView extends VNoteBase<CTextNoteItem> {
 				</div>
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}
-				{this.renderComments()}
 			</div>;
 		}));
 	}

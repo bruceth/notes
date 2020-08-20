@@ -5,7 +5,7 @@ import { CNoteItem } from 'note/item';
 
 export class VList extends VBasePage {
 	render() {
-		return <List className="my-1" items={this.controller.items} 
+		return <List className="mt-1" items={this.controller.items} 
 			item={{render: this.renderNote, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
 	}
 
@@ -17,8 +17,8 @@ export class VList extends VBasePage {
 
 	private renderNote = (item: CNoteItem, index:number) => {
 		let {type, unread} = item.noteItem;
-		let cn = 'd-block rounded mx-2 my-1 border';
-		if (unread>0) cn += 'border-info shadow';
+		let cn = 'd-block mb-2';
+		// if (unread>0) cn += 'border-info shadow';
 		return <div className={cn}>
 			{item.renderItem(index)}
 		</div>;

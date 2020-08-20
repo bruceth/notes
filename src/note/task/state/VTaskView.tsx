@@ -1,11 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { FA, EasyTime } from "tonva";
+import { FA } from "tonva";
 import { CTaskNoteItem, EnumTaskState } from "../CTaskNoteItem";
-import { VNoteBase, CheckItem } from '../../item';
+import { VNoteView, CheckItem } from '../../item';
 import { VEdit } from '../VEdit';
 
-export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
+export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
 	header() { return '任务' }
 	protected get allowCheck() { return true; }
@@ -24,7 +24,6 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 				</div>
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}
-				{this.renderComments()}
 			</div>;
 		}));
 	}
@@ -112,7 +111,9 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 	}
 
 	renderListItem() {
-		let { caption, $create, $update } = this.controller.noteItem;
+		let { caption } = this.controller.noteItem;
+		/*
+		, $create, $update
 		let divChanged: any = undefined;
 		let create: Date = $create;
 		let update: Date = $update;
@@ -132,17 +133,15 @@ export abstract class VTaskView extends VNoteBase<CTaskNoteItem> {
 				</small>
 			</div>;
 		}
+		*/
 
 		let divCaption = this.renderCaption(caption);
 		return <div className="d-block bg-white">
+			{this.renderFrom()}
 			<div className="px-3 py-2">
 				{divCaption}
 			</div>
 			{this.renderContent()}
-			<div className="d-flex px-3 py-2 bg-light">
-				<div className="mr-auto"/>
-				{divChanged}
-			</div>
 		</div>;
 	}
 }

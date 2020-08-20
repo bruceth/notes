@@ -1,14 +1,12 @@
 import React from 'react';
 import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { VNoteBase, CheckItem } from '.';
+import { VNoteView, CheckItem } from '.';
 import { FA, ConfirmOptions } from 'tonva';
 import { CNoteItem } from './CNoteItem';
-//import { notesName } from '../../note';
-import { threadId } from 'worker_threads';
 import { VItemInput, ItemInputProps } from './VItemInput';
 
-export abstract class VNoteForm<T extends CNoteItem> extends VNoteBase<T> {
+export abstract class VNoteForm<T extends CNoteItem> extends VNoteView<T> {
 	@observable private changed: boolean = false;
 	private inputAdd: HTMLInputElement;
 

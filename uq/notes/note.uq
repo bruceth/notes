@@ -215,9 +215,10 @@ RETURNS ret (
 	comment ID,
 ) {
 	VAR commentId ID, folderId ID, seconds INT;
-	IF exists(SELECT id FROM Note WHERE id=note AND owner=$user) OR
-	   exists(SELECT a.note FROM NoteAccess as a WHERE a.note=note AND a.user=$user)
-	{
+	--看到即有评论权限
+	--IF exists(SELECT id FROM Note WHERE id=note AND owner=$user) OR 
+	--   exists(SELECT a.note FROM NoteAccess as a WHERE a.note=note AND a.user=$user)
+	--{
 		TUID Note INTO commentId SET type=EnumNoteType.Comment, content=content, owner=$user;
 		SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
@@ -225,7 +226,7 @@ RETURNS ret (
 			BOOK FolderNote AT(noteFolderId, note) SET seconds=seconds;
 		}
 		BOOK Note2Note AT(note, commentId) SET type=EnumNoteMapType.Comment;
-	}
+	--}
 	INTO ret SELECT commentId as comment;
 };
 
@@ -238,13 +239,13 @@ ACTION SetNote (
 		VAR noteId ID, folderId ID, seconds INT;
 		TUID Note ID note SET caption=caption, content=content;
 		SET noteId = note;
-		SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
+		-- SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
-		BOOK FolderNote AT(folderId, noteId) SET seconds=seconds; -- , type=type, sub=sub;
+		-- BOOK FolderNote AT(folderId, noteId) SET seconds=seconds; -- , type=type, sub=sub;
 		FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
-			IF noteFolderId<>folderId {
+			--IF noteFolderId<>folderId {
 				BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds;
-			}
+			--}
 		}
 		FOREACH (var to ID OF SELECT user as to FROM NoteAccess WHERE note=noteId and access=1) {
 			TUID [$User] ID (to) SET poke=1;

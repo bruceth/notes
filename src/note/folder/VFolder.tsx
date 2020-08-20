@@ -36,7 +36,7 @@ export class VFolder extends VNoteView<CFolderNoteItem> {
 				topContent = "整理小单";
 			}
 			top = <div className="d-flex mx-3 pt-2">
-				<FA className="mr-3 text-warning" name="folder" size="3x" />
+				<FA className="mr-3 text-warning" name={noteItem.toCount > 0 ? "folder-open":"folder"} size="3x" />
 				<div className="small text-muted">{this.renderParagraphs(topContent)}</div>
 			</div>;
 		}

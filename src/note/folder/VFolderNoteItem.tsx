@@ -11,7 +11,10 @@ export class VFolderNoteItem extends VNoteBase<CFolderNoteItem> {
 
 			return <div className="d-block d-flex bg-white">
 				{caption && <div className="px-3 py-2"><b>{caption}</b></div>}
-				<FA className="ml-auto mr-2 align-self-center" name="angle-right" />
+				<div className="ml-auto px-3 py-2 align-self-center" 
+					onClick={(e)=>{e.stopPropagation(); this.controller.onClickEllipsis()}}>
+					<FA name="ellipsis-h" />
+				</div>
 			</div>;
 		}));
 	}

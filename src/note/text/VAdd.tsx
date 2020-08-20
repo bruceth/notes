@@ -18,7 +18,7 @@ export class VAdd extends VNoteForm<CTextNoteItem> {
 		return this.renderEdit();
 	}
 
-	protected getOptions() {
+	protected getOptions(): {val:number, text:string}[] {
 		return [
 			{ val: 0, text: '文字' },
 			{ val: 1, text: '可勾选事项' },

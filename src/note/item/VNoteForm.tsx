@@ -55,7 +55,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteView<T> {
 
 	protected abstract renderExButtons():JSX.Element;
 
-	protected getOptions() {
+	protected getOptions(): {val:number, text:string}[] {
 		return [
 			{ val: 0, text: '文字' },
 			{ val: 1, text: '可勾选事项' },

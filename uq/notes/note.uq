@@ -1,4 +1,4 @@
-ENUM EnumNoteType (Text=0, Task=1, Comment=2);
+ENUM EnumNoteType (Text=0, Task=1, Comment=2, Folder=3);
 
 -- type: 根据type，分配给特定的程序
 TUID Note (
@@ -42,7 +42,7 @@ MAP NoteX (
 );
 
 MAP FolderNote (
-	KEY folder ID Folder,
+	KEY folder ID Note,
 	KEY note ID Note,
 	type SMALLINT DEFAULT 0,			-- Note类, EnumNoteType
 	seconds INT,						-- seconds since 2020-1-1
@@ -178,7 +178,8 @@ RETURNS contain (
 		LIMIT 20;
 };
 
-ACTION AddNote (
+ACTION AddNote VER 1.03 (
+	parent ID Note,
 	caption CHAR(200),
 	content TEXT,
 	type SMALLINT,
@@ -188,7 +189,12 @@ RETURNS ret (
 ) {
 	VAR noteId ID, folderId ID, seconds INT;
 	TUID Note INTO noteId SET type=type, caption=caption, content=content, owner=$user;
-	SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
+	if parent is NULL OR parent < 0 {
+		SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
+	}
+	else {
+		SET folderId=parent;
+	}
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 	BOOK FolderNote AT (folderId, noteId) SET seconds=seconds, type=type;
 	FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
@@ -267,7 +273,7 @@ ACTION SendNoteTo (
 			VAR folderId ID;
 			SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
 			IF folderId IS NULL {
-				TUID Folder INTO folderId SET owner=to;
+				TUID Note INTO folderId SET owner=to, type=EnumNoteType.Folder;
 				BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
 			}
 			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
@@ -294,7 +300,7 @@ RETURNS ret (
 	spawn INT,
 ) {
 	VAR toCount INT, spawnCount INT;
-	SET toCount = Count(*) FROM NoteAccess WHERE note=note AND access=1;
+	SET toCount = Count(*) FROM NoteAccess as a WHERE a.note=[note] AND a.access=1;
 	SET spawnCount = Count(*) FROM Note2Note WHERE note0=note AND type=EnumNoteMapType.Spawn;
 	INTO ret SELECT toCount as to, spawnCount as spawn;
 };

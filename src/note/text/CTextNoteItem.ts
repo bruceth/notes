@@ -21,7 +21,7 @@ export class CTextNoteItem extends CNoteItem {
 		this.openVPage(VTextView);
 	}
 
-	showAddNotePage() {
-		this.openVPage(VAdd);
+	showAddNotePage(parent: number) {
+		this.openVPage(VAdd, parent);
 	}
 }

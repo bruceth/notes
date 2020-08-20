@@ -55,12 +55,16 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteView<T> {
 
 	protected abstract renderExButtons():JSX.Element;
 
-	protected renderEdit() {
-		let radios = [
+	protected getOptions() {
+		return [
 			{ val: 0, text: '文字' },
 			{ val: 1, text: '可勾选事项' },
 			{ val: 2, text: '分段落' },
 		];
+	}
+
+	protected renderEdit() {
+		let radios = this.getOptions();
 
 		return <div className="m-2">
 			<div className="border rounded">
@@ -71,7 +75,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteView<T> {
 							defaultValue={this.controller.title} />
 					</div>
 					<div className="py-1 px-1">
-						{React.createElement(observer(() => this.controller.checkType === 0 ? 
+						{React.createElement(observer(() => this.controller.checkType === 0 || this.controller.checkType === 3? 
 							this.renderContentTextArea()
 							: this.controller.checkType === 1 ? this.renderContentCheckList(): this.renderContentEditList()))}
 					</div>
@@ -87,16 +91,18 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteView<T> {
 					{this.renderExButtons()}
 				</div>
 			</div>
-			<div className="m-2 form-group form-check">
-				{radios.map((v, index) => {
-					let { val, text } = v;
-					return <label key={index} className="mb-0 mx-2">
-						<input className="mr-1" type="radio" value={val}
-							defaultChecked={this.controller.checkType === val} name={'checktype'} onChange={this.onCheckableChanged} />
-						{text}
-				</label>
-				})}
-			</div>
+			{ radios &&
+				<div className="m-2 form-group form-check">
+					{radios.map((v, index) => {
+						let { val, text } = v;
+						return <label key={index} className="mb-0 mx-2">
+							<input className="mr-1" type="radio" value={val}
+								defaultChecked={this.controller.checkType === val} name={'checktype'} onChange={this.onCheckableChanged} />
+							{text}
+					</label>
+					})}
+				</div>
+			}
 		</div>;
 	}
 

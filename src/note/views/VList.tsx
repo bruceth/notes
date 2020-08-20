@@ -5,7 +5,7 @@ import { CNoteItem } from 'note/item';
 
 export class VList extends VBasePage {
 	render() {
-		return <List className="mt-1" items={this.controller.notesPager} 
+		return <List className="mt-1" items={this.controller.items} 
 			item={{render: this.renderNote, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
 	}
 

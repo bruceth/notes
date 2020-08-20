@@ -5,19 +5,20 @@ import { CTextNoteItem } from "./text";
 import { EnumNoteItemType, NoteItem, NoteModel } from "./model";
 import { CNoteItem } from "./item/CNoteItem";
 import { VTo } from "./views/VTo";
-import { CTaskNoteItem } from "./task/CTaskNoteItem";
+import { CTaskNoteItem, EnumTaskState } from "./task/CTaskNoteItem";
 import { Contact } from "model";
 import { observable } from "mobx";
 import { VSent } from "./views/VSent";
+import { CFolderNoteItem } from "./folder";
 
 const cNoteItems: {[key in EnumNoteItemType]: new (...args: any[])=> CNoteItem} = {
 	[EnumNoteItemType.text]: CTextNoteItem,
 	[EnumNoteItemType.task]: CTaskNoteItem,
+	[EnumNoteItemType.folder]: CFolderNoteItem,
 };
 
 export class CNote extends CUqBase {
-	folderId: number;
-	notesPager: QueryPager<CNoteItem>;
+	protected foldItem: CFolderNoteItem[];
 	@observable contacts: Contact[];
 	noteItem: NoteItem;
 	//noteModel: NoteModel;
@@ -26,24 +27,36 @@ export class CNote extends CUqBase {
 	}
 
 	init(folderId?: number) {
-		if (!folderId) this.folderId = -EnumSpecFolder.notes;
-		else this.folderId = folderId;
-		let {notes} = this.uqs;
-		this.notesPager = new QueryPager<CNoteItem>(notes.GetNotes, undefined, undefined, true);
-		this.notesPager.setItemConverter(this.noteItemConverter);
+		this.foldItem = [this.newSub(CFolderNoteItem)];
 	}
 
-	private noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteItem => {
+	noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteItem => {
 		let cNoteItem = this.getCNoteItem(item.type);
 		item = cNoteItem.convertObj(item);
 		cNoteItem.init(item);
-
-		cNoteItem.getToAndSpawnCount(); //需要考虑加入队列排队获取吗
-
 		return cNoteItem;
 	}
 
-	private getCNoteItem(type: EnumNoteItemType): CNoteItem {
+	get currentFoldItem() {
+		return this.foldItem[0];
+	}
+
+	get items() {
+		return this.currentFoldItem.notesPager;
+	}
+
+	openFolder(foldItem:CFolderNoteItem) {
+		this.foldItem.unshift(foldItem);
+		this.currentFoldItem.showFolder();
+	}
+
+	popFolder() {
+		if (this.foldItem.length > 1) {
+			this.foldItem.splice(0, 1);
+		}
+	}
+
+	getCNoteItem(type: EnumNoteItemType): CNoteItem {
 		let ret = cNoteItems[type];
 		if (ret === undefined) {
 			debugger;
@@ -53,85 +66,23 @@ export class CNote extends CUqBase {
 	}
 
 	async load() {
-		await this.notesPager.first({folderId: this.folderId});
+		await this.currentFoldItem.load();
 	}
 
 	async refresh() {
-		//每次刷新取5个。
-		let newnotes = new QueryPager<NoteItem>(this.uqs.notes.GetNotes, 5, 5, false);
-		await newnotes.first({folderId: this.folderId});
-		let newitems = newnotes.items;
-		if (newitems) {
-			let len = newitems.length;
-			let items = this.notesPager.items;
-			for (let i = len - 1; i >= 0; --i) {
-				let item = newitems[i];
-				let note = item.note;
-				let index = items.findIndex(v => v.noteItem.note===note);
-				if (index >= 0) {
-					items.splice(index, 1);
-				}
-				let cNoteItem = this.noteItemConverter(item, undefined);
-				items.unshift(cNoteItem);
-			}
-		}
+		await this.currentFoldItem.refresh();
 	}
 
 	async getNote(id: number): Promise<NoteModel> {
-		let ret = await this.uqs.notes.GetNote.query({folder: this.folderId, note: id});
-		let noteModel:NoteModel = ret.ret[0];
-		noteModel.to = ret.to;
-		noteModel.flow = ret.flow;
-		noteModel.spawn = ret.spawn;
-		noteModel.contain = ret.contain;
-		noteModel.comments = ret.comments;
-		return noteModel;
+		return await this.currentFoldItem.getNote(id);
 	}
 
-	async addNote(caption:string, content:string, obj:any) {
-		let type = EnumNoteItemType.text;
-		let sub = 0;
-		let ret = await this.uqs.notes.AddNote.submit({caption, content, type, sub});
-		let {note} = ret;
-		//let {Note} = this.uqs.notes;
-		let date = new Date();
-		let noteItem:NoteItem = {
-			seconds: undefined,
-			owner: this.user.id,
-			note: note as number,
-			type: EnumNoteItemType.text,
-			caption,
-			content,
-			assigned: undefined,
-			from: undefined,
-			fromAssigned: undefined,
-			state: undefined,
-			unread: undefined,
-			obj,
-			$create: date,
-			$update: date,
-		}
-		let cNoteItem = this.getCNoteItem(EnumNoteItemType.text);
-		cNoteItem.init(noteItem);
-		this.notesPager.items.unshift(cNoteItem);
-		return cNoteItem;
+	async addNote(folder:number, caption:string, content:string, obj:any, type: EnumNoteItemType) {
+		return await this.currentFoldItem.addNote(folder, caption, content, obj, type);
 	}
 
 	async setNote(waiting:boolean, noteItem:NoteItem, caption:string, content:string, obj:any) {
-		let {SetNote, Note} = this.uqs.notes;
-		let {note, type} = noteItem;
-		await SetNote.submit({note, caption, content, type}, waiting);
-		Note.resetCache(note);
-		let {items} = this.notesPager;
-		let index = items.findIndex(v => v.noteItem.note===note);
-		if (index >= 0) {
-			let theItems = items.splice(index, 1);
-			let theItem = theItems[0];
-			theItem.noteItem.caption = caption;
-			theItem.noteItem.content = content;
-			theItem.noteItem.obj = obj;
-			items.unshift(theItem);
-		}
+		return await this.currentFoldItem.setNote(waiting, noteItem, caption, content, obj);
 	}
 
 	async sendNoteTo(note:number, toList:number[]) {
@@ -140,18 +91,16 @@ export class CNote extends CUqBase {
 	}
 
 	async hideNote(note:number, x:number) {
-		await this.uqs.notes.HideNote.submit({note, x});
-		let index = this.notesPager.items.findIndex(v => v.noteItem.note === note);
-		if (index >= 0) this.notesPager.items.splice(index, 1);
+		await this.currentFoldItem.hideNote(note, x);
 	}
 
 	renderListView() {
-		return this.renderView(VList);
+		return this.currentFoldItem.renderListView();
 	}
 
-	showAddNotePage = () => {
+	showAddNotePage = (parent: number) => {
 		let cTextNoteItem = this.newSub(CTextNoteItem);
-		cTextNoteItem.showAddNotePage();
+		cTextNoteItem.showAddNotePage(parent);
 	}
 
 	showTo(noteItem:NoteItem, backPageCount:Number) {

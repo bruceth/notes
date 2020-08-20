@@ -8,7 +8,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		let {checkType} = this.controller;
 		return <div>
 		{
-			checkType === 0 ? 
+			checkType === 0 || checkType === 3 ? 
 				this.renderContentText()
 				: 
 				checkType === 1 ? 

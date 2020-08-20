@@ -7,6 +7,7 @@ import { CTextNoteItem } from './CTextNoteItem';
 export class VTextView extends VNoteView<CTextNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return this.t('notes')}
+
 	content() {
 		return React.createElement(observer(() => {
 			let {title} = this.controller;

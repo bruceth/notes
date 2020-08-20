@@ -1,7 +1,7 @@
 import { BoxId, t } from "tonva";
 
 //export const notesName = t('notes');
-export enum EnumNoteItemType {text=0, task=1}
+export enum EnumNoteItemType {text=0, task=1, folder=3}
 
 export interface NoteItem {
 	seconds: number;
@@ -19,6 +19,8 @@ export interface NoteItem {
 	obj: any;
 	$create: Date;
 	$update: Date;
+	toCount?: number;
+	spawnCount?: number;
 }
 
 export interface NoteFlow {	

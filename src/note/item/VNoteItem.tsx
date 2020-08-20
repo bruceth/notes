@@ -4,7 +4,7 @@ import { FA } from 'tonva';
 import { CNoteItem } from './CNoteItem';
 import { observer } from 'mobx-react';
 
-export class VNoteItem extends VNoteView<CNoteItem> {
+export class VNoteItem<T extends CNoteItem> extends VNoteView<T> {
 	render() {
 		return React.createElement(observer(() => {
 			let {owner, caption, $create, $update} = this.controller.noteItem;

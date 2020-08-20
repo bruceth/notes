@@ -30,7 +30,7 @@ export class VFolder extends VNoteView<CFolderNoteItem> {
 			let json = JSON.parse(contentString);
 			if (json) {
 				let {content} = json;
-				topContent = (content as string).trimEnd();
+				topContent = (content as string)?.trimEnd();
 			}
 			else {
 				topContent = "整理小单";

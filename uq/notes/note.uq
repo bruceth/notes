@@ -272,7 +272,7 @@ ACTION SendNoteTo (
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 		TABLE tblTo(to ID);
 		TEXT tos sep=',' ln='|' INTO tblTo;
-		BOOK NoteAccess AT (note, *) SET access=0;
+		--BOOK NoteAccess AT (note, *) SET access=0; 这句实际把所有access清空了
 		FOREACH (var to ID OF SELECT to FROM tblTo) {
 			VAR folderId ID;
 			SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;

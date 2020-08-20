@@ -83,7 +83,7 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 		'contain': {caption: '包含', render: this.renderContain},
 	}
 	protected arr:RelativeKey[] = ['comment', 'to', 'flow', 'spawn', 'contain'];
-	@observable private relativeCur: RelativeKey = 'comment';
+	@observable protected relativeCur: RelativeKey = 'comment';
 	render():JSX.Element {
 		let render = observer(() => {
 			return <div className="bg-white">

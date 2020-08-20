@@ -222,7 +222,9 @@ RETURNS ret (
 		SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 		FOREACH (var noteFolderId ID OF SELECT a.folder as noteFolderId FROM FolderNote as a WHERE a.note=note) {
-			BOOK FolderNote AT(noteFolderId, note) SET seconds=seconds;
+			BOOK FolderNote AT(noteFolderId, note) 
+				SET seconds=seconds, 
+					unread=CASE WHEN noteFolderId<>folderId THEN 1 ELSE 0 END;
 		}
 		BOOK Note2Note AT(note, commentId) SET type=EnumNoteMapType.Comment;
 	}
@@ -242,9 +244,9 @@ ACTION SetNote (
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 		BOOK FolderNote AT(folderId, noteId) SET seconds=seconds; -- , type=type, sub=sub;
 		FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
-			IF noteFolderId<>folderId {
-				BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds;
-			}
+			BOOK FolderNote AT(noteFolderId, noteId) 
+				SET seconds=seconds, 
+					unread=CASE WHEN noteFolderId<>folderId THEN 1 ELSE 0 END;
 		}
 		FOREACH (var to ID OF SELECT user as to FROM NoteAccess WHERE note=noteId and access=1) {
 			TUID [$User] ID (to) SET poke=1;

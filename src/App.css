@@ -52,3 +52,20 @@ ul.note-content-list>li {
 	padding: 0;
 	margin: 0;
 }
+.unread-dot {
+	position: relative;
+}
+.unread-dot>u {
+    position: absolute;
+    display: block;
+    right: -0.5rem;
+    top: -0.2rem;
+    height: 0.5rem;
+    width: 0.5rem;
+    background-color: red;
+    border-radius: 0.3rem;
+    color: white;
+    font-size: 0.75rem;
+	text-decoration: none;
+	text-align: center;
+}

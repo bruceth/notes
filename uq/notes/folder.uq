@@ -1,16 +1,16 @@
-TUID Folder (
-	id,
-	main caption CHAR(100),
-	owner ID [$User],
-	index owner_id (owner, id) UNIQUE,
-);
+--TUID Folder (
+--	id,
+--	main caption CHAR(100),
+--	owner ID [$User],
+--	index owner_id (owner, id) UNIQUE,
+--);
 
 ENUM EnumSpecFolder (notes=1, good=2);
 
 MAP SpecFolder (
 	KEY owner ID [$User],
 	KEY spec TINYINT,
-	folder ID Folder,
+	folder ID Note,
 ) ON ADD {
 	// only for test of ON ADD action
 	var a INT, b int;
@@ -18,8 +18,8 @@ MAP SpecFolder (
 	set b = spec;
 };
 
-QUERY GetNotes(
-	folderId ID Folder,					-- folderId < 0, 则是特定folder，如果没有，需要创建
+QUERY GetNotes ver 1.01 (
+	folderId ID Note,					-- folderId < 0, 则是特定folder，如果没有，需要创建
 )
 PAGE (
 	seconds INT DESC, 
@@ -36,13 +36,15 @@ PAGE (
 	unread TINYINT,
 	[$create] TIMESTAMP,
 	[$update] TIMESTAMP,
+	toCount INT,
+	spawnCount INT
 ) {
 	-- 第一次如果没有notes folder，则创建
 	IF folderId < 0 {
 		VAR fid ID;
 		SET fid = folder FROM SpecFolder WHERE owner=$user AND spec=-folderId;
 		IF fid IS NULL {
-			TUID Folder INTO fid SET owner=$user;
+			TUID Note INTO fid SET owner=$user, type=EnumNoteType.Folder;
 			BOOK SpecFolder AT($user, -folderId) SET folder=fid;
 		}
 		SET folderId = fid;
@@ -52,6 +54,8 @@ PAGE (
 		, b.[from], e.assigned as fromAssigned
 		, d.state, d.flowContent, a.unread
 		, b.[$create], b.[$update]
+		, (SELECT Count(*) FROM NoteAccess as WHERE note=a.note AND access=1) as toCount
+		, (SELECT Count(*) FROM Note2Note WHERE note0=a.note AND type=EnumNoteMapType.Spawn) as spawnCount
 		FROM FolderNote as a
 			LEFT JOIN Note as b ON a.note=b.id
 			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact

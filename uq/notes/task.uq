@@ -25,7 +25,7 @@ ACTION AssignTask ver 1.0 (
 		VAR taskId ID, folderId ID;
 		SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
 		IF folderId IS NULL {
-			TUID Folder INTO folderId SET owner=to;
+			TUID Note INTO folderId SET owner=to, type=EnumNoteType.Folder;
 			BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
 		}
 		TUID Note INTO taskId SET type=EnumNoteType.task, caption=caption, content=content, owner=to, from=$user;

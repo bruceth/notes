@@ -1,6 +1,5 @@
-import React from 'react';
 import { observable } from "mobx";
-import { NoteItem, NoteModel, replaceAll } from '../model';
+import { NoteItem, NoteModel, EnumNoteItemType } from '../model';
 import { CNote } from '../CNote';
 import { CUqSub } from '../../tapp';
 import { VNoteItem } from './VNoteItem';
@@ -16,15 +15,17 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	@observable noteItem: NoteItem;
 	@observable toCount: number;
 	@observable spawnCount: number;
-	
-	init(param: NoteItem):void {
+
+	init(param: NoteItem): void {
 		this.noteItem = param;
 		if (!param) return;
 		this.title = param.caption;
-		let {obj} = param;
+		this.toCount = param.toCount;
+		this.spawnCount = param.spawnCount;
+		let { obj } = param;
 		if (obj) {
 			this.checkType = Number(obj.check);
-			if (this.checkType === 0) {
+			if (this.checkType === 0 || this.checkType === 3) {
 				this.noteContent = obj.content;
 			}
 			else {
@@ -40,18 +41,11 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	@observable checkType: number = 0;
 	@observable items: CheckItem[] = [];
 	@observable changedNoteContent: string;
-	itemKey:number = 1;
+	itemKey: number = 1;
 
-	protected async internalStart() {}
+	protected async internalStart() { }
 
-	async getToAndSpawnCount() {
-		let id = this.noteItem.note as number;
-		let ret = await this.uqs.notes.GetNoteToAndSpawnCount.submit({note:id});
-		this.toCount = ret.to as number;
-		this.spawnCount = ret.spawn as number;
-	}
-
-	addItem(value:string):boolean {
+	addItem(value: string): boolean {
 		if (this.checkType === 1) {
 			this.items.push({
 				key: this.itemKey++,
@@ -68,7 +62,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		return false;
 	}
 
-	renderItem(index:number): JSX.Element {
+	renderItem(index: number): JSX.Element {
 		let vNoteItem = new VNoteItem(this);
 		return vNoteItem.render();
 	}
@@ -80,9 +74,9 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		return ret;
 	}
 
-	protected buildObj():any {
-		let obj = this.noteItem?{...this.noteItem.obj}:{};
-		if (this.checkType === 0) {
+	protected buildObj(): any {
+		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
+		if (this.checkType === 0 || this.checkType === 3) {
 			obj.check = this.checkType;
 			obj.content = this.changedNoteContent || this.noteContent;
 			delete obj.itemKey;
@@ -98,12 +92,12 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	}
 
 	// convertObj 可以在不同的继承中被重载
-	convertObj(item:NoteItem):NoteItem {
+	convertObj(item: NoteItem): NoteItem {
 		item.obj = this.parseContent(item.content);
 		return item;
 	}
 
-	protected parseContent(content:string):any {
+	protected parseContent(content: string): any {
 		try {
 			if (!content) return undefined;
 			return JSON.parse(content);
@@ -114,11 +108,11 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		}
 	}
 
-	showTo(backPageCount:number) {
+	showTo(backPageCount: number) {
 		this.owner.showTo(this.noteItem, backPageCount);
 	}
 
-	onCheckableChanged(type:number) {
+	onCheckableChanged(type: number) {
 		let oldType = this.checkType;
 		this.checkType = type;
 		if (oldType === 0) {
@@ -143,7 +137,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 			}
 		}
 		else {
-			if (this.checkType === 0) {
+			if (this.checkType === 0 || this.checkType === 3) {
 				this.noteContent = this.items.map(v => v.text).join('\n');
 			}
 			else if (this.checkType === 1) {
@@ -156,17 +150,17 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		this.changedNoteContent = undefined;
 	}
 
-	async onCheckChange(key:number, checked:boolean) {
+	async onCheckChange(key: number, checked: boolean) {
 		let item = this.items.find(v => v.key === key);
 		if (item) item.checked = checked;
 		await this.SetNote(false);
 	}
 
-	async SetNote(waiting:boolean) {
+	async SetNote(waiting: boolean) {
 		let noteContent = this.stringifyContent();
 		await this.owner.setNote(waiting,
 			this.noteItem,
-			this.title, 
+			this.title,
 			noteContent,
 			this.buildObj());
 		this.updateChange();
@@ -185,16 +179,17 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		}
 	}
 
-	async AddNote() {
+	async AddNote(parent: number) {
 		let noteContent = this.stringifyContent();
-		let ret = await this.owner.addNote(this.title, noteContent, this.buildObj());
+		let type = this.checkType === 3 ? EnumNoteItemType.folder : EnumNoteItemType.text;
+		let ret = await this.owner.addNote(parent, this.title, noteContent, this.buildObj(), type);
 		this.updateChange();
 		return ret;
 	}
 
-	async AddComment(content:string) {		
-		let ret = await this.uqs.notes.AddComment.submit({note:this.noteModel.id, content});
-		let commentId = ret.comment;		
+	async AddComment(content: string) {
+		let ret = await this.uqs.notes.AddComment.submit({ note: this.noteModel.id, content });
+		let commentId = ret.comment;
 		// 加入note界面，显示comment
 		if (commentId) {
 			this.noteModel.comments.unshift({

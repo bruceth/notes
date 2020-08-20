@@ -22,7 +22,7 @@ export class VFolder extends VPage<CFolderNoteItem> {
 	}
 
 	content() {
-		return <List className="my-1" items={this.controller.notesPager} 
+		return <List className="mt-1" items={this.controller.notesPager} 
 			item={{render: this.renderNote, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
 	}
 
@@ -38,7 +38,7 @@ export class VFolder extends VPage<CFolderNoteItem> {
 
 	private renderNote = (item: CNoteItem, index:number) => {
 		let {type, unread} = item.noteItem;
-		let cn = 'd-block rounded mx-2 my-1 border';
+		let cn = 'd-block mb-2 ';
 		if (unread>0) cn += 'border-info shadow';
 		return <div className={cn}>
 			{item.renderItem(index)}

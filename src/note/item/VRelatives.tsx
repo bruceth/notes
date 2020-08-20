@@ -6,8 +6,8 @@ import { NoteItem, CommentItem } from 'note/model';
 import { observer } from 'mobx-react';
 import { VNoteBase } from './VNoteBase';
 
-type RelativeKey = 'comment'|'to'|'flow'|'spawn'|'contain';
-interface Relative {
+export type RelativeKey = 'comment'|'to'|'flow'|'spawn'|'contain';
+export interface Relative {
 	caption: string;
 	render: () => JSX.Element;
 }
@@ -75,14 +75,14 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 		return <UserView user={userId as number} render={renderUser} />;
 	}
 
-	private tabs:{[key in RelativeKey]:Relative} = {
+	protected tabs:{[key in RelativeKey]:Relative} = {
 		'comment': {caption: '评论', render: this.renderComments},
 		'to': {caption: '分享', render: this.renderTo},
 		'flow': {caption: '流程', render: this.renderFlow},
 		'spawn': {caption: '派生', render: this.renderSpawn},
 		'contain': {caption: '包含', render: this.renderContain},
 	}
-	private arr:RelativeKey[] = ['to', 'flow', 'spawn', 'contain', 'comment'];
+	protected arr:RelativeKey[] = ['to', 'flow', 'spawn', 'contain', 'comment'];
 	@observable private relativeCur: RelativeKey = 'to';
 	render():JSX.Element {
 		let render = observer(() => {

@@ -135,7 +135,9 @@ RETURNS contain (
 		VAR fid ID;
 		SET folder = a.folder FROM SpecFolder as a WHERE a.owner=$user AND a.spec=-folder;
 	}
-	BOOK FolderNote AT (folder, note) SET unread=0;
+	if folder <> note {
+		BOOK FolderNote AT (folder, note) SET unread=0;
+	}
 	INTO ret SELECT a.id, a.type, a.caption, a.content, a.owner, a.x, a.from, a.[$create], a.[$update], b.state, b.flowContent
 		FROM Note as a LEFT JOIN NoteX as b ON a.id=b.note
 		WHERE a.id=note;
@@ -264,7 +266,8 @@ ACTION SendNoteTo (
 	tos TEXT,
 ) {
 	IF exists(SELECT id FROM Note WHERE id=note and owner=$user) {
-		VAR seconds INT;
+		VAR seconds INT, noteType INT;
+		SET noteType = type FROM Note WHERE id=note;
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 		TABLE tblTo(to ID);
 		TEXT tos sep=',' ln='|' INTO tblTo;
@@ -276,7 +279,7 @@ ACTION SendNoteTo (
 				TUID Note INTO folderId SET owner=to, type=EnumNoteType.Folder;
 				BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
 			}
-			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
+			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1, type=noteType;
 			BOOK NoteAccess AT (note, to) SET access=1;
 			TUID [$User] ID (to) SET poke=1;
 		};

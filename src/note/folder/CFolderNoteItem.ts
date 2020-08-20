@@ -4,6 +4,7 @@ import { QueryPager } from "tonva";
 import { EnumSpecFolder } from "tapp";
 import { VFolder } from "./VFolder"
 import { VFolderNoteItem } from "./VFolderNoteItem";
+import { VFolderView } from "./VFolderView";
 
 
 export class CFolderNoteItem extends CNoteItem {
@@ -50,7 +51,8 @@ export class CFolderNoteItem extends CNoteItem {
 	}
 
 	async getNote(id: number): Promise<NoteModel> {
-		let ret = await this.uqs.notes.GetNote.query({folder: this.folderId, note: id});
+		let folderId = this.owner.currentFoldItem?.folderId;
+		let ret = await this.uqs.notes.GetNote.query({folder: folderId, note: id});
 		let noteModel:NoteModel = ret.ret[0];
 		noteModel.to = ret.to;
 		noteModel.flow = ret.flow;
@@ -71,6 +73,16 @@ export class CFolderNoteItem extends CNoteItem {
 
 	onClickItem(noteModel: NoteModel): void {
 		this.owner.openFolder(this);
+	}
+
+	async onClickEllipsis() {
+		let noteItem = this.noteItem;
+		if (!noteItem)
+			return;
+		let noteModel = await this.getNote(noteItem.note);
+		noteItem.unread = 0;
+		this.noteModel = noteModel;
+		this.openVPage(VFolderView);
 	}
 
 	async addNote(folder:number, caption:string, content:string, obj:any, type:EnumNoteItemType) {

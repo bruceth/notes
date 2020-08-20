@@ -37,7 +37,7 @@ export class CNote extends CUqBase {
 		return cNoteItem;
 	}
 
-	protected get currentFoldItem() {
+	get currentFoldItem() {
 		return this.foldItem[0];
 	}
 

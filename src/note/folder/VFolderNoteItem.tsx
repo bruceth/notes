@@ -11,7 +11,7 @@ export class VFolderNoteItem extends VNoteBase<CFolderNoteItem> {
 
 			return <div className="d-block d-flex bg-white">
 				{caption && <div className="px-3 py-2"><b>{caption}</b></div>}
-				<FA className="ml-auto" name="angle-right" />
+				<FA className="ml-auto mr-2 align-self-center" name="angle-right" />
 			</div>;
 		}));
 	}

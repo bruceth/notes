@@ -1,9 +1,9 @@
 import React from 'react';
 import { CFolderNoteItem } from './CFolderNoteItem';
-import { CNoteItem } from "../item";
-import { VPage, List, FA } from 'tonva';
+import { CNoteItem, VNoteView } from "../item";
+import { List, FA } from 'tonva';
 
-export class VFolder extends VPage<CFolderNoteItem> {
+export class VFolder extends VNoteView<CFolderNoteItem> {
 	afterBack() {
 		this.controller.owner.popFolder();
 	}
@@ -22,8 +22,30 @@ export class VFolder extends VPage<CFolderNoteItem> {
 	}
 
 	content() {
-		return <List className="mt-1" items={this.controller.notesPager} 
-			item={{render: this.renderNote, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
+		let {noteItem, notesPager} = this.controller;
+		let top:any;
+		if (noteItem) {
+			let topContent: string;
+			let {content: contentString} = noteItem;
+			let json = JSON.parse(contentString);
+			if (json) {
+				let {content} = json;
+				topContent = (content as string).trimEnd();
+			}
+			else {
+				topContent = "整理小单";
+			}
+			top = <div className="d-flex mx-3 pt-2">
+				<FA className="mr-3 text-warning" name="folder" size="3x" />
+				<div className="small text-muted">{this.renderParagraphs(topContent)}</div>
+			</div>;
+		}
+		return <div>
+			{top}
+			<List className="mt-1" 
+				items={notesPager} 
+				item={{render: this.renderNote, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
+		</div>
 	}
 
 	renderListView() {

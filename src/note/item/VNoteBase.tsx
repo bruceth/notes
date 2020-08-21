@@ -2,9 +2,16 @@ import React from "react";
 import { VPage, User, Image, UserView, Page, EasyTime, FA } from "tonva";
 import { CNoteItem, CheckItem } from "./CNoteItem";
 import { observer } from "mobx-react";
+import { EnumNoteItemType } from 'note/model';
+
+const itemIcons: {[key in EnumNoteItemType]: JSX.Element} = {
+	[EnumNoteItemType.text]: <FA name="file-text-o" size="lg" className="text-info" />,
+	[EnumNoteItemType.task]: <FA name="tasks" size="lg" className="text-success" />,
+	[EnumNoteItemType.folder]: <FA name="folder" size="lg" className="text-warning mr-2" />,
+}
 
 export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
-	protected renderContent() {
+	protected renderContentBase(checkable:boolean) {
 		let {checkType} = this.controller;
 		return <div>
 		{
@@ -12,12 +19,30 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 				this.renderContentText()
 				: 
 				checkType === 1 ? 
-					this.renderCheckItems(true)
+					this.renderCheckItems(checkable)
 					:
 					this.renderContentList()
 		}
 		</div>;
 	}
+
+	protected renderContent() {
+		return this.renderContentBase(true);
+	}
+
+	protected renderItemContent() {
+		return this.renderContentBase(false);
+	}
+
+	protected renderTop() {
+		let {type, unread} = this.controller.noteItem;
+		let dot:any;
+		if (unread>0) dot = <u/>;
+		return <div className="d-flex mx-3 py-2 unread-dot align-items-center">
+			<div className="mr-4">{itemIcons[type]}{dot}</div>
+			{this.renderFrom()}
+		</div>;
+}
 	
 	protected renderParagraphs(content:string):JSX.Element {
 		if (!content) return;
@@ -67,41 +92,61 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 				let {checked} = ci;
 				if (checked === true) checkedItems.push(ci);
 				else uncheckedItems.push(ci);
-			}			
+			}
+			let doneItems:any;			
+			let checkedCount = checkedItems.length;
+			if (checkedCount > 0) {
+				let cn:string, doneTop:any;
+				if (checkable===true) {
+					cn = 'border-top py-2';
+					doneTop = <div className="px-3 pt-2 small text-muted">{checkedCount}项完成</div>;
+				}
+				doneItems = <div className={cn}>
+					{doneTop}
+					{checkedItems.map((v, index) => this.renderCheckItem(v, checkable))}
+				</div>;
+			}
 			return <div className="">
 				{uncheckedItems.map((v, index) => this.renderCheckItem(v, checkable))}
-				{
-					checkedItems.length > 0 && <div className="border-top py-2">
-						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
-						{checkedItems.map((v, index) => this.renderCheckItem(v, checkable))}
-					</div>
-				}
+				{doneItems}
 			</div>;
 		}));
 	}
 
 	protected renderCheckItem(v:CheckItem, checkable:boolean) {
 		let {key, text, checked} = v;
-		let cn = 'form-control-plaintext ml-3 ';
+		let cn = 'ml-3 ';
 		let content: any;
+		let icon: string;
 		if (checked === true) {
-			cn += 'text-muted';
+			cn += 'text-muted ';
 			content = <del>{text}</del>;
+			icon = 'check-square';
 		}
 		else {
 			content = text;
+			icon = 'square-o';
 		}
-		return <div key={key} className="d-flex mx-3 my-0 align-items-center form-group form-check">
-			<input className="form-check-input mr-3 mt-0" type="checkbox"
-				defaultChecked={checked}
-				data-key={key}
-				disabled={!checkable} />
-			<div className={cn}>{content}</div>
-		</div>;
+		if (checkable === true) {
+			return <div key={key} className="d-flex mx-3 my-0 align-items-center form-group form-check">
+				<input className="form-check-input mr-3 mt-0" type="checkbox"
+					defaultChecked={checked}
+					data-key={key} />
+				<div className={'form-control-plaintext ' + cn}>{content}</div>
+			</div>;
+		}
+		else {
+			return <div key={key} className="d-flex mx-3 my-0 align-items-center">
+				<FA name={icon} />
+				<div className={'py-1 ' + cn}>{content}</div>
+			</div>;
+		}
 	}
 
 	protected renderFrom = () => {
-		let {owner, assigned, from, fromAssigned, $create, $update} = this.controller.noteItem;
+		let {noteItem} = this.controller;
+		if (!noteItem) return <div>noteItem undefined in renderFrom</div>;
+		let {owner, assigned, from, fromAssigned, $create, $update} = noteItem;
 		let contact:number, contactAssigned:string;
 		if (from) {
 			contact = from as number;
@@ -112,18 +157,18 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			contactAssigned = assigned;
 		}
 		if (this.isMe(contact) === true) {
-			return <div className="px-3 pt-2 pb-1 small">{this.renderEditTime()}</div>
+			return this.renderEditTime();
 		}
 
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;
-			return <div className="d-flex pt-2 pb-3">
-				<div className="px-3 pt-1">
+			return <div className="d-flex">
+				<div className="pr-3">
 					<Image className="w-2-5c h-2-5c" src={icon || '.user-o'} />
 				</div>
-				<div>
+				<div style={{lineHeight:'1.3'}}>
 					<div><b className="small font-weight-bolder">{assigned || nick || name}</b></div>
-					<div className="small">{this.renderEditTime()}</div>
+					<div>{this.renderEditTime()}</div>
 				</div>
 			</div>
 		}
@@ -137,15 +182,15 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		if (create && update) {
 			let time:Date, action:any;
 			if (update.getTime() - create.getTime() > 60*1000) {
-				action = <FA className="mr-1" name="pencil-square-o" />;
+				action = <FA className="mr-1" name="pencil" />;
 				time = update;
 			}
 			else {
 				time = create;
 			}
 			return <small className="text-muted">
+				<span className="mr-2"><EasyTime date={time} /></span>
 				{action}
-				<span><EasyTime date={time} /></span>
 			</small>
 		}
 	}

@@ -15,7 +15,7 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 			let allowCheck = this.allowCheck;
 			let divCaption = this.renderCaption(title);
 			return <div className="my-2 mx-1 border rounded">
-				{this.renderFrom()}
+				{this.renderTop()}
 				<div className="bg-white">
 					<div className="px-3 py-2 border-bottom">
 						{divCaption}
@@ -30,7 +30,7 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 
 	private renderCaption(title: string) {
 		let divCaption = title ? <b className="text-primary">{title}</b> : <span className="text-info">任务</span>;
-		return <>{this.renderState()} &nbsp; {divCaption}</>;
+		return <><span className="mr-2">{divCaption}</span> {this.renderState()}</>;
 	}
 
 	protected renderBottomCommands() {
@@ -46,7 +46,7 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 			{right}
 		</div>;
 	}
-
+/*
 	protected renderCheckItem(v: CheckItem, allowCheck: boolean) {
 		let { key, text, checked } = v;
 		let cn = 'form-control-plaintext ml-3 ';
@@ -67,7 +67,8 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 			<div className={cn}>{content}</div>
 		</div>;
 	}
-
+*/
+/*
 	protected renderCheckItems(allowCheck: boolean) {
 		return React.createElement(observer(() => {
 			let uncheckedItems: CheckItem[] = [];
@@ -88,7 +89,7 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 			</div>;
 		}));
 	}
-
+*/
 	private onCheckChange = async (evt: React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;
 		let key = Number(t.getAttribute('data-key'));
@@ -112,36 +113,13 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 
 	renderListItem() {
 		let { caption } = this.controller.noteItem;
-		/*
-		, $create, $update
-		let divChanged: any = undefined;
-		let create: Date = $create;
-		let update: Date = $update;
-		if (create && update) {
-			let time: Date, action: any;
-			if (update.getTime() - create.getTime() > 60 * 1000) {
-				action = <FA name="pencil-square-o" />;
-				time = update;
-			}
-			else {
-				time = create;
-			}
-			divChanged = <div className="small">
-				<small>
-					{action}
-					<span className="text-info"><EasyTime date={time} /></span>
-				</small>
-			</div>;
-		}
-		*/
-
 		let divCaption = this.renderCaption(caption);
 		return <div className="d-block bg-white">
-			{this.renderFrom()}
+			{this.renderTop()}
 			<div className="px-3 py-2">
 				{divCaption}
 			</div>
-			{this.renderContent()}
+			{this.renderItemContent()}
 		</div>;
 	}
 }

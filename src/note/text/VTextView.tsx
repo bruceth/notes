@@ -13,7 +13,7 @@ export class VTextView extends VNoteView<CTextNoteItem> {
 			let {title} = this.controller;
 			return <div className="">
 				<div className="bg-white">
-					{this.renderFrom()}
+					{this.renderTop()}
 					{title && <div className="px-3 py-2 border-bottom">
 						<div><b>{title}</b></div>
 					</div>}
@@ -66,7 +66,7 @@ export class VTextView extends VNoteView<CTextNoteItem> {
 			<div className={cn}>{content}</div>
 		</label>;
 	}
-
+/*
 	protected renderCheckItems() {
 		return React.createElement(observer(() => {
 			let uncheckedItems:CheckItem[] = [];
@@ -87,7 +87,7 @@ export class VTextView extends VNoteView<CTextNoteItem> {
 			</div>;
 		}));
 	}
-
+*/
 	private onCheckChange = async (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;
 		let key = Number(t.getAttribute('data-key'));

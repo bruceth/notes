@@ -101,7 +101,7 @@ export class CFolderNoteItem extends CNoteItem {
 			from: undefined,
 			fromAssigned: undefined,
 			state: undefined,
-			unread: undefined,
+			unread: 0,
 			obj,
 			$create: date,
 			$update: date,
@@ -118,7 +118,8 @@ export class CFolderNoteItem extends CNoteItem {
 		let {SetNote, Note} = this.uqs.notes;
 		let {note, type} = noteItem;
 		await SetNote.submit({note, caption, content, type}, waiting);
-		Note.resetCache(note);
+		// Note.resetCache(note); 现在不调用NoteTuid的cache，所以不需要了
+		// noteItem.unread = 1; 自己修改自己的小单，只是移到最前面，并不显示unread
 		let {items} = this.notesPager;
 		let index = items.findIndex(v => v.noteItem.note===note);
 		if (index >= 0) {

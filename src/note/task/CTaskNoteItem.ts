@@ -125,8 +125,8 @@ export class CTaskNoteItem extends CNoteItem {
 	async assignTask(param: AssignTaskParam) {
 		let { note: noteId } = this.noteItem;
 		let { contacts, checker, rater, point } = param;
-		let note: NoteModel = await this.uqs.notes.Note.assureBox(noteId);
-		let { caption, content } = note;
+		//let note: NoteModel = await this.uqs.notes.Note.assureBox(noteId);
+		let { caption, content } = this.noteItem;
 		let cObj = JSON.parse(content);
 		if (checker) {
 			cObj.checker = numberFromId(checker.contact);
@@ -163,6 +163,7 @@ export class CTaskNoteItem extends CNoteItem {
 
 		let ret = await this.uqs.notes.DoneTask.submit(data);
 		this.noteItem.state = Number(EnumTaskState.Done);
+		this.noteItem.$update = new Date();
 	}
 
 	async CheckSaveInfo() {

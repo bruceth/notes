@@ -257,9 +257,8 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		let right = <button className="btn btn-sm btn-success mr-1" onClick={this.onCommentSubmit}>提交</button>;
 		this.openPageElement(<Page header="说明" right={right}>
 			<textarea rows={10} 
-				className="w-100 border-0 form-control" 
+				className="w-100 border-0 form-control"
 				placeholder="请输入" maxLength={20000}
-				defaultValue={this.controller.noteContent}
 				onChange={this.onCommentChange} />
 		</Page>);
 	}
@@ -270,6 +269,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 
 	private onCommentSubmit = async () => {
 		await this.controller.AddComment(this.comment);
+		this.controller.relativeKey = 'comment';
 		this.closePage();
 	}
 }

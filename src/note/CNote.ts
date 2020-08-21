@@ -17,16 +17,18 @@ const cNoteItems: {[key in EnumNoteItemType]: new (...args: any[])=> CNoteItem} 
 };
 
 export class CNote extends CUqBase {
-	protected foldItem: CFolderNoteItem[];
+	protected foldItemStack: CFolderNoteItem[];
+	currentFoldItem: CFolderNoteItem;
+
 	@observable contacts: Contact[];
 	noteItem: NoteItem;
-	//noteModel: NoteModel;
 
     protected async internalStart() {
 	}
 
 	init(folderId?: number) {
-		this.foldItem = [this.newSub(CFolderNoteItem)];
+		this.currentFoldItem = this.newSub(CFolderNoteItem);
+		this.foldItemStack = [];
 	}
 
 	noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteItem => {
@@ -36,23 +38,18 @@ export class CNote extends CUqBase {
 		return cNoteItem;
 	}
 
-	get currentFoldItem() {
-		return this.foldItem[0];
-	}
-
 	get items() {
 		return this.currentFoldItem.notesPager;
 	}
 
 	openFolder(foldItem:CFolderNoteItem) {
-		this.foldItem.unshift(foldItem);
+		this.foldItemStack.push(this.currentFoldItem);
+		this.currentFoldItem = foldItem;
 		this.currentFoldItem.showFolder();
 	}
 
 	popFolder() {
-		if (this.foldItem.length > 1) {
-			this.foldItem.splice(0, 1);
-		}
+		this.currentFoldItem = this.foldItemStack.pop();
 	}
 
 	getCNoteItem(type: EnumNoteItemType): CNoteItem {

@@ -35,14 +35,14 @@ export class VFolder extends VNoteView<CFolderNoteItem> {
 			else {
 				topContent = "整理小单";
 			}
-			top = <div className="d-flex mx-3 pt-2">
+			top = <div className="d-flex mx-3 py-3">
 				<FA className="mr-3 text-warning" name={noteItem.toCount > 0 ? "folder-open":"folder"} size="3x" />
 				<div className="small text-muted">{this.renderParagraphs(topContent)}</div>
 			</div>;
 		}
 		return <div>
 			{top}
-			<List className="mt-1" 
+			<List className="" 
 				items={notesPager} 
 				item={{render: this.renderNote, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
 		</div>
@@ -54,17 +54,11 @@ export class VFolder extends VNoteView<CFolderNoteItem> {
 
 	private noteKey = (item: CNoteItem) => {
 		let note = item.noteItem.note;
-		//if (typeof note === "object") return note.id;
 		return note;
 	}
 
 	private renderNote = (item: CNoteItem, index:number) => {
-		let {type, unread} = item.noteItem;
-		let cn = 'd-block mb-2 ';
-		if (unread>0) cn += 'border-info shadow';
-		return <div className={cn}>
-			{item.renderItem(index)}
-		</div>;
+		return <div className="d-block mb-2 bg-white">{item.renderItem(index)}</div>;
 	}
 
 	private onNoteClick = async (item: CNoteItem) => {

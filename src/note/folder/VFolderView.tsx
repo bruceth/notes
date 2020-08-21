@@ -20,7 +20,7 @@ export class VFolderView extends VNoteView<CFolderNoteItem> {
 			let {title} = this.controller;
 			return <div className="">
 				<div className="bg-white">
-					{this.renderFrom()}
+					{this.renderTop()}
 					{title && <div className="px-3 py-2 border-bottom">
 						<div><b>{title}</b></div>
 					</div>}

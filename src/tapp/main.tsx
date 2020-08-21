@@ -7,8 +7,8 @@ function caption(label:string, icon:string) {
 	return (selected: boolean) => TabCaptionComponent(label, icon, color(selected));
 }
 export class VMain extends VPage<CApp> {
-    async open(param?: any) {
-        this.openPage(this.render);
+    async open(param?: any, onClosePage?: (ret:any)=>void) {
+        this.openPage(this.render, param, onClosePage);
     }
 
     render = (param?: any): JSX.Element => {

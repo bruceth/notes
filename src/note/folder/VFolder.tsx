@@ -38,6 +38,10 @@ export class VFolder extends VNoteView<CFolderNoteItem> {
 			top = <div className="d-flex mx-3 py-3">
 				<FA className="mr-3 text-warning" name={noteItem.toCount > 0 ? "folder-open":"folder"} size="3x" />
 				<div className="small text-muted">{this.renderParagraphs(topContent)}</div>
+				<div className="ml-auto align-self-center" 
+						onClick={(e)=>{e.stopPropagation(); this.controller.onClickEllipsis()}}>
+						<FA name="ellipsis-h" />
+				</div>
 			</div>;
 		}
 		return <div>

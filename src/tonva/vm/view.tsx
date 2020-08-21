@@ -70,15 +70,15 @@ export abstract class View<C extends Controller> {
 		return this.renderUser(user.id, imageClassName, textClassName);
 	}
 
-    protected openPage(view: React.StatelessComponent<any>, param?:any) {
+    protected openPage(view: React.StatelessComponent<any>, param?:any, onClosePage?:(ret:any)=>void) {
         let type = typeof param;
         if (type === 'object' || type === 'undefined') {
-            this.controller.openPage(React.createElement(view, param));
+            this.controller.openPage(React.createElement(view, param), onClosePage);
         }
         else {
             this.controller.openPage(<Page header="param type error">
                 View.openPage param must be object, but here is {type}
-            </Page>);
+            </Page>, onClosePage);
         }
     }
 

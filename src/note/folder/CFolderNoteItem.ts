@@ -16,6 +16,7 @@ export class CFolderNoteItem extends CNoteItem {
 		if (param) {
 			if (!this.title) this.title = param.caption;
 		}
+		this.relativeKey = 'to';
 
 		let folderId = this.noteItem?.note;
 		if (!folderId) this.folderId = -EnumSpecFolder.notes;

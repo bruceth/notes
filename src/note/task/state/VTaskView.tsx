@@ -1,7 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { FA } from "tonva";
-import { CTaskNoteItem, EnumTaskState } from "../CTaskNoteItem";
+import { EnumTaskState } from "../TaskState"
+import { CTaskNoteItem } from "../CTaskNoteItem";
 import { VNoteView, CheckItem } from '../../item';
 import { VEdit } from '../VEdit';
 
@@ -98,13 +99,6 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 
 	protected renderState(): JSX.Element {
 		return <>state</>;
-	}
-
-	protected renderStateSpan(content: string, isEnd: boolean = false) {
-		if (isEnd === true) {
-			return <span className="small text-danger"><FA className="small mr-1" name="stop" />{content}</span>;
-		}
-		return <span className="small text-success border border-success rounded px-2">{content}</span>;
 	}
 
 	protected onEdit() {

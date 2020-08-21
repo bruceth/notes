@@ -30,13 +30,13 @@ export class VFolder extends VNoteView<CFolderNoteItem> {
 			let json = JSON.parse(contentString);
 			if (json) {
 				let {content} = json;
-				topContent = (content as string).trimEnd();
+				topContent = (content as string)?.trimEnd();
 			}
 			else {
 				topContent = "整理小单";
 			}
 			top = <div className="d-flex mx-3 py-3">
-				<FA className="mr-3 text-warning" name="folder" size="3x" />
+				<FA className="mr-3 text-warning" name={noteItem.toCount > 0 ? "folder-open":"folder"} size="3x" />
 				<div className="small text-muted">{this.renderParagraphs(topContent)}</div>
 			</div>;
 		}

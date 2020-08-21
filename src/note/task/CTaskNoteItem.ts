@@ -4,7 +4,7 @@ import { VTaskParams } from "./VTaskParams";
 import { Contact } from "model";
 import { TaskViewFactory, VCheckTask, VRateTask } from "./state";
 import { observable } from "mobx";
-import { threadId } from "worker_threads";
+import { EnumTaskState } from "./TaskState"
 
 export interface AssignTaskParam {
 	contacts: Contact[];
@@ -17,8 +17,6 @@ export interface TaskCheckItem extends CheckItem {
 	checkInfo?: string;
 	rateInfo?: string;
 }
-
-export enum EnumTaskState { Start = 0, Done = 1, Pass = 2, Fail = 3, Rated = 4, Canceled = 5 };
 
 export class CTaskNoteItem extends CNoteItem {
 	private getTaskView = new TaskViewFactory().getView;
@@ -89,11 +87,13 @@ export class CTaskNoteItem extends CNoteItem {
 
 	private getView() {
 		let state = this.noteItem.state as EnumTaskState;
+		// eslint-disable-next-line
 		if (state == EnumTaskState.Done) {
 			if (this.noteItem.obj && this.isMe(this.noteItem.obj.checker)) {
 				return VCheckTask;
 			}
 		}
+		// eslint-disable-next-line
 		else if (state == EnumTaskState.Pass) {
 			if (this.noteItem.obj && this.isMe(this.noteItem.obj.rater)) {
 				return VRateTask;
@@ -125,8 +125,8 @@ export class CTaskNoteItem extends CNoteItem {
 	async assignTask(param: AssignTaskParam) {
 		let { note: noteId } = this.noteItem;
 		let { contacts, checker, rater, point } = param;
-		let note: NoteModel = await this.uqs.notes.Note.assureBox(noteId);
-		let { caption, content } = note;
+		//let note: NoteModel = await this.uqs.notes.Note.assureBox(noteId);
+		let { caption, content } = this.noteItem;
 		let cObj = JSON.parse(content);
 		if (checker) {
 			cObj.checker = numberFromId(checker.contact);
@@ -163,6 +163,7 @@ export class CTaskNoteItem extends CNoteItem {
 
 		let ret = await this.uqs.notes.DoneTask.submit(data);
 		this.noteItem.state = Number(EnumTaskState.Done);
+		this.noteItem.$update = new Date();
 	}
 
 	async CheckSaveInfo() {

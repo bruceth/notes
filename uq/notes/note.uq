@@ -156,7 +156,7 @@ RETURNS contain (
 		WHERE a.note0=note and a.type=EnumNoteMapType.Comment
 		ORDER BY a.note1 desc
 		LIMIT 20;
-	INTO spawn SELECT a.note1 as seconds, b.owner, a.note1 as note, a.type
+	INTO spawn SELECT a.note1 as seconds, b.owner, a.note1 as note, b.type
 		, b.[from]
 		, b.caption, b.content, c.assigned, d.state, 0 as unread
 		, b.[$create], b.[$update]
@@ -167,7 +167,7 @@ RETURNS contain (
 		WHERE a.note0=note and a.type=EnumNoteMapType.spawn
 		ORDER BY a.note1 desc
 		LIMIT 20;
-	INTO contain SELECT a.note1 as seconds, b.owner, a.note1 as note, a.type
+	INTO contain SELECT a.note1 as seconds, b.owner, a.note1 as note, b.type
 		, b.[from]
 		, b.caption, b.content, c.assigned, d.state, 0 as unread
 		, b.[$create], b.[$update]
@@ -204,6 +204,11 @@ RETURNS ret (
 			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds, type=type;
 		}
 	}
+	FOREACH (var parentFolderId ID, ownerId ID OF SELECT a.folder as parentFolderId, b.owner as ownerId 
+			FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=folderId) {
+		BOOK FolderNote AT(parentFolderId, folderId) SET seconds=seconds;
+		TUID [$User] ID (ownerId) SET poke=1;
+	}
 	INTO ret SELECT noteId as note;
 };
 
@@ -215,9 +220,10 @@ RETURNS ret (
 	comment ID,
 ) {
 	VAR commentId ID, folderId ID, seconds INT;
-	IF exists(SELECT id FROM Note WHERE id=note AND owner=$user) OR
-	   exists(SELECT a.note FROM NoteAccess as a WHERE a.note=note AND a.user=$user)
-	{
+	--看到即有评论权限
+	--IF exists(SELECT id FROM Note WHERE id=note AND owner=$user) OR 
+	--   exists(SELECT a.note FROM NoteAccess as a WHERE a.note=note AND a.user=$user)
+	--{
 		TUID Note INTO commentId SET type=EnumNoteType.Comment, content=content, owner=$user;
 		SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
@@ -225,9 +231,14 @@ RETURNS ret (
 			BOOK FolderNote AT(noteFolderId, note) 
 				SET seconds=seconds, 
 					unread=CASE WHEN noteFolderId<>folderId THEN 1 ELSE 0 END;
+			FOREACH (var parentFolderId ID, ownerId ID OF SELECT a.folder as parentFolderId, b.owner as ownerId 
+					FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=noteFolderId) {
+				BOOK FolderNote AT(parentFolderId, noteFolderId) SET seconds=seconds;
+				TUID [$User] ID (ownerId) SET poke=1;
+			}
 		}
 		BOOK Note2Note AT(note, commentId) SET type=EnumNoteMapType.Comment;
-	}
+	--}
 	INTO ret SELECT commentId as comment;
 };
 
@@ -240,13 +251,18 @@ ACTION SetNote (
 		VAR noteId ID, folderId ID, seconds INT;
 		TUID Note ID note SET caption=caption, content=content;
 		SET noteId = note;
-		SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
+		-- SET folderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
-		BOOK FolderNote AT(folderId, noteId) SET seconds=seconds; -- , type=type, sub=sub;
+		-- BOOK FolderNote AT(folderId, noteId) SET seconds=seconds; -- , type=type, sub=sub;
 		FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
 			BOOK FolderNote AT(noteFolderId, noteId) 
 				SET seconds=seconds, 
 					unread=CASE WHEN noteFolderId<>folderId THEN 1 ELSE 0 END;
+			FOREACH (var parentFolderId ID, ownerId ID OF SELECT a.folder as parentFolderId, b.owner as ownerId 
+					FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=noteFolderId) {
+				BOOK FolderNote AT(parentFolderId, noteFolderId) SET seconds=seconds;
+				TUID [$User] ID (ownerId) SET poke=1;
+			}
 		}
 		FOREACH (var to ID OF SELECT user as to FROM NoteAccess WHERE note=noteId and access=1) {
 			TUID [$User] ID (to) SET poke=1;
@@ -273,7 +289,7 @@ ACTION SendNoteTo ver 1.0 (
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 		TABLE tblTo(to ID);
 		TEXT tos sep=',' ln='|' INTO tblTo;
-		BOOK NoteAccess AT (note, *) SET access=0;
+		--BOOK NoteAccess AT (note, *) SET access=0; 这句实际把所有access清空了
 		FOREACH (var to ID OF SELECT to FROM tblTo) {
 			VAR folderId ID;
 			SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;

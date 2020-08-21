@@ -15,11 +15,14 @@ export class VNoteItem<T extends CNoteItem> extends VNoteView<T> {
 				{this.renderTop()}
 				{caption && <div className="px-3 py-2"><b>{caption}</b></div>}
 				{this.renderItemContent()}
-				<div className="d-flex align-items-center px-3 py-2">
-					{divToCount}
-					{divspawnCount}
-					<div className="mr-auto" />
-				</div>
+				{
+					(divToCount || divspawnCount) &&
+						<div className="d-flex align-items-center px-3 mb-1">
+							{divToCount}
+							{divspawnCount}
+							<div className="mr-auto" />
+						</div>
+				}
 			</div>;
 		}));
 	}

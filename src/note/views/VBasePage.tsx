@@ -8,7 +8,7 @@ export abstract class VBasePage extends VPage<CNote> {
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;
 			return <>
-				<Image className="w-1-5c h-1-5c mr-2" src={icon} />
+				<Image className="w-1-5c h-1-5c mr-2" src={icon || '.user-o'} />
 				{assigned || nick || name}
 			</>
 		}

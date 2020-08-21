@@ -1,11 +1,10 @@
-import { CUqBase, EnumSpecFolder } from "tapp";
-import { QueryPager } from "tonva";
-import { VList, VSelectContact, SelectContactOptions } from "./views";
+import { CUqBase } from "tapp";
+import { VSelectContact, SelectContactOptions } from "./views";
 import { CTextNoteItem } from "./text";
 import { EnumNoteItemType, NoteItem, NoteModel } from "./model";
 import { CNoteItem } from "./item/CNoteItem";
 import { VTo } from "./views/VTo";
-import { CTaskNoteItem, EnumTaskState } from "./task/CTaskNoteItem";
+import { CTaskNoteItem } from "./task/CTaskNoteItem";
 import { Contact } from "model";
 import { observable } from "mobx";
 import { VSent } from "./views/VSent";

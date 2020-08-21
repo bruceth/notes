@@ -46,7 +46,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	
 	protected renderParagraphs(content:string):JSX.Element {
 		if (!content) return;
-		return <>{content.split('\n').map((v, index) => {
+		return <>{content.trimRight().split('\n').map((v, index) => {
 			let c:any;
 			if (!v) {
 				c = '\u00A0'; //<>&nbsp;</>;
@@ -245,6 +245,13 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		return <span onClick={()=>this.onEdit()} className="cursor-pointer text-primary mr-3">
 			<FA name="pencil-square-o" />
 		</span>;
+	}
+	
+	protected renderStateSpan(content: string, isEnd: boolean = false) {
+		if (isEnd === true) {
+			return <span className="small text-danger"><FA className="small mr-1" name="stop" />{content}</span>;
+		}
+		return <span className="small text-success border border-success rounded px-2">{content}</span>;
 	}
 
 	protected onEdit() {}

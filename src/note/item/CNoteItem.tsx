@@ -122,7 +122,9 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 			let content = this.changedNoteContent || this.noteContent;
 			if (content) {
 				this.items.splice(0, this.items.length);
-				this.items.push(...content.split('\n').map((v, index) => {
+				this.items.push(...content.split('\n').filter((v, index) => {
+						return v.trim().length > 0;
+					}).map((v, index) => {
 					if (this.checkType === 1) {
 						return {
 							key: this.itemKey++,

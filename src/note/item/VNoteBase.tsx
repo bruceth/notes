@@ -46,7 +46,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	
 	protected renderParagraphs(content:string):JSX.Element {
 		if (!content) return;
-		return <>{content.split('\n').map((v, index) => {
+		return <>{content.trimRight().split('\n').map((v, index) => {
 			let c:any;
 			if (!v) {
 				c = '\u00A0'; //<>&nbsp;</>;

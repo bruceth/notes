@@ -20,7 +20,7 @@ export class VFolderNoteItem extends VNoteBase<CFolderNoteItem> {
 					</div>
 				</div>
 				{ divToCount &&
-						<div className="d-flex align-items-center px-3 py-2">
+						<div className="d-flex align-items-center px-3 mb-1">
 							{divToCount}
 							<div className="mr-auto" />
 						</div>

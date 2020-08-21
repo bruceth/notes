@@ -17,7 +17,7 @@ export class VNoteItem<T extends CNoteItem> extends VNoteView<T> {
 				{this.renderItemContent()}
 				{
 					(divToCount || divspawnCount) &&
-						<div className="d-flex align-items-center px-3 py-2">
+						<div className="d-flex align-items-center px-3 mb-1">
 							{divToCount}
 							{divspawnCount}
 							<div className="mr-auto" />

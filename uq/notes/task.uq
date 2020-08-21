@@ -69,8 +69,10 @@ RETURNS ret (
 		}
 		SET parentId = note0 FROM Note2Note WHERE note1=note and type=EnumNoteMapType.Spawn;
 		IF NOT parentId IS NULL {
-			FOREACH (var pfId ID OF SELECT a.folder as pfId FROM FolderNote as a WHERE a.note=parentId) {
-				BOOK FolderNote AT(pfId, parentId) SET seconds=seconds;
+			FOREACH (var parentFolderId ID, ownerId ID OF SELECT a.folder as parentFolderId, b.owner as ownerId 
+					FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=parentId) {
+				BOOK FolderNote AT(parentFolderId, parentId) SET seconds=seconds;
+				TUID [$User] ID (ownerId) SET poke=1;
 			}
 		}
 		INTO ret SELECT EnumTaskState.Done as toState;

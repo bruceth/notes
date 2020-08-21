@@ -204,8 +204,10 @@ RETURNS ret (
 			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds, type=type;
 		}
 	}
-	FOREACH (var parentFolderId ID OF SELECT folder as parentFolderId FROM FolderNote WHERE note=folderId) {
+	FOREACH (var parentFolderId ID, ownerId ID OF SELECT a.folder as parentFolderId, b.owner as ownerId 
+			FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=folderId) {
 		BOOK FolderNote AT(parentFolderId, folderId) SET seconds=seconds;
+		TUID [$User] ID (ownerId) SET poke=1;
 	}
 	INTO ret SELECT noteId as note;
 };
@@ -229,8 +231,10 @@ RETURNS ret (
 			BOOK FolderNote AT(noteFolderId, note) 
 				SET seconds=seconds, 
 					unread=CASE WHEN noteFolderId<>folderId THEN 1 ELSE 0 END;
-			FOREACH (var parentFolderId ID OF SELECT folder as parentFolderId FROM FolderNote WHERE note=noteFolderId) {
+			FOREACH (var parentFolderId ID, ownerId ID OF SELECT a.folder as parentFolderId, b.owner as ownerId 
+					FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=noteFolderId) {
 				BOOK FolderNote AT(parentFolderId, noteFolderId) SET seconds=seconds;
+				TUID [$User] ID (ownerId) SET poke=1;
 			}
 		}
 		BOOK Note2Note AT(note, commentId) SET type=EnumNoteMapType.Comment;
@@ -254,8 +258,10 @@ ACTION SetNote (
 			BOOK FolderNote AT(noteFolderId, noteId) 
 				SET seconds=seconds, 
 					unread=CASE WHEN noteFolderId<>folderId THEN 1 ELSE 0 END;
-			FOREACH (var parentFolderId ID OF SELECT folder as parentFolderId FROM FolderNote WHERE note=noteFolderId) {
+			FOREACH (var parentFolderId ID, ownerId ID OF SELECT a.folder as parentFolderId, b.owner as ownerId 
+					FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=noteFolderId) {
 				BOOK FolderNote AT(parentFolderId, noteFolderId) SET seconds=seconds;
+				TUID [$User] ID (ownerId) SET poke=1;
 			}
 		}
 		FOREACH (var to ID OF SELECT user as to FROM NoteAccess WHERE note=noteId and access=1) {

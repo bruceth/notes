@@ -66,6 +66,7 @@ import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
 
 (async function() {
 	nav.setSettings(appConfig);
+	//如果要支持route，必须调用下面这一句
 	//await startRoute(appConfig);
 	const App: React.FC = () => {
 		const onLogined = async () => {

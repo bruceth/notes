@@ -263,7 +263,7 @@ ACTION SetNoteX (
 	}
 };
 
-ACTION SendNoteTo (
+ACTION SendNoteTo ver 1.0 (
 	note ID,
 	tos TEXT,
 ) {

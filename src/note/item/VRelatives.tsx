@@ -1,12 +1,11 @@
 import React from 'react';
 import { EasyTime, LMR, List, User, Image, UserView } from "tonva";
-import { CNoteItem } from "./CNoteItem";
+import { CNoteItem, RelativeKey } from "./CNoteItem";
 import { observable } from 'mobx';
 import { NoteItem, CommentItem } from 'note/model';
 import { observer } from 'mobx-react';
 import { VNoteBase } from './VNoteBase';
 
-export type RelativeKey = 'comment'|'to'|'flow'|'spawn'|'contain';
 export interface Relative {
 	caption: string;
 	render: () => JSX.Element;
@@ -14,11 +13,14 @@ export interface Relative {
 
 export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 	protected renderComments = () => {
-		let {comments} = this.controller.noteModel;
-		if (comments.length === 0) return;
-		return <div className="py-3">{
-			comments.map(v => this.renderComment(v))
-		}</div>;
+		//let render = observer(() => {
+			let {comments} = this.controller.noteModel;
+			if (comments.length === 0) return;
+			return <div className="py-3">{
+				comments.map(v => this.renderComment(v))
+			}</div>;
+		//});
+		//return React.createElement(render);
 	}
 
 	protected renderTo = () => {
@@ -82,28 +84,30 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 		'spawn': {caption: '派生', render: this.renderSpawn},
 		'contain': {caption: '包含', render: this.renderContain},
 	}
-	protected arr:RelativeKey[] = ['to', 'flow', 'spawn', 'contain', 'comment'];
-	@observable private relativeCur: RelativeKey = 'to';
+	protected arr:RelativeKey[] = ['comment', 'to', 'flow', 'spawn', 'contain'];
+	//@observable private relativeCur: RelativeKey = 'to';
 	render():JSX.Element {
 		let render = observer(() => {
+			let {relativeKey} = this.controller;
+			if (relativeKey === undefined) {relativeKey = 'comment'}
 			return <div className="bg-white">
 				<div className="d-flex px-3 pt-3 border-bottom">
 					{this.arr.map(v => {
 						let {caption} = this.tabs[v];
 						let cn:string;
-						if (v === this.relativeCur) {
+						if (v === relativeKey) {
 							cn = ' bg-white border-left border-top border-right';
 						}
 						else {
 							cn = ' bg-light text-muted';
 						}
-						return <div key={v} className={'px-3 py-2 cursor-pointer' + cn} onClick={()=>this.relativeCur = v}>
+						return <div key={v} className={'px-3 py-2 cursor-pointer' + cn} onClick={()=>this.controller.relativeKey = v}>
 							{caption}
 						</div>;
 					})}
 				</div>
 				<div className="py-3">
-					{this.tabs[this.relativeCur].render() || <small className="px-3 text-muted">[无]</small>}
+					{this.tabs[relativeKey].render() || <small className="px-3 text-muted">[无]</small>}
 				</div>
 			</div>
 		});

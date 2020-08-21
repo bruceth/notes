@@ -4,7 +4,7 @@ import { VTaskParams } from "./VTaskParams";
 import { Contact } from "model";
 import { TaskViewFactory, VCheckTask, VRateTask } from "./state";
 import { observable } from "mobx";
-import { threadId } from "worker_threads";
+import { EnumTaskState } from "./TaskState"
 
 export interface AssignTaskParam {
 	contacts: Contact[];
@@ -17,8 +17,6 @@ export interface TaskCheckItem extends CheckItem {
 	checkInfo?: string;
 	rateInfo?: string;
 }
-
-export enum EnumTaskState { Start = 0, Done = 1, Pass = 2, Fail = 3, Rated = 4, Canceled = 5 };
 
 export class CTaskNoteItem extends CNoteItem {
 	private getTaskView = new TaskViewFactory().getView;

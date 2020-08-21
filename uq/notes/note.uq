@@ -156,7 +156,7 @@ RETURNS contain (
 		WHERE a.note0=note and a.type=EnumNoteMapType.Comment
 		ORDER BY a.note1 desc
 		LIMIT 20;
-	INTO spawn SELECT a.note1 as seconds, b.owner, a.note1 as note, a.type
+	INTO spawn SELECT a.note1 as seconds, b.owner, a.note1 as note, b.type
 		, b.[from]
 		, b.caption, b.content, c.assigned, d.state, 0 as unread
 		, b.[$create], b.[$update]
@@ -167,7 +167,7 @@ RETURNS contain (
 		WHERE a.note0=note and a.type=EnumNoteMapType.spawn
 		ORDER BY a.note1 desc
 		LIMIT 20;
-	INTO contain SELECT a.note1 as seconds, b.owner, a.note1 as note, a.type
+	INTO contain SELECT a.note1 as seconds, b.owner, a.note1 as note, b.type
 		, b.[from]
 		, b.caption, b.content, c.assigned, d.state, 0 as unread
 		, b.[$create], b.[$update]
@@ -204,6 +204,9 @@ RETURNS ret (
 			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds, type=type;
 		}
 	}
+	FOREACH (var parentFolderId ID OF SELECT folder as parentFolderId FROM FolderNote WHERE note=folderId) {
+		BOOK FolderNote AT(parentFolderId, folderId) SET seconds=seconds;
+	}
 	INTO ret SELECT noteId as note;
 };
 
@@ -226,6 +229,9 @@ RETURNS ret (
 			BOOK FolderNote AT(noteFolderId, note) 
 				SET seconds=seconds, 
 					unread=CASE WHEN noteFolderId<>folderId THEN 1 ELSE 0 END;
+			FOREACH (var parentFolderId ID OF SELECT folder as parentFolderId FROM FolderNote WHERE note=noteFolderId) {
+				BOOK FolderNote AT(parentFolderId, noteFolderId) SET seconds=seconds;
+			}
 		}
 		BOOK Note2Note AT(note, commentId) SET type=EnumNoteMapType.Comment;
 	--}
@@ -248,6 +254,9 @@ ACTION SetNote (
 			BOOK FolderNote AT(noteFolderId, noteId) 
 				SET seconds=seconds, 
 					unread=CASE WHEN noteFolderId<>folderId THEN 1 ELSE 0 END;
+			FOREACH (var parentFolderId ID OF SELECT folder as parentFolderId FROM FolderNote WHERE note=noteFolderId) {
+				BOOK FolderNote AT(parentFolderId, noteFolderId) SET seconds=seconds;
+			}
 		}
 		FOREACH (var to ID OF SELECT user as to FROM NoteAccess WHERE note=noteId and access=1) {
 			TUID [$User] ID (to) SET poke=1;
@@ -264,7 +273,7 @@ ACTION SetNoteX (
 	}
 };
 
-ACTION SendNoteTo (
+ACTION SendNoteTo ver 1.0 (
 	note ID,
 	tos TEXT,
 ) {

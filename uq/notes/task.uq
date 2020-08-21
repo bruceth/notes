@@ -48,7 +48,7 @@ RETURNS ret (
 	VAR seconds INT;
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 
-	VAR flowId SMALLINT, checker ID, rater ID, point INT, folderId ID, state TINYINT;
+	VAR flowId SMALLINT, checker ID, rater ID, point INT, folderId ID, parentId INT, state TINYINT;
 	SET checker=a.checker, rater=a.rater, point=a.point, state=b.state
 		FROM Task as a LEFT JOIN NoteX as b ON a.note=b.note
 		WHERE a.note=note;
@@ -66,6 +66,12 @@ RETURNS ret (
 		}
 		IF NOT folderId IS NULL {
 			BOOK FolderNote AT(folderId, note) SET seconds=seconds, type=EnumNoteType.task, unread=1;
+		}
+		SET parentId = note0 FROM Note2Note WHERE note1=note and type=EnumNoteMapType.Spawn;
+		IF NOT parentId IS NULL {
+			FOREACH (var pfId ID OF SELECT a.folder as pfId FROM FolderNote as a WHERE a.note=parentId) {
+				BOOK FolderNote AT(pfId, parentId) SET seconds=seconds;
+			}
 		}
 		INTO ret SELECT EnumTaskState.Done as toState;
 	}

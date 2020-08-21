@@ -1,12 +1,11 @@
 import React from 'react';
-import { EasyTime, LMR, List, User, Image, UserView } from "tonva";
-import { CNoteItem } from "./CNoteItem";
-import { observable } from 'mobx';
-import { NoteItem, CommentItem } from 'note/model';
+import { EasyTime, LMR, List, User, Image, UserView, FA } from "tonva";
+import { CNoteItem, RelativeKey } from "./CNoteItem";
+import { NoteItem, CommentItem, EnumNoteItemType } from 'note/model';
 import { observer } from 'mobx-react';
 import { VNoteBase } from './VNoteBase';
+import { GetTaskStateContent } from 'note/task/TaskState';
 
-export type RelativeKey = 'comment'|'to'|'flow'|'spawn'|'contain';
 export interface Relative {
 	caption: string;
 	render: () => JSX.Element;
@@ -14,11 +13,14 @@ export interface Relative {
 
 export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 	protected renderComments = () => {
-		let {comments} = this.controller.noteModel;
-		if (comments.length === 0) return;
-		return <div className="py-3">{
-			comments.map(v => this.renderComment(v))
-		}</div>;
+		//let render = observer(() => {
+			let {comments} = this.controller.noteModel;
+			if (comments.length === 0) return;
+			return <div className="py-3">{
+				comments.map(v => this.renderComment(v))
+			}</div>;
+		//});
+		//return React.createElement(render);
 	}
 
 	protected renderTo = () => {
@@ -39,13 +41,23 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 		return <div>flow: {flow.length}</div>
 	}
 
+	private renderSpawnState(type:number, state:number) {
+		let ss = GetTaskStateContent(type, state);
+		if (ss === undefined)
+			return;
+		let {content, isEnd} = ss;
+
+		return this.renderStateSpan(content, isEnd);
+	}
+
 	private renderSpawnItem = (item:NoteItem, index:number):JSX.Element => {
-		let {caption, $create, $update, owner, assigned} = item;
+		let {caption, $create, $update, owner, assigned, type, state} = item;
 		let divOwner = this.renderContact(owner as number, assigned);
 		let right = <small className="text-muted"><EasyTime date={$update} /></small>;
 		return <div className="px-3 py-2 d-block bg-white">
 			<LMR right={right}>
 				<span className="mr-3">{divOwner}</span>{caption}
+				<span className="ml-3">{this.renderSpawnState(type, state)}</span>
 			</LMR>
 		</div>;
 	}
@@ -83,27 +95,29 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 		'contain': {caption: '包含', render: this.renderContain},
 	}
 	protected arr:RelativeKey[] = ['comment', 'to', 'flow', 'spawn', 'contain'];
-	@observable protected relativeCur: RelativeKey = 'comment';
+	//@observable private relativeCur: RelativeKey = 'to';
 	render():JSX.Element {
 		let render = observer(() => {
+			let {relativeKey} = this.controller;
+			if (relativeKey === undefined) {relativeKey = 'comment'}
 			return <div className="bg-white">
 				<div className="d-flex px-3 pt-3 border-bottom">
 					{this.arr.map(v => {
 						let {caption} = this.tabs[v];
 						let cn:string;
-						if (v === this.relativeCur) {
+						if (v === relativeKey) {
 							cn = ' bg-white border-left border-top border-right';
 						}
 						else {
 							cn = ' bg-light text-muted';
 						}
-						return <div key={v} className={'px-3 py-2 cursor-pointer' + cn} onClick={()=>this.relativeCur = v}>
+						return <div key={v} className={'px-3 py-2 cursor-pointer' + cn} onClick={()=>this.controller.relativeKey = v}>
 							{caption}
 						</div>;
 					})}
 				</div>
 				<div className="py-3">
-					{this.tabs[this.relativeCur].render() || <small className="px-3 text-muted">[无]</small>}
+					{this.tabs[relativeKey].render() || <small className="px-3 text-muted">[无]</small>}
 				</div>
 			</div>
 		});

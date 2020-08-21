@@ -4,6 +4,8 @@ import { CNote } from '../CNote';
 import { CUqSub } from '../../tapp';
 import { VNoteItem } from './VNoteItem';
 
+export type RelativeKey = 'comment'|'to'|'flow'|'spawn'|'contain';
+
 export interface CheckItem {
 	key: number;
 	text: string;
@@ -15,6 +17,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	@observable noteItem: NoteItem;
 	@observable toCount: number;
 	@observable spawnCount: number;
+	@observable relativeKey: RelativeKey;
 
 	init(param: NoteItem): void {
 		this.noteItem = param;
@@ -119,7 +122,9 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 			let content = this.changedNoteContent || this.noteContent;
 			if (content) {
 				this.items.splice(0, this.items.length);
-				this.items.push(...content.split('\n').map((v, index) => {
+				this.items.push(...content.split('\n').filter((v, index) => {
+						return v.trim().length > 0;
+					}).map((v, index) => {
 					if (this.checkType === 1) {
 						return {
 							key: this.itemKey++,

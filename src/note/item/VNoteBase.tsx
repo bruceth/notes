@@ -246,6 +246,13 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			<FA name="pencil-square-o" />
 		</span>;
 	}
+	
+	protected renderStateSpan(content: string, isEnd: boolean = false) {
+		if (isEnd === true) {
+			return <span className="small text-danger"><FA className="small mr-1" name="stop" />{content}</span>;
+		}
+		return <span className="small text-success border border-success rounded px-2">{content}</span>;
+	}
 
 	protected onEdit() {}
 
@@ -257,9 +264,8 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		let right = <button className="btn btn-sm btn-success mr-1" onClick={this.onCommentSubmit}>提交</button>;
 		this.openPageElement(<Page header="说明" right={right}>
 			<textarea rows={10} 
-				className="w-100 border-0 form-control" 
+				className="w-100 border-0 form-control"
 				placeholder="请输入" maxLength={20000}
-				defaultValue={this.controller.noteContent}
 				onChange={this.onCommentChange} />
 		</Page>);
 	}
@@ -270,6 +276,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 
 	private onCommentSubmit = async () => {
 		await this.controller.AddComment(this.comment);
+		this.controller.relativeKey = 'comment';
 		this.closePage();
 	}
 }

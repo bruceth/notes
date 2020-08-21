@@ -89,11 +89,13 @@ export class CTaskNoteItem extends CNoteItem {
 
 	private getView() {
 		let state = this.noteItem.state as EnumTaskState;
+		// eslint-disable-next-line
 		if (state == EnumTaskState.Done) {
 			if (this.noteItem.obj && this.isMe(this.noteItem.obj.checker)) {
 				return VCheckTask;
 			}
 		}
+		// eslint-disable-next-line
 		else if (state == EnumTaskState.Pass) {
 			if (this.noteItem.obj && this.isMe(this.noteItem.obj.rater)) {
 				return VRateTask;

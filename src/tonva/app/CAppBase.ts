@@ -76,7 +76,7 @@ export abstract class CAppBase extends Controller {
     protected async beforeStart():Promise<boolean> {
         try {
 			this.onRoute();
-			if (nav.isInAppRouting === true || !nav.isRouting) {
+			if (nav.isRouting === false) {
 				//await nav.init();
 				let {appName, version, tvs} = this.appConfig;
 				await UQsMan.load(appName, version, tvs);
@@ -128,7 +128,7 @@ export abstract class CAppBase extends Controller {
         }
     }
 	protected async afterStart():Promise<void> {
-		if (nav.isInAppRouting) nav.resolveRoute();
+		nav.resolveRoute();
 	}
 
     async userFromId(userId:number):Promise<any> {
@@ -140,11 +140,10 @@ export abstract class CAppBase extends Controller {
 	protected on(regex:RegExp, routeFunc:RouteFunc, hooks?:Hooks):Navigo;
 	protected on(options: {[url:string]: RouteFunc|NamedRoute}):Navigo;
 	protected on(...args:any[]):Navigo {
-		nav.isInAppRouting = true;
 		return nav.on(args[0], args[1], args[2]);
 	}
 
-	protected onRoute() {		
+	protected onRoute() {
 	}
 
 	/*

@@ -6,7 +6,6 @@ import { CMe } from "me";
 import { CDiscover } from "discover";
 import { computed } from "mobx";
 import { Contact } from "model";
-import { nav } from "tonva";
 import { VTestMe } from "./VTestMe";
 import { VTestAB } from "./VTestAB";
 import { res } from "./res";
@@ -14,6 +13,7 @@ import { res } from "./res";
 const gaps = [10, 3,3,3,3,3,5,5,5,5,5,5,5,5,10,10,10,10,15,15,15,30,30,60];
 
 export class CApp extends CUqApp {
+	private timer:any;
 	cHome: CHome;
 	cRelation: CRelation;
 	cDiscover: CDiscover;
@@ -21,8 +21,7 @@ export class CApp extends CUqApp {
 
 	protected async internalStart() {
 		this.setRes(res);
-		if (nav.isInAppRouting) return;
-		await this.startHome();
+		if (this.isRouting === false) await this.startHome();
 	}
 
 	protected async startHome() {
@@ -33,7 +32,12 @@ export class CApp extends CUqApp {
 		this.cHome.load();
 		this.showMain();
 
-		setInterval(this.callTick, 1000);
+		this.timer = setInterval(this.callTick, 1000);
+	}
+
+	protected onDispose() {
+		clearInterval(this.timer);
+		this.timer = undefined;
 	}
 
 	protected async startMe() {
@@ -86,7 +90,7 @@ export class CApp extends CUqApp {
 	}
 
     private showMain(initTabName?: string) {
-        this.openVPage(VMain, initTabName);
+        this.openVPage(VMain, initTabName, this.dispose);
 	}
 
 	private tick = 0;

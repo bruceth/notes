@@ -21,9 +21,9 @@ export class VActions extends VBasePage {
 		return <div className="">
 			<div className="text-muted small px-3 py-1 mt-2">收件人</div>
 			<div className="border rounded p-3 mb-3">
-				{this.controller.contacts.map(c => {
+				{this.controller.contacts.map((c, index) => {
 					let {contact, assigned} = c;
-					return <span className="mr-3">{this.renderContact(contact, assigned)}</span>;
+					return <span key={index} className="mr-3">{this.renderContact(contact, assigned)}</span>;
 				})}
 			</div>
 			<div className={cn} onClick={this.onSend}>

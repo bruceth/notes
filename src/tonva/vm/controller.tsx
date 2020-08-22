@@ -57,16 +57,18 @@ export abstract class Controller {
 	}
 
     private receiveHandlerId:number;
-    private disposer:()=>void;
+    //private disposer:()=>void;
 
-    private dispose = () => {
+    protected dispose = () => {
         // message listener的清理
         nav.unregisterReceiveHandler(this.receiveHandlerId);
         this.onDispose();
     }
 
     protected onDispose() {
-    }
+	}
+	
+	get isRouting() {return nav.isRouting;}
 
 	isMe(id:any):boolean {
 		if (id === null) return false;
@@ -130,7 +132,7 @@ export abstract class Controller {
 
     protected abstract internalStart(param?:any, ...params:any[]):Promise<void>;
     async start(param?:any, ...params:any[]):Promise<void> {
-        this.disposer = this.dispose;
+        //this.disposer = this.dispose;
 		this.registerReceiveHandler();
         let ret = await this.beforeStart();
         if (ret === false) return;
@@ -167,22 +169,22 @@ export abstract class Controller {
         resolve(value);
     }
 
-    openPage(page:JSX.Element, onClosePage?: ()=>void) {
+    openPage(page:JSX.Element, onClosePage?: (ret:any)=>void) {
 		let disposer: ()=>void;
 		if (onClosePage !== undefined) {
 			disposer = () => {
-				if (this.disposer) this.disposer();
-				onClosePage();
+				//if (this.disposer) this.disposer();
+				onClosePage(undefined);
 			}
 		}
 
         nav.push(page, disposer);
-        this.disposer = undefined;
+        //this.disposer = undefined;
     }
 
-    replacePage(page:JSX.Element) {
-        nav.replace(page, this.disposer);
-        this.disposer = undefined;
+    replacePage(page:JSX.Element, onClosePage?: ()=>void) {
+        nav.replace(page, onClosePage);
+        //this.disposer = undefined;
     }
 
     backPage() {

@@ -27,7 +27,7 @@ export class VMe extends VPage<CMe> {
             rows.push(
                 {
                     type: 'component',
-                    component: <button className="btn btn-success w-100 my-2" onClick={() => nav.showLogin(undefined, true)}>
+                    component: <button className="btn btn-success w-100 my-2" onClick={() => nav.logout()}>
                         <FA name="sign-out" size="lg" /> {this.t('pleaseLogin')}
                     </button>
                 },

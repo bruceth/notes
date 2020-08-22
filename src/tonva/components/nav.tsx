@@ -79,7 +79,7 @@ export class NavView extends React.Component<Props, NavViewState> {
     async componentDidMount()
     {
 		window.addEventListener('popstate', this.navBack);
-		if (nav.isInAppRouting || !nav.isRouting) await nav.init();
+		if (nav.isRouting === false) await nav.init();
         await nav.start();
     }
 
@@ -388,8 +388,7 @@ export class Nav {
     private wsHost: string;
     private local: LocalData = new LocalData();
 	private navigo: Navigo;
-	isRouting: boolean;
-	isInAppRouting: boolean;
+	isRouting: boolean = false;
 	navSettings: NavSettings;
     @observable user: User/*InNav*/ = undefined;
     testing: boolean;
@@ -402,9 +401,6 @@ export class Nav {
         this.language = lang;
         this.culture = district;
 		this.testing = false;
-		this.navigo = new Navigo();
-		this.isRouting = false;
-		this.isInAppRouting = false;
     }
 
     get guest(): number {
@@ -624,7 +620,8 @@ export class Nav {
 	}
 
 	resolveRoute() {
-		this.isRouting = true;
+		if (this.isRouting === false) return;
+		if (this.navigo === undefined) return;
 		this.navigo.resolve();
 	}
 
@@ -633,6 +630,9 @@ export class Nav {
 	on(regex:RegExp, routeFunc:RouteFunc, hooks?:Hooks):Navigo;
 	on(options: {[url:string]: RouteFunc|NamedRoute}):Navigo;
 	on(...args:any[]):Navigo {
+		if (this.navigo === undefined) {
+			this.navigo = new Navigo();
+		}
 		return this.navigo.on(args[0], args[1], args[2]);
 	}
 
@@ -642,7 +642,7 @@ export class Nav {
 	}
 
 	go(showPage:()=>void, url:string, absolute?:boolean) {
-		if (this.isRouting) {
+		if (this.navigo !== undefined) {
 			this.navigate(url, absolute);
 		}
 		else {
@@ -681,7 +681,8 @@ export class Nav {
         console.log("logined: %s", JSON.stringify(user));
         this.user = user;
         this.saveLocalUser();
-        netToken.set(user.id, user.token);
+		netToken.set(user.id, user.token);
+		nav.clear();
         if (callback !== undefined) //this.loginCallbacks.has)
             callback(user);
             //this.loginCallbacks.call(user);
@@ -792,15 +793,8 @@ export class Nav {
         logoutApis();
         let guest = this.local.guest.get();
         setCenterToken(0, guest && guest.token);
-        this.ws = undefined;
-        /*
-        if (this.loginCallbacks.has)
-            this.logoutCallbacks.call();
-        else {
-            if (notShowLogin === true) return;
-        }
-        await nav.start();
-        */
+		this.ws = undefined;
+		this.clear();
         if (callback === undefined)
             await nav.start();
         else

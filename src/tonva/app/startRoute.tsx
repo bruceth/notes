@@ -15,6 +15,7 @@ export async function startRoute(appConfig: AppConfig) {
 	}
 	
 	nav.setSettings(appConfig);
+	nav.isRouting = true;
 	await nav.init();
 	let {appName, version, tvs} = appConfig;
 	await UQsMan.load(appName, version, tvs);

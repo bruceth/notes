@@ -44,7 +44,7 @@ MAP NoteX (
 MAP FolderNote (
 	KEY folder ID Note,
 	KEY note ID Note,
-	type SMALLINT DEFAULT 0,			-- Note类, EnumNoteType
+	--type SMALLINT DEFAULT 0,			-- Note类, EnumNoteType 多余，经常忘记写入
 	seconds INT,						-- seconds since 2020-1-1
 	unread TINYINT DEFAULT 0,			-- 1: read
 	state TINYINT DEFAULT 0,			-- 对当前状态的描述，各type自行定义
@@ -198,10 +198,10 @@ RETURNS ret (
 		SET folderId=parent;
 	}
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
-	BOOK FolderNote AT (folderId, noteId) SET seconds=seconds, type=type;
+	BOOK FolderNote AT (folderId, noteId) SET seconds=seconds;
 	FOREACH (var noteFolderId ID OF SELECT folder as noteFolderId FROM FolderNote WHERE note=noteId) {
 		IF noteFolderId<>folderId {
-			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds, type=type;
+			BOOK FolderNote AT(noteFolderId, noteId) SET seconds=seconds;
 		}
 	}
 	FOREACH (var parentFolderId ID, ownerId ID OF SELECT a.folder as parentFolderId, b.owner as ownerId 
@@ -284,8 +284,7 @@ ACTION SendNoteTo ver 1.0 (
 	tos TEXT,
 ) {
 	IF exists(SELECT id FROM Note WHERE id=note and owner=$user) {
-		VAR seconds INT, noteType INT;
-		SET noteType = type FROM Note WHERE id=note;
+		VAR seconds INT;
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 		TABLE tblTo(to ID);
 		TEXT tos sep=',' ln='|' INTO tblTo;
@@ -297,7 +296,7 @@ ACTION SendNoteTo ver 1.0 (
 				TUID Note INTO folderId SET owner=to, type=EnumNoteType.Folder;
 				BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
 			}
-			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1, type=noteType;
+			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
 			BOOK NoteAccess AT (note, to) SET access=1;
 			TUID [$User] ID (to) SET poke=1;
 		};

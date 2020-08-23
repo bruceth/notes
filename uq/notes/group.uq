@@ -41,11 +41,16 @@ RETURNS ret (
 
 	-- 建立其它成员的Group Folder
 	FOREACH members {
+		SET specFolderId=folder FROM SpecFolder WHERE owner=member AND spec=EnumSpecFolder.notes;
+		IF specFolderId IS NULL {
+			TUID Note INTO specFolderId SET owner=member, type=EnumNoteType.Folder;
+			BOOK SpecFolder AT(member, EnumSpecFolder.notes) SET folder=specFolderId;
+		}
 		TUID Note INTO folderId SET type=EnumNoteType.GroupFolder, caption=caption, content=content, owner=member;
 		BOOK GroupFolder AT(groupId, member) SET folder=folderId;
-		SET specFolderId=folder FROM SpecFolder WHERE owner=member AND spec=EnumSpecFolder.notes;
 		BOOK FolderNote AT(specFolderId, folderId) SET seconds=seconds;
 		TUID [$User] ID (member) SET poke=1;
+		SET specFolderId=NULL;
 	}
 	INTO ret SELECT groupId as [group], folderId as folder;
 };
@@ -73,11 +78,15 @@ ACTION AddGroupMember (
 		VAR folderId ID, specFolderId ID, caption CHAR(200), content TEXT, seconds INT;
 		SET folderId=a.folder FROM GroupFolder as a WHERE a.group=group AND a.member=member;
 		IF folderId IS NULL {
+		SET specFolderId=folder FROM SpecFolder WHERE owner=member AND spec=EnumSpecFolder.notes;
+			IF specFolderId IS NULL {
+				TUID Note INTO specFolderId SET owner=member, type=EnumNoteType.Folder;
+				BOOK SpecFolder AT(member, EnumSpecFolder.notes) SET folder=specFolderId;
+			}
 			SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 			SET caption=a.caption, content=a.content FROM Note as a WHERE a.id=group;
 			TUID Note INTO folderId SET type=EnumNoteType.GroupFolder, caption=caption, content=content, owner=member;
 			BOOK GroupFolder AT(group, member) SET folder=folderId;
-			SET specFolderId=folder FROM SpecFolder WHERE owner=member AND spec=EnumSpecFolder.notes;
 			BOOK FolderNote AT(specFolderId, folderId) SET seconds=seconds;
 			TUID [$User] ID (member) SET poke=1;
 		}

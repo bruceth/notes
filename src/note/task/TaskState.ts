@@ -22,22 +22,28 @@ export function GetTaskStateContent(type:number, state:number) {
 	/*
 	let content:string;
 	let isEnd:boolean = true;
+	// eslint-disable-next-line
 	if (state == Number(EnumTaskState.Start)) {
 		content = '待办';
 		isEnd = false;
 	}
+	// eslint-disable-next-line
 	else if (state == Number(EnumTaskState.Done)) {
 		content = '已办';
 	}
+	// eslint-disable-next-line
 	else if (state == Number(EnumTaskState.Pass)) {
 		content = '已验收';
 	}
+	// eslint-disable-next-line
 	else if (state == Number(EnumTaskState.Fail)) {
 		content = '拒签';
 	}
+	// eslint-disable-next-line
 	else if (state == Number(EnumTaskState.Rated)) {
 		content = '已评价';
 	}
+	// eslint-disable-next-line
 	else if (state == Number(EnumTaskState.Fail)) {
 		content = '已取消';
 	}

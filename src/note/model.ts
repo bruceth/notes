@@ -1,7 +1,7 @@
 import { BoxId, t } from "tonva";
 
 //export const notesName = t('notes');
-export enum EnumNoteItemType {text=0, task=1, folder=3}
+export enum EnumNoteItemType {text=0, task=1, folder=3, group=4, groupFolder=5, unit=6}
 
 export interface NoteItem {
 	seconds: number;

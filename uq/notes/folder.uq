@@ -11,12 +11,13 @@ MAP SpecFolder (
 	KEY owner ID [$User],
 	KEY spec TINYINT,
 	folder ID Note,
-) ON ADD {
+);
+/* ON ADD {
 	// only for test of ON ADD action
 	var a INT, b int;
 	SET a = owner;
 	set b = spec;
-};
+};*/
 
 QUERY GetNotes ver 1.01 (
 	folderId ID Note,					-- folderId < 0, 则是特定folder，如果没有，需要创建

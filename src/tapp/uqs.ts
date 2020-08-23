@@ -20,6 +20,8 @@ export interface Notes {
 
 	AddComment: Action;
 
+	AddGroup: Action;
+
 	$Poked: Query;
 	GetNotes: Query;
 	GetMyContacts: Query;

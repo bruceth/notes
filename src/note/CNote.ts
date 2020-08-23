@@ -9,15 +9,21 @@ import { Contact } from "model";
 import { observable } from "mobx";
 import { VSent } from "./views/VSent";
 import { CFolderNoteItem } from "./folder";
+import { CGroup } from "./group/CGroup";
+import { CGroupFolderItem } from "./groupFolder/CGroupFolderItem";
 
 const cNoteItems: {[key in EnumNoteItemType]: new (...args: any[])=> CNoteItem} = {
 	[EnumNoteItemType.text]: CTextNoteItem,
 	[EnumNoteItemType.task]: CTaskNoteItem,
 	[EnumNoteItemType.folder]: CFolderNoteItem,
+	[EnumNoteItemType.group]: CFolderNoteItem,
+	[EnumNoteItemType.groupFolder]: CGroupFolderItem,
+	[EnumNoteItemType.unit]: CFolderNoteItem,
 };
 
 export class CNote extends CUqBase {
 	protected foldItemStack: CFolderNoteItem[];
+	rootFoldItem: CFolderNoteItem;
 	currentFoldItem: CFolderNoteItem;
 
 	@observable contacts: Contact[];
@@ -27,7 +33,7 @@ export class CNote extends CUqBase {
 	}
 
 	init(folderId?: number) {
-		this.currentFoldItem = this.newSub(CFolderNoteItem);
+		this.rootFoldItem =this.currentFoldItem = this.newSub(CFolderNoteItem);
 		this.foldItemStack = [];
 	}
 
@@ -116,5 +122,10 @@ export class CNote extends CUqBase {
 		let cTaskNoteItem = this.newSub(CTaskNoteItem);
 		cTaskNoteItem.init(this.noteItem);
 		cTaskNoteItem.showAssignTaskPage();
+	}
+
+	showAddGroupPage() {
+		let cGroup = this.newSub(CGroup);
+		cGroup.showAddPage();
 	}
 }

@@ -2,8 +2,9 @@ import React from 'react';
 import { VBasePage } from "./VBasePage";
 import { LMR, FA } from 'tonva';
 import { CheckItem } from 'note/item';
+import { CNote } from 'note/CNote';
 
-export class VActions extends VBasePage {
+export class VActions extends VBasePage<CNote> {
 	protected backPageCount = 3;
 
 	init(param?:any):void {
@@ -21,10 +22,7 @@ export class VActions extends VBasePage {
 		return <div className="">
 			<div className="text-muted small px-3 py-1 mt-2">收件人</div>
 			<div className="border rounded p-3 mb-3">
-				{this.controller.contacts.map((c, index) => {
-					let {contact, assigned} = c;
-					return <span key={index} className="mr-3">{this.renderContact(contact, assigned)}</span>;
-				})}
+				{this.renderSelectedContact(this.controller.contacts)}
 			</div>
 			<div className={cn} onClick={this.onSend}>
 				分享内容

@@ -143,4 +143,34 @@ export class CFolderNoteItem extends CNoteItem {
 		let vNoteItem = new VFolderNoteItem(this);
 		return vNoteItem.render();
 	}
+
+	async addGroup(caption:string, content:string, members:{member:number}[]) {
+		let ret = await this.uqs.notes.AddGroup.submit({caption, content, members});
+		let {group, folder} = ret;
+		let date = new Date();
+		let type = EnumNoteItemType.groupFolder;
+		let noteItem:NoteItem = {
+			seconds: undefined,
+			owner: this.user.id,
+			note: group as number,
+			type,
+			caption,
+			content,
+			assigned: undefined,
+			from: undefined,
+			fromAssigned: undefined,
+			state: undefined,
+			unread: 0,
+			obj: undefined,
+			$create: date,
+			$update: date,
+		}
+		let cNoteItem = this.owner.getCNoteItem(type);
+		cNoteItem.init(noteItem);
+		if (folder === this.folderId) {
+			this.notesPager.items.unshift(cNoteItem);
+		}
+		return cNoteItem;
+	}
+
 }

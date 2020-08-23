@@ -50,7 +50,7 @@ PAGE (
 		}
 		SET folderId = fid;
 	}
-	PAGE SELECT a.seconds, b.owner, a.note, a.type
+	PAGE SELECT a.seconds, b.owner, a.note, b.type
 		, b.caption, b.content, c.assigned
 		, b.[from], e.assigned as fromAssigned
 		, d.state, d.flowContent, a.unread

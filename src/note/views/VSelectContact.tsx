@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import { VBasePage } from './VBasePage';
 import { List, User, Image, UserView, FA } from 'tonva';
 import { Contact } from 'model';
+import { CNote } from 'note/CNote';
 
 export interface SelectContactOptions {
 	title?: string;
@@ -11,7 +12,7 @@ export interface SelectContactOptions {
 	single?: boolean;
 }
 
-export class VSelectContact extends VBasePage {
+export class VSelectContact extends VBasePage<CNote> {
 	@observable private anySelected:boolean = false;
 	@observable private contacts: Contact[];
 	@observable private multiple:boolean = false;

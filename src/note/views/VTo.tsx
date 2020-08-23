@@ -5,8 +5,9 @@ import { VBasePage } from './VBasePage';
 import { List, User, Image, UserView, FA } from 'tonva';
 import { Contact } from 'model';
 import { VActions } from './VActions';
+import { CNote } from 'note/CNote';
 
-export class VTo extends VBasePage {
+export class VTo extends VBasePage<CNote> {
 	protected backPageCount = 2;
 
 	init(param?:any):void {

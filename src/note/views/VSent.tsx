@@ -1,7 +1,8 @@
 import React from 'react';
 import { VBasePage } from './VBasePage';
+import { CNote } from 'note/CNote';
 
-export class VSent extends VBasePage {
+export class VSent extends VBasePage<CNote> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '已发送'}
 	content() {

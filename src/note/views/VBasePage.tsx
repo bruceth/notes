@@ -1,9 +1,8 @@
 import React from 'react';
-import { VPage, User, Image, UserView } from "tonva";
-import { CNote } from "../CNote";
+import { VPage, User, Image, UserView, CBase } from "tonva";
 import { Contact } from 'model';
 
-export abstract class VBasePage extends VPage<CNote> {
+export abstract class VBasePage<T extends CBase> extends VPage<T> {
 	protected renderContact = (userId:number, assigned:string) => {
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;
@@ -20,5 +19,12 @@ export abstract class VBasePage extends VPage<CNote> {
 		return <div className="px-3 py-2">
 			{this.renderContact(contact, assigned)}
 		</div>;
+	}
+
+	protected renderSelectedContact(contacts:Contact[]) {
+		return contacts.map((c, index) => {
+			let {contact, assigned} = c;
+			return <span key={index} className="mr-3">{this.renderContact(contact, assigned)}</span>;
+		});
 	}
 }

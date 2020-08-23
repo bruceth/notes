@@ -5,9 +5,12 @@ import { observer } from "mobx-react";
 import { EnumNoteItemType } from 'note/model';
 
 const itemIcons: {[key in EnumNoteItemType]: JSX.Element} = {
-	[EnumNoteItemType.text]: <FA name="file-text-o" size="lg" className="text-info" />,
+	[EnumNoteItemType.text]: <FA name="file-o" size="lg" className="text-info" />,
 	[EnumNoteItemType.task]: <FA name="tasks" size="lg" className="text-success" />,
 	[EnumNoteItemType.folder]: <FA name="folder" size="lg" className="text-warning mr-2" />,
+	[EnumNoteItemType.group]: <FA name="folder" size="lg" className="text-warning mr-2" />,
+	[EnumNoteItemType.groupFolder]: <FA name="folder" size="lg" className="text-warning mr-2" />,
+	[EnumNoteItemType.unit]: <FA name="folder" size="lg" className="text-warning mr-2" />,
 }
 
 export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {

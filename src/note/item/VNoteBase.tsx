@@ -165,12 +165,17 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;
+			let vImage:any, cnName:string = 'font-weight-bolder';
+			if (icon) {
+				cnName += ' small'
+				vImage = <div className="pr-3">
+					<Image className="w-2-5c h-2-5c" src={icon} />
+				</div>;
+			}
 			return <div className="d-flex">
-				<div className="pr-3">
-					<Image className="w-2-5c h-2-5c" src={icon || '.user-o'} />
-				</div>
+				{vImage}
 				<div style={{lineHeight:'1.3'}}>
-					<div><b className="small font-weight-bolder">{assigned || nick || name}</b></div>
+					<div><b className={cnName}>{assigned || nick || name}</b></div>
 					<div>{this.renderEditTime()}</div>
 				</div>
 			</div>

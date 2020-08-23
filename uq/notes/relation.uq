@@ -52,15 +52,32 @@ RETURNS ret (
 	INTO ret SELECT retState as state;
 };
 
-QUERY GetMyContacts()
+QUERY GetMyContacts(
+	groupFolder ID,
+)
 PAGE (
 	contact ID [$User] ASC,
 	assigned TEXT(TINY),
 	state TINYINT,
 ) {
-	PAGE SELECT contact, assigned, state
-		FROM MyContact 
-		WHERE me=$user AND contact>$pageStart
-		ORDER BY contact ASC
-		LIMIT $pageSize;
+	IF groupFolder IS NULL OR groupFolder <= 0 {
+		PAGE SELECT contact, assigned, state
+			FROM MyContact 
+			WHERE me=$user AND contact>$pageStart
+			ORDER BY contact ASC
+			LIMIT $pageSize;
+	}
+	ELSE {
+		VAR groupId ID;
+		SET groupId=a.group FROM GroupFolder as a WHERE a.folder=groupFolder;
+
+		-- GroupFolder里面包含自己
+		-- GroupFolder JOIN MyContact 自动去掉了自己
+		PAGE SELECT b.contact, b.assigned, b.state
+			FROM GroupFolder as a 
+				JOIN MyContact as b ON b.me=$user AND b.contact=a.member
+			WHERE a.group=groupId AND b.contact>$pageStart
+			ORDER BY b.contact ASC
+			LIMIT $pageSize;
+	}
 };

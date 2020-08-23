@@ -111,8 +111,8 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		}
 	}
 
-	showTo(backPageCount: number) {
-		this.owner.showTo(this.noteItem, backPageCount);
+	async showTo(backPageCount: number) {
+		await this.owner.showTo(this.noteItem, backPageCount);
 	}
 
 	onCheckableChanged(type: number) {

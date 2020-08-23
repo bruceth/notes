@@ -10,10 +10,13 @@ MAP UnitX (
 	tonvaUnit ID,				-- 跟tonva机构对应的值
 );
 
+-- 包含了所有的Group成员
 MAP GroupFolder (
 	KEY group ID Note,			-- NoteType=group
 	KEY member ID [$User],
-	folder ID Note,			-- NoteType=groupFolder
+	folder ID Note,				-- NoteType=groupFolder
+	role TINYINT DEFAULT 0, 	-- 0: 普通, 1: owner, 2: admin
+	state TINYINT DEFAULT 1,	-- 1:正常，0:删除
 	INDEX folder (folder) UNIQUE,
 );
 

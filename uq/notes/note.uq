@@ -280,22 +280,32 @@ ACTION SetNoteX (
 };
 
 ACTION SendNoteTo ver 1.0 (
+	groupFolder ID,
 	note ID,
 	tos TEXT,
 ) {
 	IF exists(SELECT id FROM Note WHERE id=note and owner=$user) {
-		VAR seconds INT;
+		VAR seconds INT, groupId ID;
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 		TABLE tblTo(to ID);
 		TEXT tos sep=',' ln='|' INTO tblTo;
+		SET groupId=a.group FROM GroupFolder as a WHERE a.folder=groupFolder AND a.member=$user;
+
 		--BOOK NoteAccess AT (note, *) SET access=0; 这句实际把所有access清空了
 		FOREACH (var to ID OF SELECT to FROM tblTo) {
 			VAR folderId ID;
-			SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
-			IF folderId IS NULL {
-				TUID Note INTO folderId SET owner=to, type=EnumNoteType.Folder;
-				BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
+			SET folderId = NULL;
+			IF NOT groupId IS NULL {
+				SET folderId = a.folder FROM GroupFolder as a WHERE a.group=groupId AND a.member=to;
 			}
+			IF folderId IS NULL {
+				SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
+				IF folderId IS NULL {
+					TUID Note INTO folderId SET owner=to, type=EnumNoteType.Folder;
+					BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
+				}
+			}
+
 			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
 			BOOK NoteAccess AT (note, to) SET access=1;
 			TUID [$User] ID (to) SET poke=1;

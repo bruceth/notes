@@ -10,7 +10,7 @@ export class VActions extends VBasePage<CNote> {
 	init(param?:any):void {
 		if (param) {
 			this.backPageCount = Number(param);
-		}	
+		}
 	}
 
 	header() {return '操作'}
@@ -39,14 +39,14 @@ export class VActions extends VBasePage<CNote> {
 	}
 
 	private onSend = async () => {
-		let {contacts, noteItem} = this.controller;
+		let {contacts, noteItem, currentFoldItem} = this.controller;
 		let toList = contacts.map (v => {
 			let {contact} = v;
 			if (!contact) return undefined;
 			if (typeof contact === 'object') return (contact as any).id;
 			return contact;
 		});
-		await this.controller.sendNoteTo(noteItem.note, toList);
+		await this.controller.sendNoteTo(currentFoldItem.folderId, noteItem.note, toList);
 		this.closePage(this.backPageCount);
 		this.controller.showSentPage();
 	}

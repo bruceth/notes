@@ -26,6 +26,7 @@ export class CNote extends CUqBase {
 	rootFoldItem: CFolderNoteItem;
 	currentFoldItem: CFolderNoteItem;
 
+	@observable groupMembers: Contact[];
 	@observable contacts: Contact[];
 	noteItem: NoteItem;
 
@@ -87,9 +88,9 @@ export class CNote extends CUqBase {
 		return await this.currentFoldItem.setNote(waiting, noteItem, caption, content, obj);
 	}
 
-	async sendNoteTo(note:number, toList:number[]) {
+	async sendNoteTo(groupFolder:number, note:number, toList:number[]) {
 		let tos = toList.join('|');
-		await this.uqs.notes.SendNoteTo.submit({note, tos});
+		await this.uqs.notes.SendNoteTo.submit({groupFolder, note, tos});
 	}
 
 	async hideNote(note:number, x:number) {
@@ -105,8 +106,13 @@ export class CNote extends CUqBase {
 		cTextNoteItem.showAddNotePage(parent);
 	}
 
-	showTo(noteItem:NoteItem, backPageCount:Number) {
+	async showTo(noteItem:NoteItem, backPageCount:Number) {
 		this.noteItem = noteItem;
+		let ret = await this.uqs.notes.GetMyContacts.page(
+			{
+				groupFolder: this.currentFoldItem.folderId
+			}, 0, 50, true);
+		this.groupMembers = ret.$page;
 		this.openVPage(VTo, backPageCount);
 	}
 

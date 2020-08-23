@@ -29,7 +29,7 @@ export class VTo extends VBasePage<CNote> {
 		return React.createElement(c);
 	}
 	content() {
-		let items = this.controller.cApp.contacts;
+		let items = this.controller.groupMembers; //.cApp.contacts;
 		return <div className="">
 			<List ref={v => this.list = v}
 				items={items} 

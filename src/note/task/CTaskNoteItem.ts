@@ -141,6 +141,7 @@ export class CTaskNoteItem extends CNoteItem {
 			delete cObj.rater;
 		}
 		let data = {
+			folder: this.owner.currentFoldItem.folderId,
 			note: numberFromId(noteId),
 			caption,
 			content: JSON.stringify(cObj),
@@ -157,6 +158,7 @@ export class CTaskNoteItem extends CNoteItem {
 		let note: NoteModel = await this.uqs.notes.Note.assureBox(noteId);
 		let { content } = note;
 		let data = {
+			folder: this.owner.currentFoldItem.folderId,
 			note: numberFromId(noteId),
 			content: content
 		}
@@ -192,6 +194,7 @@ export class CTaskNoteItem extends CNoteItem {
 		let { note: noteId } = this.noteItem;
 		let content = this.stringifyContent();
 		let data = {
+			folder: this.owner.currentFoldItem.folderId,
 			note: numberFromId(noteId),
 			action: pass ? 1 : 2,
 			content: content
@@ -208,6 +211,7 @@ export class CTaskNoteItem extends CNoteItem {
 		let { note: noteId } = this.noteItem;
 		let content = this.stringifyContent();
 		let data = {
+			folder: this.owner.currentFoldItem.folderId,
 			note: numberFromId(noteId),
 			value: value,
 			content: content

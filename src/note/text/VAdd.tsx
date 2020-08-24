@@ -38,6 +38,7 @@ export class VAdd extends VNoteForm<CTextNoteItem> {
     }
 
 	protected async onButtonSave(): Promise<void> {
+		this.checkInputAdd();
 		await this.controller.AddNote(this.parentId);
 		this.closePage();
 		return;

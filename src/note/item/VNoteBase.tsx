@@ -65,12 +65,12 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 				}
 				c += v.substr(i);
 			}
-			return <div key={index} className="mb-3">{c}</div>;
+			return <div key={index} className="pt-1 pb-2">{c}</div>;
 		})}</>;
 	}
 
 	protected renderContentText() {
-		return <div className="px-3 py-3">{this.renderParagraphs(this.controller.noteContent)}</div>;
+		return <div className="px-3 pb-2">{this.renderParagraphs(this.controller.noteContent)}</div>;
 	}
 
 	protected renderContentList() {
@@ -109,7 +109,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 					{checkedItems.map((v, index) => this.renderCheckItem(v, checkable))}
 				</div>;
 			}
-			return <div className="">
+			return <div className="mb-2">
 				{uncheckedItems.map((v, index) => this.renderCheckItem(v, checkable))}
 				{doneItems}
 			</div>;
@@ -131,7 +131,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			icon = 'square-o';
 		}
 		if (checkable === true) {
-			return <div key={key} className="d-flex mx-3 my-0 align-items-center form-group form-check">
+			return <div key={key} className="d-flex mx-3 py-1 align-items-center form-group form-check">
 				<input className="form-check-input mr-3 mt-0" type="checkbox"
 					defaultChecked={checked}
 					data-key={key} />
@@ -139,7 +139,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			</div>;
 		}
 		else {
-			return <div key={key} className="d-flex mx-3 my-0 align-items-center">
+			return <div key={key} className="d-flex mx-3 py-1 align-items-center">
 				<FA name={icon} />
 				<div className={'py-1 ' + cn}>{content}</div>
 			</div>;

@@ -49,6 +49,30 @@ export class CNote extends CUqBase {
 		return this.currentFoldItem.notesPager;
 	}
 
+	updateFolderTime(note:number, time:Date) {
+		this.currentFoldItem.updateTime(time);
+		if (!this.currentFoldItem.noteItem)
+			return;
+		let fnote = this.currentFoldItem.noteItem.note;
+		if (this.foldItemStack.length > 0) {
+			for (var folderItem of this.foldItemStack) {
+				if (this.updateSubFolderItem(folderItem, fnote)) {
+					folderItem.updateTime(time);
+				}
+			}
+		}
+	}
+
+	protected updateSubFolderItem(folder:CFolderNoteItem, fnote:number) {
+		let {items} = folder.notesPager;
+		let index = items.findIndex(v=>v.noteItem?.note === fnote);
+		if (index > 0) {
+			let fItem = items.splice(index, 1);
+			items.unshift(...fItem);
+		}
+		return index >= 0;
+	}
+
 	openFolder(foldItem:CFolderNoteItem) {
 		this.foldItemStack.push(this.currentFoldItem);
 		this.currentFoldItem = foldItem;

@@ -181,6 +181,13 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 			if (this.title && this.title !== this.noteItem.caption) {
 				this.noteItem.caption = this.title;
 			}
+			this.owner.updateFolderTime(this.noteItem.note, this.noteItem.$update);
+		}
+	}
+
+	updateTime(time:Date) {
+		if (this.noteItem) {
+			this.noteItem.$update = time;
 		}
 	}
 

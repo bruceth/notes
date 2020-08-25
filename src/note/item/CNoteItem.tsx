@@ -19,6 +19,10 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	@observable spawnCount: number;
 	@observable relativeKey: RelativeKey;
 
+	get groupFolder() {
+		return this.noteItem?.groupFolder;
+	}
+
 	init(param: NoteItem): void {
 		this.noteItem = param;
 		if (!param) return;

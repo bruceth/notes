@@ -88,7 +88,21 @@ export class CFolderNoteItem extends CNoteItem {
 
 	async addNote(folder:number, caption:string, content:string, obj:any, type:EnumNoteItemType) {
 		let sub = 0;
-		let ret = await this.uqs.notes.AddNote.submit({groupFolder:this.noteItem?.groupFolder, parent:folder, caption, content, type, sub});
+		let groupFolder = this.noteItem?.groupFolder;
+		if (!groupFolder && this.noteItem) {
+			// eslint-disable-next-line
+			if (folder === this.noteItem.note && this.noteItem.type === Number(EnumNoteItemType.groupFolder)) {
+				groupFolder = folder;
+			}
+		}
+		let param = {
+			groupFolder:groupFolder,
+			parent:folder,
+			caption,
+			content,
+			type,
+			sub}
+		let ret = await this.uqs.notes.AddNote.submit(param);
 		let {note} = ret;
 		let date = new Date();
 		let noteItem:NoteItem = {

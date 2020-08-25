@@ -19,7 +19,7 @@ MAP SpecFolder (
 	set b = spec;
 };*/
 
-QUERY GetNotes ver 1.01 (
+QUERY GetNotes ver 1.02 (
 	folderId ID Note,					-- folderId < 0, 则是特定folder，如果没有，需要创建
 )
 PAGE (
@@ -34,6 +34,7 @@ PAGE (
 	fromAssigned CHAR(100),
 	state TEXT,
 	flowContent TEXT,
+	groupFolder ID,
 	unread TINYINT,
 	[$create] TIMESTAMP,
 	[$update] TIMESTAMP,
@@ -53,7 +54,7 @@ PAGE (
 	PAGE SELECT a.seconds, b.owner, a.note, b.type
 		, b.caption, b.content, c.assigned
 		, b.[from], e.assigned as fromAssigned
-		, d.state, d.flowContent, a.unread
+		, d.state, d.flowContent, f.groupFolder, a.unread
 		, b.[$create], b.[$update]
 		, (SELECT Count(*) FROM NoteAccess as WHERE note=a.note AND access=1) as toCount
 		, (SELECT Count(*) FROM Note2Note WHERE note0=a.note AND type=EnumNoteMapType.Spawn) as spawnCount
@@ -62,6 +63,7 @@ PAGE (
 			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact
 			LEFT JOIN NoteX as d ON a.note=d.note
 			LEFT JOIN MyContact as e ON e.me=$user and b.from=c.contact
+			LEFT JOIN NoteXGroup as f ON a.note=f.folder
 		WHERE a.folder=folderId and a.seconds<$pageStart and b.x=0
 		ORDER BY a.seconds desc
 		LIMIT $pageSize;

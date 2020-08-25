@@ -8,7 +8,8 @@ MAP Task (
 	point INT,
 );
 
-ACTION AssignTask ver 1.01 (
+ACTION AssignTask ver 1.02 (
+	groupFolder ID Note,
 	folder ID NOTE,
 	note ID NOTE,
 	caption CHAR(200),
@@ -21,11 +22,11 @@ ACTION AssignTask ver 1.01 (
 	),
 ) {
 	VAR seconds INT, groupID INT;
-	if folder IS NULL OR folder < 0 {
+	if groupFolder IS NULL OR groupFolder <= 0 {
 		SET groupID = -1;
 	}
 	ELSE {
-		SET groupID = a.group FROM GroupFolder as a WHERE a.folder=folder AND a.member=$user;
+		SET groupID = a.group FROM GroupFolder as a WHERE a.folder=groupFolder AND a.member=$user;
 		if groupID IS NULL {
 			set groupID = -1;
 		}
@@ -55,6 +56,7 @@ ACTION AssignTask ver 1.01 (
 };
 
 ACTION DoneTask ver 1.01 (
+	groupFolder ID Note,
 	folder ID NOTE,
 	note ID NOTE,
 	content TEXT,		-- json
@@ -80,11 +82,11 @@ RETURNS ret (
 			SET nextUser = rater;
 		}
 		if NOT nextUser IS NULL {
-			if folder IS NULL OR folder < 0 {
+			if groupFolder IS NULL OR groupFolder <= 0 {
 				SET groupID = -1;
 			}
 			ELSE {
-				SET groupID = a.group FROM GroupFolder as a WHERE a.folder=folder AND a.member=$user;
+				SET groupID = a.group FROM GroupFolder as a WHERE a.folder=groupFolder AND a.member=$user;
 				if groupID IS NULL {
 					set groupID = -1;
 				}
@@ -120,6 +122,7 @@ RETURNS ret (
 };
 
 ACTION CheckTask ver 1.01 (
+	groupFolder ID Note,
 	folder ID NOTE,
 	note ID Note,
 	action TINYINT,		-- 1: pass，2: fail
@@ -148,11 +151,11 @@ RETURNS ret (
 			SET flowId=(SELECT ifnull(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
 			BOOK Flow AT(note, flowId) SET content=content, operator=$user, action=EnumTaskAction.Check;
 			IF NOT rater IS NULL {
-				if folder IS NULL OR folder < 0 {
+				if groupFolder IS NULL OR groupFolder <= 0 {
 					SET groupID = -1;
 				}
 				ELSE {
-					SET groupID = a.group FROM GroupFolder as a WHERE a.folder=folder AND a.member=$user;
+					SET groupID = a.group FROM GroupFolder as a WHERE a.folder=groupFolder AND a.member=$user;
 					if groupID IS NULL {
 						set groupID = -1;
 					}
@@ -185,6 +188,7 @@ RETURNS ret (
 };
 
 ACTION RateTask ver 1.01 (
+	groupFolder ID Note,
 	folder ID NOTE,
 	note ID Note,
 	value INT,			-- 分值

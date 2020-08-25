@@ -30,6 +30,8 @@ export class VDiscover extends VPage<CDiscover> {
 		let cn = 'px-3 py-2 cursor-pointer bg-white mb-1';
 		let right = <FA name="angle-right" />;
 		return <div className="py-3">
+			{this.controller.cBook.renderBook()}
+
 			{this.items.map((v, index) => {
 				if (typeof v === 'string') {
 					return <div key={index} className="pt-2" />;

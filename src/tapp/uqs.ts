@@ -26,6 +26,12 @@ export interface Notes {
 	GetNotes: Query;
 	GetMyContacts: Query;
 	GetNote: Query;
+
+	GetBookProjects: Query;
+	GetProjectFlow: Query;
+	GetProjectYearSum: Query;
+	GetProjectMonthSum: Query;
+	GetProjectDaySum: Query;
 };
 
 export interface UQs {

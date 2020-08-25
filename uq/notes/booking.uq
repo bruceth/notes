@@ -1,0 +1,225 @@
+TUID BookProject (
+	id,
+	owner ID [$User],
+	name CHAR(100),
+	stamp (create, update),
+	index owner_name (owner, name) UNIQUE,
+	index owner_id (owner, id) UNIQUE,
+);
+
+MAP BookProjectSetting (
+	KEY user ID [$User],
+	KEY project ID BookProject,
+	unread TINYINT DEFAULT 0,
+);
+
+-- 计算汇总的一些参数
+BOOK MySetting (
+	KEY user ID [$User],
+	timezone TINYINT DEFAULT 8,				-- 默认北京时间，根据第一次登录的浏览器来设置的
+	startDayOfMonth TINYINT DEFAULT 0,		-- 月初日
+	startMonthOfYear TINYINT DEFAULT 0,		-- 年初月
+);
+
+BOOK BookFlow (
+	KEY project ID BookProject,
+	KEY stamp TIMESTAMP,
+	debit DEC(16,4),
+	credit DEC(16,4),
+	memo CHAR(100),
+	note ID Note,							-- 关联的Note
+);
+
+BOOK BookYearSum (
+	KEY project ID BookProject,
+	KEY year SMALLINT,						-- 自然年
+	debit DEC(16,4),
+	credit DEC(16,4),
+);
+
+BOOK BookMonthSum (
+	KEY project ID BookProject,
+	KEY date DATE,							-- 月份
+	debit DEC(16,4),
+	credit DEC(16,4),
+);
+
+BOOK BookWeekSum (
+	KEY project ID BookProject,
+	KEY date DATE,							-- 周
+	debit DEC(16,4),
+	credit DEC(16,4),
+);
+
+BOOK BookDaySum (
+	KEY project ID BookProject,
+	KEY date DATE,							-- 日
+	debit DEC(16,4),
+	credit DEC(16,4),
+);
+
+PROC WriteBook (
+	owner ID [$User],
+	project CHAR(100),
+	cur TIMESTAMP,						-- UTC time
+	debit DEC(16,4),
+	credit DEC(16,4),
+	memo CHAR(100),
+	note ID Note,						-- 关联的Note
+) {
+	VAR projectId ID;
+	VAR timezone TINYINT, startDayOfMonth TINYINT, startMonthOfYear TINYINT, localTime DATETIME;
+	IF cur IS NULL {
+		SET cur=$date;
+	}
+	SET timezone=a.timezone, startDayOfMonth=a.startDayOfMonth, startMonthOfYear=a.startMonthOfYear
+		, localTime=DateAdd(HOUR, a.timezone, cur)
+		FROM MySetting as a WHERE a.user=owner;
+	SET projectId=a.id FROM BookProject as a WHERE a.owner=owner AND a.name=project;
+	IF projectId IS NULL {
+		TUID BookProject INTO projectId SET owner=owner, name=project;
+	}
+
+	BOOK BookProjectSetting AT(owner, projectId) SET unread=1;
+	BOOK BookFlow AT(projectId, cur) SET debit=debit, credit=credit, memo=memo, note=note;
+
+	VAR yearNum SMALLINT, monthNum SMALLINT, dayNum SMALLINT, yearDate DATE, monthDate DATE, weekDate DATE, dayDate DATE;
+	SET yearNum=Year(localTime);
+	SET monthNum=Month(localTime);
+	set dayNum=Day(localTime);
+	SET yearDate=CONCAT(yearNum, '-', startMonthOfYear+1, '-', startDayOfMonth+1);
+	IF cur<yearDate {
+		SET yearNum = yearNum-1;
+	}
+	BOOK BookYearSum AT(projectId, yearNum) SET debit+=debit, credit+=credit;
+
+	SET monthDate=CONCAT(yearNum, '-', monthNum, '-', startDayOfMonth+1);
+	IF cur<monthDate {
+		SET monthDate = DateAdd(Month, -1, monthDate);
+	}
+	BOOK BookMonthSum AT(projectId, DATE(monthDate)) SET debit+=debit, credit+=credit;
+
+	SET weekDate=CONCAT(yearNum, '-', monthNum, '-', dayNum);
+	SET weekDate = DateAdd(Day, -WEEKDAY(weekDate), weekDate);
+	BOOK BookWeekSum AT(projectId, DATE(weekDate)) SET debit+=debit, credit+=credit;
+
+	SET dayDate=CONCAT(yearNum, '-', monthNum, '-', dayNum);
+	BOOK BookDaySum AT(projectId, DATE(dayDate)) SET debit+=debit, credit+=credit;
+};
+
+QUERY GetBookProjects (
+	user ID [$User],
+	at TIMESTAMP,
+) 
+RETURNS ret (
+	id ID,
+	name CHAR(100),
+	debitYear DEC(16,4),
+	creditYear DEC(16,4),
+	debitMonth DEC(16,4),
+	creditMonth DEC(16,4),
+	debitWeek DEC(16,4),
+	creditWeek DEC(16,4),
+	debitDay DEC(16,4),
+	creditDay DEC(16,4),
+) {
+	BOOK BookProjectSetting AT(user, *) SET unread=0;
+	IF [at] is null {
+		SET [at] = now();
+	}
+
+	VAR timezone TINYINT, startDayOfMonth TINYINT, startMonthOfYear TINYINT, localTime DATETIME;
+	SET timezone=a.timezone, startDayOfMonth=a.startDayOfMonth, startMonthOfYear=a.startMonthOfYear
+		, localTime=DateAdd(HOUR, a.timezone, [at])
+		FROM MySetting as a WHERE a.user=user;
+	VAR yearNum SMALLINT, monthNum SMALLINT, dayNum SMALLINT, yearDate DATETIME, monthDate DATETIME, weekDate DATETIME, dayDate DATETIME;
+	SET yearNum=Year(localTime);
+	SET monthNum=Month(localTime);
+	set dayNum=Day(localTime);
+	SET yearDate=CONCAT(yearNum, '-', startMonthOfYear+1, '-', startDayOfMonth+1);
+	IF localTime<yearDate {
+		SET yearNum = yearNum-1;
+	}
+	SET monthDate=CONCAT(yearNum, '-', monthNum, '-', startDayOfMonth+1);
+	IF localTime<monthDate {
+		SET monthDate = DateAdd(Day, -1, monthDate);
+	}
+	SET weekDate=CONCAT(yearNum, '-', monthNum, '-', dayNum);
+	SET weekDate = DateAdd(Day, -WEEKDAY(weekDate), weekDate);
+	SET dayDate=CONCAT(yearNum, '-', monthNum, '-', dayNum);
+
+	INTO ret SELECT a.id, a.name
+		, b.debit as debitYear, b.credit as creditYear
+		, c.debit as debitMonth, c.credit as creditMonth
+		, w.debit as debitWeek, w.credit as creditWeek
+		, d.debit as debitDay, d.credit as creditDay
+		FROM BookProject as a
+			LEFT JOIN (SELECT bky.project, bky.debit, bky.credit FROM BookYearSum as bky WHERE bky.year=yearNum) as b
+				ON a.id = b.project
+			LEFT JOIN (SELECT bkm.project, bkm.debit, bkm.credit FROM BookMonthSum as bkm WHERE bkm.date=monthDate) as c
+				ON a.id = c.project
+			LEFT JOIN (SELECT bkw.project, bkw.debit, bkw.credit FROM BookWeekSum as bkw WHERE bkw.date=weekDate) as w
+				ON a.id = w.project
+			LEFT JOIN (SELECT bkd.project, bkd.debit, bkd.credit FROM BookDaySum as bkd WHERE bkd.date=dayDate) as d
+				ON a.id = d.project
+		WHERE a.owner=$user
+		ORDER BY a.id DESC;
+};
+
+QUERY GetProjectFlow (
+	project ID BookProject,
+)
+PAGE (
+	stamp TIMESTAMP DESC,
+	debit DEC(16,4),
+	credit DEC(16,4),
+	memo CHAR(100),
+	note ID Note,							-- 关联的Note
+) {
+	PAGE SELECT a.stamp, a.debit, a.credit, a.memo, a.note
+		FROM BookFlow as a
+		WHERE a.project=project and a.stamp<$pageStart
+		ORDER BY a.stamp DESC;
+};
+
+QUERY GetProjectYearSum (
+	project ID BookProject,
+)
+PAGE (
+	year SMALLINT DESC,
+	debit DEC(16,4),
+	credit DEC(16,4),
+) {
+	PAGE SELECT a.year, a.debit, a.credit
+		FROM BookYearSum as a
+		WHERE a.project=project and a.year>$pageStart
+		ORDER BY a.year DESC;
+};
+
+QUERY GetProjectMonthSum (
+	project ID BookProject,
+)
+PAGE (
+	date DATE DESC,
+	debit DEC(16,4),
+	credit DEC(16,4),
+) {
+	PAGE SELECT a.date, a.debit, a.credit
+		FROM BookMonthSum as a
+		WHERE a.project=project and a.date>$pageStart
+		ORDER BY a.date DESC;
+};
+
+QUERY GetProjectDaySum (
+	project ID BookProject,
+)
+PAGE (
+	date DATE DESC,
+	debit DEC(16,4),
+	credit DEC(16,4),
+) {
+	PAGE SELECT a.date, a.debit, a.credit
+		FROM BookDaySum as a
+		WHERE a.project=project and a.date>$pageStart
+		ORDER BY a.date DESC;
+};

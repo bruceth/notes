@@ -166,18 +166,32 @@ export abstract class Entity {
             let {name, type} = field;            
             let d = params[name];
             let val:any;
-            if (type === 'datetime') {
-                val = this.buildDateTimeParam(d);
-            }
-            else {
-                switch (typeof d) {
-                    default: val = d; break;
-                    case 'object':
-                        let tuid = field._tuid;
-                        if (tuid === undefined) val = d.id;
-                        else val = tuid.getIdFromObj(d);
-                        break;
-                }
+            switch (type) {
+				case 'datetime':
+                	val = this.buildDateTimeParam(d);
+					break;
+				case 'date':
+					if (d instanceof Date) {
+						val = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+					}
+					else {
+						val = d;
+					}
+					break;
+				default:
+					switch (typeof d) {
+						default: val = d; break;
+						case 'object':
+							if (d instanceof Date) {
+								val = d;
+								break;
+							}
+							let tuid = field._tuid;
+							if (tuid === undefined) val = d.id;
+							else val = tuid.getIdFromObj(d);
+							break;
+					}
+					break;
             }
             result[name] = val;
         }

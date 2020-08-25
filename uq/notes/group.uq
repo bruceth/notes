@@ -44,14 +44,15 @@ RETURNS ret (
 
 	-- 建立其它成员的Group Folder
 	FOREACH members {
+		var memberFolderId ID;
 		SET specFolderId=folder FROM SpecFolder WHERE owner=member AND spec=EnumSpecFolder.notes;
 		IF specFolderId IS NULL {
 			TUID Note INTO specFolderId SET owner=member, type=EnumNoteType.Folder;
 			BOOK SpecFolder AT(member, EnumSpecFolder.notes) SET folder=specFolderId;
 		}
-		TUID Note INTO folderId SET type=EnumNoteType.GroupFolder, caption=caption, content=content, owner=member;
-		BOOK GroupFolder AT(groupId, member) SET folder=folderId;
-		BOOK FolderNote AT(specFolderId, folderId) SET seconds=seconds;
+		TUID Note INTO memberFolderId SET type=EnumNoteType.GroupFolder, caption=caption, content=content, owner=member;
+		BOOK GroupFolder AT(groupId, member) SET folder=memberFolderId;
+		BOOK FolderNote AT(specFolderId, memberFolderId) SET seconds=seconds;
 		TUID [$User] ID (member) SET poke=1;
 		SET specFolderId=NULL;
 	}

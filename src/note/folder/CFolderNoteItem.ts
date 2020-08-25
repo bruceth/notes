@@ -88,7 +88,7 @@ export class CFolderNoteItem extends CNoteItem {
 
 	async addNote(folder:number, caption:string, content:string, obj:any, type:EnumNoteItemType) {
 		let sub = 0;
-		let ret = await this.uqs.notes.AddNote.submit({parent:folder, caption, content, type, sub});
+		let ret = await this.uqs.notes.AddNote.submit({groupFolder:this.noteItem?.groupFolder, parent:folder, caption, content, type, sub});
 		let {note} = ret;
 		let date = new Date();
 		let noteItem:NoteItem = {
@@ -152,7 +152,7 @@ export class CFolderNoteItem extends CNoteItem {
 		let noteItem:NoteItem = {
 			seconds: undefined,
 			owner: this.user.id,
-			note: group as number,
+			note: folder as number,
 			type,
 			caption,
 			content,
@@ -160,6 +160,7 @@ export class CFolderNoteItem extends CNoteItem {
 			from: undefined,
 			fromAssigned: undefined,
 			state: undefined,
+			groupFolder:group,
 			unread: 0,
 			obj: undefined,
 			$create: date,
@@ -167,9 +168,7 @@ export class CFolderNoteItem extends CNoteItem {
 		}
 		let cNoteItem = this.owner.getCNoteItem(type);
 		cNoteItem.init(noteItem);
-		if (folder === this.folderId) {
-			this.notesPager.items.unshift(cNoteItem);
-		}
+		this.notesPager.items.unshift(cNoteItem);
 		return cNoteItem;
 	}
 

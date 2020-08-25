@@ -52,6 +52,11 @@ MAP FolderNote (
 	index note_folder(note, folder) unique,
 );
 
+MAP NoteXGroup (
+	KEY folder ID Note,		-- NoteType=folder
+	groupFolder ID Note,	-- NoteType=groupFolder
+);
+
 ENUM EnumNoteMapType (Spawn=0, Born=1, Contain=2, Comment=3);
 
 MAP Note2Note (
@@ -81,7 +86,8 @@ RETURNS ret (
 	[$create] TIMESTAMP,
 	[$update] TIMESTAMP,
 	state TINYINT,
-	flowContent TEXT,	
+	flowContent TEXT,
+	groupFolder ID	
 )
 RETURNS flow (
 	flow SMALLINT,					-- 不断附加的id，跟操作相关
@@ -138,8 +144,9 @@ RETURNS contain (
 	if folder <> note {
 		BOOK FolderNote AT (folder, note) SET unread=0;
 	}
-	INTO ret SELECT a.id, a.type, a.caption, a.content, a.owner, a.x, a.from, a.[$create], a.[$update], b.state, b.flowContent
+	INTO ret SELECT a.id, a.type, a.caption, a.content, a.owner, a.x, a.from, a.[$create], a.[$update], b.state, b.flowContent, c.groupFolder
 		FROM Note as a LEFT JOIN NoteX as b ON a.id=b.note
+		LEFT JOIN NoteXGroup as c ON a.id=c.folder
 		WHERE a.id=note;
 	INTO flow SELECT a.flow, a.operator, a.action, a.stamp, a.content
 		FROM Flow as a
@@ -180,7 +187,8 @@ RETURNS contain (
 		LIMIT 20;
 };
 
-ACTION AddNote VER 1.03 (
+ACTION AddNote VER 1.04 (
+	groupFolder ID Note,
 	parent ID Note,
 	caption CHAR(200),
 	content TEXT,
@@ -196,6 +204,9 @@ RETURNS ret (
 	}
 	else {
 		SET folderId=parent;
+	}
+	if type=EnumNoteType.Folder AND groupFolder > 0 {
+		BOOK NoteXGroup AT (noteId) SET groupFolder=groupFolder;
 	}
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 	BOOK FolderNote AT (folderId, noteId) SET seconds=seconds;

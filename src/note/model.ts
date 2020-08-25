@@ -15,6 +15,7 @@ export interface NoteItem {
 	fromAssigned: string;
 	state: number;
 	flowContent?: string;
+	groupFolder?:number;
 	unread: number;
 	obj: any;
 	$create: Date;

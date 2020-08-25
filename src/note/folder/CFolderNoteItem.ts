@@ -88,15 +88,8 @@ export class CFolderNoteItem extends CNoteItem {
 
 	async addNote(folder:number, caption:string, content:string, obj:any, type:EnumNoteItemType) {
 		let sub = 0;
-		let groupFolder = this.noteItem?.groupFolder;
-		if (!groupFolder && this.noteItem) {
-			// eslint-disable-next-line
-			if (folder === this.noteItem.note && this.noteItem.type === Number(EnumNoteItemType.groupFolder)) {
-				groupFolder = folder;
-			}
-		}
 		let param = {
-			groupFolder:groupFolder,
+			groupFolder:this.groupFolder,
 			parent:folder,
 			caption,
 			content,

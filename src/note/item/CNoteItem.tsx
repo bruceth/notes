@@ -20,7 +20,14 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 	@observable relativeKey: RelativeKey;
 
 	get groupFolder() {
-		return this.noteItem?.groupFolder;
+		if (!this.noteItem)
+			return;
+		let ret = this.noteItem.groupFolder;
+		if (!ret && this.noteItem.type === Number(EnumNoteItemType.groupFolder)) {
+			ret = this.noteItem.note;
+		}
+
+		return ret;
 	}
 
 	init(param: NoteItem): void {

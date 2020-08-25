@@ -33,7 +33,7 @@ export class VMain extends VPage<CApp> {
 		let tabs: TabProp[] = [
 			{name: 'home', caption: caption(t('home'), 'home'), content: cHome.tab},
 			{name: 'relation', caption: caption(t('relation'), 'user-plus'), content: cRelation.tab, onShown: cRelation.load},
-			{name: 'discover', caption: caption(t('discover'), 'arrows-alt'), content: cDiscover.tab},
+			{name: 'discover', caption: caption(t('discover'), 'arrows-alt'), content: cDiscover.tab, load: cDiscover.loadBookProjects},
 			{name: 'me', caption: caption(t('me'), 'user-o'), content: cMe.tab},
 		];
 		return <Page tabsProps={{tabs}} />;

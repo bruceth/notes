@@ -33,6 +33,7 @@ ACTION AssignTask ver 1.01 (
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 	FOREACH tos {
 		VAR taskId ID, folderId ID;
+		SET folderId = NULL;
 		if groupID >= 0 {
 			SET folderId = folder FROM GroupFolder WHERE group=groupID AND member=to;
 		}

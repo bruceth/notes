@@ -39,12 +39,17 @@ RETURNS ret (
 	TUID Note INTO folderId SET type=EnumNoteType.GroupFolder, caption=caption, content=content, owner=$user;
 	BOOK GroupFolder AT(groupId, $user) SET folder=folderId;
 	SET specFolderId=folder FROM SpecFolder WHERE owner=$user AND spec=EnumSpecFolder.notes;
+	IF specFolderId IS NULL {
+		TUID Note INTO specFolderId SET owner=$user, type=EnumNoteType.Folder;
+		BOOK SpecFolder AT($user, EnumSpecFolder.notes) SET folder=specFolderId;
+	}
 	BOOK FolderNote AT(specFolderId, folderId) SET seconds=seconds;
 	TUID [$User] ID ($user) SET poke=1;
 
 	-- 建立其它成员的Group Folder
 	FOREACH members {
 		var memberFolderId ID;
+		SET specFolderId=NULL;  --必须在循环开始时清空
 		SET specFolderId=folder FROM SpecFolder WHERE owner=member AND spec=EnumSpecFolder.notes;
 		IF specFolderId IS NULL {
 			TUID Note INTO specFolderId SET owner=member, type=EnumNoteType.Folder;
@@ -54,7 +59,6 @@ RETURNS ret (
 		BOOK GroupFolder AT(groupId, member) SET folder=memberFolderId;
 		BOOK FolderNote AT(specFolderId, memberFolderId) SET seconds=seconds;
 		TUID [$User] ID (member) SET poke=1;
-		SET specFolderId=NULL;
 	}
 	INTO ret SELECT groupId as [group], folderId as folder;
 };

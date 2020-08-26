@@ -2,16 +2,39 @@ import React from "react";
 import { VPage, User, Image, UserView, Page, EasyTime, FA } from "tonva";
 import { CNoteItem, CheckItem } from "./CNoteItem";
 import { observer } from "mobx-react";
-import { EnumNoteItemType } from 'note/model';
+import { EnumNoteItemType, NoteItem } from 'note/model';
 
-const itemIcons: {[key in EnumNoteItemType]: JSX.Element} = {
-	[EnumNoteItemType.text]: <FA name="file-o" size="lg" className="text-info" />,
-	[EnumNoteItemType.task]: <FA name="tasks" size="lg" className="text-success" />,
-	[EnumNoteItemType.folder]: <FA name="folder" size="lg" className="text-warning mr-2" />,
-	[EnumNoteItemType.group]: <FA name="folder" size="lg" className="text-warning mr-2" />,
-	[EnumNoteItemType.groupFolder]: <FA name="folder" size="lg" className="text-warning mr-2" />,
-	[EnumNoteItemType.unit]: <FA name="folder" size="lg" className="text-warning mr-2" />,
+type RenderIcon = (noteItem:NoteItem) => JSX.Element;
+
+const itemIcons: {[key in EnumNoteItemType]: RenderIcon} = {
+	[EnumNoteItemType.text]: (noteItem: NoteItem) => {
+		let {toCount} = noteItem;
+		//if (!toCount) {
+			return <FA name={toCount>0? 'files-o': 'file-o'} size="lg" className="text-info" fixWidth={true} />;
+		/*}
+		return <span className="fa-tonva-stack fa-lg">
+			<i className="fa fa-file-o fa-stack-outer" />
+			<i className="fa fa-share fa-stack-inner" />
+		</span>;*/
+	},
+	[EnumNoteItemType.task]: (noteItem: NoteItem) => {
+		return <FA name="tasks" size="lg" className="text-success" fixWidth={true} />;
+	},
+	[EnumNoteItemType.folder]: (noteItem: NoteItem) => {
+		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
+	},
+	[EnumNoteItemType.group]: (noteItem: NoteItem) => {
+		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
+	},
+	[EnumNoteItemType.groupFolder]: (noteItem: NoteItem) => {
+		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
+	},
+	[EnumNoteItemType.unit]: (noteItem: NoteItem) => {
+		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
+	},
 }
+//<FA name="file-o" size="lg" className="text-info" />
+//<FA name="folder" size="lg" className="text-warning mr-2" />
 
 export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	protected renderContentBase(checkable:boolean) {
@@ -38,14 +61,15 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected renderTop() {
-		let {type, unread} = this.controller.noteItem;
+		let {noteItem} = this.controller;
+		let {type, unread} = noteItem;
 		let dot:any;
 		if (unread>0) dot = <u/>;
-		return <div className="d-flex mx-3 py-2 unread-dot align-items-center">
-			<div className="mr-4">{itemIcons[type]}{dot}</div>
+		return <div className="d-flex mx-3 py-2 align-items-center">
+			<div className="mr-4 unread-dot">{itemIcons[type](noteItem)}{dot}</div>
 			{this.renderFrom()}
 		</div>;
-}
+	}
 	
 	protected renderParagraphs(content:string):JSX.Element {
 		if (!content) return;
@@ -147,7 +171,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected renderFrom = () => {
-		let {noteItem} = this.controller;
+		let {noteItem, inFolder} = this.controller;
 		if (!noteItem) return <div>noteItem undefined in renderFrom</div>;
 		let {owner, assigned, from, fromAssigned, $create, $update} = noteItem;
 		let contact:number, contactAssigned:string;
@@ -159,7 +183,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			contact = owner as number;
 			contactAssigned = assigned;
 		}
-		if (this.isMe(contact) === true) {
+		if (inFolder === true || this.isMe(contact) === true) {
 			return this.renderEditTime();
 		}
 

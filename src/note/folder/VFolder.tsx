@@ -1,7 +1,7 @@
 import React from 'react';
 import { CFolderNoteItem } from './CFolderNoteItem';
 import { CNoteItem, VNoteView } from "../item";
-import { List, FA } from 'tonva';
+import { List, FA, User, Image, UserView } from 'tonva';
 
 export class VFolder extends VNoteView<CFolderNoteItem> {
 	afterBack() {
@@ -16,31 +16,54 @@ export class VFolder extends VNoteView<CFolderNoteItem> {
 	}
 
 	right() {
-		return <button onClick={()=>this.controller.owner.showAddNotePage(this.controller.folderId)} className="btn btn-success btn-sm mr-1">
-			<FA name="plus" /> {this.t('notes')}
-		</button>;
+		if (this.isMe(this.controller.noteItem.owner)) {
+			return <button onClick={()=>this.controller.owner.showAddNotePage(this.controller.folderId)}
+				className="btn btn-success btn-sm mr-1">
+				<FA name="plus" /> {this.t('notes')}
+			</button>;
+		}
 	}
 
 	protected top() {
 		let {noteItem, notesPager} = this.controller;
 		if (!noteItem) return;
 
-		let topContent: string;
+		let paragraphs: string;
 		let {content: contentString} = noteItem;
 		let json = JSON.parse(contentString);
 		if (json) {
 			let {content} = json;
-			topContent = (content as string)?.trimEnd();
+			paragraphs = (content as string)?.trimEnd();
 		}
 		else {
-			topContent = "整理小单";
+			paragraphs = "整理小单";
 		}
-		return <div className="d-flex mx-3 py-3">
-			<FA className="mr-3 text-warning" name={noteItem.toCount > 0 ? "folder-open":"folder"} size="3x" />
-			<div className="small text-muted">{this.renderParagraphs(topContent)}</div>
-			<div className="ml-auto align-self-center" 
-					onClick={(e)=>{e.stopPropagation(); this.controller.onClickEllipsis()}}>
-					<FA name="ellipsis-h" />
+		let left: any;
+		if (this.isMe(this.controller.noteItem.owner)) {
+			left = <>
+				<FA className="mr-3 text-warning py-3" name={noteItem.toCount > 0 ? "folder-open":"folder"} size="3x" />
+				<div className="small text-muted py-3">{this.renderParagraphs(paragraphs)}</div>
+			</>;
+		}
+		else {
+			let {owner, assigned} = noteItem;
+			let renderUser = (user:User) => {
+				let {name, nick, icon} = user;
+				return <>
+					<Image className="w-3c h-3c mr-2 my-3" src={icon || '.user-o'} />
+					<div className="py-3">
+						<div className="small">{assigned || nick || name}</div>
+						<div className="small text-muted py-3">{this.renderParagraphs(paragraphs)}</div>
+					</div>
+				</>;
+			}
+			left = <UserView user={owner as number} render={renderUser} />;
+		}
+		return <div className="d-flex ml-3">
+			{left}
+			<div className="ml-auto align-self-stretch cursor-pointer px-3 d-flex align-items-center" 
+				onClick={(e)=>{e.stopPropagation(); this.controller.onClickEllipsis()}}>
+				<FA name="ellipsis-h" />
 			</div>
 		</div>;
 	}

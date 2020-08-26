@@ -23,7 +23,15 @@ export class CFolderNoteItem extends CNoteItem {
 		else this.folderId = folderId;
 
 		this.notesPager = new QueryPager<CNoteItem>(this.uqs.notes.GetNotes, undefined, undefined, true);
-		this.notesPager.setItemConverter(this.owner.noteItemConverter);
+		this.notesPager.setItemConverter(this.getItemConverter());
+	}
+
+	protected getItemConverter() {
+		return (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteItem => {
+			let ret = this.owner.noteItemConverter(item, queryResults);
+			ret.inFolder = true;
+			return ret;
+		}
 	}
 
 	async load() {

@@ -8,8 +8,7 @@ export class VGroupFolderItem extends VNoteBase<CGroupFolderItem> {
 	render() {
 		return React.createElement(observer(() => {
 			let {noteItem} = this.controller;
-			let {toCount} = noteItem;
-			//let divToCount = this.renderToCount();
+			let {toCount, unread} = noteItem;
 			let divToCount:any;
 			if (toCount > 0) {
 				divToCount = <small className="ml-4 text-muted">
@@ -18,8 +17,11 @@ export class VGroupFolderItem extends VNoteBase<CGroupFolderItem> {
 				</small>;
 			}
 			return <div className="d-block bg-white">
-				<div className="d-flex px-3 py-2 align-items-center">
-					<FA name="users" className="text-warning mr-3" size="lg" />
+				<div className="d-flex px-3 py-3 align-items-center">
+					<div className="unread-dot mr-3">
+						<FA name="users" className="text-warning" size="2x" fixWidth={true} />
+						{unread>0 && <u />}
+					</div>
 					<b className="text-primary">{noteItem.caption}</b>
 					{divToCount}
 				</div>

@@ -13,6 +13,7 @@ export interface CheckItem {
 }
 
 export abstract class CNoteItem extends CUqSub<CNote> {
+	inFolder: boolean = false;
 	@observable noteModel: NoteModel;
 	@observable noteItem: NoteItem;
 	@observable toCount: number;

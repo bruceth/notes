@@ -14,6 +14,7 @@ export interface ProjectSum {
 	creditWeek: number;
 	debitDay: number;
 	creditDay: number;
+	h8: number;
 }
 
 export class CBook extends CUqBase {

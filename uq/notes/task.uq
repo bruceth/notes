@@ -260,6 +260,4 @@ ACTION RateTask ver 1.01 (
 		}
 		TUID [$User] ID (checker) SET poke=1;
 	}
-
-	-- SET folderId = folder FROM SpecFolder WHERE owner= AND spec=EnumSpecFolder.notes;
 };

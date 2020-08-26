@@ -304,18 +304,24 @@ ACTION SendNoteTo ver 1.0 (
 
 		--BOOK NoteAccess AT (note, *) SET access=0; 这句实际把所有access清空了
 		FOREACH (var to ID OF SELECT to FROM tblTo) {
-			VAR folderId ID;
+			VAR folderId ID, rootFolderId ID;
+			SET rootFolderId = NULL;
+			SET rootFolderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
+			IF rootFolderId IS NULL {
+				TUID Note INTO rootFolderId SET owner=to, type=EnumNoteType.Folder;
+				BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=rootFolderId;
+			}
 			SET folderId = NULL;
 			IF NOT groupId IS NULL {
 				SET folderId = a.folder FROM GroupFolder as a WHERE a.group=groupId AND a.member=to;
 			}
 			IF folderId IS NULL {
-				SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
-				IF folderId IS NULL {
-					TUID Note INTO folderId SET owner=to, type=EnumNoteType.Folder;
-					BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
-				}
+				BOOK FolderNote AT(rootFolderId, note) SET seconds=seconds, unread=1;
 			}
+			ELSE {
+				BOOK FolderNote AT(rootFolderId, folderId) SET seconds=seconds, unread=1;
+				BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
+			} 
 
 			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
 			BOOK NoteAccess AT (note, to) SET access=1;

@@ -122,6 +122,7 @@ RETURNS ret (
 	creditWeek DEC(16,4),
 	debitDay DEC(16,4),
 	creditDay DEC(16,4),
+	h8 int,
 ) {
 	BOOK BookProjectSetting AT(user, *) SET unread=0;
 	IF [at] is null {
@@ -153,6 +154,7 @@ RETURNS ret (
 		, c.debit as debitMonth, c.credit as creditMonth
 		, w.debit as debitWeek, w.credit as creditWeek
 		, d.debit as debitDay, d.credit as creditDay
+		, 5 as h8
 		FROM BookProject as a
 			LEFT JOIN (SELECT bky.project, bky.debit, bky.credit FROM BookYearSum as bky WHERE bky.year=yearNum) as b
 				ON a.id = b.project

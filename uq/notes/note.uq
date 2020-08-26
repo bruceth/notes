@@ -323,7 +323,6 @@ ACTION SendNoteTo ver 1.0 (
 				BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
 			} 
 
-			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
 			BOOK NoteAccess AT (note, to) SET access=1;
 			TUID [$User] ID (to) SET poke=1;
 		};

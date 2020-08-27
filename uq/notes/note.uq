@@ -347,8 +347,9 @@ PROC UpdateUserNoteTime(
 	TABLE tblDone(KEY folderId ID);
 	INTO tblNote SELECT note as folderId;
 	SET unreadFlag = CASE WHEN userId=$user THEN 0 ELSE 1 END;
-	WHILE (SELECT Count(*) FROM tblNote) > 0 {
-		SET noteId = folderId FROM tblNote LIMIT 1;
+	WHILE 1=1 {
+		SET noteId = folderId FROM tblNote ORDER BY folderId DESC LIMIT 1;
+		IF noteId IS NULL { break; }
 		DELETE FROM tblNote WHERE folderId=noteId;
 		INTO tblDone SELECT noteID as folderId;
 
@@ -360,6 +361,7 @@ PROC UpdateUserNoteTime(
 				INTO tblNote SELECT shareFolderId as folderId;
 			}
 		}
+		SET noteId = NULL;
 	}
 	IF userId <> $user {
 		TUID [$User] ID (userId) SET poke=1;

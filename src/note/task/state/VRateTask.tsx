@@ -23,7 +23,7 @@ export class VRateTask extends VTaskView {
 		else {
 			content = text;
 		}
-		return <label key={key} className="flex-grow-1 d-flex mx-3 my-0 align-items-center form-group form-check">
+		return <label key={key} className="flex-grow-1 d-flex mx-3 my-0 align-items-center form-check">
 			<input className="form-check-input mr-3 mt-0" type="checkbox"
 				defaultChecked={checked}
 				data-key={key}

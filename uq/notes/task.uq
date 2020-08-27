@@ -22,7 +22,7 @@ ACTION AssignTask ver 1.02 (
 	),
 ) {
 	VAR seconds INT, groupID INT;
-	if groupFolder IS NULL OR groupFolder <= 0 {
+	if groupFolder IS NULL {
 		SET groupID = 0;
 	}
 	ELSE {
@@ -37,13 +37,12 @@ ACTION AssignTask ver 1.02 (
 		SET folderId = NULL;
 		if groupID > 0 {
 			SET folderId = folder FROM GroupFolder WHERE group=groupID AND member=to;
+			if NOT folderId IS NULL {
+				PROC UpdateNoteTime(folderId, seconds);
+			}
 		}
 		if folderId IS NULL {
 			SET folderId = folder FROM SpecFolder WHERE owner=to AND spec=EnumSpecFolder.notes;
-			IF folderId IS NULL {
-				TUID Note INTO folderId SET owner=to, type=EnumNoteType.Folder;
-				BOOK SpecFolder AT(to, EnumSpecFolder.notes) SET folder=folderId;
-			}
 		}
 		TUID Note INTO taskId SET type=EnumNoteType.task, caption=caption, content=content, owner=to, from=$user;
 		BOOK Task AT(taskId) SET checker=checker, rater=rater, point=point;
@@ -67,7 +66,7 @@ RETURNS ret (
 	VAR seconds INT, groupID INT, fromID INT;
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 
-	VAR flowId SMALLINT, checker ID, rater ID, nextUser ID, point INT, folderId ID, parentId INT, state TINYINT;
+	VAR flowId SMALLINT, checker ID, rater ID, nextUser ID, point INT, folderId ID, parentFolderID INT, parentId INT, state TINYINT;
 	SET checker=a.checker, rater=a.rater, point=a.point, state=b.state
 		FROM Task as a LEFT JOIN NoteX as b ON a.note=b.note
 		WHERE a.note=note;
@@ -91,25 +90,20 @@ RETURNS ret (
 			}
 			if folderId IS NULL {
 				SET folderId = folder FROM SpecFolder WHERE owner=nextUser AND spec=EnumSpecFolder.notes;
-				IF folderId IS NULL {
-					TUID Note INTO folderId SET owner=nextUser, type=EnumNoteType.Folder;
-					BOOK SpecFolder AT(nextUser, EnumSpecFolder.notes) SET folder=folderId;
-				}
 			}
 			TUID [$User] ID (rater) SET poke=1;
 		}
 		IF NOT folderId IS NULL {
 			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
+			PROC UpdateNoteTime(folderId, seconds);
 		}
 
 		--Task From 更新
-		SET parentId = note1 FROM Note2Note WHERE note0=note and type=EnumNoteMapType.Born;
-		IF NOT parentId IS NULL {
-			FOREACH (var parentFolderId ID, ownerId ID OF SELECT a.folder as parentFolderId, b.owner as ownerId 
-					FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=parentId) {
-				BOOK FolderNote AT(parentFolderId, parentId) SET seconds=seconds;
-				TUID [$User] ID (ownerId) SET poke=1;
-			}
+		SET parentFolderID = a.note1, parentId = b.owner FROM Note2Note as a 
+			LEFT JOIN Note as b on a.note1=b.id
+			WHERE a.note0=note and a.type=EnumNoteMapType.Born;
+		IF NOT parentFolderID IS NULL {
+			PROC UpdateUserNoteTime(parentId, parentFolderID, seconds);
 		}
 
 		INTO ret SELECT EnumTaskState.Done as toState;
@@ -129,7 +123,7 @@ ACTION CheckTask ver 1.01 (
 RETURNS ret (
 	toState TINYINT
 ) {
-	VAR seconds INT, groupID INT, parentId INT;
+	VAR seconds INT, groupID INT, parentId INT, parentFolderId INT;
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 
 	VAR flowId SMALLINT, owner ID, checker ID, rater ID, point INT, folderId ID, state INT;
@@ -154,10 +148,6 @@ RETURNS ret (
 			}
 			if folderId IS NULL {
 				SET folderId = folder FROM SpecFolder WHERE owner=rater AND spec=EnumSpecFolder.notes;
-				IF folderId IS NULL {
-					TUID Note INTO folderId SET owner=rater, type=EnumNoteType.Folder;
-					BOOK SpecFolder AT(rater, EnumSpecFolder.notes) SET folder=folderId;
-				}
 			}
 			TUID [$User] ID (rater) SET poke=1;
 
@@ -167,26 +157,19 @@ RETURNS ret (
 		TUID [$User] ID (owner) SET poke=1;
 
 		--Task From 更新
-		SET parentId = note1 FROM Note2Note WHERE note0=note and type=EnumNoteMapType.Born;
-		IF NOT parentId IS NULL {
-			FOREACH (var parentFolderId ID, ownerId ID OF SELECT a.folder as parentFolderId, b.owner as ownerId 
-					FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=parentId) {
-				BOOK FolderNote AT(parentFolderId, parentId) SET seconds=seconds;
-				TUID [$User] ID (ownerId) SET poke=1;
-			}
+		SET parentFolderID = a.note1, parentId = b.owner FROM Note2Note as a 
+			LEFT JOIN Note as b on a.note1=b.id
+			WHERE a.note0=note and a.type=EnumNoteMapType.Born;
+		IF NOT parentFolderID IS NULL {
+			PROC UpdateUserNoteTime(parentId, parentFolderID, seconds);
 		}
 
 		-- Task owner Folder 需要更新
 		VAR ownerId INT;
 		SET ownerId = a.owner FROM NOTE as a WHERE a.id=note;
 		IF NOT ownerId IS NULL {
-			FOREACH (var parentFolderId ID OF SELECT a.folder as parentFolderId FROM FolderNote as a
-					LEFT JOIN Note as b on a.folder=b.id WHERE a.note=note AND b.owner=ownerId) {
-				BOOK FolderNote AT(parentFolderId, note) SET seconds=seconds;
-			}
-			TUID [$User] ID (ownerId) SET poke=1;
+			Proc UpdateUserNoteTime(ownerId, note, seconds);
 		}
-		--
 
 		INTO ret SELECT state as toState;
 	}
@@ -202,7 +185,7 @@ ACTION RateTask ver 1.01 (
 	value INT,			-- 分值
 	content TEXT,  		-- json
 ) {
-	VAR seconds INT, groupId INT, parentId INT;
+	VAR seconds INT, groupId INT, parentId INT, parentFolderId INT;
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 
 	VAR flowId SMALLINT, owner ID, checker ID, rater ID, point INT, folderId ID;
@@ -220,10 +203,6 @@ ACTION RateTask ver 1.01 (
 			if folderId IS NULL OR folderId <= 0 {
 				SET folderId = NULL;
 				SET folderId = folder FROM SpecFolder WHERE owner=rater AND spec=EnumSpecFolder.notes;
-				IF folderId IS NULL {
-					TUID Note INTO folderId SET owner=rater, type=EnumNoteType.Folder;
-					BOOK SpecFolder AT(rater, EnumSpecFolder.notes) SET folder=folderId;
-				}
 			}
 		}
 		BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
@@ -231,33 +210,22 @@ ACTION RateTask ver 1.01 (
 	TUID [$User] ID (owner) SET poke=1;
 	
 	--Task From 更新
-	SET parentId = note1 FROM Note2Note WHERE note0=note and type=EnumNoteMapType.Born;
-	IF NOT parentId IS NULL {
-		FOREACH (var parentFolderId ID, ownerId ID OF SELECT a.folder as parentFolderId, b.owner as ownerId 
-				FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=parentId) {
-			BOOK FolderNote AT(parentFolderId, parentId) SET seconds=seconds;
-			TUID [$User] ID (ownerId) SET poke=1;
-		}
+	SET parentFolderID = a.note1, parentId = b.owner FROM Note2Note as a 
+		LEFT JOIN Note as b on a.note1=b.id
+		WHERE a.note0=note and a.type=EnumNoteMapType.Born;
+	IF NOT parentFolderID IS NULL {
+		PROC UpdateUserNoteTime(parentId, parentFolderID, seconds);
 	}
 
 	-- Task owner Folder 需要更新
 	VAR ownerId INT;
 	SET ownerId = a.owner FROM NOTE as a WHERE a.id=note;
 	IF NOT ownerId IS NULL {
-		FOREACH (var parentFolderId ID OF SELECT a.folder as parentFolderId FROM FolderNote as a
-				LEFT JOIN Note as b on a.folder=b.id WHERE a.note=note AND b.owner=ownerId) {
-			BOOK FolderNote AT(parentFolderId, note) SET seconds=seconds;
-		}
-		TUID [$User] ID (ownerId) SET poke=1;
+		Proc UpdateUserNoteTime(ownerId, note, seconds);
 	}
-	--
 
 	-- Task checker Folder 需要更新
 	IF NOT checker IS NULL {
-		FOREACH (var parentFolderId ID OF SELECT a.folder as parentFolderId FROM FolderNote as a
-				LEFT JOIN Note as b on a.folder=b.id WHERE a.note=note AND b.owner=checker) {
-			BOOK FolderNote AT(parentFolderId, note) SET seconds=seconds;
-		}
-		TUID [$User] ID (checker) SET poke=1;
+		Proc UpdateUserNoteTime(checker, note, seconds);
 	}
 };

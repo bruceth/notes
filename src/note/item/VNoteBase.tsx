@@ -155,7 +155,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			icon = 'square-o';
 		}
 		if (checkable === true) {
-			return <div key={key} className="d-flex mx-3 py-1 align-items-center form-group form-check">
+			return <div key={key} className="d-flex mx-3 align-items-center form-check">
 				<input className="form-check-input mr-3 mt-0" type="checkbox"
 					defaultChecked={checked}
 					data-key={key} />
@@ -163,7 +163,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			</div>;
 		}
 		else {
-			return <div key={key} className="d-flex mx-3 py-1 align-items-center">
+			return <div key={key} className="d-flex mx-3 align-items-center">
 				<FA name={icon} />
 				<div className={'py-1 ' + cn}>{content}</div>
 			</div>;

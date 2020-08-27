@@ -15,8 +15,13 @@ ACTION AddContact ver 1.0 (
 RETURNS ret (
 	state TINYINT,
 ) {
-	VAR state TINYINT, retState TINYINT;
+	VAR state TINYINT, retState TINYINT, rootFolderId ID;
 	IF contact<>$user {
+		SET rootFolderId = folder FROM SpecFolder WHERE owner=contact AND spec=EnumSpecFolder.notes;
+		IF rootFolderId IS NULL {
+			TUID Note INTO rootFolderId SET owner=contact, type=EnumNoteType.Folder;
+			BOOK SpecFolder AT(contact, EnumSpecFolder.notes) SET folder=rootFolderId;
+		}
 		SET state = a.state FROM MyContact as a WHERE a.me=contact AND a.contact=$user;
 		SET retState=EnumContactState.OK;
 		IF state=EnumContactState.OK {

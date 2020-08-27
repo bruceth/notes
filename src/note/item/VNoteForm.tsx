@@ -92,7 +92,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteView<T> {
 				</div>
 			</div>
 			{ radios &&
-				<div className="m-2 form-group form-check">
+				<div className="m-2 form-check">
 					{radios.map((v, index) => {
 						let { val, text } = v;
 						return <label key={index} className="mb-0 mx-2">
@@ -160,7 +160,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteView<T> {
 						onUpdate: onItemUpdate,
 						content: text,
 					}
-					return <div key={key} className="d-flex mx-3 my-2 align-items-center form-group form-check">
+					return <div key={key} className="d-flex mx-3 my-2 align-items-center form-check">
 						<input className="form-check-input mr-3 mt-0" type="checkbox"
 							defaultChecked={checked}
 							onChange={this.onCheckChange}
@@ -178,7 +178,7 @@ export abstract class VNoteForm<T extends CNoteItem> extends VNoteView<T> {
 					<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
 					{checkedItems.map((v, index) => {
 						let {key, text, checked} = v;
-						return <div key={key} className="d-flex mx-3 my-2 align-items-center form-group form-check">
+						return <div key={key} className="d-flex mx-3 my-2 align-items-center form-check">
 							<input className="form-check-input mr-3 mt-0" type="checkbox" 
 								defaultChecked={checked} 
 								onChange={this.onCheckChange} 

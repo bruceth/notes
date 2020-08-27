@@ -98,7 +98,7 @@ export class CFolderNoteItem extends CNoteItem {
 		let sub = 0;
 		let param = {
 			groupFolder:this.groupFolder,
-			parent:folder,
+			folder:folder,
 			caption,
 			content,
 			type,
@@ -121,6 +121,9 @@ export class CFolderNoteItem extends CNoteItem {
 			obj,
 			$create: date,
 			$update: date,
+		}
+		if (type === Number(EnumNoteItemType.folder)) {
+			noteItem.groupFolder = this.groupFolder;
 		}
 		let cNoteItem = this.owner.getCNoteItem(type);
 		cNoteItem.init(noteItem);

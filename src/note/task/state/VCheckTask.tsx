@@ -28,7 +28,7 @@ export class VCheckTask extends VTaskView {
 		let eprops: EditTextItemProps = { onUpdate: onUpdate, content: checkInfo, header: '验收事项说明' }
 		let vEdit = new VEditTextItemInput(this.controller, eprops);
 		return <div key={key} className={'d-flex'}>
-			<label className="flex-grow-1 d-flex mx-3 my-0 align-items-center form-group form-check">
+			<label className="flex-grow-1 d-flex mx-3 my-0 align-items-center form-check">
 				<input className="form-check-input mr-3 mt-0" type="checkbox"
 					defaultChecked={checked}
 					data-key={key}

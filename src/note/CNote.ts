@@ -134,7 +134,7 @@ export class CNote extends CUqBase {
 		this.noteItem = noteItem;
 		let ret = await this.uqs.notes.GetMyContacts.page(
 			{
-				groupFolder: this.currentFoldItem.folderId
+				groupFolder: this.currentFoldItem.groupFolder
 			}, 0, 50, true);
 		this.groupMembers = ret.$page;
 		this.openVPage(VTo, backPageCount);

@@ -38,7 +38,7 @@ ACTION AssignTask ver 1.02 (
 		if groupID > 0 {
 			SET folderId = folder FROM GroupFolder WHERE group=groupID AND member=to;
 			if NOT folderId IS NULL {
-				PROC UpdateNoteTime(folderId, seconds);
+				PROC NotifyNote(folderId, seconds, 0);
 			}
 		}
 		if folderId IS NULL {
@@ -95,7 +95,7 @@ RETURNS ret (
 		}
 		IF NOT folderId IS NULL {
 			BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
-			PROC UpdateNoteTime(folderId, seconds);
+			PROC NotifyNote(folderId, seconds, 0);
 		}
 
 		--Task From 更新
@@ -103,7 +103,7 @@ RETURNS ret (
 			LEFT JOIN Note as b on a.note1=b.id
 			WHERE a.note0=note and a.type=EnumNoteMapType.Born;
 		IF NOT parentFolderID IS NULL {
-			PROC UpdateUserNoteTime(parentId, parentFolderID, seconds);
+			PROC NotifyUserNote(parentId, parentFolderID, seconds);
 		}
 
 		INTO ret SELECT EnumTaskState.Done as toState;
@@ -161,14 +161,14 @@ RETURNS ret (
 			LEFT JOIN Note as b on a.note1=b.id
 			WHERE a.note0=note and a.type=EnumNoteMapType.Born;
 		IF NOT parentFolderID IS NULL {
-			PROC UpdateUserNoteTime(parentId, parentFolderID, seconds);
+			PROC NotifyUserNote(parentId, parentFolderID, seconds);
 		}
 
 		-- Task owner Folder 需要更新
 		VAR ownerId INT;
 		SET ownerId = a.owner FROM NOTE as a WHERE a.id=note;
 		IF NOT ownerId IS NULL {
-			Proc UpdateUserNoteTime(ownerId, note, seconds);
+			Proc NotifyUserNote(ownerId, note, seconds);
 		}
 
 		INTO ret SELECT state as toState;
@@ -214,18 +214,18 @@ ACTION RateTask ver 1.01 (
 		LEFT JOIN Note as b on a.note1=b.id
 		WHERE a.note0=note and a.type=EnumNoteMapType.Born;
 	IF NOT parentFolderID IS NULL {
-		PROC UpdateUserNoteTime(parentId, parentFolderID, seconds);
+		PROC NotifyUserNote(parentId, parentFolderID, seconds);
 	}
 
 	-- Task owner Folder 需要更新
 	VAR ownerId INT;
 	SET ownerId = a.owner FROM NOTE as a WHERE a.id=note;
 	IF NOT ownerId IS NULL {
-		Proc UpdateUserNoteTime(ownerId, note, seconds);
+		Proc NotifyUserNote(ownerId, note, seconds);
 	}
 
 	-- Task checker Folder 需要更新
 	IF NOT checker IS NULL {
-		Proc UpdateUserNoteTime(checker, note, seconds);
+		Proc NotifyUserNote(checker, note, seconds);
 	}
 };

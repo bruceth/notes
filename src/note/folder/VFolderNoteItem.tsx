@@ -23,7 +23,7 @@ export class VFolderNoteItem extends VNoteBase<CFolderNoteItem> {
 			}
 	
 			let vIcon = <div className="unread-dot mr-3">
-				<FA name="file-text-o" className="text-primary" size="lg" fixWidth={true} />
+				<FA name="folder" className="text-warning" size="lg" fixWidth={true} />
 				{dot}
 			</div>;
 

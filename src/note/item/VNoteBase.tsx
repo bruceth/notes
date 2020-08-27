@@ -60,14 +60,29 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		return this.renderContentBase(false);
 	}
 
-	protected renderTop() {
+	protected renderItemTop() {
 		let {noteItem} = this.controller;
 		let {type, unread} = noteItem;
 		let dot:any;
 		if (unread>0) dot = <u/>;
-		return <div className="d-flex mx-3 py-2 align-items-center">
-			<div className="mr-4 unread-dot">{itemIcons[type](noteItem)}{dot}</div>
+		return <div className="d-flex px-3 py-2 align-items-center border-top">
+			<div className="mr-3 unread-dot">{itemIcons[type](noteItem)}{dot}</div>
 			{this.renderFrom()}
+		</div>;
+	}
+	
+	protected renderViewTop() {
+		let {noteItem} = this.controller;
+		let {type} = noteItem;
+		let vEditButton:any;
+		let isMe = this.isMe(this.controller.noteItem.owner);
+		if (isMe === true) {
+			vEditButton = <div className="ml-auto">{this.renderEditButton()}</div>;
+		}
+		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
+			<div className="mr-3">{itemIcons[type](noteItem)}</div>
+			{this.renderFrom()}
+			{vEditButton}
 		</div>;
 	}
 	
@@ -94,13 +109,13 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected renderContentText() {
-		return <div className="px-3 pb-2">{this.renderParagraphs(this.controller.noteContent)}</div>;
+		return <div className="px-3 my-2">{this.renderParagraphs(this.controller.noteContent)}</div>;
 	}
 
 	protected renderContentList() {
 		return React.createElement(observer(() => {
 			let items = this.controller.items;
-			return <ul className="note-content-list px-3 pb-2">
+			return <ul className="note-content-list px-3 my-2">
 				{items.map((v, index) => {
 					let {key, text} = v;
 					return <li key={key} className="ml-3 pt-1 pb-2 align-items-center">
@@ -171,7 +186,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected renderFrom = () => {
-		let {noteItem, inFolder} = this.controller;
+		let {noteItem, disableOwnerFrom} = this.controller;
 		if (!noteItem) return <div>noteItem undefined in renderFrom</div>;
 		let {owner, assigned, from, fromAssigned, $create, $update} = noteItem;
 		let contact:number, contactAssigned:string;
@@ -183,28 +198,30 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			contact = owner as number;
 			contactAssigned = assigned;
 		}
-		if (inFolder === true || this.isMe(contact) === true) {
+		let vEditTime = this.renderEditTime();
+		let vFromContact:any;
+
+		/*
+		if (disableOwnerFrom === true || this.isMe(contact) === true) {
 			return this.renderEditTime();
 		}
-
-		let renderUser = (user:User) => {
-			let {name, nick, icon} = user;
-			let vImage:any, cnName:string = 'font-weight-bolder';
-			if (icon) {
-				cnName += ' small'
-				vImage = <div className="pr-3">
-					<Image className="w-2-5c h-2-5c" src={icon} />
-				</div>;
+		*/
+		if (disableOwnerFrom === false && this.isMe(contact) === false) {
+			let renderUser = (user:User) => {
+				let {name, nick, icon} = user;
+				let vImage:any, cnName:string = 'font-weight-bolder';
+				if (icon) {
+					cnName += ' small'
+					vImage = <Image className="w-1c h-1c mr-1" src={icon} />;
+				}
+				return <>
+					{vImage} <b className={cnName}>{assigned || nick || name}</b>
+				</>
 			}
-			return <div className="d-flex">
-				{vImage}
-				<div style={{lineHeight:'1.3'}}>
-					<div><b className={cnName}>{assigned || nick || name}</b></div>
-					<div>{this.renderEditTime()}</div>
-				</div>
-			</div>
+			vFromContact = <UserView user={contact} render={renderUser} />;
 		}
-		return <UserView user={contact} render={renderUser} />;
+
+		return <>{vEditTime} {vFromContact}</>;
 	}
 
 	protected renderEditTime() {
@@ -220,7 +237,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			else {
 				time = create;
 			}
-			return <small className="text-muted">
+			return <small className="text-muted w-10c">
 				<span className="mr-2"><EasyTime date={time} /></span>
 				{action}
 			</small>
@@ -245,6 +262,16 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		</span>;
 	}
 
+	protected renderCommentFlag = () => {
+		let {commentCount, commentUnread} = this.controller.noteItem;
+		if (commentCount === undefined || commentCount <= 0)
+			return;
+		return  <span className="mr-5 text-muted position-relative">
+			<FA className="mr-2" name="comment-o"/><small className="">{commentCount}</small>
+			{commentUnread>0 && <span className="unread-num">{commentUnread}</span>}
+		</span>;
+	}
+
 	protected showActionEndPage({content, onClick}:{content:any; onClick?:()=>void}) {
 		this.openPage(() => {
 			onClick = onClick || (()=>this.closePage());
@@ -262,7 +289,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		});
 	}
 
-	protected renderSendToButton() {
+	protected renderShareButton() {
 		return <span onClick={this.onSendNote} className="cursor-pointer text-primary mr-5">
 			<FA name="share" />
 		</span>;
@@ -274,7 +301,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected renderEditButton() {
-		return <span onClick={()=>this.onEdit()} className="cursor-pointer text-primary mr-3">
+		return <span onClick={()=>this.onEdit()} className="cursor-pointer text-primary">
 			<FA name="pencil-square-o" />
 		</span>;
 	}
@@ -292,9 +319,9 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		return <span className="cursor-pointer text-primary mr-5" onClick={this.onComment}><FA name="comment-o" /></span>;
 	}
 
-	private onComment = () => {
+	protected onComment = () => {
 		let right = <button className="btn btn-sm btn-success mr-1" onClick={this.onCommentSubmit}>提交</button>;
-		this.openPageElement(<Page header="说明" right={right}>
+		this.openPageElement(<Page header="评论" right={right}>
 			<textarea rows={10} 
 				className="w-100 border-0 form-control"
 				placeholder="请输入" maxLength={20000}

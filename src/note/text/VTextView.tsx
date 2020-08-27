@@ -3,6 +3,7 @@ import { VEdit } from './VEdit';
 import { observer } from 'mobx-react';
 import { VNoteView, CheckItem } from '../item';
 import { CTextNoteItem } from './CTextNoteItem';
+import { VTextRelatives } from './VTextRelatives';
 
 export class VTextView extends VNoteView<CTextNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
@@ -12,33 +13,31 @@ export class VTextView extends VNoteView<CTextNoteItem> {
 		return React.createElement(observer(() => {
 			let {title} = this.controller;
 			return <div className="">
-				<div className="bg-white">
-					{this.renderTop()}
-					{title && <div className="px-3 py-2 border-bottom">
+				{this.renderViewTop()}
+				<div className="bg-white py-2 mb-3">
+					{title && <div className="px-3 py-2">
 						<div><b>{title}</b></div>
 					</div>}
 					{this.renderContent()}
 				</div>
-				{this.renderBottomCommands()}
 				{this.renderRelatives()}
 			</div>;
 		}));
 	}
 
+	protected renderRelatives() {
+		return this.renderVm(VTextRelatives);
+	}
+
+	footer() {
+		return this.renderBottomCommands();
+	}
+
 	protected renderBottomCommands() {
-		let {owner} = this.controller.noteItem;
-		let isMe = this.isMe(owner);
-		let right:any;
-		if (isMe === true) {
-			right = <>
-				{this.renderEditButton()}				
-			</>;
-		}
-		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-end">
-			{this.renderSendToButton()}
-			{this.renderCommentButton()}
-			<div className="mr-auto" />
-			{right}
+		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-center">
+			{this.renderShareButton()}
+			<div className="flex-fill rounded-pill mr-3 border bg-white px-3 py-1 small cursor-pointer"
+				onClick={this.onComment}>写评论...</div>
 		</div>;
 	}
 

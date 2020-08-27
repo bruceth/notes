@@ -6,8 +6,7 @@ import { VFolder } from "./VFolder"
 import { VFolderNoteItem } from "./VFolderNoteItem";
 import { VFolderView } from "./VFolderView";
 
-
-export class CFolderNoteItem extends CNoteItem {
+export abstract class CFolderNoteItem extends CNoteItem {
 	folderId: number;
 	notesPager: QueryPager<CNoteItem>;
 
@@ -26,11 +25,18 @@ export class CFolderNoteItem extends CNoteItem {
 		this.notesPager.setItemConverter(this.getItemConverter());
 	}
 
+	protected abstract getDisableOwnerFrom():boolean;
+
 	protected getItemConverter() {
-		return (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteItem => {
-			let ret = this.owner.noteItemConverter(item, queryResults);
-			ret.inFolder = true;
-			return ret;
+		if (this.getDisableOwnerFrom() === true) {
+			return (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteItem => {
+				let ret = this.owner.noteItemConverter(item, queryResults);
+				ret.disableOwnerFrom = true;
+				return ret;
+			}
+		}
+		else {
+			return this.owner.noteItemConverter;
 		}
 	}
 
@@ -90,6 +96,7 @@ export class CFolderNoteItem extends CNoteItem {
 			return;
 		let noteModel = await this.getNote(noteItem.note);
 		noteItem.unread = 0;
+		noteItem.commentUnread = 0;
 		this.noteModel = noteModel;
 		this.openVPage(VFolderView);
 	}
@@ -190,4 +197,9 @@ export class CFolderNoteItem extends CNoteItem {
 		return cNoteItem;
 	}
 
+}
+
+// 小单夹
+export class CPersonalFolderNoteItem extends CFolderNoteItem {
+	protected getDisableOwnerFrom() {return true;}
 }

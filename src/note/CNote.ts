@@ -8,17 +8,18 @@ import { CTaskNoteItem } from "./task/CTaskNoteItem";
 import { Contact } from "model";
 import { observable } from "mobx";
 import { VSent } from "./views/VSent";
-import { CFolderNoteItem } from "./folder";
+import { CFolderNoteItem, CPersonalFolderNoteItem } from "./folder";
 import { CGroup } from "./group/CGroup";
-import { CGroupFolderItem } from "./groupFolder/CGroupFolderItem";
+import { CGroupFolderItem } from "./groupFolder";
+import { CRootFolderNoteItem } from "./folder";
 
 const cNoteItems: {[key in EnumNoteItemType]: new (...args: any[])=> CNoteItem} = {
 	[EnumNoteItemType.text]: CTextNoteItem,
 	[EnumNoteItemType.task]: CTaskNoteItem,
-	[EnumNoteItemType.folder]: CFolderNoteItem,
-	[EnumNoteItemType.group]: CFolderNoteItem,
+	[EnumNoteItemType.folder]: CPersonalFolderNoteItem,
+	[EnumNoteItemType.group]: undefined, // CFolderNoteItem,
 	[EnumNoteItemType.groupFolder]: CGroupFolderItem,
-	[EnumNoteItemType.unit]: CFolderNoteItem,
+	[EnumNoteItemType.unit]: undefined, // CFolderNoteItem,
 };
 
 export class CNote extends CUqBase {
@@ -34,7 +35,7 @@ export class CNote extends CUqBase {
 	}
 
 	init(folderId?: number) {
-		this.rootFoldItem =this.currentFoldItem = this.newSub(CFolderNoteItem);
+		this.rootFoldItem =this.currentFoldItem = this.newSub(CRootFolderNoteItem);
 		this.foldItemStack = [];
 	}
 

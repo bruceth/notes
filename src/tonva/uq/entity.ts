@@ -289,10 +289,18 @@ export abstract class Entity {
 
     private packArr(result:string[], fields:Field[], data:any[]) {
         if (data !== undefined) {
-            for (let row of data) {
-                this.packRow(result, fields, row);
-            }
-        }
+			if (data.length === 0) {
+				result.push(ln);
+			}
+			else {
+				for (let row of data) {
+					this.packRow(result, fields, row);
+				}
+			}
+		}
+		else {
+			result.push(ln);
+		}
         result.push(ln);
     }
     protected cacheFieldsInValue(values:any, fields:Field[]) {

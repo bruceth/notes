@@ -68,6 +68,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		return <div className="d-flex px-3 py-2 align-items-center border-top">
 			<div className="mr-3 unread-dot">{itemIcons[type](noteItem)}{dot}</div>
 			{this.renderFrom()}
+			<div className="ml-auto">{this.renderEditTime()}</div>
 		</div>;
 	}
 	
@@ -81,6 +82,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		}
 		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
 			<div className="mr-3">{itemIcons[type](noteItem)}</div>
+			{this.renderEditTime()}
 			{this.renderFrom()}
 			{vEditButton}
 		</div>;
@@ -198,14 +200,6 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 			contact = owner as number;
 			contactAssigned = assigned;
 		}
-		let vEditTime = this.renderEditTime();
-		let vFromContact:any;
-
-		/*
-		if (disableOwnerFrom === true || this.isMe(contact) === true) {
-			return this.renderEditTime();
-		}
-		*/
 		if (disableOwnerFrom === false && this.isMe(contact) === false) {
 			let renderUser = (user:User) => {
 				let {name, nick, icon} = user;
@@ -218,10 +212,8 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 					{vImage} <b className={cnName}>{assigned || nick || name}</b>
 				</>
 			}
-			vFromContact = <UserView user={contact} render={renderUser} />;
+			return <UserView user={contact} render={renderUser} />;
 		}
-
-		return <>{vEditTime} {vFromContact}</>;
 	}
 
 	protected renderEditTime() {
@@ -238,7 +230,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 				time = create;
 			}
 			return <small className="text-muted w-10c">
-				<span className="mr-2"><EasyTime date={time} /></span>
+				<span><EasyTime date={time} /></span>
 				{action}
 			</small>
 		}

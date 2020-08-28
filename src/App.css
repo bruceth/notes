@@ -90,7 +90,7 @@ ul.note-content-list>li {
 	vertical-align: middle;
 	width: 1.3rem;
 	height: 1.3rem;
-  }
+}
 .fa-stack-outer,
 .fa-stack-inner {
 	position: absolute;
@@ -103,4 +103,8 @@ ul.note-content-list>li {
 	font-size: 0.3rem;
 	align-self: center;
 	top: 0.3rem;
+}
+
+.text-primary-dark {
+	color: #3f3fc0;
 }

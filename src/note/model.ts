@@ -22,6 +22,8 @@ export interface NoteItem {
 	$update: Date;
 	toCount?: number;
 	spawnCount?: number;
+	commentCount?: number;
+	commentUnread?: number;
 }
 
 export interface NoteFlow {	

@@ -95,6 +95,7 @@ export class VFolder extends VNoteView<CFolderNoteItem> {
 		let noteItem = item.noteItem;
 		let noteModel = await this.controller.getNote(noteItem.note);
 		noteItem.unread = 0;
+		noteItem.commentUnread = 0;
 		item.noteModel = noteModel;
 		return item.onClickItem(noteModel);
 	}

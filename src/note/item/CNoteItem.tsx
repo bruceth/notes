@@ -13,11 +13,13 @@ export interface CheckItem {
 }
 
 export abstract class CNoteItem extends CUqSub<CNote> {
-	inFolder: boolean = false;
+	disableOwnerFrom: boolean = false;
 	@observable noteModel: NoteModel;
 	@observable noteItem: NoteItem;
 	@observable toCount: number;
 	@observable spawnCount: number;
+	//@observable commentCount: number;
+	//@observable commentUnread: number;
 	@observable relativeKey: RelativeKey;
 
 	get groupFolder() {
@@ -37,6 +39,8 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		this.title = param.caption;
 		this.toCount = param.toCount;
 		this.spawnCount = param.spawnCount;
+		//this.commentCount = param.commentCount;
+		//this.commentUnread = param.commentUnread;
 		let { obj } = param;
 		if (obj) {
 			this.checkType = Number(obj.check);
@@ -216,6 +220,7 @@ export abstract class CNoteItem extends CUqSub<CNote> {
 		let commentId = ret.comment;
 		// 加入note界面，显示comment
 		if (commentId) {
+			this.noteItem.commentCount++;
 			this.noteModel.comments.unshift({
 				id: commentId,
 				content: content,

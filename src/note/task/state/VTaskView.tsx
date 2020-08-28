@@ -5,6 +5,7 @@ import { EnumTaskState } from "../TaskState"
 import { CTaskNoteItem } from "../CTaskNoteItem";
 import { VNoteView, CheckItem } from '../../item';
 import { VEdit } from '../VEdit';
+import { VTaskRelatives } from './VTaskRelatives';
 
 export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
@@ -16,7 +17,7 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 			let allowCheck = this.allowCheck;
 			let divCaption = this.renderCaption(title);
 			return <div className="my-2 mx-1 border rounded">
-				{this.renderTop()}
+				{this.renderViewTop()}
 				<div className="bg-white">
 					<div className="px-3 py-2 border-bottom">
 						{divCaption}
@@ -47,54 +48,9 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 			{right}
 		</div>;
 	}
-/*
-	protected renderCheckItem(v: CheckItem, allowCheck: boolean) {
-		let { key, text, checked } = v;
-		let cn = 'form-control-plaintext ml-3 ';
-		let content: any;
-		if (checked === true) {
-			cn += 'text-muted';
-			content = <del>{text}</del>;
-		}
-		else {
-			content = text;
-		}
-		return <div key={key} className="d-flex mx-3 my-0 align-items-center form-group form-check">
-			<input className="form-check-input mr-3 mt-0" type="checkbox"
-				defaultChecked={checked}
-				onChange={this.onCheckChange}
-				data-key={key}
-				disabled={!allowCheck} />
-			<div className={cn}>{content}</div>
-		</div>;
-	}
-*/
-/*
-	protected renderCheckItems(allowCheck: boolean) {
-		return React.createElement(observer(() => {
-			let uncheckedItems: CheckItem[] = [];
-			let checkedItems: CheckItem[] = [];
-			for (let ci of this.controller.items) {
-				let { checked } = ci;
-				if (checked === true) checkedItems.push(ci);
-				else uncheckedItems.push(ci);
-			}
-			return <div className="">
-				{uncheckedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
-				{
-					checkedItems.length > 0 && <div className="border-top mt-2 py-2">
-						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
-						{checkedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
-					</div>
-				}
-			</div>;
-		}));
-	}
-*/
-	private onCheckChange = async (evt: React.ChangeEvent<HTMLInputElement>) => {
-		let t = evt.currentTarget;
-		let key = Number(t.getAttribute('data-key'));
-		await this.controller.onCheckChange(key, t.checked);
+
+	renderRelatives() {
+		return this.renderVm(VTaskRelatives);
 	}
 
 	protected renderState(): JSX.Element {
@@ -109,7 +65,7 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 		let { caption } = this.controller.noteItem;
 		let divCaption = this.renderCaption(caption);
 		return <div className="d-block bg-white">
-			{this.renderTop()}
+			{this.renderItemTop()}
 			<div className="px-3 py-2">
 				{divCaption}
 			</div>

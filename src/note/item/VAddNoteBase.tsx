@@ -47,11 +47,11 @@ export class VAddNoteBase<T extends CNoteItem> extends VNoteForm<T> {
 		return React.createElement(observer(() => {
 			if (this.controller.checkType === 3)
 				return;
-			return this.renderSendToButton();
+			return this.renderShareButton();
 		}));
 	}
 
-	protected renderSendToButton() {
+	protected renderShareButton() {
 		return <button onClick={this.onSaveAndSendNote}
 			className="btn btn-outline-primary mr-3">
 			发给

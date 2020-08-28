@@ -3,7 +3,6 @@ import { CNote } from "../CNote";
 import { VGroupAdd } from "./VGroupAdd";
 import { observable } from "mobx";
 import { Contact } from "model";
-import { VGroupFolder } from "../groupFolder/VGroupFolder";
 
 export class CGroup extends CUqSub<CNote> {
 	@observable contacts: Contact[];

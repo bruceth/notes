@@ -47,6 +47,7 @@ MAP FolderNote (
 	--type SMALLINT DEFAULT 0,			-- Note类, EnumNoteType 多余，经常忘记写入
 	seconds INT,						-- seconds since 2020-1-1
 	unread TINYINT DEFAULT 0,			-- 1: read
+	commentUnread INT DEFAULT 0,		-- 未读的评论数
 	state TINYINT DEFAULT 0,			-- 对当前状态的描述，各type自行定义
 	index folder_seconds(folder, seconds),
 	index note_folder(note, folder) unique,
@@ -142,7 +143,7 @@ RETURNS contain (
 		SET folder = a.folder FROM SpecFolder as a WHERE a.owner=$user AND a.spec=-folder;
 	}
 	if folder <> note {
-		BOOK FolderNote AT (folder, note) SET unread=0;
+		BOOK FolderNote AT (folder, note) SET unread=0, commentUnread=0;
 	}
 	INTO ret SELECT a.id, a.type, a.caption, a.content, a.owner, a.x, a.from, a.[$create], a.[$update], b.state, b.flowContent, c.groupFolder
 		FROM Note as a LEFT JOIN NoteX as b ON a.id=b.note
@@ -208,7 +209,7 @@ RETURNS ret (
 	}
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 	BOOK FolderNote AT (folderId, noteId) SET seconds=seconds;
-	Proc UpdateNoteTime(folderId, seconds);
+	Proc NotifyNote(folderId, seconds, 0);
 	INTO ret SELECT noteId as note;
 };
 
@@ -224,7 +225,7 @@ RETURNS ret (
 	--看到即有评论权限
 	TUID Note INTO commentId SET type=EnumNoteType.Comment, content=content, owner=$user;
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
-	Proc UpdateNoteTime(note, seconds);
+	Proc NotifyNote(note, seconds, 1);
 	BOOK Note2Note AT(note, commentId) SET type=EnumNoteMapType.Comment;
 
 	INTO ret SELECT commentId as comment;
@@ -239,7 +240,7 @@ ACTION SetNote (
 		VAR noteId ID, folderId ID, seconds INT;
 		TUID Note ID note SET caption=caption, content=content;
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
-		Proc UpdateNoteTime(note, seconds);
+		Proc NotifyNote(note, seconds, 0);
 	}
 };
 
@@ -278,7 +279,7 @@ ACTION SendNoteTo ver 1.0 (
 			}
 			ELSE {
 				BOOK FolderNote AT(folderId, note) SET seconds=seconds, unread=1;
-				Proc UpdateNoteTime(folderId, seconds);
+				Proc NotifyNote(folderId, seconds, 0);
 				BOOK FolderNote AT(rootFolderId, folderId) SET seconds=seconds, unread=1;
 			} 
 
@@ -308,63 +309,4 @@ RETURNS ret (
 	SET toCount = Count(*) FROM NoteAccess as a WHERE a.note=[note] AND a.access=1;
 	SET spawnCount = Count(*) FROM Note2Note WHERE note0=note AND type=EnumNoteMapType.Spawn;
 	INTO ret SELECT toCount as to, spawnCount as spawn;
-};
-
-PROC UpdateNoteTime(
-	note ID [Note],
-	seconds INT,
-) {
-	VAR noteId INT;
-	TABLE tblNote(KEY folderId ID);
-	TABLE tblDone(KEY folderId ID);
-	INTO tblNote SELECT note as folderId;
-	WHILE 1=1 {
-		SET noteId = NULL;
-		SET noteId = folderId FROM tblNote ORDER BY folderId DESC LIMIT 1;
-		DELETE FROM tblNote WHERE folderId=noteId;
-		INTO tblDone SELECT noteID as folderId;
-
-		FOREACH (var shareFolderId ID, ownerId ID OF SELECT a.folder as shareFolderId, b.owner as ownerId 
-				FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=noteId) {
-			BOOK FolderNote AT(shareFolderId, noteId) SET seconds=seconds, unread=CASE WHEN ownerId=$user THEN 0 ELSE 1 END;
-			IF (SELECT folderId FROM tblNote WHERE folderId=shareFolderId) IS NULL 
-					AND (SELECT folderId FROM tblDone WHERE folderId=shareFolderId) IS NULL {
-				INTO tblNote SELECT shareFolderId as folderId;
-			}
-			IF ownerId <> $user {
-				TUID [$User] ID (ownerId) SET poke=1;
-			}
-		}
-	}
-};
-
-PROC UpdateUserNoteTime(
-	userId ID [$User],
-	note ID [Note],
-	seconds INT,
-) {
-	VAR noteId INT, unreadFlag TINYINT;
-	TABLE tblNote(KEY folderId ID);
-	TABLE tblDone(KEY folderId ID);
-	INTO tblNote SELECT note as folderId;
-	SET unreadFlag = CASE WHEN userId=$user THEN 0 ELSE 1 END;
-	WHILE 1=1 {
-		SET noteId = NULL;
-		SET noteId = folderId FROM tblNote ORDER BY folderId DESC LIMIT 1;
-		IF noteId IS NULL { break; }
-		DELETE FROM tblNote WHERE folderId=noteId;
-		INTO tblDone SELECT noteID as folderId;
-
-		FOREACH (var shareFolderId ID OF SELECT a.folder as shareFolderId 
-				FROM FolderNote as a LEFT JOIN Note as b ON a.folder=b.id WHERE a.note=noteId AND b.owner=userId) {
-			BOOK FolderNote AT(shareFolderId, noteId) SET seconds=seconds, unread=unreadFlag;
-			IF (SELECT folderId FROM tblNote WHERE folderId=shareFolderId) IS NULL 
-					AND (SELECT folderId FROM tblDone WHERE folderId=shareFolderId) IS NULL {
-				INTO tblNote SELECT shareFolderId as folderId;
-			}
-		}
-	}
-	IF userId <> $user {
-		TUID [$User] ID (userId) SET poke=1;
-	}
 };

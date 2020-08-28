@@ -39,7 +39,9 @@ PAGE (
 	[$create] TIMESTAMP,
 	[$update] TIMESTAMP,
 	toCount INT,
-	spawnCount INT
+	spawnCount INT,
+	commentCount INT,
+	commentUnread INT,
 ) {
 	-- 第一次如果没有notes folder，则创建
 	IF folderId < 0 {
@@ -58,6 +60,8 @@ PAGE (
 		, b.[$create], b.[$update]
 		, (SELECT Count(*) FROM NoteAccess as WHERE note=a.note AND access=1) as toCount
 		, (SELECT Count(*) FROM Note2Note WHERE note0=a.note AND type=EnumNoteMapType.Spawn) as spawnCount
+		, (SELECT Count(*) FROM Note2Note WHERE note0=a.note AND type=EnumNoteMapType.Comment) as commentCount
+		, a.commentUnread
 		FROM FolderNote as a
 			LEFT JOIN Note as b ON a.note=b.id
 			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact

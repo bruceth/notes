@@ -20,8 +20,8 @@ export class VFolderView extends VNoteView<CFolderNoteItem> {
 			let {title} = this.controller;
 			return <div className="">
 				<div className="bg-white">
-					{this.renderTop()}
-					{title && <div className="px-3 py-2 border-bottom">
+					{this.renderViewTop()}
+					{title && <div className="px-3 py-2">
 						<div><b>{title}</b></div>
 					</div>}
 					{this.renderContent()}
@@ -39,6 +39,7 @@ export class VFolderView extends VNoteView<CFolderNoteItem> {
 
 	protected renderBottomCommands() {
 		let {owner} = this.controller.noteItem;
+		/*
 		let isMe = this.isMe(owner);
 		let right:any;
 		if (isMe === true) {
@@ -46,10 +47,11 @@ export class VFolderView extends VNoteView<CFolderNoteItem> {
 				{this.renderEditButton()}				
 			</>;
 		}
-		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-end">
-			{this.renderSendToButton()}
 			<div className="mr-auto" />
 			{right}
+		*/
+		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-end">
+			{this.renderShareButton()}
 		</div>;
 	}
 

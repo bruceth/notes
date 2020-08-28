@@ -7,5 +7,9 @@ export class VFolderRelatives extends VRelatives<CFolderNoteItem> {
 	constructor(controller: CFolderNoteItem) {
 		super(controller);
 	}
-	protected arr:RelativeKey[] = ['to', 'spawn', 'contain'];
+	protected arr:RelativeKey[] = ['to'];
+
+	render() {
+		return super.render();
+	}
 }

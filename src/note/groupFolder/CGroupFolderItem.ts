@@ -3,9 +3,7 @@ import { VGroupFolderItem } from "./VGroupFolderItem";
 import { VGroupFolder } from "./VGroupFolder";
 
 export class CGroupFolderItem extends CFolderNoteItem {
-	protected getItemConverter() {
-		return this.owner.noteItemConverter;
-	}
+	protected getDisableOwnerFrom() {return false;}
 
 	renderItem(index: number): JSX.Element {
 		let vNoteItem = new VGroupFolderItem(this);

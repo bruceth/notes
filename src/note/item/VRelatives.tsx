@@ -1,5 +1,5 @@
 import React from 'react';
-import { EasyTime, LMR, List, User, Image, UserView, FA } from "tonva";
+import { EasyTime, LMR, List, User, Image, UserView, FA, Page } from "tonva";
 import { CNoteItem, RelativeKey } from "./CNoteItem";
 import { NoteItem, CommentItem, EnumNoteItemType } from 'note/model';
 import { observer } from 'mobx-react';
@@ -7,23 +7,62 @@ import { VNoteBase } from './VNoteBase';
 import { GetTaskStateContent } from 'note/task/TaskState';
 
 export interface Relative {
-	caption: string;
+	caption: (isAction:boolean) => JSX.Element;
 	render: () => JSX.Element;
 }
 
+abstract class Tab {
+
+}
+
 export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
-	protected renderComments = () => {
-		//let render = observer(() => {
-			let {comments} = this.controller.noteModel;
-			if (comments.length === 0) return;
-			return <div className="py-3">{
-				comments.map(v => this.renderComment(v))
-			}</div>;
-		//});
-		//return React.createElement(render);
+	private renderTab(isAction:boolean, key:RelativeKey, tabContent:any) {
+		let cn:string;
+		if (isAction === true) {
+			cn = ' bg-white border-left border-top border-right rounded-top';
+		}
+		else {
+			cn = ' bg-light text-muted';
+		}
+		return <div key={key} className={'px-3 py-2 cursor-pointer' + cn} onClick={()=>this.controller.relativeKey = key}>
+			{tabContent}
+		</div>;
 	}
 
-	protected renderTo = () => {
+	protected tabComment = (isAction:boolean) => {
+		let {commentCount} = this.controller.noteItem;
+		let vCount:any;
+		if (commentCount > 0) vCount = <small>{commentCount}</small>;
+		return <>
+			<FA className="mr-2" name="comment-o" /> 
+			{vCount}
+		</>;
+	}
+	protected renderComments = () => {
+		let {comments} = this.controller.noteModel;
+		let {length} = comments;
+		if (length === 0) return;
+		return <div className="py-3">
+			{comments.map(v => this.renderComment(v))}
+			{length>10 && <div className="px-3 pt-3 cursor-pointer text-primary text-right small" onClick={this.showMoreComments}>更多评论...</div>}
+		</div>;
+	}
+	private showMoreComments = () => {
+		this.openPageElement(<Page header="评论">
+			<div className="text-muted p-3">更多评论正在开发中...</div>
+		</Page>);
+	}
+
+	protected tabShare = (isAction:boolean) => {
+		let {toCount} = this.controller.noteItem;
+		let vCount:any;
+		if (toCount > 0) vCount = <small>{toCount}</small>;
+		return <>
+			<FA className="mr-2" name="share" /> 
+			{vCount}
+		</>;
+	}
+	protected renderShare = () => {
 		let {to} = this.controller.noteModel;
 		if (!to || to.length === 0) return;
 		return <div className="px-3 py-2">
@@ -35,6 +74,9 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 		</div>
 	}
 
+	protected tabFlow = (isAction:boolean) => {
+		return <>流程</>;
+	}
 	protected renderFlow = () => {
 		let {flow} = this.controller.noteModel;
 		if (!flow || flow.length === 0) return;
@@ -62,6 +104,9 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 		</div>;
 	}
 
+	protected tabSpawn = (isActive:boolean) => {
+		return <>派生</>;
+	}
 	protected renderSpawn = () => {
 		let {spawn} = this.controller.noteModel;
 		if (!spawn || spawn.length === 0) return;
@@ -70,6 +115,9 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 			item={{render: this.renderSpawnItem,  className: "notes"}} />
 	}
 
+	protected tabContain = (isActive:boolean) => {
+		return <>包含</>;
+	}
 	protected renderContain = () => {
 		let {contain} = this.controller.noteModel;
 		if (!contain || contain.length === 0) return;
@@ -88,11 +136,11 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 	}
 
 	protected tabs:{[key in RelativeKey]:Relative} = {
-		'comment': {caption: '评论', render: this.renderComments},
-		'to': {caption: '分享', render: this.renderTo},
-		'flow': {caption: '流程', render: this.renderFlow},
-		'spawn': {caption: '派生', render: this.renderSpawn},
-		'contain': {caption: '包含', render: this.renderContain},
+		'comment': {caption: this.tabComment, render: this.renderComments},
+		'to': {caption: this.tabShare, render: this.renderShare},
+		'flow': {caption: this.tabFlow, render: this.renderFlow},
+		'spawn': {caption: this.tabSpawn, render: this.renderSpawn},
+		'contain': {caption: this.tabContain, render: this.renderContain},
 	}
 	protected arr:RelativeKey[] = ['comment', 'to', 'flow', 'spawn', 'contain'];
 	//@observable private relativeCur: RelativeKey = 'to';
@@ -101,23 +149,15 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 			let {relativeKey} = this.controller;
 			if (relativeKey === undefined) {relativeKey = 'comment'}
 			return <div className="bg-white">
-				<div className="d-flex px-3 pt-3 border-bottom">
+				<div className="d-flex px-3 pt-3">
 					{this.arr.map(v => {
 						let {caption} = this.tabs[v];
-						let cn:string;
-						if (v === relativeKey) {
-							cn = ' bg-white border-left border-top border-right';
-						}
-						else {
-							cn = ' bg-light text-muted';
-						}
-						return <div key={v} className={'px-3 py-2 cursor-pointer' + cn} onClick={()=>this.controller.relativeKey = v}>
-							{caption}
-						</div>;
+						let isActive = v === relativeKey;
+						return this.renderTab(isActive, v, caption(isActive));
 					})}
 				</div>
-				<div className="py-3">
-					{this.tabs[relativeKey].render() || <small className="px-3 text-muted">[无]</small>}
+				<div className="border-top" style={{marginTop: '-1px'}}>
+					{this.tabs[relativeKey].render() || <div className="p-3 text-muted small">[无]</div>}
 				</div>
 			</div>
 		});
@@ -129,22 +169,48 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 		let renderUser = (user:User) => {
 			let {id, name, nick, icon} = user;
 			let isMe = this.isMe(id);
-			let divUserName:any;
+			let userName:string, cn:string;
 			if (isMe === true) {
-				divUserName = <span className="text-success">[自己]</span>
+				cn = 'text-success';
+				userName = '[我]';
 			}
 			else {
-				divUserName = assigned || nick || name;
+				cn = 'text-primary';
+				userName = assigned || nick || name;
 			}
+			let divUserName = <span className={cn + ' mr-2'}>{userName}:</span>;
+			// <Image className="w-1-5c h-1-5c mx-3" src={icon || '.user-o'} />
+			// <div className="small mb-3">{divUserName}</div>
 			return <div className="mt-1 d-flex bg-white pt-2">
-				<Image className="w-1-5c h-1-5c mx-3" src={icon || '.user-o'} />
-				<div className="mr-3">
-					<div className="small mb-3">{divUserName}</div>
-					<div className="mt-2">{this.renderParagraphs(content)}</div>
-					<div className="py-1 small text-muted"><EasyTime date={$update} /></div>
+				<div className="mx-3">
+					<div className="small text-muted"><EasyTime date={$update} /></div>
+					<div className="">{this.renderCommentContent(divUserName, content)}</div>
 				</div>
 			</div>
 		}
 		return <UserView key={id} user={owner} render={renderUser} />;
+	}
+	
+	protected renderCommentContent(vUser:any, content:string):JSX.Element {
+		if (!content) return;
+		return <>{content.trimRight().split('\n').map((v, index) => {
+			let c:any;
+			if (!v) {
+				c = '\u00A0'; //<>&nbsp;</>;
+			}
+			else {
+				c = '';
+				let len = v.length, i=0;
+				for (; i<len; i++) {
+					switch(v.charCodeAt(i)) {
+						case 0x20: c +='\u2000'; continue;
+					}
+					break;
+				}
+				c += v.substr(i);
+			}
+			if (index === 0) c = <>{vUser}{c}</>;
+			return <div key={index} className="pb-1">{c}</div>;
+		})}</>;
 	}
 }

@@ -266,9 +266,14 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 		let {commentCount, commentUnread} = this.controller.noteItem;
 		if (commentCount === undefined || commentCount <= 0)
 			return;
+		let vCU:any;
+		if (commentUnread > 0) {
+			let cu:any = commentUnread>99? <>99<sup>+</sup></> : commentUnread;
+			vCU = <div className="unread-num">{cu}</div>;
+		};
 		return  <span className="mr-5 text-muted position-relative">
 			<FA className="mr-2" name="comment-o"/><small className="">{commentCount}</small>
-			{commentUnread>0 && <span className="unread-num">{commentUnread}</span>}
+			{vCU}
 		</span>;
 	}
 

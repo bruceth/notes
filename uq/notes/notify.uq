@@ -19,7 +19,9 @@ PROC NotifyNote (
 			}
 			ELSE {
 				BOOK FolderNote AT(shareFolderId, noteId) 
-					SET seconds = seconds, unread = 1, commentUnread += commentUnread;
+					SET seconds = seconds
+						, unread = CASE WHEN commentUnread>0 THEN 0 ELSE 1 END
+						, commentUnread += commentUnread;
 				TUID [$User] ID (ownerId) SET poke=1;
 			}
 			IF (SELECT folderId FROM tblNote WHERE folderId=shareFolderId) IS NULL 

@@ -11,6 +11,7 @@ export interface AssignTaskParam {
 	checker: Contact;
 	rater: Contact;
 	point?: number;
+	hours?: number;
 }
 
 export interface TaskCheckItem extends CheckItem {
@@ -28,6 +29,8 @@ export class CTaskNoteItem extends CNoteItem {
 	protected rateInfoInput: string;
 	protected rateValue: number;
 	protected rateValueInput: number;
+	hours: number;
+	protected point: number;
 
 	init(param: NoteItem):void {
 		super.init(param);
@@ -41,6 +44,8 @@ export class CTaskNoteItem extends CNoteItem {
 			this.rateInfoInput = this.rateInfo;
 			this.rateValue = obj.rateValue;
 			this.rateValueInput = this.rateValue;
+			this.hours = obj.hours;
+			this.point = obj.point;
 		}
 	}
 
@@ -64,6 +69,8 @@ export class CTaskNoteItem extends CNoteItem {
 		else {
 			delete obj.rateValue;
 		}
+		obj.hours = this.hours;
+		obj.point = this.point;
 
 		return obj;
 	}
@@ -124,7 +131,7 @@ export class CTaskNoteItem extends CNoteItem {
 
 	async assignTask(param: AssignTaskParam) {
 		let { note: noteId } = this.noteItem;
-		let { contacts, checker, rater, point } = param;
+		let { contacts, checker, rater, point, hours } = param;
 		//let note: NoteModel = await this.uqs.notes.Note.assureBox(noteId);
 		let { caption, content } = this.noteItem;
 		let cObj = JSON.parse(content);
@@ -140,6 +147,8 @@ export class CTaskNoteItem extends CNoteItem {
 		else {
 			delete cObj.rater;
 		}
+		cObj.hours = hours;
+		cObj.point = point;
 		let data = {
 			groupFolder: this.owner.currentFoldItem.groupFolder,
 			folder: this.owner.currentFoldItem.folderId,
@@ -155,14 +164,15 @@ export class CTaskNoteItem extends CNoteItem {
 	}
 
 	async DoneTask() {
-		let { note: noteId } = this.noteItem;
-		let note: NoteModel = await this.uqs.notes.Note.assureBox(noteId);
-		let { content } = note;
+		let { note: noteId, caption } = this.noteItem;
+		let content = this.stringifyContent();
 		let data = {
 			groupFolder: this.owner.currentFoldItem.groupFolder,
 			folder: this.owner.currentFoldItem.folderId,
 			note: numberFromId(noteId),
-			content: content
+			content: content,
+			caption: caption,
+			hours: this.hours
 		}
 
 		let ret = await this.uqs.notes.DoneTask.submit(data);

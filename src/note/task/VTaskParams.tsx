@@ -20,6 +20,7 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 	@observable rater: Contact;
 
 	private point:number = 100;
+	private hours:number = 3;
 
 	init(param:{contacts:Contact[]}) {
 		let {contacts} = param;
@@ -42,6 +43,7 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 		let rows: Param[] = [
 			{label: '执行人', values: this.renderContacts(), onClick: this.onClickContacts}, 
 			{label: '分值', values: this.renderPoint()}, 
+			{label: '工时', values: this.renderHours()}, 
 			{label: '检查人', values: this.renderChecker(), onClick: this.onClickChecker}, 
 			{label: '评价人', values: this.renderRater(), onClick: this.onClickRater}, 
 		];
@@ -59,6 +61,7 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 			checker: this.checker,
 			rater: this.rater,
 			point: this.point,
+			hours: this.hours,
 		});
 		this.closePage(2);
 		this.controller.owner.showSentPage();
@@ -101,6 +104,13 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 				onKeyDown={this.onItemKeyDown}/>;
 	}
 
+	private renderHours() {
+		return <input className="flex-fill form-control border-0"
+				type="number" step="1" min="1" defaultValue={this.hours}
+				onChange={this.onHoursChange}
+				onKeyDown={this.onHoursKeyDown}/>;
+	}
+
 	private onItemChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
 		this.point = Number(evt.currentTarget.value);
 	}
@@ -108,6 +118,12 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 	private onItemKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {
 	}
 
+	private onHoursChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
+		this.hours = Number(evt.currentTarget.value);
+	}
+
+	private onHoursKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {
+	}
 
 	private renderChecker() {
 		return React.createElement(observer(() => this.renderContact(this.checker)));

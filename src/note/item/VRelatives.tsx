@@ -175,7 +175,7 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 				userName = '[我]';
 			}
 			else {
-				cn = 'text-primary';
+				cn = 'text-primary-dark';
 				userName = assigned || nick || name;
 			}
 			let divUserName = <span className={cn + ' mr-2'}>{userName}:</span>;

@@ -4,6 +4,7 @@ import {nav, Page, resOptions} from '../components';
 import { User, env } from '../tool';
 import { VPage } from './vpage';
 import { View } from './view';
+import { messageHub } from 'tonva';
 
 export interface ConfirmOptions {
     caption?: string;
@@ -61,7 +62,8 @@ export abstract class Controller {
 
     protected dispose = () => {
         // message listener的清理
-        nav.unregisterReceiveHandler(this.receiveHandlerId);
+		//nav.unregisterReceiveHandler(this.receiveHandlerId);
+		messageHub.unregisterReceiveHandler(this.receiveHandlerId);
         this.onDispose();
     }
 
@@ -127,7 +129,7 @@ export abstract class Controller {
 	protected async afterStart():Promise<void> {
 	}
     protected registerReceiveHandler() {
-        this.receiveHandlerId = nav.registerReceiveHandler(this.onMessageReceive);
+        this.receiveHandlerId = messageHub.registerReceiveHandler(this.onMessageReceive);
     }
 
     protected abstract internalStart(param?:any, ...params:any[]):Promise<void>;

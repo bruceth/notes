@@ -19,8 +19,9 @@ export class CApp extends CUqApp {
 	cDiscover: CDiscover;
 	cMe: CMe;
 
-	protected async internalStart() {
+	protected async internalStart(isUserLogin: boolean) {
 		this.setRes(res);
+		if (isUserLogin === true) await this.initMySetting();
 		if (this.isRouting === false) await this.startHome();
 	}
 
@@ -33,6 +34,11 @@ export class CApp extends CUqApp {
 		this.showMain();
 
 		this.timer = setInterval(this.callTick, 1000);
+	}
+
+	private async initMySetting() {
+		let timezone:number = - (new Date()).getTimezoneOffset() / 60;
+		await this.uqs.notes.InitMySetting.submit({timezone}, true);
 	}
 
 	protected onDispose() {

@@ -8,8 +8,8 @@ import FetchErrorView, { SystemNotifyPage } from './fetchErrorView';
 import {FetchError} from '../net/fetchError';
 import {appUrl, setAppInFrame, getExHash, getExHashPos} from '../net/appBridge';
 import {LocalData, env} from '../tool';
-import {guestApi, logoutApis, setCenterUrl, setCenterToken, WSChannel, appInFrame, host, resUrlFromHost} from '../net';
-import { WsBase, wsBridge } from '../net/wsChannel';
+import {guestApi, logoutApis, setCenterUrl, setCenterToken, appInFrame, host, resUrlFromHost, messageHub} from '../net';
+//import { WsBase, wsBridge } from '../net/wsChannel';
 import { resOptions } from '../res/res';
 import { Loading } from './loading';
 import { Navigo, RouteFunc, Hooks, NamedRoute } from './navigo';
@@ -39,9 +39,7 @@ const logs:string[] = [];
 
 export interface Props //extends React.Props<Nav>
 {
-    //view: JSX.Element | (()=>JSX.Element);
-    //start?: ()=>Promise<void>;
-    onLogined: ()=>Promise<void>;
+    onLogined: (isUserLogin?:boolean)=>Promise<void>;
     notLogined?: ()=>Promise<void>;
 };
 let stackKey = 1;
@@ -66,8 +64,6 @@ export class NavView extends React.Component<Props, NavViewState> {
 
     constructor(props:Props) {
         super(props);
-        //this.back = this.back.bind(this);
-        //this.navBack = this.navBack.bind(this);
         this.stack = [];
         this.state = {
             stack: this.stack,
@@ -384,7 +380,7 @@ export interface NavSettings {
 
 export class Nav {
     private nav:NavView;
-    private ws: WsBase;
+    //private ws: WsBase;
     private wsHost: string;
     private local: LocalData = new LocalData();
 	private navigo: Navigo;
@@ -415,21 +411,21 @@ export class Nav {
         //this.logo = logo;
         this.nav = nav;
 	}
-	
+	/*
     registerReceiveHandler(handler: (message:any)=>Promise<void>):number {
-        if (this.ws === undefined) return;
-        return this.ws.onWsReceiveAny(handler);
+        //if (this.ws === undefined) return;
+        return messageHub.onReceiveAny(handler);
     }
 
     unregisterReceiveHandler(handlerId:number) {
-        if (this.ws === undefined) return;
+        //if (this.ws === undefined) return;
         if (handlerId === undefined) return;
-        this.ws.endWsReceive(handlerId);
+        messageHub.endReceive(handlerId);
     }
-
+	*/
     async onReceive(msg:any) {
-        if (this.ws === undefined) return;
-        await this.ws.receive(msg);
+        //if (this.ws === undefined) return;
+        await messageHub.dispatch(msg);
     }
 
 	private async loadUnitJson() {
@@ -564,7 +560,7 @@ export class Nav {
 		if (exHash !== undefined && window !== window.parent) {
 			// is in frame
 			if (appInFrame !== undefined) {
-				this.ws = wsBridge;
+				//this.ws = wsBridge;
 				console.log('this.ws = wsBridge in sub frame');
 				//nav.user = {id:0} as User;
 				if (window.self !== window.parent) {
@@ -650,15 +646,14 @@ export class Nav {
 		}
 	}
 
-    async showAppView() {
+    async showAppView(isUserLogin?: boolean) {
         let {onLogined} = this.nav.props;
         if (onLogined === undefined) {
             nav.push(<div>NavView has no prop onLogined</div>);
             return;
         }
         nav.clear();
-        await onLogined();
-        //console.log('logined: AppView shown');
+        await onLogined(isUserLogin);
     }
 
     setGuest(guest: Guest) {
@@ -676,25 +671,36 @@ export class Nav {
         this.user.nick = me.nick;
     }
 
-    async logined(user: User, callback?: (user:User)=>Promise<void>) {
+	private async internalLogined(user: User, callback: (user:User)=>Promise<void>, isUserLogin:boolean) {
         logoutApis();
         console.log("logined: %s", JSON.stringify(user));
         this.user = user;
         this.saveLocalUser();
 		netToken.set(user.id, user.token);
 		nav.clear();
+
         if (callback !== undefined) //this.loginCallbacks.has)
             callback(user);
             //this.loginCallbacks.call(user);
         else {
-            await this.showAppView();
+            await this.showAppView(isUserLogin);
         }
+	}
+
+	// 缓冲登录
+    async logined(user: User, callback?: (user:User)=>Promise<void>) {
+		await this.internalLogined(user, callback, false);
     }
 
-    wsConnect() {
-        let ws:WSChannel = this.ws = new WSChannel(this.wsHost, this.user.token);
-        ws.connect();
+	// 用户操作之后登录
+    async userLogined(user: User, callback?: (user:User)=>Promise<void>) {
+		await this.internalLogined(user, callback, true);
     }
+
+    //wsConnect() {
+        //let ws:WSChannel = this.ws = new WSChannel(this.wsHost, this.user.token);
+        //ws.connect();
+    //}
 
     loginTop(defaultTop:JSX.Element) {
         return (this.navSettings && this.navSettings.loginTop) || defaultTop;
@@ -762,9 +768,10 @@ export class Nav {
 
     async showLogin(callback?: (user:User)=>Promise<void>, withBack?:boolean) {
         let lv = await import('../entry/login');
-        let loginView = <lv.default 
-            withBack={withBack} 
-            callback={callback} />;
+        let loginView = React.createElement(
+			lv.default, 
+			{withBack, callback}
+		);
         if (withBack !== true) {
             this.nav.clear();
             this.pop();
@@ -793,7 +800,7 @@ export class Nav {
         logoutApis();
         let guest = this.local.guest.get();
         setCenterToken(0, guest && guest.token);
-		this.ws = undefined;
+		//this.ws = undefined;
 		this.clear();
         if (callback === undefined)
             await nav.start();
@@ -969,3 +976,7 @@ export class Nav {
     }
 }
 export const nav: Nav = new Nav();
+
+export class TonvaView extends NavView {
+
+}

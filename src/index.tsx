@@ -69,8 +69,8 @@ import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
 	//如果要支持route，必须调用下面这一句
 	//await startRoute(appConfig);
 	const App: React.FC = () => {
-		const onLogined = async () => {
-			await start(CApp, appConfig);
+		const onLogined = async (isUserLogin?:boolean) => {
+			await start(CApp, appConfig, isUserLogin);
 		}
 		return <NavView onLogined={onLogined} />;
 	}

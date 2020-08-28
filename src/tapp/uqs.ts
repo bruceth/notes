@@ -32,6 +32,8 @@ export interface Notes {
 	GetProjectYearSum: Query;
 	GetProjectMonthSum: Query;
 	GetProjectDaySum: Query;
+
+	InitMySetting: Action;
 };
 
 export interface UQs {

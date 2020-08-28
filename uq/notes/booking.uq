@@ -21,6 +21,14 @@ BOOK MySetting (
 	startMonthOfYear TINYINT DEFAULT 0,		-- 年初月
 );
 
+ACTION InitMySetting (
+	timezone INT,
+) {
+	IF not exists(SELECT timezone FROM MySetting WHERE user=$user) {
+		BOOK MySetting at($user) SET timezone=timezone;
+	}
+};
+
 BOOK BookFlow (
 	KEY project ID BookProject,
 	KEY stamp TIMESTAMP,

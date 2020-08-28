@@ -39,9 +39,7 @@ const logs:string[] = [];
 
 export interface Props //extends React.Props<Nav>
 {
-    //view: JSX.Element | (()=>JSX.Element);
-    //start?: ()=>Promise<void>;
-    onLogined: ()=>Promise<void>;
+    onLogined: (isUserLogin?:boolean)=>Promise<void>;
     notLogined?: ()=>Promise<void>;
 };
 let stackKey = 1;
@@ -66,8 +64,6 @@ export class NavView extends React.Component<Props, NavViewState> {
 
     constructor(props:Props) {
         super(props);
-        //this.back = this.back.bind(this);
-        //this.navBack = this.navBack.bind(this);
         this.stack = [];
         this.state = {
             stack: this.stack,
@@ -650,15 +646,14 @@ export class Nav {
 		}
 	}
 
-    async showAppView() {
+    async showAppView(isUserLogin?: boolean) {
         let {onLogined} = this.nav.props;
         if (onLogined === undefined) {
             nav.push(<div>NavView has no prop onLogined</div>);
             return;
         }
         nav.clear();
-        await onLogined();
-        //console.log('logined: AppView shown');
+        await onLogined(isUserLogin);
     }
 
     setGuest(guest: Guest) {
@@ -676,19 +671,30 @@ export class Nav {
         this.user.nick = me.nick;
     }
 
-    async logined(user: User, callback?: (user:User)=>Promise<void>) {
+	private async internalLogined(user: User, callback: (user:User)=>Promise<void>, isUserLogin:boolean) {
         logoutApis();
         console.log("logined: %s", JSON.stringify(user));
         this.user = user;
         this.saveLocalUser();
 		netToken.set(user.id, user.token);
 		nav.clear();
+
         if (callback !== undefined) //this.loginCallbacks.has)
             callback(user);
             //this.loginCallbacks.call(user);
         else {
-            await this.showAppView();
+            await this.showAppView(isUserLogin);
         }
+	}
+
+	// 缓冲登录
+    async logined(user: User, callback?: (user:User)=>Promise<void>) {
+		await this.internalLogined(user, callback, false);
+    }
+
+	// 用户操作之后登录
+    async userLogined(user: User, callback?: (user:User)=>Promise<void>) {
+		await this.internalLogined(user, callback, true);
     }
 
     //wsConnect() {
@@ -762,9 +768,10 @@ export class Nav {
 
     async showLogin(callback?: (user:User)=>Promise<void>, withBack?:boolean) {
         let lv = await import('../entry/login');
-        let loginView = <lv.default 
-            withBack={withBack} 
-            callback={callback} />;
+        let loginView = React.createElement(
+			lv.default, 
+			{withBack, callback}
+		);
         if (withBack !== true) {
             this.nav.clear();
             this.pop();
@@ -969,3 +976,7 @@ export class Nav {
     }
 }
 export const nav: Nav = new Nav();
+
+export class TonvaView extends NavView {
+
+}

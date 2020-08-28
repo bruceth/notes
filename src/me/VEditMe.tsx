@@ -32,7 +32,7 @@ export class VEditMe extends VPage<CMe>{
             icon: icon,
         };
 
-        let { cApp } = this.controller;
+        //let { cApp } = this.controller;
     }
 
     private onItemChanged = async (itemSchema: ItemSchema, newValue: any, preValue: any) => {

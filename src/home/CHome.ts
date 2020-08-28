@@ -1,9 +1,9 @@
 import { CUqBase } from "tapp";
-import { CNote } from "../note";
+import { CNotes } from "../notes";
 import { VHome } from "./VHome";
 
 export class CHome extends CUqBase {
-	cNode: CNote;
+	cNode: CNotes;
 
   	protected async internalStart() {
 	}
@@ -13,7 +13,7 @@ export class CHome extends CUqBase {
 	}
 
 	init() {
-		this.cNode = this.newC(CNote);
+		this.cNode = this.newC(CNotes);
 	}
 
 	tab = () => this.renderView(VHome);

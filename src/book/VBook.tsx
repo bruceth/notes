@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, FA, Page, QueryPager } from "tonva";
+import { View, FA } from "tonva";
 import { CBook, ProjectSum } from './CBook';
 
 export class VBook extends View<CBook> {
@@ -8,7 +8,8 @@ export class VBook extends View<CBook> {
 		if (projectSums.length === 0) return;
 		return <div className="px-3 mb-3 border-top">
 			{projectSums.map(v => { 
-				let {id, name, debitYear, creditYear, debitMonth, creditMonth, debitWeek, creditWeek, debitDay, creditDay} = v;
+				//let {id, name, debitYear, creditYear, debitMonth, creditMonth, debitWeek, creditWeek, debitDay, creditDay} = v;
+				let {id, name, debitMonth, debitWeek, debitDay} = v;
 				return <div key={id} className="row py-3 align-items-end border-bottom bg-white cursor-pointer"
 					onClick={() => this.onProject(v)}>
 					<div className="col text-center">{name}</div>

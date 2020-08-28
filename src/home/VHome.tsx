@@ -1,27 +1,26 @@
 import React from 'react';
 import { CHome } from './CHome';
-import { VPage, Page, FA, DropdownActions, DropdownAction } from 'tonva';
-//import { notesName } from '../note';
+import { VPage, Page, DropdownActions, DropdownAction } from 'tonva';
 
 export class VHome extends VPage<CHome> {
 	private actionAddNote = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFoldItem.folderId);
+		cNode.showAddNotePage(cNode.currentFold.folderId);
 	}
 
 	private actionAddList = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFoldItem.folderId);
+		cNode.showAddNotePage(cNode.currentFold.folderId);
 	}
 
 	private actionAddTask = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFoldItem.folderId);
+		cNode.showAddNotePage(cNode.currentFold.folderId);
 	}
 
 	private actionAddFolder = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFoldItem.folderId);
+		cNode.showAddNotePage(cNode.currentFold.folderId);
 	}
 
 	private actionAddGroup = () => {

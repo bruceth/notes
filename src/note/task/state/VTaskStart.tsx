@@ -35,12 +35,12 @@ export class VTaskStart extends VTaskView {
 	protected renderHours() {
 		return <div className="flex-fill mr-3 "><input className="flex-fill form-control border-0"
 			type="number" step="1" min="1" defaultValue={this.controller.hours}
-			onChange={this.onHoursChange}/>
+			onChange={e=>this.onHoursChange(e)}/>
 		</div>;
 	}
 
 
-	private onHoursChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
+	protected onHoursChange(evt:React.ChangeEvent<HTMLInputElement>) {
 		this.controller.hours = Number(evt.currentTarget.value);
 	}
 

@@ -44,7 +44,10 @@ export class VRelatives<T extends CNoteItem> extends VNoteBase<T> {
 		if (length === 0) return;
 		return <div className="py-3">
 			{comments.map(v => this.renderComment(v))}
-			{length>10 && <div className="px-3 pt-3 cursor-pointer text-primary text-right small" onClick={this.showMoreComments}>更多评论...</div>}
+			{
+				length >= 10 && <div className="px-3 pt-3 cursor-pointer text-primary text-right small"
+				onClick={this.showMoreComments}>更多评论...</div>
+			}
 		</div>;
 	}
 	private showMoreComments = () => {

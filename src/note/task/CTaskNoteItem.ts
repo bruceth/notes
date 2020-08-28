@@ -25,6 +25,8 @@ export class CTaskNoteItem extends CNoteItem {
 	@observable checkInfo: string;
 	@observable rateInfo: string;
 
+	protected checker: number;
+	protected rater: number;
 	protected checkInfoInput: string;
 	protected rateInfoInput: string;
 	protected rateValue: number;
@@ -44,6 +46,8 @@ export class CTaskNoteItem extends CNoteItem {
 			this.rateInfoInput = this.rateInfo;
 			this.rateValue = obj.rateValue;
 			this.rateValueInput = this.rateValue;
+			this.checker = obj.checker;
+			this.rater = obj.rater;
 			this.hours = obj.hours;
 			this.point = obj.point;
 		}
@@ -68,6 +72,12 @@ export class CTaskNoteItem extends CNoteItem {
 		}
 		else {
 			delete obj.rateValue;
+		}
+		if (this.checker !== undefined) {
+			obj.checker = this.checker;
+		}
+		if (this.rater !== undefined) {
+			obj.rater = this.rater;
 		}
 		obj.hours = this.hours;
 		obj.point = this.point;

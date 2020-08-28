@@ -65,28 +65,7 @@ export class VTextView extends VNoteView<CTextNoteItem> {
 			<div className={cn}>{content}</div>
 		</label>;
 	}
-/*
-	protected renderCheckItems() {
-		return React.createElement(observer(() => {
-			let uncheckedItems:CheckItem[] = [];
-			let checkedItems:CheckItem[] = [];
-			for (let ci of this.controller.items) {
-				let {checked} = ci;
-				if (checked === true) checkedItems.push(ci);
-				else uncheckedItems.push(ci);
-			}			
-			return <div className="">
-				{uncheckedItems.map((v, index) => this.renderCheckItem(v, true))}
-				{
-					checkedItems.length > 0 && <div className="border-top mt-2 py-2">
-						<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
-						{checkedItems.map((v, index) => this.renderCheckItem(v, true))}
-					</div>
-				}
-			</div>;
-		}));
-	}
-*/
+
 	private onCheckChange = async (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;
 		let key = Number(t.getAttribute('data-key'));

@@ -5,12 +5,7 @@ import { VPage, FA, UserView, Image, User } from "tonva";
 import { CTaskNoteItem } from "./CTaskNoteItem";
 import { Contact } from 'model';
 import { SelectContactOptions } from 'note/views';
-
-interface Param {
-	label: string;
-	values?: any;
-	onClick?: () => void;
-}
+import { TaskParam } from '.';
 
 const none = <small className="text-muted">[无]</small>;
 
@@ -30,7 +25,7 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 	header() {return '分派任务'}
 	get back(): 'close'|'back'|'none' {return 'close';}
 
-	private renderParam(param: Param) {
+	private renderParam(param: TaskParam) {
 		let {label, values, onClick} = param;
 		return <div key={label} className="px-3 py-2 bg-white d-flex cursor-pointer align-items-center border-bottom" onClick={onClick}>
 			<div className="text-muted mr-3 w-5c">{label}</div>
@@ -40,7 +35,7 @@ export class VTaskParams extends VPage<CTaskNoteItem> {
 	}
 
 	content() {
-		let rows: Param[] = [
+		let rows: TaskParam[] = [
 			{label: '执行人', values: this.renderContacts(), onClick: this.onClickContacts}, 
 			{label: '分值', values: this.renderPoint()}, 
 			{label: '工时', values: this.renderHours()}, 

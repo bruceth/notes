@@ -30,7 +30,7 @@ export class CTaskNoteItem extends CNoteItem {
 	protected rateValue: number;
 	protected rateValueInput: number;
 	hours: number;
-	protected point: number;
+	point: number;
 
 	init(param: NoteItem):void {
 		super.init(param);

@@ -6,6 +6,9 @@ import { CTaskNoteItem } from "../CTaskNoteItem";
 import { VNoteView, CheckItem } from '../../item';
 import { VEdit } from '../VEdit';
 import { VTaskRelatives } from './VTaskRelatives';
+import { TaskParam } from '..';
+
+const none = <small className="text-muted">[无]</small>;
 
 export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
@@ -23,6 +26,7 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 					</div>
 					{this.renderContent()}
 				</div>
+				{this.renderTaskAdditions()}
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}
 			</div>;
@@ -36,6 +40,38 @@ export abstract class VTaskView extends VNoteView<CTaskNoteItem> {
 	private renderCaption(title: string) {
 		let divCaption = title ? <b className="text-primary">{title}</b> : <span className="text-info">任务</span>;
 		return <><span className="mr-2">{divCaption}</span> {this.renderState()}</>;
+	}
+
+	protected renderParam(param: TaskParam) {
+		let {label, values, onClick} = param;
+		return <div key={label} className="px-3 py-2 bg-white d-flex cursor-pointer align-items-center border-bottom" onClick={onClick}>
+			<div className="text-muted mr-3 w-5c">{label}</div>
+			<div className="flex-fill mr-3 ">{values || none}</div>
+		</div>
+	}
+
+	protected additionRows: TaskParam[] = [
+		{label: '分值', values: this.renderPoint()}, 
+		{label: '工时', values: this.renderHours()}, 
+	];
+
+
+	protected renderTaskAdditions() {
+		return <div>
+			{this.additionRows.map(v => this.renderParam(v))}
+		</div>;
+	}
+
+	protected renderPoint() {
+		return <div className="flex-fill form-control border-0">
+			{this.controller.point}
+		</div>;
+	}
+
+	protected renderHours() {
+		return <div className="flex-fill form-control border-0">
+			{this.controller.hours}
+		</div>;
 	}
 
 	protected renderBottomCommands() {

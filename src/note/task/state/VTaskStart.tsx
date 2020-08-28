@@ -1,5 +1,6 @@
 import React from 'react';
 import { VTaskView } from './VTaskView';
+import { TaskParam } from '..';
 
 export class VTaskStart extends VTaskView {
 	protected get allowCheck() { return this.isMe(this.controller.noteItem.owner); }
@@ -19,21 +20,25 @@ export class VTaskStart extends VTaskView {
 			right = <>{this.renderEditButton()}</>;
 		}
 
-		return <div> 
-			<div className="px-3 py-2 bg-white d-flex cursor-pointer align-items-center border-bottom">
-				<div className="text-muted mr-3 w-5c">实际工时</div>
-				<div className="flex-fill mr-3 "><input className="flex-fill form-control border-0"
-					type="number" step="1" min="1" defaultValue={this.controller.hours}
-					onChange={this.onHoursChange}/>
-				</div>
-			</div>
-			<div className="py-2 bg-light border-top d-flex">
+		return <div className="py-2 bg-light border-top d-flex">
 				{left}
 				<div className="mr-auto" />
 				{right}
-			</div>
 		</div>;
 	}
+
+	protected additionRows: TaskParam[] = [
+		{label: '分值', values: this.renderPoint()}, 
+		{label: '实际工时', values: this.renderHours()}, 
+	];
+
+	protected renderHours() {
+		return <div className="flex-fill mr-3 "><input className="flex-fill form-control border-0"
+			type="number" step="1" min="1" defaultValue={this.controller.hours}
+			onChange={this.onHoursChange}/>
+		</div>;
+	}
+
 
 	private onHoursChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
 		this.controller.hours = Number(evt.currentTarget.value);

@@ -39,16 +39,29 @@ export class VRateTask extends VTaskView {
 	}
 
 	protected renderOrtherContent() {
-		let { checkInfo } = this.controller;
-		return <div className="px-3 py-2 d-flex align-items-center border-bottom" >
-			<div className="text-muted mr-1 w-5c">评分意见</div>
-			<div className="flex-fill mr-3 ">
-				<input className="flex-fill form-control border-0"
-					type="text" step="1" min="1"
-					defaultValue={checkInfo}
-					onChange={this.onDiscribeChange}
-					onKeyDown={this.onDiscribeKeyDown} /></div>
-		</div>
+		let { rateInfo, checkInfo } = this.controller;
+		return <div>
+			{
+				checkInfo && <div className="px-3 py-2 d-flex align-items-center border-bottom" >
+					<div className="text-muted mr-1 w-5c">验收意见</div>
+					<div className="flex-fill mr-3 ">
+					<input className="flex-fill form-control border-0"
+						type="text" step="1" min="1"
+						defaultValue={checkInfo}
+						disabled={true}
+						 /></div>
+				</div>
+			}
+			<div className="px-3 py-2 d-flex align-items-center border-bottom" >
+				<div className="text-muted mr-1 w-5c">评分意见</div>
+				<div className="flex-fill mr-3 ">
+					<input className="flex-fill form-control border-0"
+						type="text" step="1" min="1"
+						defaultValue={rateInfo}
+						onChange={this.onDiscribeChange}
+						onKeyDown={this.onDiscribeKeyDown} /></div>
+			</div>
+		</div>;
 	}
 
 	private onDiscribeChange = (evt: React.ChangeEvent<HTMLInputElement>) => {

@@ -53,7 +53,7 @@ export abstract class VNoteBase<T extends CNoteItem> extends VPage<T> {
 	}
 
 	protected renderContent() {
-		return this.renderContentBase(true);
+		return this.renderContentBase(false);
 	}
 
 	protected renderItemContent() {

@@ -310,4 +310,3 @@ RETURNS ret (
 	SET spawnCount = Count(*) FROM Note2Note WHERE note0=note AND type=EnumNoteMapType.Spawn;
 	INTO ret SELECT toCount as to, spawnCount as spawn;
 };
-

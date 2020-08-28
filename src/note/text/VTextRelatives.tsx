@@ -7,7 +7,7 @@ export class VTextRelatives extends VRelatives<CTextNoteItem> {
 	constructor(controller: CTextNoteItem) {
 		super(controller);
 	}
-	protected arr:RelativeKey[] = ['comment', 'to'];
+	protected arr:RelativeKey[] = ['comment', 'to', 'spawn'];
 
 	render() {
 		return super.render();

@@ -1,10 +1,10 @@
 import { VNoteForm } from '../views/VNoteForm';
-import { CNoteText } from "./CNoteText";
+import { CNoteAssign } from "./CNoteAssign";
 
-export class VEdit extends VNoteForm<CNoteText> {
+export class VEdit extends VNoteForm<CNoteAssign> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {
-		return this.controller.checkType === 1 ? this.t('taskList') : this.t('notes')
+		return this.t('assign');
 	}
 
 	content() {

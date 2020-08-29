@@ -43,10 +43,10 @@ export abstract class VNoteForm<T extends CNote> extends VNoteBaseView<T> {
 		}
 	}
 
-	private onCheckableChanged = (evt:React.ChangeEvent<HTMLInputElement>) => {
-		this.changed = true;
-		this.controller.onCheckableChanged(Number(evt.target.value));
-	}
+	// private onCheckableChanged = (evt:React.ChangeEvent<HTMLInputElement>) => {
+	// 	this.changed = true;
+	// 	this.controller.onCheckableChanged(Number(evt.target.value));
+	// }
 
 	protected renderDeleteButton() {
 		return <button className="btn btn-outline-secondary mr-3" onClick={() => this.onDelete()}>
@@ -56,16 +56,16 @@ export abstract class VNoteForm<T extends CNote> extends VNoteBaseView<T> {
 
 	protected abstract renderExButtons():JSX.Element;
 
-	protected getOptions(): {val:number, text:string}[] {
-		return [
-			{ val: 0, text: '文字' },
-			{ val: 2, text: '列表' },
-			{ val: 1, text: '勾选事项' },
-		];
-	}
+	// protected getOptions(): {val:number, text:string}[] {
+	// 	return [
+	// 		{ val: 0, text: '文字' },
+	// 		{ val: 2, text: '列表' },
+	// 		{ val: 1, text: '勾选事项' },
+	// 	];
+	// }
 
 	protected renderEdit() {
-		let radios = this.getOptions();
+		//let radios = this.getOptions();
 
 		return <div className="m-2">
 			<div className="border rounded">
@@ -92,7 +92,7 @@ export abstract class VNoteForm<T extends CNote> extends VNoteBaseView<T> {
 					{this.renderExButtons()}
 				</div>
 			</div>
-			{ radios &&
+			{/* radios &&
 				<div className="m-2 form-check">
 					{radios.map((v, index) => {
 						let { val, text } = v;
@@ -102,7 +102,7 @@ export abstract class VNoteForm<T extends CNote> extends VNoteBaseView<T> {
 							{text}
 					</label>
 					})}
-				</div>
+				</div>*/
 			}
 		</div>;
 	}

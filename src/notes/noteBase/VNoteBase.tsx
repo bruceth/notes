@@ -11,12 +11,29 @@ export function renderIcon(name:string, cn:string) {
 }
 /*
 const itemIcons: {[key in EnumNoteType]: RenderIcon} = {
-	[EnumNoteType.text]: (noteItem: NoteItem) => renderIcon(noteItem.toCount>0? 'files-o': 'file-o', 'text-info'),
-	[EnumNoteType.task]: (noteItem: NoteItem) => renderIcon('tasks', 'text-success'),
-	[EnumNoteType.folder]: (noteItem: NoteItem) => renderIcon('folder', 'text-warning'),
-	[EnumNoteType.group]: (noteItem: NoteItem) => renderIcon('folder', 'text-warning'),
-	[EnumNoteType.groupFolder]: (noteItem: NoteItem) => renderIcon('folder', 'text-warning'),
-	[EnumNoteType.unit]: (noteItem: NoteItem) => renderIcon('folder', 'text-warning'),
+	[EnumNoteType.text]: (noteItem: NoteItem) => {
+		let {toCount} = noteItem;
+		let name = toCount>0? 'files-o': 'file-o';
+		return <FA name={name} size="lg" className="text-info" fixWidth={true} />;
+	},
+	[EnumNoteType.task]: (noteItem: NoteItem) => {
+		return <FA name="tasks" size="lg" className="text-success" fixWidth={true} />;
+	},
+	[EnumNoteType.folder]: (noteItem: NoteItem) => {
+		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
+	},
+	[EnumNoteType.group]: (noteItem: NoteItem) => {
+		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
+	},
+	[EnumNoteType.groupFolder]: (noteItem: NoteItem) => {
+		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
+	},
+	[EnumNoteType.unit]: (noteItem: NoteItem) => {
+		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
+	},
+	[EnumNoteType.assign]: (noteItem: NoteItem) => {
+		return <FA name="tasks" size="lg" className="text-success" fixWidth={true} />;
+	},
 }
 */
 export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {

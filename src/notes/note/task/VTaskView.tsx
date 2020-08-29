@@ -17,7 +17,7 @@ export interface TaskParam {
 
 export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
-	header() { return '任务' }
+	header() { return this.t('task') }
 	protected get allowCheck() { return true; }
 	content() {
 		return React.createElement(observer(() => {

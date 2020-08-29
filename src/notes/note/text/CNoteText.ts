@@ -1,16 +1,9 @@
 import { NoteItem } from '../../model';
 import { VTextView } from './VTextView';
 import { VAdd } from './VAdd';
-import { CNote } from "../CNote";
-import { renderIcon, VNoteBaseItem } from '../../noteBase';
-import { VTextItem } from './VTextItem';
-import { CNotes } from '../../CNotes';
+import { CInput } from '../CInput';
 
-export function createCNoteText(cNotes: CNotes): CNoteText {
-	return new CNoteText(cNotes);
-}
-
-export class CNoteText extends CNote {
+export class CNoteText extends CInput {
 	init(param: NoteItem):void {
 		super.init(param);
 		if (param) {
@@ -28,7 +21,8 @@ export class CNoteText extends CNote {
 		this.openVPage(VTextView);
 	}
 
-	showAddNotePage(parent: number) {
+	showAddNotePage(parent: number, checkType: number) {
+		this.checkType = checkType;
 		this.openVPage(VAdd, parent);
 	}
 }

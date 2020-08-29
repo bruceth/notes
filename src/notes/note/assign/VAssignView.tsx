@@ -1,15 +1,15 @@
 import React from 'react';
 import { VEdit } from './VEdit';
 import { observer } from 'mobx-react';
-import { VNoteBaseView } from '../../noteBase';
-import { CNoteText } from './CNoteText';
-import { VTextRelatives } from './VTextRelatives';
+import { VNoteView } from '../../noteBase';
+import { CNoteAssign } from './CNoteAssign';
+import { VAssignRelatives } from './VAssignRelatives';
 import { CheckItem } from '../../model';
 
-export class VTextView extends VNoteBaseView<CNoteText> {
+export class VAssignView extends VNoteView<CNoteAssign> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {
-		return this.t('notes')
+		return this.t('assign')
 	}
 
 	content() {
@@ -29,7 +29,7 @@ export class VTextView extends VNoteBaseView<CNoteText> {
 	}
 
 	protected renderRelatives() {
-		return this.renderVm(VTextRelatives);
+		return this.renderVm(VAssignRelatives);
 	}
 
 	footer() {

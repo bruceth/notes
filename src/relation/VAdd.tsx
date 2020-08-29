@@ -19,11 +19,15 @@ export class VAdd extends VPage<CRelation> {
 	}
 
 	private onSearch = async (key:string) => {
-		this.user = await userApi.fromKey(key);
-		if (!this.user) {
+		let ret = await userApi.fromKey(key);
+		if (!ret) {
 			this.hasError = true;
 			return;
 		}
+		if (this.controller.isMe(ret.id)) {
+			return;
+		}
+		this.user = ret;
 	}
 
 	private onFocus = () => {

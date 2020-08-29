@@ -1,4 +1,4 @@
-ENUM EnumNoteType (Text=0, Task=1, Comment=2, Folder=3, Group=4, GroupFolder=5, Unit=6);
+ENUM EnumNoteType (Text=0, Task=1, Comment=2, Folder=3, Group=4, GroupFolder=5, Unit=6, Assign=7);
 
 -- type: 根据type，分配给特定的程序
 TUID Note (

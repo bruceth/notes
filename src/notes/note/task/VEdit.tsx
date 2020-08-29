@@ -3,6 +3,7 @@ import { CNoteTask } from "./CNoteTask";
 
 export class VEdit extends VNoteForm<CNoteTask> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
+	header() { return this.t('task') }
 	content() {
 		return this.renderEdit();
 	}

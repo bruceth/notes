@@ -10,7 +10,7 @@ import { Contact } from "../model";
 import { VSent } from "./views/VSent";
 import { VTo } from "./views/VTo";
 import { createNoteBase } from "./factory";
-import { createCNoteText, createCNoteTask } from "./note";
+import { createCNoteText, createCNoteTask, createCNoteAssign } from "./note";
 
 export class CNotes extends CUqBase {
 	protected foldStack: CContainer[];
@@ -118,9 +118,14 @@ export class CNotes extends CUqBase {
 		return this.currentFold.renderListView();
 	}
 
-	showAddNotePage = (parent: number) => {
+	showAddNotePage = (parent: number, checkType: number) => {
 		let cNoteText = createCNoteText(this); // this.newSub(CNoteText);
-		cNoteText.showAddNotePage(parent);
+		cNoteText.showAddNotePage(parent, checkType);
+	}
+
+	showAddAssignPage = (parent: number) => {
+		let cNoteAssign = createCNoteAssign(this); // this.newSub(CNoteText);
+		cNoteAssign.showAddAssignPage(parent);
 	}
 
 	async showTo(noteItem:NoteItem, backPageCount:Number) {

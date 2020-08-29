@@ -9,5 +9,7 @@ export const zh = {
 	logout: '退出登录',
 
 	notes: '小单',
+	task: '任务',
+	assign: '作业单',
 	
 }

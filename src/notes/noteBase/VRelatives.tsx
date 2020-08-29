@@ -1,9 +1,10 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { EasyTime, User, Image, UserView, FA, Page } from "tonva";
+import { EasyTime, User, Image, UserView, FA, Page, List, LMR } from "tonva";
 import { CNoteBase } from "./CNoteBase";
-import { CommentItem, RelativeKey, Relative } from '../model';
+import { CommentItem, RelativeKey, Relative, NoteItem } from '../model';
 import { VNoteBase } from './VNoteBase';
+import { GetTaskStateContent } from 'notes/note/task/TaskState';
 
 export class VRelatives<T extends CNoteBase> extends VNoteBase<T> {
 	private renderTab(isAction:boolean, key:RelativeKey, tabContent:any) {
@@ -76,6 +77,38 @@ export class VRelatives<T extends CNoteBase> extends VNoteBase<T> {
 		return <div>flow: {flow.length}</div>
 	}
 
+	protected tabSpawn = (isActive:boolean) => {
+		return <>派生</>;
+	}
+	protected renderSpawn = () => {
+		let {spawn} = this.controller.noteModel;
+		if (!spawn || spawn.length === 0) return;
+		return <List
+			items={spawn} 
+			item={{render: this.renderSpawnItem,  className: "notes"}} />
+	}
+
+	protected renderSpawnState(type:number, state:number) {
+		let ss = GetTaskStateContent(type, state);
+		if (ss === undefined)
+			return;
+		let {content, isEnd} = ss;
+
+		return this.renderStateSpan(content, isEnd);
+	}
+
+	protected renderSpawnItem = (item:NoteItem, index:number):JSX.Element => {
+		let {caption, $update, owner, assigned, type, state} = item;
+		let divOwner = this.renderContact(owner as number, assigned);
+		let right = <small className="text-muted"><EasyTime date={$update} /></small>;
+		return <div className="px-3 py-2 d-block bg-white">
+			<LMR right={right}>
+				<span className="mr-3">{divOwner}</span>{caption}
+				<span className="ml-3">{this.renderSpawnState(type, state)}</span>
+			</LMR>
+		</div>;
+	}
+
 	protected tabContain = (isActive:boolean) => {
 		return <>包含</>;
 	}
@@ -110,6 +143,7 @@ export class VRelatives<T extends CNoteBase> extends VNoteBase<T> {
 			case 'to': return {caption: this.tabShare, render: this.renderShare};
 			case 'flow': return {caption: this.tabFlow, render: this.renderFlow};
 			case 'contain': return {caption: this.tabContain, render: this.renderContain};
+			case 'spawn': return {caption: this.tabSpawn, render: this.renderSpawn};
 		}
 	}
 

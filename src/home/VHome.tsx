@@ -5,22 +5,22 @@ import { VPage, Page, DropdownActions, DropdownAction } from 'tonva';
 export class VHome extends VPage<CHome> {
 	private actionAddNote = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFold.folderId);
+		cNode.showAddNotePage(cNode.currentFold.folderId, 0);
 	}
 
 	private actionAddList = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFold.folderId);
+		cNode.showAddNotePage(cNode.currentFold.folderId, 2);
 	}
 
-	private actionAddTask = () => {
+	private actionAddAssign = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFold.folderId);
+		cNode.showAddAssignPage(cNode.currentFold.folderId);
 	}
 
 	private actionAddFolder = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFold.folderId);
+		cNode.showAddNotePage(cNode.currentFold.folderId, 3);
 	}
 
 	private actionAddGroup = () => {
@@ -31,7 +31,7 @@ export class VHome extends VPage<CHome> {
 	private dropdownActions: DropdownAction[] = [
 		{icon:'file', caption:this.t('notes'), action: this.actionAddNote, iconClass: 'text-primary', captionClass: 'text-primary'},
 		{icon:'list', caption:'列表', action: this.actionAddList},
-		{icon:'check-square-o', caption:'任务', action: this.actionAddTask},
+		{icon:'check-square-o', caption:'作业单', action: this.actionAddAssign},
 		{icon:'folder', caption:'小单夹', action: this.actionAddFolder, iconClass: 'text-warning'},
 		{icon:'users', caption:'群', action: this.actionAddGroup, iconClass: 'text-danger'},
 	];

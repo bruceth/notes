@@ -10,5 +10,7 @@ export const en = {
 	pleaseLogin: 'Login',
 
 	notes: 'Notes',
+	task: 'Task',
+	taskList: 'Task List',
 	
 }

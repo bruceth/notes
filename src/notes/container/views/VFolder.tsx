@@ -1,7 +1,8 @@
 import React from 'react';
 import { CContainer } from '../CContainer';
 import { CNoteBase, VNoteView } from "../../noteBase";
-import { List, FA, User, Image, UserView } from 'tonva';
+import { List, FA, User, Image, UserView, DropdownAction, DropdownActions } from 'tonva';
+import { EnumNoteType } from 'notes/model';
 
 export class VFolder extends VNoteView<CContainer> {
 	afterBack() {
@@ -15,12 +16,39 @@ export class VFolder extends VNoteView<CContainer> {
 		return this.t('notes')
 	}
 
+	private actionAddNote = () => {
+		let {owner} = this.controller;
+		owner.showAddNotePage(owner.currentFold.folderId, 0);
+	}
+
+	private actionAddList = () => {
+		let {owner} = this.controller;
+		owner.showAddNotePage(owner.currentFold.folderId, 2);
+	}
+
+	private actionAddTask = () => {
+		let {owner} = this.controller;
+		owner.showAddNotePage(owner.currentFold.folderId, 1);
+	}
+
+	private actionAddFolder = () => {
+		let {owner} = this.controller;
+		owner.showAddNotePage(owner.currentFold.folderId, 3);
+	}
+
+	private dropdownActions: DropdownAction[] = [
+		{icon:'file', caption:this.t('notes'), action: this.actionAddNote, iconClass: 'text-primary', captionClass: 'text-primary'},
+		{icon:'list', caption:'列表', action: this.actionAddList},
+		{icon:'check-square-o', caption:'任务', action: this.actionAddTask},
+		{icon:'folder', caption:'小单夹', action: this.actionAddFolder, iconClass: 'text-warning'},
+	];
+
 	right() {
 		if (this.isMe(this.controller.noteItem.owner)) {
-			return <button onClick={()=>this.controller.owner.showAddNotePage(this.controller.folderId)}
-				className="btn btn-success btn-sm mr-1">
-				<FA name="plus" /> {this.t('notes')}
-			</button>;
+			return <>
+			<DropdownActions actions={this.dropdownActions} icon="plus" itemIconClass="text-info"
+				className="cursor-pointer btn btn-lg text-white p-1 mr-1"/>
+		</>;
 		}
 	}
 

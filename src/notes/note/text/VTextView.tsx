@@ -8,7 +8,9 @@ import { CheckItem } from '../../model';
 
 export class VTextView extends VNoteView<CNoteText> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
-	header() {return this.t('notes')}
+	header() {
+		return this.controller.checkType === 1 ? this.t('taskList') : this.t('notes')
+	}
 
 	content() {
 		return React.createElement(observer(() => {

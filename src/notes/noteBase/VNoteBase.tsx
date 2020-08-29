@@ -8,8 +8,16 @@ type RenderIcon = (noteItem:NoteItem) => JSX.Element;
 
 const itemIcons: {[key in EnumNoteType]: RenderIcon} = {
 	[EnumNoteType.text]: (noteItem: NoteItem) => {
+		let taskList = noteItem.obj?.check === 1;
 		let {toCount} = noteItem;
-		return <FA name={toCount>0? 'files-o': 'file-o'} size="lg" className="text-info" fixWidth={true} />;
+		let name: string;
+		if (taskList) {
+			name = 'tasks';
+		}
+		else {
+			name = toCount>0? 'files-o': 'file-o';
+		}
+		return <FA name={name} size="lg" className="text-info" fixWidth={true} />;
 	},
 	[EnumNoteType.task]: (noteItem: NoteItem) => {
 		return <FA name="tasks" size="lg" className="text-success" fixWidth={true} />;

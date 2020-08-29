@@ -3,6 +3,10 @@ import { CNoteText } from "./CNoteText";
 
 export class VEdit extends VNoteForm<CNoteText> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
+	header() {
+		return this.controller.checkType === 1 ? this.t('taskList') : this.t('notes')
+	}
+
 	content() {
 		return this.renderEdit();
 	}

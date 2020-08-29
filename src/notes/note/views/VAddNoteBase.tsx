@@ -17,14 +17,14 @@ export class VAddNoteBase<T extends CNote> extends VNoteForm<T> {
 		return this.renderEdit();
 	}
 
-	protected getOptions(): {val:number, text:string}[] {
-		return [
-			{ val: 0, text: '文字' },
-			{ val: 2, text: '列表' },
-			{ val: 1, text: '勾选事项' },
-			{ val: 3, text: '小单夹' },
-		];
-	}
+	// protected getOptions(): {val:number, text:string}[] {
+	// 	return [
+	// 		{ val: 0, text: '文字' },
+	// 		{ val: 2, text: '列表' },
+	// 		{ val: 1, text: '勾选事项' },
+	// 		{ val: 3, text: '小单夹' },
+	// 	];
+	// }
 
 	protected getSaveDisabled():boolean {
 		if (this.controller.title !== undefined) {

@@ -12,7 +12,7 @@ const none = <small className="text-muted">[无]</small>;
 
 export abstract class VTaskView extends VNoteView<CNoteTask> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
-	header() { return '任务' }
+	header() { return this.t('task') }
 	protected get allowCheck() { return true; }
 	content() {
 		return React.createElement(observer(() => {

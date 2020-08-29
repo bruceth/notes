@@ -118,9 +118,9 @@ export class CNotes extends CUqBase {
 		return this.currentFold.renderListView();
 	}
 
-	showAddNotePage = (parent: number) => {
+	showAddNotePage = (parent: number, checkType: number) => {
 		let cNoteText = createCNoteText(this); // this.newSub(CNoteText);
-		cNoteText.showAddNotePage(parent);
+		cNoteText.showAddNotePage(parent, checkType);
 	}
 
 	async showTo(noteItem:NoteItem, backPageCount:Number) {

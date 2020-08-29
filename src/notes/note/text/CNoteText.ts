@@ -20,7 +20,8 @@ export class CNoteText extends CNote {
 		this.openVPage(VTextView);
 	}
 
-	showAddNotePage(parent: number) {
+	showAddNotePage(parent: number, checkType: number) {
+		this.checkType = checkType;
 		this.openVPage(VAdd, parent);
 	}
 }

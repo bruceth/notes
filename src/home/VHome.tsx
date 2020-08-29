@@ -5,22 +5,22 @@ import { VPage, Page, DropdownActions, DropdownAction } from 'tonva';
 export class VHome extends VPage<CHome> {
 	private actionAddNote = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFold.folderId);
+		cNode.showAddNotePage(cNode.currentFold.folderId, 0);
 	}
 
 	private actionAddList = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFold.folderId);
+		cNode.showAddNotePage(cNode.currentFold.folderId, 2);
 	}
 
 	private actionAddTask = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFold.folderId);
+		cNode.showAddNotePage(cNode.currentFold.folderId, 1);
 	}
 
 	private actionAddFolder = () => {
 		let {cNode} = this.controller;
-		cNode.showAddNotePage(cNode.currentFold.folderId);
+		cNode.showAddNotePage(cNode.currentFold.folderId, 3);
 	}
 
 	private actionAddGroup = () => {

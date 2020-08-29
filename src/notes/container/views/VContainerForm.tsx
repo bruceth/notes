@@ -3,9 +3,9 @@ import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { ConfirmOptions } from 'tonva';
 import { CContainer } from '../CContainer';
-import { VNoteView } from '../../noteBase';
+import { VNoteBaseView } from '../../noteBase';
 
-export abstract class VContainerForm<T extends CContainer> extends VNoteView<T> {
+export abstract class VContainerForm<T extends CContainer> extends VNoteBaseView<T> {
 	@observable private changed: boolean = false;
 	private inputAdd: HTMLInputElement;
 

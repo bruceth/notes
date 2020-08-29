@@ -2,10 +2,10 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { observable } from 'mobx';
 import { VPage, FA, UserView, Image, User } from "tonva";
-import { CNoteTask } from "./CNoteTask";
-import { Contact } from 'model';
+import { Contact } from '../../../model';
 import { SelectContactOptions } from '../../views';
-import { TaskParam } from '.';
+import { CNoteTask } from "./CNoteTask";
+import { TaskParam } from './VTaskView';
 
 const none = <small className="text-muted">[无]</small>;
 

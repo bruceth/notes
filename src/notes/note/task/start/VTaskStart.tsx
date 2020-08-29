@@ -1,8 +1,8 @@
 import React from 'react';
-import { VTaskView } from './VTaskView';
-import { TaskParam } from '..';
+import { VTaskView, TaskParam } from '../VTaskView';
+import { CTaskStart } from './CTaskStart';
 
-export class VTaskStart extends VTaskView {
+export class VTaskStart extends VTaskView<CTaskStart> {
 	protected get allowCheck() { return this.isMe(this.controller.noteItem.owner); }
 
 	protected renderState(): JSX.Element {

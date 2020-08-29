@@ -1,9 +1,10 @@
 import React from 'react';
-import { VTaskView } from './VTaskView';
 import { FA } from 'tonva';
+import { VTaskView } from '../VTaskView';
 import { TaskCheckItem } from '../CNoteTask';
+import { CTaskRate } from './CTaskRate';
 
-export class VRateTask extends VTaskView {
+export class VTaskRate extends VTaskView<CTaskRate> {
 	protected rateValue: number = 0;
 
 	protected get allowCheck() { return false; }

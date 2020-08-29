@@ -1,10 +1,11 @@
-import { NoteItem, NoteModel, numberFromId, CheckItem } from '../../model';
-import { VTaskParams } from "./VTaskParams";
-import { Contact } from "model";
-import { TaskViewFactory, VCheckTask, VRateTask } from "./state";
 import { observable } from "mobx";
-import { EnumTaskState } from "./TaskState"
+import { Contact } from "../../../model";
+import { NoteItem, numberFromId, CheckItem } from '../../model';
+import { renderIcon } from '../../noteBase';
 import { CNote } from "../CNote";
+import { VTaskParams } from "./VTaskParams";
+import { EnumTaskState, TaskStateResult } from "./TaskState"
+import { VTaskView } from './VTaskView';
 
 export interface AssignTaskParam {
 	contacts: Contact[];
@@ -19,8 +20,8 @@ export interface TaskCheckItem extends CheckItem {
 	rateInfo?: string;
 }
 
-export class CNoteTask extends CNote {
-	private getTaskView = new TaskViewFactory().getView;
+export abstract class CNoteTask extends CNote {
+	//private getTaskView = new TaskViewFactory().getView;
 
 	@observable checkInfo: string;
 	@observable rateInfo: string;
@@ -102,6 +103,9 @@ export class CNoteTask extends CNote {
 		return item;
 	}
 
+	protected abstract getTaskView():(new (controller: any) => VTaskView<any>);
+	abstract get taskStateResult(): TaskStateResult;
+/*
 	private getView() {
 		let state = this.noteItem.state as EnumTaskState;
 		// eslint-disable-next-line
@@ -117,21 +121,25 @@ export class CNoteTask extends CNote {
 			}
 		}
 
-		return this.getTaskView(state);
+		return getTaskView(state);
+	}
+*/
+	protected renderIcon(): JSX.Element {
+		return renderIcon('tasks', 'text-success');
 	}
 
-	renderItem(index: number): JSX.Element {
-		let TaskView = this.getTaskView(this.noteItem.state as EnumTaskState);
+	renderListItem(index: number): JSX.Element {
+		let TaskView = this.getTaskView(); //this.noteItem.state as EnumTaskState);
 		let v = new TaskView(this);
 		return v.renderListItem();
 	}
 
 	renderBaseItem(index: number): JSX.Element {
-		return super.renderItem(index);
+		return super.renderListItem(index);
 	}
 
-	showListItemNote(noteModel: NoteModel) {
-		let TaskView = this.getView();
+	showListItemNote() {
+		let TaskView = this.getTaskView(); // this.getView();
 		this.openVPage(TaskView);
 	}
 

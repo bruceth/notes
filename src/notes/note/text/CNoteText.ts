@@ -1,7 +1,14 @@
-import { NoteItem, NoteModel } from '../../model';
+import { NoteItem } from '../../model';
 import { VTextView } from './VTextView';
 import { VAdd } from './VAdd';
 import { CNote } from "../CNote";
+import { renderIcon, VNoteBaseItem } from '../../noteBase';
+import { VTextItem } from './VTextItem';
+import { CNotes } from '../../CNotes';
+
+export function createCNoteText(cNotes: CNotes): CNoteText {
+	return new CNoteText(cNotes);
+}
 
 export class CNoteText extends CNote {
 	init(param: NoteItem):void {
@@ -11,12 +18,13 @@ export class CNoteText extends CNote {
 		}
 	}
 
-	// renderItem(index:number): JSX.Element {
-	// 	let vNoteItem = new VTextNoteItem(this);
-	// 	return vNoteItem.render();
-	// }
+	protected renderIcon(): JSX.Element {
+		return renderIcon(this.noteItem.toCount>0? 'files-o': 'file-o', 'text-info');
+	}
 
-	showListItemNote(noteModel: NoteModel) {
+	protected newVNoteItem():VNoteBaseItem<any> {return new VTextItem(this);}
+
+	showListItemNote() {
 		this.openVPage(VTextView);
 	}
 

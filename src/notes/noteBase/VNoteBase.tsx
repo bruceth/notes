@@ -2,34 +2,23 @@ import React from "react";
 import { VPage, User, Image, UserView, Page, EasyTime, FA } from "tonva";
 import { CNoteBase } from "./CNoteBase";
 import { observer } from "mobx-react";
-import { EnumNoteType, NoteItem, CheckItem } from '../model';
+import { CheckItem } from '../model';
 
-type RenderIcon = (noteItem:NoteItem) => JSX.Element;
+//type RenderIcon = (noteItem:NoteItem) => JSX.Element;
 
-const itemIcons: {[key in EnumNoteType]: RenderIcon} = {
-	[EnumNoteType.text]: (noteItem: NoteItem) => {
-		let {toCount} = noteItem;
-		return <FA name={toCount>0? 'files-o': 'file-o'} size="lg" className="text-info" fixWidth={true} />;
-	},
-	[EnumNoteType.task]: (noteItem: NoteItem) => {
-		return <FA name="tasks" size="lg" className="text-success" fixWidth={true} />;
-	},
-	[EnumNoteType.folder]: (noteItem: NoteItem) => {
-		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
-	},
-	[EnumNoteType.group]: (noteItem: NoteItem) => {
-		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
-	},
-	[EnumNoteType.groupFolder]: (noteItem: NoteItem) => {
-		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
-	},
-	[EnumNoteType.unit]: (noteItem: NoteItem) => {
-		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
-	},
+export function renderIcon(name:string, cn:string) {
+	return <FA name={name} size="lg" className={cn} fixWidth={true} />;
 }
-//<FA name="file-o" size="lg" className="text-info" />
-//<FA name="folder" size="lg" className="text-warning mr-2" />
-
+/*
+const itemIcons: {[key in EnumNoteType]: RenderIcon} = {
+	[EnumNoteType.text]: (noteItem: NoteItem) => renderIcon(noteItem.toCount>0? 'files-o': 'file-o', 'text-info'),
+	[EnumNoteType.task]: (noteItem: NoteItem) => renderIcon('tasks', 'text-success'),
+	[EnumNoteType.folder]: (noteItem: NoteItem) => renderIcon('folder', 'text-warning'),
+	[EnumNoteType.group]: (noteItem: NoteItem) => renderIcon('folder', 'text-warning'),
+	[EnumNoteType.groupFolder]: (noteItem: NoteItem) => renderIcon('folder', 'text-warning'),
+	[EnumNoteType.unit]: (noteItem: NoteItem) => renderIcon('folder', 'text-warning'),
+}
+*/
 export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	protected renderContentBase(checkable:boolean) {
 		let {checkType} = this.controller;
@@ -55,31 +44,33 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	}
 
 	protected renderItemTop() {
+		/*
 		let {noteItem} = this.controller;
 		let {type, unread} = noteItem;
 		let dot:any;
 		if (unread>0) dot = <u/>;
+		*/
 		return <div className="d-flex px-3 py-2 align-items-center border-top">
-			<div className="mr-3 unread-dot">{itemIcons[type](noteItem)}{dot}</div>
+			{this.controller.renderItemIcon()}
 			{this.renderFrom()}
 			<div className="ml-auto">{this.renderEditTime()}</div>
 		</div>;
+		//<div className="mr-3 unread-dot">{this.controller.renderItemIcon()}{dot}</div>
 	}
 	
 	protected renderViewTop() {
-		let {noteItem} = this.controller;
-		let {type} = noteItem;
 		let vEditButton:any;
 		let isMe = this.isMe(this.controller.noteItem.owner);
 		if (isMe === true) {
 			vEditButton = <div className="ml-auto">{this.renderEditButton()}</div>;
 		}
 		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
-			<div className="mr-3">{itemIcons[type](noteItem)}</div>
+			{this.controller.renderViewIcon()}
 			<span className="mr-4">{this.renderEditTime()}</span>
 			{this.renderFrom()}
 			{vEditButton}
 		</div>;
+		//<div className="mr-3">{this.controller.renderViewIcon()}</div>
 	}
 	
 	protected renderParagraphs(content:string):JSX.Element {

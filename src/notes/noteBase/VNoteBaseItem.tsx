@@ -1,9 +1,9 @@
 import React from 'react';
-import { VNoteView } from '.';
+import { VNoteBaseView } from '.';
 import { CNoteBase } from './CNoteBase';
 import { observer } from 'mobx-react';
 
-export class VNoteItem<T extends CNoteBase> extends VNoteView<T> {
+export class VNoteBaseItem<T extends CNoteBase> extends VNoteBaseView<T> {
 	render() {
 		return React.createElement(observer(() => {
 			let {caption} = this.controller.noteItem;

@@ -1,11 +1,11 @@
 import React from 'react';
 import { VEdit } from './VEdit';
 import { observer } from 'mobx-react';
-import { VNoteView } from '../../noteBase';
+import { VNoteBaseView } from '../../noteBase';
 import { CContainer } from '../CContainer';
 import { VFolderRelatives } from './VFolderRelatives';
 
-export class VFolderView extends VNoteView<CContainer> {
+export class VFolderView extends VNoteBaseView<CContainer> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {
 		let {noteItem} = this.controller;

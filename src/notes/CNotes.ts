@@ -142,7 +142,7 @@ export class CNotes extends CUqBase {
 	}
 
 	showAssignTaskPage() {
-		let cNoteTask = createCNoteTask(this); // this.newSub(CNoteTask);
+		let cNoteTask = createCNoteTask(this, this.noteItem); // this.newSub(CNoteTask);
 		cNoteTask.init(this.noteItem);
 		cNoteTask.showAssignTaskPage();
 	}

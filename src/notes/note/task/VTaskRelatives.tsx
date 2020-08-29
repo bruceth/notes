@@ -1,9 +1,9 @@
 import React from 'react';
 import { EasyTime, LMR, List } from 'tonva';
-import { VRelatives } from '../../../noteBase';
-import { Relative, RelativeKey, NoteItem } from '../../../model';
-import { GetTaskStateContent } from '../TaskState';
-import { CNoteTask } from '../CNoteTask';
+import { VRelatives } from '../../noteBase';
+import { Relative, RelativeKey, NoteItem } from '../../model';
+import { GetTaskStateContent } from './TaskState';
+import { CNoteTask } from './CNoteTask';
 
 export class VTaskRelatives extends VRelatives<CNoteTask> {
 	protected arr:RelativeKey[] = ['comment'];

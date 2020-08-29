@@ -1,10 +1,12 @@
 import React from 'react';
-import { VTaskView } from './VTaskView';
+import { VTaskView } from '../VTaskView';
 import { Page, FA } from 'tonva';
 import { TaskCheckItem } from '../CNoteTask';
 import { VEditTextItemInput, EditTextItemProps } from '../VEditTextItem';
+import { CTaskCheck } from './CTaskCheck';
+import { TaskStateResult } from '../TaskState';
 
-export class VCheckTask extends VTaskView {
+export class VTaskCheck extends VTaskView<CTaskCheck> {
 	protected get allowCheck() { return false; }
 
 	protected renderState(): JSX.Element {

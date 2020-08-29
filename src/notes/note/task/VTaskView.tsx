@@ -1,16 +1,21 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { EnumTaskState } from "../TaskState"
-import { CNoteTask } from "../CNoteTask";
-import { VNoteView } from '../../../noteBase';
-import { VEdit } from '../VEdit';
+import { CheckItem } from '../../model';
+import { VNoteBaseView } from '../../noteBase';
+import { EnumTaskState } from "./TaskState"
+import { CNoteTask } from "./CNoteTask";
+import { VEdit } from './VEdit';
 import { VTaskRelatives } from './VTaskRelatives';
-import { TaskParam } from '..';
-import { CheckItem } from '../../../model';
 
 const none = <small className="text-muted">[无]</small>;
 
-export abstract class VTaskView extends VNoteView<CNoteTask> {
+export interface TaskParam {
+	label: string;
+	values?: any;
+	onClick?: () => void;
+}
+
+export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
 	header() { return '任务' }
 	protected get allowCheck() { return true; }
@@ -89,7 +94,7 @@ export abstract class VTaskView extends VNoteView<CNoteTask> {
 	}
 
 	renderRelatives() {
-		return this.renderVm(VTaskRelatives);
+		return this.renderVm(VTaskRelatives as any);
 	}
 
 	protected renderState(): JSX.Element {
@@ -97,7 +102,7 @@ export abstract class VTaskView extends VNoteView<CNoteTask> {
 	}
 
 	protected onEdit() {
-		this.openVPage(VEdit);
+		this.openVPage(VEdit as any);
 	}
 
 	protected renderCheckItem(v:CheckItem, checkable:boolean) {

@@ -11,7 +11,7 @@ export function createNoteBase(noteItem: NoteItem, cNotes: CNotes):CNoteBase {
 	switch (type) {
 		default: throw Error("unknown type");
 		case EnumNoteType.text: ret = createCNoteText(cNotes); break;
-		case EnumNoteType.task: ret = createCNoteTask(cNotes); break;
+		case EnumNoteType.task: ret = createCNoteTask(cNotes, noteItem); break;
 		case EnumNoteType.folder: ret = createCFolder(cNotes, noteItem); break;
 		case EnumNoteType.group: debugger; throw Error("type group undefined");
 		case EnumNoteType.groupFolder: ret = createCSpace(cNotes); break;

@@ -1,8 +1,9 @@
+import React from 'react';
 import { observable } from "mobx";
 import { NoteItem, NoteModel, EnumNoteType, RelativeKey, CheckItem } from '../model';
 import { CNotes } from '../CNotes';
 import { CUqSub } from '../../tapp';
-import { VNoteItem } from './VNoteItem';
+import { VNoteBaseItem } from './VNoteBaseItem';
 
 export abstract class CNoteBase extends CUqSub<CNotes> {
 	disableFrom: boolean = false;
@@ -73,12 +74,26 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		return false;
 	}
 
-	renderItem(index: number): JSX.Element {
-		let vNoteItem = new VNoteItem(this);
+	protected newVNoteItem():VNoteBaseItem<any> {return new VNoteBaseItem(this);}
+
+	renderListItem(index: number): JSX.Element {
+		let vNoteItem = new VNoteBaseItem(this);
 		return vNoteItem.render();
 	}
 
-	abstract showListItemNote(noteModel: NoteModel): void;
+	protected abstract renderIcon(): JSX.Element;
+	renderViewIcon(): JSX.Element {
+		return <div className="mr-3">{this.renderIcon()}</div>;
+	}
+	renderItemIcon(): JSX.Element {
+		let {unread} = this.noteItem;
+		let dot:any;
+		if (unread>0) dot = <u/>;
+		return <div className="mr-3 unread-dot">{this.renderIcon()}{dot}</div>
+		//return this.renderIcon();
+	}
+
+	abstract showListItemNote(): void;
 
 	protected stringifyContent() {
 		let ret = JSON.stringify(this.buildObj());

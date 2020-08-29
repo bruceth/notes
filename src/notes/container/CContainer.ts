@@ -75,7 +75,7 @@ export abstract class CContainer extends CNoteBase {
 		return (new VFolder(this)).renderListView();
 	}
 
-	showListItemNote(noteModel: NoteModel): void {
+	showListItemNote(): void {
 		this.owner.openFolder(this);
 	}
 
@@ -153,7 +153,7 @@ export abstract class CContainer extends CNoteBase {
 		if (index >= 0) this.notesPager.items.splice(index, 1);
 	}
 
-	renderItem(index: number): JSX.Element {
+	renderListItem(index: number): JSX.Element {
 		let vNoteItem = new VFolderNoteItem(this);
 		return vNoteItem.render();
 	}

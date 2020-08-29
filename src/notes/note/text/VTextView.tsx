@@ -1,12 +1,12 @@
 import React from 'react';
 import { VEdit } from './VEdit';
 import { observer } from 'mobx-react';
-import { VNoteView } from '../../noteBase';
+import { VNoteBaseView } from '../../noteBase';
 import { CNoteText } from './CNoteText';
 import { VTextRelatives } from './VTextRelatives';
 import { CheckItem } from '../../model';
 
-export class VTextView extends VNoteView<CNoteText> {
+export class VTextView extends VNoteBaseView<CNoteText> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return this.t('notes')}
 

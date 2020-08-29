@@ -1,9 +1,9 @@
 import React from 'react';
 import { CContainer } from '../CContainer';
-import { CNoteBase, VNoteView } from "../../noteBase";
+import { CNoteBase, VNoteBaseView } from "../../noteBase";
 import { List, FA, User, Image, UserView } from 'tonva';
 
-export class VFolder extends VNoteView<CContainer> {
+export class VFolder extends VNoteBaseView<CContainer> {
 	afterBack() {
 		this.controller.owner.popFolder();
 	}
@@ -74,7 +74,7 @@ export class VFolder extends VNoteView<CContainer> {
 			{this.top()}
 			<List className="" 
 				items={notesPager} 
-				item={{render: this.renderNote, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
+				item={{render: this.renderListItem, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
 		</div>
 	}
 
@@ -87,8 +87,8 @@ export class VFolder extends VNoteView<CContainer> {
 		return note;
 	}
 
-	private renderNote = (item: CNoteBase, index:number) => {
-		return <div className="d-block mb-2 bg-white">{item.renderItem(index)}</div>;
+	private renderListItem = (cNoteBase: CNoteBase, index:number) => {
+		return <div className="d-block mb-2 bg-white">{cNoteBase.renderListItem(index)}</div>;
 	}
 
 	private onNoteClick = async (item: CNoteBase) => {
@@ -97,6 +97,6 @@ export class VFolder extends VNoteView<CContainer> {
 		noteItem.unread = 0;
 		noteItem.commentUnread = 0;
 		item.noteModel = noteModel;
-		return item.showListItemNote(noteModel);
+		return item.showListItemNote();
 	}
 }

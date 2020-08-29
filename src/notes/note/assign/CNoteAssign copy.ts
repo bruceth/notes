@@ -1,9 +1,9 @@
 import { NoteItem, NoteModel } from '../../model';
-import { VTextView } from './VTextView';
+import { VAssignView } from './VAssignView';
 import { VAdd } from './VAdd';
 import { CInput } from '../CInput';
 
-export class CNoteText extends CInput {
+export class CNoteAssign extends CInput {
 	init(param: NoteItem):void {
 		super.init(param);
 		if (param) {
@@ -11,13 +11,8 @@ export class CNoteText extends CInput {
 		}
 	}
 
-	// renderItem(index:number): JSX.Element {
-	// 	let vNoteItem = new VTextNoteItem(this);
-	// 	return vNoteItem.render();
-	// }
-
 	showListItemNote(noteModel: NoteModel) {
-		this.openVPage(VTextView);
+		this.openVPage(VAssignView);
 	}
 
 	showAddNotePage(parent: number, checkType: number) {

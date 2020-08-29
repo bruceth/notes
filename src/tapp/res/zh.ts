@@ -10,6 +10,6 @@ export const zh = {
 
 	notes: '小单',
 	task: '任务',
-	taskList: '任务单',
+	assign: '作业单',
 	
 }

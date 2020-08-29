@@ -11,6 +11,6 @@ export const en = {
 
 	notes: 'Notes',
 	task: 'Task',
-	taskList: 'Task List',
+	assign: 'Assign',
 	
 }

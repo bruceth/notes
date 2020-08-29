@@ -199,9 +199,8 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		}
 	}
 
-	async AddNote(parent: number) {
+	async AddNote(parent: number, type:EnumNoteType) {
 		let noteContent = this.stringifyContent();
-		let type = this.checkType === 3 ? EnumNoteType.folder : EnumNoteType.text;
 		let ret = await this.owner.addNote(parent, this.title, noteContent, this.buildObj(), type);
 		this.updateChange();
 		return ret;

@@ -2,6 +2,7 @@ import React from "react";
 import { VNoteForm } from './VNoteForm';
 import { CNote } from '../CNote';
 import { observer } from "mobx-react";
+import { EnumNoteType } from "notes/model";
 
 export class VAddNoteBase<T extends CNote> extends VNoteForm<T> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
@@ -38,7 +39,8 @@ export class VAddNoteBase<T extends CNote> extends VNoteForm<T> {
 
 	protected async onButtonSave(): Promise<void> {
 		this.checkInputAdd();
-		await this.controller.AddNote(this.parentId);
+		let type = this.controller.checkType === 3 ? EnumNoteType.folder : EnumNoteType.text;
+		await this.controller.AddNote(this.parentId, type);
 		this.closePage();
 		return;
 	}
@@ -60,10 +62,10 @@ export class VAddNoteBase<T extends CNote> extends VNoteForm<T> {
 
 	protected onSaveAndSendNote = async () => {
 		this.checkInputAdd();
-		let cnewNote = await this.controller.AddNote(this.parentId);
+		let type = this.controller.checkType === 3 ? EnumNoteType.folder : EnumNoteType.text;
+		let cnewNote = await this.controller.AddNote(this.parentId, type);
 		this.closePage();
 		await cnewNote.cApp.loadRelation();
 		cnewNote.showTo(1);
 	}
-
 }

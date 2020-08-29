@@ -3,7 +3,7 @@ import { CNoteBase } from "./noteBase";
 import { EnumNoteType, NoteItem } from "./model";
 import { CNotes } from "./CNotes";
 import { createCSpace, createCFolder } from "./container";
-import { createCNoteText, createCNoteTask } from "./note";
+import { createCNoteText, createCNoteTask, createCNoteAssign } from "./note";
 
 export function createNoteBase(noteItem: NoteItem, cNotes: CNotes):CNoteBase {
 	let {type} = noteItem;
@@ -16,18 +16,8 @@ export function createNoteBase(noteItem: NoteItem, cNotes: CNotes):CNoteBase {
 		case EnumNoteType.group: debugger; throw Error("type group undefined");
 		case EnumNoteType.groupFolder: ret = createCSpace(cNotes); break;
 		case EnumNoteType.unit:  debugger; throw Error("type unit undefined");
+		case EnumNoteType.assign: ret = createCNoteAssign(cNotes); break;
 	}
 	ret.init(noteItem);
 	return ret;
 }
-
-/*
-const cNoteTypes: {[key in EnumNoteType]: new (...args: any[])=> CNoteBase} = {
-	[EnumNoteType.text]: CNoteText,
-	[EnumNoteType.task]: CNoteTask,
-	[EnumNoteType.folder]: CFolderMy,
-	[EnumNoteType.group]: undefined, // CFolderNoteItem,
-	[EnumNoteType.groupFolder]: CSpace,
-	[EnumNoteType.unit]: undefined, // CFolderNoteItem,
-};
-*/

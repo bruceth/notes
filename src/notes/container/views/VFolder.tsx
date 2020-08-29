@@ -2,7 +2,6 @@ import React from 'react';
 import { CContainer } from '../CContainer';
 import { CNoteBase, VNoteView } from "../../noteBase";
 import { List, FA, User, Image, UserView, DropdownAction, DropdownActions } from 'tonva';
-import { EnumNoteType } from 'notes/model';
 
 export class VFolder extends VNoteView<CContainer> {
 	afterBack() {
@@ -26,9 +25,9 @@ export class VFolder extends VNoteView<CContainer> {
 		owner.showAddNotePage(owner.currentFold.folderId, 2);
 	}
 
-	private actionAddTask = () => {
+	private actionAddAssign = () => {
 		let {owner} = this.controller;
-		owner.showAddNotePage(owner.currentFold.folderId, 1);
+		owner.showAddAssignPage(owner.currentFold.folderId);
 	}
 
 	private actionAddFolder = () => {
@@ -39,7 +38,7 @@ export class VFolder extends VNoteView<CContainer> {
 	private dropdownActions: DropdownAction[] = [
 		{icon:'file', caption:this.t('notes'), action: this.actionAddNote, iconClass: 'text-primary', captionClass: 'text-primary'},
 		{icon:'list', caption:'列表', action: this.actionAddList},
-		{icon:'check-square-o', caption:'任务', action: this.actionAddTask},
+		{icon:'check-square-o', caption:'任务', action: this.actionAddAssign},
 		{icon:'folder', caption:'小单夹', action: this.actionAddFolder, iconClass: 'text-warning'},
 	];
 

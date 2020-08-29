@@ -5,11 +5,11 @@ import './index.css';
 //import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import { NavView, start, startRoute, nav, CAppBase } from 'tonva';
+import { NavView, start, nav } from 'tonva';
 //import logo from './logo.svg';
 import './App.css';
 import { CApp, appConfig } from './tapp';
-import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
+//import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
 
 /*
 (async function() {

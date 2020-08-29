@@ -24,7 +24,7 @@ export class VFlow extends VPage<CBook> {
 	}
 
 	private renderFlowItem = (flowItem:any) => {
-		let {stamp, memo, debit, credit, note} = flowItem;
+		let {stamp, memo, debit, credit} = flowItem;
 		return <div className="px-3 py-2 d-flex">
 			<div className="w-8c"><EasyTime date={stamp} /></div>
 			<div className="w-5c text-right">{debit}</div>

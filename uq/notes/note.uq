@@ -163,7 +163,7 @@ RETURNS contain (
 			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact
 		WHERE a.note0=note and a.type=EnumNoteMapType.Comment
 		ORDER BY a.note1 desc
-		LIMIT 20;
+		LIMIT 10;
 	INTO spawn SELECT a.note1 as seconds, b.owner, a.note1 as note, b.type
 		, b.[from]
 		, b.caption, b.content, c.assigned, d.state, 0 as unread

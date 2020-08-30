@@ -7,6 +7,7 @@ export const zh = {
 	changePassword: '修改密码',
 	aboutTheApp: '关于本APP',
 	logout: '退出登录',
+	pleaseLogin: '登录',
 
 	notes: '小单',
 	task: '任务',

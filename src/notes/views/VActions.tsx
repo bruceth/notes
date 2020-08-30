@@ -2,6 +2,7 @@ import React from 'react';
 import { VBasePage } from "./VBasePage";
 import { LMR, FA } from 'tonva';
 import { CNotes } from '../CNotes';
+import { EnumNoteType } from 'notes/model';
 
 export class VActions extends VBasePage<CNotes> {
 	protected backPageCount = 3;
@@ -14,24 +15,23 @@ export class VActions extends VBasePage<CNotes> {
 
 	header() {return '操作'}
 	content() {
-		let {noteItem} = this.controller;
-		let obj = noteItem.obj;
-		let checkType = Number(obj?.check);
+		let {type} = this.controller.noteItem;
+		let assign = type === Number(EnumNoteType.assign);
 		let cn = 'px-3 py-2 cursor-pointer bg-white mt-1';
 		return <div className="">
 			<div className="text-muted small px-3 py-1 mt-2">收件人</div>
 			<div className="border rounded p-3 mb-3">
 				{this.renderSelectedContact(this.controller.contacts)}
 			</div>
-			<div className={cn} onClick={this.onSend}>
-				分享内容
-			</div>
 			{
-				(checkType === 1) &&
-				<div className={cn} onClick={this.onAssign}>
+				assign ? <div className={cn} onClick={this.onAssign}>
 					<LMR right={<FA name="angle-right" />}>
 						分派任务
 					</LMR>
+				</div>
+				:
+				<div className={cn} onClick={this.onSend}>
+					分享内容
 				</div>
 			}
 		</div>;

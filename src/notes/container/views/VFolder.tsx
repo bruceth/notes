@@ -15,40 +15,11 @@ export class VFolder extends VNoteBaseView<CContainer> {
 		return this.t('notes')
 	}
 
-	private actionAddNote = () => {
-		let {owner} = this.controller;
-		owner.showAddNotePage(owner.currentFold.folderId, 0);
-	}
-
-	private actionAddList = () => {
-		let {owner} = this.controller;
-		owner.showAddNotePage(owner.currentFold.folderId, 2);
-	}
-
-	private actionAddAssign = () => {
-		let {owner} = this.controller;
-		owner.showAddAssignPage(owner.currentFold.folderId);
-	}
-
-	private actionAddFolder = () => {
-		let {owner} = this.controller;
-		owner.showAddNotePage(owner.currentFold.folderId, 3);
-	}
-
-	private dropdownActions: DropdownAction[] = [
-		{icon:'file', caption:this.t('notes'), action: this.actionAddNote, iconClass: 'text-primary', captionClass: 'text-primary'},
-		{icon:'list', caption:'列表', action: this.actionAddList},
-		{icon:'check-square-o', caption:'任务', action: this.actionAddAssign},
-		{icon:'folder', caption:'小单夹', action: this.actionAddFolder, iconClass: 'text-warning'},
-	];
-
 	right() {
-		if (this.isMe(this.controller.noteItem.owner)) {
-			return <>
-			<DropdownActions actions={this.dropdownActions} icon="plus" itemIconClass="text-info"
-				className="cursor-pointer btn btn-lg text-white p-1 mr-1"/>
-		</>;
-		}
+		// 应该任何群成员都可以发小单吧
+		//if (this.isMe(this.controller.noteItem.owner)) {
+			return this.controller.owner.renderSpaceDropDown();
+		//}
 	}
 
 	protected top() {

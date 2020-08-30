@@ -3,7 +3,6 @@ import { observable } from "mobx";
 import { VSelectContact, SelectContactOptions } from "./views";
 import { EnumNoteType, NoteItem, NoteModel } from "./model";
 import { CNoteBase } from "./noteBase";
-//import { CNoteText, CNoteTask } from "./note";
 import { CContainer, CFolderRoot } from "./container";
 import { CGroup } from "./group";
 import { Contact } from "../model";
@@ -11,6 +10,7 @@ import { VSent } from "./views/VSent";
 import { VTo } from "./views/VTo";
 import { createNoteBase } from "./factory";
 import { createCNoteText, createCNoteTask, createCNoteAssign } from "./note";
+import { VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
 
 export class CNotes extends CUqBase {
 	protected foldStack: CContainer[];
@@ -118,12 +118,17 @@ export class CNotes extends CUqBase {
 		return this.currentFold.renderListView();
 	}
 
-	showAddNotePage = (parent: number, checkType: number) => {
+	renderHomeDropDown() {return this.renderView(VHomeDropdown)};
+	renderSpaceDropDown() {return this.renderView(VSpaceDropdown)};
+
+	showAddNotePage(checkType: number) {
+		let parent = this.currentFold.folderId;
 		let cNoteText = createCNoteText(this); // this.newSub(CNoteText);
 		cNoteText.showAddNotePage(parent, checkType);
 	}
 
-	showAddAssignPage = (parent: number) => {
+	showAddAssignPage() {
+		let parent = this.currentFold.folderId;
 		let cNoteAssign = createCNoteAssign(this); // this.newSub(CNoteText);
 		cNoteAssign.showAddAssignPage(parent);
 	}

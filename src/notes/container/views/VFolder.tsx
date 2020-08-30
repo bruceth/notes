@@ -1,7 +1,7 @@
 import React from 'react';
+import { List, FA, User, Image, UserView } from 'tonva';
 import { CContainer } from '../CContainer';
 import { CNoteBase, VNoteBaseView } from "../../noteBase";
-import { List, FA, User, Image, UserView, DropdownAction, DropdownActions } from 'tonva';
 
 export class VFolder extends VNoteBaseView<CContainer> {
 	afterBack() {

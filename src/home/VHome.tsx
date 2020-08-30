@@ -1,6 +1,6 @@
 import React from 'react';
+import { VPage, Page } from 'tonva';
 import { CHome } from './CHome';
-import { VPage, Page, DropdownActions, DropdownAction } from 'tonva';
 
 export class VHome extends VPage<CHome> {
 /*

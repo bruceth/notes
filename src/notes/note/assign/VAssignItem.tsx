@@ -1,11 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { VNoteBaseItem } from '../../noteBase';
+import { VCheckableNoteBaseView } from '../../noteBase';
 import { CNoteAssign } from './CNoteAssign';
 
-export class VAssignItem extends VNoteBaseItem<CNoteAssign> {
+export class VAssignItem extends VCheckableNoteBaseView<CNoteAssign> {
 	/*
-	render() {
+	renderItemForList() {
 		return React.createElement(observer(() => {
 			let {title} = this.controller;
 			return <div className="">

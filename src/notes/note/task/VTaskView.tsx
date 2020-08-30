@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { CheckItem } from '../../model';
-import { VNoteBaseView } from '../../noteBase';
+import { VCheckableNoteBaseView } from '../../noteBase';
 import { EnumTaskState } from "./TaskState"
 import { CNoteTask } from "./CNoteTask";
 import { VEdit } from './VEdit';
@@ -15,7 +15,7 @@ export interface TaskParam {
 	onClick?: () => void;
 }
 
-export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
+export abstract class VTaskView<T extends CNoteTask> extends VCheckableNoteBaseView<T> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
 	header() { return this.t('task') }
 	protected get allowCheck() { return true; }
@@ -39,7 +39,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	}
 
 	protected renderContent() {
-		return this.renderContentBase(this.allowCheck);
+		return this.renderCheckableContentBase(this.allowCheck);
 	}
 
 	private renderCaption(title: string) {

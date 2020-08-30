@@ -1,12 +1,12 @@
 import React from 'react';
 import { VEdit } from './VEdit';
 import { observer } from 'mobx-react';
-import { VNoteBaseView } from '../../noteBase';
+import { VCheckableNoteBaseView } from '../../noteBase';
 import { CNoteAssign } from './CNoteAssign';
 import { VAssignRelatives } from './VAssignRelatives';
 import { CheckItem } from '../../model';
 
-export class VAssignView extends VNoteBaseView<CNoteAssign> {
+export class VAssignView extends VCheckableNoteBaseView<CNoteAssign> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {
 		return this.t('assign')

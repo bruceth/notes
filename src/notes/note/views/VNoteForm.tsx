@@ -1,13 +1,13 @@
 import React from 'react';
 import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { VNoteBaseView } from '../../noteBase';
+import { VCheckableNoteBaseView } from '../../noteBase';
 import { FA, ConfirmOptions } from 'tonva';
 import { VItemInput, ItemInputProps } from './VItemInput';
 import { CheckItem } from '../../model';
 import { CNote } from '../CNote';
 
-export abstract class VNoteForm<T extends CNote> extends VNoteBaseView<T> {
+export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<T> {
 	@observable private changed: boolean = false;
 	private inputAdd: HTMLInputElement;
 

@@ -72,7 +72,7 @@ export class VFolder extends VNoteBaseView<CContainer> {
 			{this.top()}
 			<List className="" 
 				items={notesPager} 
-				item={{render: this.renderListItem, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
+				item={{render: this.renderItemInFolder, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
 		</div>
 	}
 
@@ -85,7 +85,7 @@ export class VFolder extends VNoteBaseView<CContainer> {
 		return note;
 	}
 
-	private renderListItem = (cNoteBase: CNoteBase, index:number) => {
+	private renderItemInFolder = (cNoteBase: CNoteBase, index:number) => {
 		return <div className="d-block mb-2 bg-white">{cNoteBase.renderListItem(index)}</div>;
 	}
 

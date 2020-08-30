@@ -41,11 +41,6 @@ export abstract class VContainerForm<T extends CContainer> extends VNoteBaseView
 		}
 	}
 
-	private onCheckableChanged = (evt:React.ChangeEvent<HTMLInputElement>) => {
-		this.changed = true;
-		this.controller.onCheckableChanged(Number(evt.target.value));
-	}
-
 	protected renderDeleteButton() {
 		return <button className="btn btn-outline-secondary mr-3" onClick={() => this.onDelete()}>
 			删除
@@ -54,17 +49,7 @@ export abstract class VContainerForm<T extends CContainer> extends VNoteBaseView
 
 	protected abstract renderExButtons():JSX.Element;
 
-	protected getOptions(): {val:number, text:string}[] {
-		return [
-			{ val: 0, text: '文字' },
-			{ val: 2, text: '列表' },
-			{ val: 1, text: '勾选事项' },
-		];
-	}
-
 	protected renderEdit() {
-		let radios = this.getOptions();
-
 		return <div className="m-2">
 			<div className="border rounded">
 				<div className="bg-white">
@@ -88,18 +73,6 @@ export abstract class VContainerForm<T extends CContainer> extends VNoteBaseView
 					{this.renderExButtons()}
 				</div>
 			</div>
-			{ radios &&
-				<div className="m-2 form-check">
-					{radios.map((v, index) => {
-						let { val, text } = v;
-						return <label key={index} className="mb-0 mx-2">
-							<input className="mr-1" type="radio" value={val}
-								defaultChecked={this.controller.checkType === val} name={'checktype'} onChange={this.onCheckableChanged} />
-							{text}
-					</label>
-					})}
-				</div>
-			}
 		</div>;
 	}
 
@@ -109,15 +82,5 @@ export abstract class VContainerForm<T extends CContainer> extends VNoteBaseView
 			placeholder={this.t('notes')} maxLength={20000}
 			defaultValue={this.controller.noteContent}
 			onChange={this.onContentChange} />;
-	}
-
-	protected checkInputAdd() {
-		let {checkType} = this.controller;
-		if ((checkType === 1 || checkType === 2) && this.inputAdd) {
-			let {value} = this.inputAdd;
-			if (value.trim().length === 0) return;
-			this.controller.addItem(value);
-			this.inputAdd.value = '';
-		}
 	}
 }

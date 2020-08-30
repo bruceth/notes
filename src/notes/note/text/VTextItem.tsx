@@ -1,5 +1,5 @@
 import { CNoteText } from "./CNoteText";
-import { VNoteBaseItem } from "../../noteBase";
+import { VCheckableNoteBaseView } from "../../noteBase";
 
-export class VTextItem<T extends CNoteText> extends VNoteBaseItem<T> {
+export class VTextItem<T extends CNoteText> extends VCheckableNoteBaseView<T> {
 }

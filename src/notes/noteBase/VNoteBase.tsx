@@ -1,63 +1,28 @@
 import React from "react";
 import { VPage, User, Image, UserView, Page, EasyTime, FA } from "tonva";
 import { CNoteBase } from "./CNoteBase";
-import { observer } from "mobx-react";
-import { CheckItem } from '../model';
 
 //type RenderIcon = (noteItem:NoteItem) => JSX.Element;
 
 export function renderIcon(name:string, cn:string) {
 	return <FA name={name} size="lg" className={cn} fixWidth={true} />;
 }
-/*
-const itemIcons: {[key in EnumNoteType]: RenderIcon} = {
-	[EnumNoteType.text]: (noteItem: NoteItem) => {
-		let {toCount} = noteItem;
-		let name = toCount>0? 'files-o': 'file-o';
-		return <FA name={name} size="lg" className="text-info" fixWidth={true} />;
-	},
-	[EnumNoteType.task]: (noteItem: NoteItem) => {
-		return <FA name="tasks" size="lg" className="text-success" fixWidth={true} />;
-	},
-	[EnumNoteType.folder]: (noteItem: NoteItem) => {
-		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
-	},
-	[EnumNoteType.group]: (noteItem: NoteItem) => {
-		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
-	},
-	[EnumNoteType.groupFolder]: (noteItem: NoteItem) => {
-		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
-	},
-	[EnumNoteType.unit]: (noteItem: NoteItem) => {
-		return <FA name="folder" size="lg" className="text-warning" fixWidth={true} />;
-	},
-	[EnumNoteType.assign]: (noteItem: NoteItem) => {
-		return <FA name="tasks" size="lg" className="text-success" fixWidth={true} />;
-	},
-}
-*/
+
 export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
-	protected renderContentBase(checkable:boolean) {
-		let {checkType} = this.controller;
+	protected renderContentBase() {
 		return <div>
 		{
-			checkType === 0 || checkType === 3 ? 
-				this.renderContentText()
-				: 
-				checkType === 1 ? 
-					this.renderCheckItems(checkable)
-					:
-					this.renderContentList()
+			this.renderContentText()
 		}
 		</div>;
 	}
 
 	protected renderContent() {
-		return this.renderContentBase(false);
+		return this.renderContentBase();
 	}
 
 	protected renderItemContent() {
-		return this.renderContentBase(false);
+		return this.renderContentBase();
 	}
 
 	protected renderItemTop() {
@@ -114,79 +79,6 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 
 	protected renderContentText() {
 		return <div className="px-3 my-2">{this.renderParagraphs(this.controller.noteContent)}</div>;
-	}
-
-	protected renderContentList() {
-		return React.createElement(observer(() => {
-			let items = this.controller.items;
-			return <ul className="note-content-list px-3 my-2">
-				{items.map((v, index) => {
-					let {key, text} = v;
-					return <li key={key} className="ml-3 pt-1 pb-2 align-items-center">
-						{text}
-					</li>
-				})}
-			</ul>;
-		}));
-	}
-
-	protected renderCheckItems(checkable:boolean) {
-		return React.createElement(observer(() => {
-			let uncheckedItems:CheckItem[] = [];
-			let checkedItems:CheckItem[] = [];
-			for (let ci of this.controller.items) {
-				let {checked} = ci;
-				if (checked === true) checkedItems.push(ci);
-				else uncheckedItems.push(ci);
-			}
-			let doneItems:any;			
-			let checkedCount = checkedItems.length;
-			if (checkedCount > 0) {
-				let cn:string, doneTop:any;
-				if (checkable===true) {
-					cn = 'border-top py-2';
-					doneTop = <div className="px-3 pt-2 small text-muted">{checkedCount}项完成</div>;
-				}
-				doneItems = <div className={cn}>
-					{doneTop}
-					{checkedItems.map((v, index) => this.renderCheckItem(v, checkable))}
-				</div>;
-			}
-			return <div className="mb-2">
-				{uncheckedItems.map((v, index) => this.renderCheckItem(v, checkable))}
-				{doneItems}
-			</div>;
-		}));
-	}
-
-	protected renderCheckItem(v:CheckItem, checkable:boolean) {
-		let {key, text, checked} = v;
-		let cn = 'ml-3 ';
-		let content: any;
-		let icon: string;
-		if (checked === true) {
-			cn += 'text-muted ';
-			content = <del>{text}</del>;
-			icon = 'check-square';
-		}
-		else {
-			content = text;
-			icon = 'square-o';
-		}
-		if (checkable === true) {
-			return <div key={key} className="d-flex mx-3 align-items-center form-check">
-				<input className="form-check-input mr-3 mt-0" type="checkbox"
-					defaultChecked={checked}
-					data-key={key} />
-				<div className={'form-control-plaintext ' + cn}>{content}</div>
-			</div>;
-		}
-		else {
-			return <div key={key} className="d-flex mx-3 align-items-center">
-				<FA name={icon} />
-				<div className={'py-1 ' + cn}>{content}</div>
-			</div>;
-		}
 	}
 
 	protected renderFrom = () => {
@@ -294,7 +186,7 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 		</span>;
 	}
 
-	private onSendNote = async () => {
+	protected onSendNote = async () => {
 		await this.controller.cApp.loadRelation();
 		this.controller.showTo(2);
 	}

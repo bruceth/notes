@@ -20,7 +20,6 @@ export class VEdit extends VContainerForm<CContainer> {
 	}
 
 	protected async onButtonSave(): Promise<void> {
-		this.checkInputAdd();
 		await this.controller.SetNote();
 		this.closePage();
 	}

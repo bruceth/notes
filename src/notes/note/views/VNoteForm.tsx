@@ -8,7 +8,7 @@ import { CheckItem } from '../../model';
 import { CNote } from '../CNote';
 
 export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<T> {
-	@observable private changed: boolean = false;
+	@observable protected changed: boolean = false;
 	private inputAdd: HTMLInputElement;
 
 	header() {return this.t('notes')}
@@ -43,16 +43,13 @@ export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<
 		}
 	}
 
-	// private onCheckableChanged = (evt:React.ChangeEvent<HTMLInputElement>) => {
-	// 	this.changed = true;
-	// 	this.controller.onCheckableChanged(Number(evt.target.value));
-	// }
-
 	protected renderDeleteButton() {
 		return <button className="btn btn-outline-secondary mr-3" onClick={() => this.onDelete()}>
 			删除
 		</button>;
 	}
+
+	protected renderButtonLeft():JSX.Element { return }
 
 	protected abstract renderExButtons():JSX.Element;
 
@@ -72,7 +69,7 @@ export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<
 				<div className="bg-white">
 					<div className="py-1 px-1 border-bottom">
 						<input type="text" className="w-100 border-0 form-control font-weight-bold" placeholder="标题" maxLength={80}
-							onChange={this.onTitleChange}
+							onChange={this.onTitleChange} autoFocus={true}
 							defaultValue={this.controller.title} />
 					</div>
 					<div className="py-1 px-1">
@@ -82,6 +79,7 @@ export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<
 					</div>
 				</div>
 				<div className="py-2 pl-3 bg-light border-top d-flex">
+					{this.renderButtonLeft()}
 					<div className="mr-auto" />
 					{React.createElement(observer(() => <>
 						<button onClick={() => this.onButtonSave()}

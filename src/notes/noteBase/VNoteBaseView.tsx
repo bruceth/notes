@@ -4,7 +4,7 @@ import { VNoteBase } from "./VNoteBase";
 import { CNoteBase } from "./CNoteBase";
 import { VRelatives } from './VRelatives';
 import { CCheckableNoteBase } from "./CCheckableNoteBase";
-import { CheckItem } from 'notes/model';
+import { CheckItem, EnumCheckType } from 'notes/model';
 import { FA } from 'tonva';
 
 export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
@@ -46,10 +46,10 @@ export class VCheckableNoteBaseView<T extends CCheckableNoteBase> extends VNoteB
 		let {checkType} = this.controller;
 		return <div>
 		{
-			checkType === 0 || checkType === 3 ? 
+			checkType === EnumCheckType.text || checkType === EnumCheckType.folder ? 
 				this.renderContentText()
 				: 
-				checkType === 1 ? 
+				checkType === EnumCheckType.checkable ? 
 					this.renderCheckItems(checkable)
 					:
 					this.renderContentList()

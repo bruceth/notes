@@ -1,5 +1,5 @@
 import React from 'react';
-import { NoteItem } from '../../model';
+import { NoteItem, EnumCheckType } from '../../model';
 import { CNotes } from '../../CNotes';
 import { VAssignView } from './VAssignView';
 import { VAdd } from './VAdd';
@@ -56,7 +56,7 @@ export class CNoteAssign extends CInput {
 	}
 
 	showAddAssignPage(parent: number) {
-		this.checkType = 1;
+		this.checkType = EnumCheckType.checkable;
 		this.openVPage(VAdd, parent);
 	}
 }

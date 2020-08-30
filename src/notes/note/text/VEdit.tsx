@@ -2,11 +2,12 @@ import React from 'react';
 import { VNoteForm } from '../views/VNoteForm';
 import { CNoteText } from "./CNoteText";
 import { DropdownAction, DropdownActions } from 'tonva';
+import { EnumCheckType } from '../../model';
 
 export class VEdit extends VNoteForm<CNoteText> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {
-		return this.controller.checkType === 1 ? this.t('taskList') : this.t('notes')
+		return this.controller.checkType === EnumCheckType.checkable ? this.t('taskList') : this.t('notes')
 	}
 
 	content() {

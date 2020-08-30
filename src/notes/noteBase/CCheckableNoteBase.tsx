@@ -1,5 +1,5 @@
 import { observable } from "mobx";
-import { NoteItem, CheckItem } from '../model';
+import { NoteItem, CheckItem, EnumCheckType } from '../model';
 import { CNoteBase } from './CNoteBase';
 import { VCheckableNoteBaseView, VNoteBaseView } from './VNoteBaseView';
 
@@ -11,7 +11,7 @@ export abstract class CCheckableNoteBase extends CNoteBase {
 		let { obj } = param;
 		if (obj) {
 			this.checkType = Number(obj.check);
-			if (this.checkType === 0 || this.checkType === 3) {
+			if (this.checkType === EnumCheckType.text || this.checkType === EnumCheckType.folder) {
 				this.noteContent = obj.content;
 			}
 			else {
@@ -22,21 +22,21 @@ export abstract class CCheckableNoteBase extends CNoteBase {
 		}
 	}
 
-	@observable checkType: number = 0;	//0: text, 1: checkable, 2: checkList, 3: folder
+	@observable checkType: EnumCheckType = EnumCheckType.text;	//0: text, 1: checkable, 2: list, 3: folder
 	@observable items: CheckItem[] = [];
 	itemKey: number = 1;
 
 	protected async internalStart() { }
 
 	addItem(value: string): boolean {
-		if (this.checkType === 1) {
+		if (this.checkType === EnumCheckType.checkable) {
 			this.items.push({
 				key: this.itemKey++,
 				text: value,
 				checked: false,
 			});
 		}
-		else if (this.checkType === 2) {
+		else if (this.checkType === EnumCheckType.list) {
 			this.items.push({
 				key: this.itemKey++,
 				text: value,
@@ -47,7 +47,7 @@ export abstract class CCheckableNoteBase extends CNoteBase {
 
 	protected buildObj(): any {
 		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
-		if (this.checkType === 0 || this.checkType === 3) {
+		if (this.checkType === EnumCheckType.text || this.checkType === EnumCheckType.folder) {
 			obj.check = this.checkType;
 			obj.content = this.changedNoteContent || this.noteContent;
 			delete obj.itemKey;
@@ -64,17 +64,17 @@ export abstract class CCheckableNoteBase extends CNoteBase {
 
 	protected newVNoteItem():VNoteBaseView<any> {return new VCheckableNoteBaseView(this);}
 
-	onCheckableChanged(type: number) {
+	onCheckableChanged(type: EnumCheckType) {
 		let oldType = this.checkType;
 		this.checkType = type;
-		if (oldType === 0) {
+		if (oldType === EnumCheckType.text) {
 			let content = this.changedNoteContent || this.noteContent;
 			if (content) {
 				this.items.splice(0, this.items.length);
 				this.items.push(...content.split('\n').filter((v, index) => {
 						return v.trim().length > 0;
 					}).map((v, index) => {
-					if (this.checkType === 1) {
+					if (this.checkType === EnumCheckType.checkable) {
 						return {
 							key: this.itemKey++,
 							text: v,
@@ -91,13 +91,13 @@ export abstract class CCheckableNoteBase extends CNoteBase {
 			}
 		}
 		else {
-			if (this.checkType === 0 || this.checkType === 3) {
+			if (this.checkType === EnumCheckType.text || this.checkType === EnumCheckType.folder) {
 				this.noteContent = this.items.map(v => v.text).join('\n');
 			}
-			else if (this.checkType === 1) {
+			else if (this.checkType === EnumCheckType.checkable) {
 				this.items.map(v => v.checked = false);
 			}
-			else if (this.checkType === 2) {
+			else if (this.checkType === EnumCheckType.list) {
 				this.items.map(v => delete v.checked);
 			}
 		}

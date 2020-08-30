@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { VCheckableNoteBaseView } from '../../noteBase';
 import { FA, ConfirmOptions } from 'tonva';
 import { VItemInput, ItemInputProps } from './VItemInput';
-import { CheckItem } from '../../model';
+import { CheckItem, EnumCheckType } from '../../model';
 import { CNote } from '../CNote';
 
 export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<T> {
@@ -63,7 +63,7 @@ export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<
 
 	protected renderEdit() {
 		//let radios = this.getOptions();
-
+		let {checkType} = this.controller;
 		return <div className="m-2">
 			<div className="border rounded">
 				<div className="bg-white">
@@ -73,9 +73,9 @@ export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<
 							defaultValue={this.controller.title} />
 					</div>
 					<div className="py-1 px-1">
-						{React.createElement(observer(() => this.controller.checkType === 0 || this.controller.checkType === 3? 
+						{React.createElement(observer(() => checkType === EnumCheckType.text || checkType === EnumCheckType.folder? 
 							this.renderContentTextArea()
-							: this.controller.checkType === 1 ? this.renderContentCheckList(): this.renderContentEditList()))}
+							: checkType === EnumCheckType.checkable ? this.renderContentCheckList(): this.renderContentEditList()))}
 					</div>
 				</div>
 				<div className="py-2 pl-3 bg-light border-top d-flex">
@@ -205,7 +205,7 @@ export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<
 
 	protected checkInputAdd() {
 		let {checkType} = this.controller;
-		if ((checkType === 1 || checkType === 2) && this.inputAdd) {
+		if ((checkType === EnumCheckType.checkable || checkType === EnumCheckType.list) && this.inputAdd) {
 			let {value} = this.inputAdd;
 			if (value.trim().length === 0) return;
 			this.controller.addItem(value);

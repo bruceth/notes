@@ -1,7 +1,14 @@
 import { NoteItem } from '../../model';
+import { CNotes } from '../../CNotes';
 import { VTextView } from './VTextView';
 import { VAdd } from './VAdd';
 import { CInput } from '../CInput';
+import { renderIcon, VNoteBaseItem } from '../../noteBase';
+import { VTextItem } from './VTextItem';
+
+export function createCNoteText(cNotes: CNotes): CNoteText {
+	return new CNoteText(cNotes);
+}
 
 export class CNoteText extends CInput {
 	init(param: NoteItem):void {
@@ -17,7 +24,7 @@ export class CNoteText extends CInput {
 
 	protected newVNoteItem():VNoteBaseItem<any> {return new VTextItem(this);}
 
-	showListItemNote() {
+	showNoteView() {
 		this.openVPage(VTextView);
 	}
 

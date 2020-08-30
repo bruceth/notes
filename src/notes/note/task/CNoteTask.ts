@@ -138,7 +138,7 @@ export abstract class CNoteTask extends CNote {
 		return super.renderListItem(index);
 	}
 
-	showListItemNote() {
+	showNoteView() {
 		let TaskView = this.getTaskView(); // this.getView();
 		this.openVPage(TaskView);
 	}

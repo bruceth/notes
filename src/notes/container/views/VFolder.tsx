@@ -1,6 +1,6 @@
 import React from 'react';
 import { CContainer } from '../CContainer';
-import { CNoteBase, VNoteView } from "../../noteBase";
+import { CNoteBase, VNoteBaseView } from "../../noteBase";
 import { List, FA, User, Image, UserView, DropdownAction, DropdownActions } from 'tonva';
 
 export class VFolder extends VNoteBaseView<CContainer> {
@@ -124,6 +124,6 @@ export class VFolder extends VNoteBaseView<CContainer> {
 		noteItem.unread = 0;
 		noteItem.commentUnread = 0;
 		item.noteModel = noteModel;
-		return item.showListItemNote();
+		return item.showNoteView();
 	}
 }

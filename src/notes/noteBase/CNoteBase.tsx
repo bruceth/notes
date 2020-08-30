@@ -90,10 +90,9 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		let dot:any;
 		if (unread>0) dot = <u/>;
 		return <div className="mr-3 unread-dot">{this.renderIcon()}{dot}</div>
-		//return this.renderIcon();
 	}
 
-	abstract showListItemNote(): void;
+	abstract showNoteView(): void;
 
 	protected stringifyContent() {
 		let ret = JSON.stringify(this.buildObj());
@@ -184,9 +183,9 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		await this.SetNote(false);
 	}
 
-	async SetNote(waiting: boolean) {
+	async SetNote(showWaiting: boolean = true) {
 		let noteContent = this.stringifyContent();
-		await this.owner.setNote(waiting,
+		await this.owner.editNote(showWaiting,
 			this.noteItem,
 			this.title,
 			noteContent,

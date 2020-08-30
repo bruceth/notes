@@ -75,7 +75,7 @@ export abstract class CContainer extends CNoteBase {
 		return (new VFolder(this)).renderListView();
 	}
 
-	showListItemNote(): void {
+	showNoteView(): void {
 		this.owner.openFolder(this);
 	}
 

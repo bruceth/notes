@@ -101,7 +101,7 @@ export class CNotes extends CUqBase {
 		return await this.currentFold.addNote(folder, caption, content, obj, type);
 	}
 
-	async setNote(waiting:boolean, noteItem:NoteItem, caption:string, content:string, obj:any) {
+	async editNote(waiting:boolean, noteItem:NoteItem, caption:string, content:string, obj:any) {
 		return await this.currentFold.editNote(waiting, noteItem, caption, content, obj);
 	}
 

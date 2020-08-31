@@ -19,6 +19,10 @@ export class CList extends CContent {
 			this.itemKey = obj.itemKey;
 			this.items = obj.items;
 		}
+		else {
+			this.items = [];
+			this.itemKey = 1;
+		}
 	}
 
 	get contentType(): EnumContentType {return EnumContentType.list;}

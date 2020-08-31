@@ -11,6 +11,7 @@ import { VTo } from "./views/VTo";
 import { createNoteBase } from "./noteBase/createNoteBase";
 import { createCNoteText, createCNoteTask, createCNoteAssign } from "./note";
 import { VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
+import { EnumContentType } from "./components";
 
 export class CNotes extends CUqBase {
 	protected foldStack: CContainer[];
@@ -121,15 +122,17 @@ export class CNotes extends CUqBase {
 	renderHomeDropDown() {return this.renderView(VHomeDropdown)};
 	renderSpaceDropDown() {return this.renderView(VSpaceDropdown)};
 
-	showAddNotePage(checkType: number) {
+	showAddNotePage(type: EnumContentType) {
 		let parent = this.currentFold.folderId;
 		let cNoteText = createCNoteText(this); // this.newSub(CNoteText);
-		cNoteText.showAddPage(parent, checkType);
+		cNoteText.initContent(type);
+		cNoteText.showAddPage(parent, type);
 	}
 
 	showAddAssignPage() {
 		let parent = this.currentFold.folderId;
 		let cNoteAssign = createCNoteAssign(this); // this.newSub(CNoteText);
+		cNoteAssign.initContent(EnumContentType.checkable);
 		cNoteAssign.showAddAssignPage(parent);
 	}
 

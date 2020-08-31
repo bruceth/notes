@@ -3,7 +3,7 @@ import { observable } from "mobx";
 import { CUqSub } from '../../tapp';
 import { NoteItem, NoteModel, EnumNoteType, RelativeKey } from '../model';
 import { CNotes } from '../CNotes';
-import { CContent, createCContent, CComments } from '../components';
+import { CContent, createCContent, CComments, createCContentFromType, EnumContentType } from '../components';
 import { VNoteBaseView } from './VNoteBaseView';
 
 export abstract class CNoteBase extends CUqSub<CNotes> {
@@ -38,6 +38,10 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 			this.noteContent = obj.content;
 		}
 		*/
+	}
+
+	initContent(type: EnumContentType) {
+		this.cContent = createCContentFromType(type);
 	}
 
 	@observable title: string;

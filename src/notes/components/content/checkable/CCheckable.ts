@@ -23,6 +23,10 @@ export class CCheckable extends CContent {
 			this.itemKey = obj.itemKey;
 			this.items = obj.items;
 		}
+		else {
+			this.items = [];
+			this.itemKey = 1;
+		}
 	}
 
 	renderInput():JSX.Element {return this.renderView(VInput)}

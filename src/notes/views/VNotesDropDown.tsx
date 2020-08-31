@@ -1,22 +1,23 @@
 import React from 'react';
 import { View, DropdownActions, DropdownAction } from "tonva";
 import { CNotes } from "../CNotes";
+import { EnumContentType } from 'notes/components';
 
 abstract class VNotesDropDown extends View<CNotes> {
 	private actionAddNote = () => {
-		this.controller.showAddNotePage(0);
+		this.controller.showAddNotePage(EnumContentType.text);
 	}
 
 	private actionAddList = () => {
-		this.controller.showAddNotePage(2);
+		this.controller.showAddNotePage(EnumContentType.list);
 	}
 
 	private actionCheckable = () => {
-		this.controller.showAddNotePage(1);
+		this.controller.showAddNotePage(EnumContentType.checkable);
 	}
 
 	private actionAddFolder = () => {
-		this.controller.showAddNotePage(3);
+		this.controller.showAddNotePage(EnumContentType.folder);
 	}
 
 	private actionAddAssign = () => {

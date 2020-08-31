@@ -11,13 +11,6 @@ export function renderIcon(name:string, cn:string) {
 export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	protected renderContentBase() {
 		return this.controller.cContent.renderContent();
-		/*
-		return <div>
-		{
-			this.renderContentText()
-		}
-		</div>;
-		*/
 	}
 
 	protected renderContent() {
@@ -29,18 +22,25 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	}
 
 	protected renderItemTop() {
-		/*
-		let {noteItem} = this.controller;
-		let {type, unread} = noteItem;
-		let dot:any;
-		if (unread>0) dot = <u/>;
-		*/
 		return <div className="d-flex px-3 py-2 align-items-center border-top">
 			{this.controller.renderItemIcon()}
 			{this.renderFrom()}
 			<div className="ml-auto">{this.renderEditTime()}</div>
 		</div>;
 		//<div className="mr-3 unread-dot">{this.controller.renderItemIcon()}{dot}</div>
+	}
+
+	protected renderViewCaption() {
+		let {title} = this.controller;
+		if (title) {
+			return <div className="px-3 py-2">
+				<div><b>{title}</b></div>
+			</div>;
+		}
+	}
+
+	protected renderItemCaption() {
+		
 	}
 	
 	protected renderViewTop() {
@@ -55,7 +55,6 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 			{this.renderFrom()}
 			{vEditButton}
 		</div>;
-		//<div className="mr-3">{this.controller.renderViewIcon()}</div>
 	}
 	
 	protected renderParagraphs(content:string):JSX.Element {

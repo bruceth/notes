@@ -12,13 +12,10 @@ export class VTextView extends VNoteBase<CNoteText> {
 
 	content() {
 		return React.createElement(observer(() => {
-			let {title} = this.controller;
 			return <div className="">
 				{this.renderViewTop()}
 				<div className="bg-white py-2 mb-3">
-					{title && <div className="px-3 py-2">
-						<div><b>{title}</b></div>
-					</div>}
+					{this.renderViewCaption()}
 					{this.renderContent()}
 				</div>
 				{this.renderRelatives()}

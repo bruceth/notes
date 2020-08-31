@@ -21,14 +21,10 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	protected get allowCheck() { return true; }
 	content() {
 		return React.createElement(observer(() => {
-			let { title } = this.controller;
-			let divCaption = this.renderCaption(title);
 			return <div className="my-2 mx-1 border rounded">
 				{this.renderViewTop()}
 				<div className="bg-white">
-					<div className="px-3 py-2 border-bottom">
-						{divCaption}
-					</div>
+					{this.renderViewCaption()}
 					{this.renderContent()}
 				</div>
 				{this.renderTaskAdditions()}
@@ -43,9 +39,12 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		//return this.renderCheckableContentBase(this.allowCheck);
 	}
 
-	private renderCaption(title: string) {
+	protected renderViewCaption() {
+		let { title } = this.controller;
 		let divCaption = title ? <b className="text-primary">{title}</b> : <span className="text-info">任务</span>;
-		return <><span className="mr-2">{divCaption}</span> {this.renderState()}</>;
+		return <div className="px-3 py-2">
+			<span className="mr-2">{divCaption}</span> {this.renderState()}
+		</div>;
 	}
 
 	protected renderParam(param: TaskParam) {
@@ -135,13 +134,9 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 
 
 	renderListItem() {
-		let { caption } = this.controller.noteItem;
-		let divCaption = this.renderCaption(caption);
 		return <div className="d-block bg-white">
 			{this.renderItemTop()}
-			<div className="px-3 py-2">
-				{divCaption}
-			</div>
+			{this.renderViewCaption()}
 			{this.renderItemContent()}
 		</div>;
 	}

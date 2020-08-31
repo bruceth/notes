@@ -3,7 +3,7 @@ import { CText } from "./text";
 import { CCheckable } from "./checkable";
 import { CList } from "./list";
 import { CFolder } from "./folder";
-import { EnumNoteType } from "notes/model";
+import { EnumNoteType } from "../../model";
 
 export enum EnumContentType {text=0, checkable=1, list=2, folder=3}
 

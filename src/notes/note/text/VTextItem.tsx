@@ -1,7 +1,7 @@
 import { CNoteText } from "./CNoteText";
-import { VNoteBaseView } from "../../noteBase";
+import { VNoteBase } from "../../noteBase";
 
-export class VTextItem<T extends CNoteText> extends VNoteBaseView<T> {
+export class VTextItem<T extends CNoteText> extends VNoteBase<T> {
 	protected renderContentBase() {
 		return this.controller.cContent.renderItemContent();
 	}

@@ -1,6 +1,8 @@
 import React from "react";
 import { VPage, User, Image, UserView, Page, EasyTime, FA } from "tonva";
 import { CNoteBase } from "./CNoteBase";
+import { VRelatives } from "./VRelatives";
+import { observer } from "mobx-react";
 
 //type RenderIcon = (noteItem:NoteItem) => JSX.Element;
 
@@ -8,7 +10,7 @@ export function renderIcon(name:string, cn:string) {
 	return <FA name={name} size="lg" className={cn} fixWidth={true} />;
 }
 
-export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
+export class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	protected renderContentBase() {
 		return this.controller.cContent.renderContent();
 	}
@@ -40,7 +42,7 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	}
 
 	protected renderItemCaption() {
-		
+
 	}
 	
 	protected renderViewTop() {
@@ -77,6 +79,37 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 			}
 			return <div key={index} className="pt-1 pb-2">{c}</div>;
 		})}</>;
+	}
+
+	protected renderRelatives() {
+		return this.renderVm(VRelatives);
+	}
+
+	renderListItem() {
+		return React.createElement(observer(() => {
+			let {caption} = this.controller.noteItem;
+			let divToCount = this.renderToCount();
+			let divSpawnCount = this.renderSpawnCount();
+			let divComment = this.renderCommentFlag();
+			let divBottom:any;
+			if (divToCount || divSpawnCount || divComment) {
+				divBottom = <div className="d-flex align-items-center px-3 mb-1">
+					{divToCount}
+					{divSpawnCount}
+					{divComment}
+					<div className="mr-auto" />
+				</div>;
+			}
+
+			return <div className="d-block bg-white">
+				{this.renderItemTop()}
+				<div className="py-2">
+					{caption && <div className="px-3 my-2"><b>{caption}</b></div>}
+					{this.renderItemContent()}
+				</div>
+				{divBottom}
+			</div>;
+		}));
 	}
 
 	/*

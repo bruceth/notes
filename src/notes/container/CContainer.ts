@@ -1,4 +1,4 @@
-import { CNoteBase } from "../noteBase";
+import { CNoteBase, VNoteBase } from "../noteBase";
 import { NoteItem, NoteModel, EnumNoteType } from '../model';
 import { QueryPager } from "tonva";
 import { EnumSpecFolder } from "tapp";
@@ -153,10 +153,14 @@ export abstract class CContainer extends CNoteBase {
 		if (index >= 0) this.notesPager.items.splice(index, 1);
 	}
 
+	protected newVNoteItem():VNoteBase<any> {return new VFolderNoteItem(this);}
+
+	/*
 	renderListItem(index: number): JSX.Element {
 		let vNoteItem = new VFolderNoteItem(this);
 		return vNoteItem.render();
 	}
+	*/
 
 	async addGroup(caption:string, content:string, members:{member:number}[]) {
 		let ret = await this.uqs.notes.AddGroup.submit({caption, content, members});

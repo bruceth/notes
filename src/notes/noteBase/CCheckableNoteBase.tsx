@@ -1,7 +1,7 @@
 import { observable } from "mobx";
 import { CheckItem, EnumCheckType } from '../model';
 import { CNoteBase } from './CNoteBase';
-import { VNoteBaseView } from './VNoteBaseView';
+import { VNoteBase } from './VNoteBase';
 
 export abstract class CCheckableNoteBase1 extends CNoteBase {
 	/*
@@ -66,7 +66,7 @@ export abstract class CCheckableNoteBase1 extends CNoteBase {
 	}
 	*/
 
-	protected newVNoteItem():VNoteBaseView<any> {return new VNoteBaseView(this);}
+	protected newVNoteItem():VNoteBase<any> {return new VNoteBase(this);}
 
 	onCheckableChanged(type: EnumCheckType) {
 		/*

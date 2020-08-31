@@ -1,8 +1,8 @@
 import React from 'react';
 import { CContainer } from '../CContainer';
-import { VNoteBaseView } from '../../noteBase';
+import { VNoteBase } from '../../noteBase';
 
-export abstract class VContainerForm<T extends CContainer> extends VNoteBaseView<T> {
+export abstract class VContainerForm<T extends CContainer> extends VNoteBase<T> {
 	protected renderTitleInput() {
 		return <div className="py-1 px-1 border-bottom">
 			<input type="text" className="w-100 border-0 form-control font-weight-bold" placeholder="标题" maxLength={80}

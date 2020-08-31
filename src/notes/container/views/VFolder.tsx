@@ -1,9 +1,9 @@
 import React from 'react';
 import { List, FA, User, Image, UserView } from 'tonva';
 import { CContainer } from '../CContainer';
-import { CNoteBase, VNoteBaseView } from "../../noteBase";
+import { CNoteBase, VNoteBase } from "../../noteBase";
 
-export class VFolder extends VNoteBaseView<CContainer> {
+export class VFolder extends VNoteBase<CContainer> {
 	afterBack() {
 		this.controller.owner.popFolder();
 	}

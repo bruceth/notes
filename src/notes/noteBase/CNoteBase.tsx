@@ -4,7 +4,7 @@ import { CUqSub } from '../../tapp';
 import { NoteItem, NoteModel, EnumNoteType, RelativeKey } from '../model';
 import { CNotes } from '../CNotes';
 import { CContent, createCContent, CComments, createCContentFromType, EnumContentType } from '../components';
-import { VNoteBaseView } from './VNoteBaseView';
+import { VNoteBase } from './VNoteBase';
 
 export abstract class CNoteBase extends CUqSub<CNotes> {
 	disableFrom: boolean = false;
@@ -52,7 +52,7 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 
 	protected async internalStart() { }
 
-	protected newVNoteItem():VNoteBaseView<any> {return new VNoteBaseView(this);}
+	protected newVNoteItem():VNoteBase<any> {return new VNoteBase(this);}
 
 	renderListItem(index: number): JSX.Element {
 		let vNoteItem = this.newVNoteItem();

@@ -1,11 +1,11 @@
 import React from 'react';
-import { VNoteBaseView } from '../../noteBase';
+import { VNoteBase } from '../../noteBase';
 import { CNote } from '../CNote';
 import { observer } from 'mobx-react';
 import { ConfirmOptions } from 'tonva';
 import { computed, observable } from 'mobx';
 
-export abstract class VNoteForm<T extends CNote> extends VNoteBaseView<T> {
+export abstract class VNoteForm<T extends CNote> extends VNoteBase<T> {
 	@observable protected changed: boolean = false;
 	protected renderTitleInput() {
 		return <div className="py-1 px-1 border-bottom">

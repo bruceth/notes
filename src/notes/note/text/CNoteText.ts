@@ -2,7 +2,7 @@ import { NoteItem, EnumNoteType } from '../../model';
 import { CNotes } from '../../CNotes';
 import { VTextView } from './VTextView';
 import { VAdd } from './VAdd';
-import { renderIcon, VNoteBaseView } from '../../noteBase';
+import { renderIcon, VNoteBase } from '../../noteBase';
 import { VTextItem } from './VTextItem';
 import { CNote } from '../CNote';
 import { EnumContentType, createCContentFromType } from '../../components';
@@ -25,7 +25,7 @@ export class CNoteText extends CNote {
 		return renderIcon(this.noteItem.toCount>0? 'files-o': 'file-o', 'text-info');
 	}
 
-	protected newVNoteItem():VNoteBaseView<any> {return new VTextItem(this);}
+	protected newVNoteItem():VNoteBase<any> {return new VTextItem(this);}
 
 	showNoteView() {
 		this.openVPage(VTextView);

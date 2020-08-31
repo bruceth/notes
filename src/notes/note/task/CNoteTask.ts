@@ -1,7 +1,7 @@
 import { observable } from "mobx";
 import { Contact } from "../../../model";
 import { NoteItem, numberFromId, CheckItem, EnumNoteType } from '../../model';
-import { renderIcon } from '../../noteBase';
+import { renderIcon, VNoteBase } from '../../noteBase';
 import { CNote } from "../CNote";
 import { VTaskParams } from "./VTaskParams";
 import { EnumTaskState, TaskStateResult } from "./TaskState"
@@ -129,11 +129,17 @@ export abstract class CNoteTask extends CNote {
 		return renderIcon('tasks', 'text-success');
 	}
 
+	protected newVNoteItem():VNoteBase<any> {
+		let TaskView = this.getTaskView(); //this.noteItem.state as EnumTaskState);
+		return new TaskView(this);
+	}
+	/*
 	renderListItem(index: number): JSX.Element {
 		let TaskView = this.getTaskView(); //this.noteItem.state as EnumTaskState);
 		let v = new TaskView(this);
 		return v.renderListItem();
 	}
+	*/
 
 	renderBaseItem(index: number): JSX.Element {
 		return super.renderListItem(index);

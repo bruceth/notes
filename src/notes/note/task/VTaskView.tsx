@@ -128,8 +128,8 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	}
 
 	private onCheckChange = async (evt:React.ChangeEvent<HTMLInputElement>) => {
-		let t = evt.currentTarget;
-		let key = Number(t.getAttribute('data-key'));
+		//let t = evt.currentTarget;
+		//let key = Number(t.getAttribute('data-key'));
 		//await this.controller.onCheckChange(key, t.checked);
 	}
 

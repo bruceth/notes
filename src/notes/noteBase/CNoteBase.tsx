@@ -3,9 +3,8 @@ import { observable } from "mobx";
 import { CUqSub } from '../../tapp';
 import { NoteItem, NoteModel, EnumNoteType, RelativeKey } from '../model';
 import { CNotes } from '../CNotes';
-import { CContent, createCContent, CComments, createCContentFromType, EnumContentType } from '../components';
+import { CContent, createCContent, CComments } from '../components';
 import { VNoteBaseView } from './VNoteBaseView';
-import {  } from 'notes/components/content/createCContent';
 
 export abstract class CNoteBase extends CUqSub<CNotes> {
 	disableFrom: boolean = false;

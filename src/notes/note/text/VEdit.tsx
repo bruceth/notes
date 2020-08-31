@@ -1,7 +1,7 @@
 import React from 'react';
 import { VNoteForm } from '../views/VNoteForm';
 import { CNoteText } from "./CNoteText";
-import { DropdownAction, DropdownActions } from 'tonva';
+//import { DropdownAction, DropdownActions } from 'tonva';
 
 export class VEdit extends VNoteForm<CNoteText> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}

@@ -1,8 +1,6 @@
 import React from "react";
 import { VNoteForm } from './VNoteForm';
 import { CNote } from '../CNote';
-import { observer } from "mobx-react";
-import { EnumNoteType, EnumCheckType } from "../../model";
 
 export class VAddNoteBase<T extends CNote> extends VNoteForm<T> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}

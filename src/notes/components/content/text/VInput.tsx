@@ -1,5 +1,4 @@
 import React from 'react';
-import { VTextBaseInput } from '../textBase';
 import { CText } from './CText';
 import { observer } from 'mobx-react';
 import { View, t } from 'tonva';

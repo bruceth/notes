@@ -1,7 +1,5 @@
 import React from 'react';
-import { View, FA } from "tonva";
-import { CCheckable, CheckItem } from './CCheckable';
-import { observer } from 'mobx-react';
+import { CheckItem } from './CCheckable';
 import { VBase } from './VBase';
 
 export class VView extends VBase {

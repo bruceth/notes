@@ -1,5 +1,5 @@
 import { observable } from "mobx";
-import { NoteItem, CheckItem, EnumCheckType } from '../model';
+import { CheckItem, EnumCheckType } from '../model';
 import { CNoteBase } from './CNoteBase';
 import { VNoteBaseView } from './VNoteBaseView';
 

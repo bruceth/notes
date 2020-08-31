@@ -1,7 +1,4 @@
 import React from 'react';
-import { computed, observable } from 'mobx';
-import { observer } from 'mobx-react';
-import { ConfirmOptions } from 'tonva';
 import { CContainer } from '../CContainer';
 import { VNoteBaseView } from '../../noteBase';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, FA } from "tonva";
+import { View } from "tonva";
 import { CCheckable, CheckItem } from './CCheckable';
 import { observer } from 'mobx-react';
 

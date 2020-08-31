@@ -3,9 +3,6 @@ import { observer } from 'mobx-react';
 import { VNoteBase } from "./VNoteBase";
 import { CNoteBase } from "./CNoteBase";
 import { VRelatives } from './VRelatives';
-//import { CCheckableNoteBase } from "./CCheckableNoteBase";
-import { CheckItem, EnumCheckType } from 'notes/model';
-import { FA } from 'tonva';
 
 export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 	protected renderRelatives() {

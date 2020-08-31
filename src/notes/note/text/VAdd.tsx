@@ -1,14 +1,8 @@
 import React from "react";
 import { CNoteText } from './CNoteText';
-import { VNoteForm } from "../views/VNoteForm";
+import { VAddNoteBase } from "../views/VAddNoteBase";
 
-export class VAdd extends VNoteForm<CNoteText> {
+export class VAdd extends VAddNoteBase<CNoteText> {
 	header() {return '新建文字单'}
 
-	content() {
-		return <div className="bg-white">
-			{this.renderTitleInput()}
-			{this.controller.cContent.renderInput()}
-		</div>;
-	}
 }

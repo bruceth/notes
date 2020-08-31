@@ -21,7 +21,7 @@ function cContentFromType(type: EnumContentType): CContent {
 
 export function createCContent(content:string, type: EnumNoteType): CContent { 
 	let ret:CContent;
-	if (type === 2 /*comments*/ || content === undefined) {
+	if (type === EnumNoteType.comment || content === undefined) {
 		ret = new CText(undefined);
 		ret.init(content);
 	}

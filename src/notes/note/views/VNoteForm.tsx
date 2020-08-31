@@ -1,8 +1,12 @@
 import React from 'react';
 import { VNoteBaseView } from '../../noteBase';
 import { CNote } from '../CNote';
+import { observer } from 'mobx-react';
+import { ConfirmOptions } from 'tonva';
+import { computed, observable } from 'mobx';
 
 export abstract class VNoteForm<T extends CNote> extends VNoteBaseView<T> {
+	@observable protected changed: boolean = false;
 	protected renderTitleInput() {
 		return <div className="py-1 px-1 border-bottom">
 			<input type="text" className="w-100 border-0 form-control font-weight-bold" placeholder="标题" maxLength={80}
@@ -13,7 +17,62 @@ export abstract class VNoteForm<T extends CNote> extends VNoteBaseView<T> {
 
 	protected onTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
 		this.controller.title = evt.target.value.trim();
+		this.changed = true;
 	}
+
+	content() {
+		return <>
+			<div className="bg-white">
+				{this.renderTitleInput()}
+				{this.controller.cContent.renderInput()}
+			</div>
+			<div className="py-2 pl-3 bg-light border-top d-flex">
+					{this.renderButtonLeft()}
+					<div className="mr-auto" />
+					{React.createElement(observer(() => <>
+						<button onClick={() => this.onButtonSave()}
+							className="btn btn-primary mr-3" disabled={this.btnSaveDisabled}>
+							保存
+						</button>
+					</>))}
+					{this.renderExButtons()}
+				</div>
+		</>;
+	}
+
+	protected async onDelete(): Promise<void> {
+		let options: ConfirmOptions = {
+			caption: '请确认',
+			message: '真的要删除这个小单吗？',
+			yes: '确认删除',
+			no: '不删除'
+		};
+		if (await this.controller.confirm(options) === 'yes') {
+			await this.controller.owner.hideNote(this.controller.noteItem.note, 1);
+			this.closePage(2);
+		}
+	}
+
+	protected renderDeleteButton() {
+		return <button className="btn btn-outline-secondary mr-3" onClick={() => this.onDelete()}>
+			删除
+		</button>;
+	}
+
+	protected renderButtonLeft():JSX.Element { return }
+
+	protected abstract renderExButtons():JSX.Element;
+
+	protected abstract getSaveDisabled():boolean;
+
+	protected abstract onButtonSave(): Promise<void>;
+
+	@computed protected get btnSaveDisabled():boolean {
+		if (this.controller.cContent.changed) return false;
+		if (this.changed === true) return false;
+		return this.getSaveDisabled();
+	}
+
 }
 
 /*

@@ -1,6 +1,6 @@
 import { observable } from "mobx";
 import { Contact } from "../../../model";
-import { NoteItem, numberFromId, CheckItem } from '../../model';
+import { NoteItem, numberFromId, CheckItem, EnumNoteType } from '../../model';
 import { renderIcon } from '../../noteBase';
 import { CNote } from "../CNote";
 import { VTaskParams } from "./VTaskParams";
@@ -21,6 +21,7 @@ export interface TaskCheckItem extends CheckItem {
 }
 
 export abstract class CNoteTask extends CNote {
+	get type():EnumNoteType { return EnumNoteType.task }
 	//private getTaskView = new TaskViewFactory().getView;
 
 	@observable checkInfo: string;

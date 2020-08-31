@@ -40,6 +40,8 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		*/
 	}
 
+	abstract get type():EnumNoteType;
+
 	initContent(type: EnumContentType) {
 		this.cContent = createCContentFromType(type);
 	}
@@ -135,8 +137,7 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 
 	async AddNote(parent: number) {
 		let noteContent = this.stringifyContent();
-		let type = this.noteItem.type;
-		let ret = await this.owner.addNote(parent, this.title, noteContent, this.buildObj(), type);
+		let ret = await this.owner.addNote(parent, this.title, noteContent, this.buildObj(), this.type);
 		this.updateChange();
 		return ret;
 	}

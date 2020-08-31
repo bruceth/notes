@@ -1,5 +1,5 @@
 import React from 'react';
-import { NoteItem } from '../../model';
+import { NoteItem, EnumNoteType } from '../../model';
 import { CNotes } from '../../CNotes';
 import { VAssignView } from './VAssignView';
 import { VAdd } from './VAdd';
@@ -12,6 +12,7 @@ export function createCNoteAssign(cNotes: CNotes): CNoteAssign {
 }
 
 export class CNoteAssign extends CInput {
+	get type():EnumNoteType { return EnumNoteType.assign }
 	init(param: NoteItem):void {
 		super.init(param);
 		if (param) {

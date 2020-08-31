@@ -1,6 +1,9 @@
 import React from 'react';
 import { VNoteForm } from '../views/VNoteForm';
 import { CNoteText } from "./CNoteText";
+import { DropdownActions, DropdownAction } from 'tonva';
+import { EnumContentType } from 'notes/components';
+import { EnumCheckType } from 'notes/model';
 //import { DropdownAction, DropdownActions } from 'tonva';
 
 export class VEdit extends VNoteForm<CNoteText> {
@@ -9,19 +12,12 @@ export class VEdit extends VNoteForm<CNoteText> {
 		return this.t('noteText');
 	}
 
-	content() {
-		return <div className="bg-white">
-			{this.renderTitleInput()}
-			{this.controller.cContent.renderInput()}
-		</div>;
-	}
-	/*
 	protected getSaveDisabled():boolean {
-		return (this.controller.title === undefined && this.controller.changedNoteContent === undefined);
+		return (this.controller.title === undefined /*&& this.controller.changedNoteContent === undefined*/);
 	}
 
 	protected async onButtonSave(): Promise<void> {
-		this.checkInputAdd();
+		//this.checkInputAdd();
 		await this.controller.SetNote();
 		this.closePage();
 	}
@@ -36,14 +32,13 @@ export class VEdit extends VNoteForm<CNoteText> {
 	}
 
 	private dropdownActions: DropdownAction[] = [
-		{icon:'file-o', caption:this.t('noteText'), action: ()=>this.actionSwitchType(0)},
-		{icon:'list', caption:this.t('noteList'), action: ()=>this.actionSwitchType(2)},
-		{icon:'check-square-o', caption:this.t('noteCheckable'), action: ()=>this.actionSwitchType(1)},
+		{icon:'file-o', caption:this.t('noteText'), action: ()=>this.actionSwitchType(EnumContentType.text)},
+		{icon:'list', caption:this.t('noteList'), action: ()=>this.actionSwitchType(EnumContentType.list)},
+		{icon:'check-square-o', caption:this.t('noteCheckable'), action: ()=>this.actionSwitchType(EnumContentType.checkable)},
 	];
 
 	private actionSwitchType(type: number) {
-	 	this.changed = true;
+	 	//this.changed = true;
 	 	//this.controller.onCheckableChanged(type);
 	}
-	*/
 }

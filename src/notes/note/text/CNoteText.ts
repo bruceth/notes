@@ -1,4 +1,4 @@
-import { NoteItem } from '../../model';
+import { NoteItem, EnumNoteType } from '../../model';
 import { CNotes } from '../../CNotes';
 import { VTextView } from './VTextView';
 import { VAdd } from './VAdd';
@@ -13,6 +13,7 @@ export function createCNoteText(cNotes: CNotes): CNoteText {
 }
 
 export class CNoteText extends CNote {
+	get type():EnumNoteType { return EnumNoteType.text }
 	init(param: NoteItem):void {
 		super.init(param);
 		if (param) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { CheckItem } from '../../model';
-import { VCheckableNoteBaseView } from '../../noteBase';
+import { VNoteBaseView } from '../../noteBase';
 import { EnumTaskState } from "./TaskState"
 import { CNoteTask } from "./CNoteTask";
 import { VEdit } from './VEdit';
@@ -15,7 +15,7 @@ export interface TaskParam {
 	onClick?: () => void;
 }
 
-export abstract class VTaskView<T extends CNoteTask> extends VCheckableNoteBaseView<T> {
+export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
 	header() { return this.t('task') }
 	protected get allowCheck() { return true; }
@@ -39,7 +39,8 @@ export abstract class VTaskView<T extends CNoteTask> extends VCheckableNoteBaseV
 	}
 
 	protected renderContent() {
-		return this.renderCheckableContentBase(this.allowCheck);
+		return <>VTaskView</>;
+		//return this.renderCheckableContentBase(this.allowCheck);
 	}
 
 	private renderCaption(title: string) {
@@ -129,7 +130,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VCheckableNoteBaseV
 	private onCheckChange = async (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;
 		let key = Number(t.getAttribute('data-key'));
-		await this.controller.onCheckChange(key, t.checked);
+		//await this.controller.onCheckChange(key, t.checked);
 	}
 
 

@@ -1,9 +1,9 @@
 //import { CContainer, CSpace, CFolderRoot, CFolderMy } from "./container";
-import { CNoteBase } from "./noteBase";
-import { EnumNoteType, NoteItem } from "./model";
-import { CNotes } from "./CNotes";
-import { createCSpace, createCFolder } from "./container";
-import { createCNoteText, createCNoteTask, createCNoteAssign } from "./note";
+import { CNoteBase } from ".";
+import { EnumNoteType, NoteItem } from "../model";
+import { CNotes } from "../CNotes";
+import { createCSpace, createCFolder } from "../container";
+import { createCNoteText, createCNoteTask, createCNoteAssign } from "../note";
 
 export function createNoteBase(noteItem: NoteItem, cNotes: CNotes):CNoteBase {
 	let {type} = noteItem;

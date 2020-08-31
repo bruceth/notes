@@ -18,5 +18,7 @@ export const en = {
 	noteCheckable: 'Checkable',
 	noteTask: 'Task',
 	noteFolder: 'Folder',
-	noteSpace: 'Space'
+	noteSpace: 'Space',
+
+	content: 'Content',
 }

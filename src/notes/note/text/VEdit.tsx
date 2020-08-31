@@ -2,18 +2,20 @@ import React from 'react';
 import { VNoteForm } from '../views/VNoteForm';
 import { CNoteText } from "./CNoteText";
 import { DropdownAction, DropdownActions } from 'tonva';
-import { EnumCheckType } from '../../model';
 
 export class VEdit extends VNoteForm<CNoteText> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {
-		return this.controller.checkType === EnumCheckType.checkable ? this.t('taskList') : this.t('notes')
+		return this.t('noteText');
 	}
 
 	content() {
-		return this.renderEdit();
+		return <div className="bg-white">
+			{this.renderTitleInput()}
+			{this.controller.cContent.renderInput()}
+		</div>;
 	}
-
+	/*
 	protected getSaveDisabled():boolean {
 		return (this.controller.title === undefined && this.controller.changedNoteContent === undefined);
 	}
@@ -41,6 +43,7 @@ export class VEdit extends VNoteForm<CNoteText> {
 
 	private actionSwitchType(type: number) {
 	 	this.changed = true;
-	 	this.controller.onCheckableChanged(type);
+	 	//this.controller.onCheckableChanged(type);
 	}
+	*/
 }

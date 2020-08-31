@@ -9,17 +9,17 @@ export class VAdd extends VAddNoteBase<CNoteAssign> {
 	}
 
 	protected async onButtonSave(): Promise<void> {
-		this.checkInputAdd();
+		//this.checkInputAdd();
 		let type = EnumNoteType.assign;
-		await this.controller.AddNote(this.parentId, type);
+		await this.controller.AddNote(this.parentId);
 		this.closePage();
 		return;
 	}
 
 	protected onSaveAndSendNote = async () => {
-		this.checkInputAdd();
+		//this.checkInputAdd();
 		let type = EnumNoteType.assign;
-		let cnewNote = await this.controller.AddNote(this.parentId, type);
+		let cnewNote = await this.controller.AddNote(this.parentId);
 		this.closePage();
 		await cnewNote.cApp.loadRelation();
 		cnewNote.showTo(1);

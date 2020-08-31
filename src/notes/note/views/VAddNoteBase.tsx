@@ -15,7 +15,7 @@ export class VAddNoteBase<T extends CNote> extends VNoteForm<T> {
 	}
 
 	content() {
-		return this.renderEdit();
+		return <>VAddNoteBase</>; // this.renderEdit();
 	}
 
 	// protected getOptions(): {val:number, text:string}[] {
@@ -26,7 +26,7 @@ export class VAddNoteBase<T extends CNote> extends VNoteForm<T> {
 	// 		{ val: 3, text: '小单夹' },
 	// 	];
 	// }
-
+	/*
 	protected getSaveDisabled():boolean {
 		if (this.controller.title !== undefined) {
 			return this.controller.title.length === 0;
@@ -39,16 +39,16 @@ export class VAddNoteBase<T extends CNote> extends VNoteForm<T> {
 
 	protected async onButtonSave(): Promise<void> {
 		this.checkInputAdd();
-		let type = this.controller.checkType === EnumCheckType.folder ? EnumNoteType.folder : EnumNoteType.text;
-		await this.controller.AddNote(this.parentId, type);
+		let type =  //this.controller.checkType === EnumCheckType.folder ? EnumNoteType.folder : EnumNoteType.text;
+		await this.controller.AddNote(this.parentId); //, type);
 		this.closePage();
 		return;
 	}
 
 	protected renderExButtons():JSX.Element {
 		return React.createElement(observer(() => {
-			if (this.controller.checkType === EnumCheckType.folder)
-				return;
+			//if (this.controller.checkType === EnumCheckType.folder)
+			//	return;
 			return this.renderShareButton();
 		}));
 	}
@@ -68,4 +68,5 @@ export class VAddNoteBase<T extends CNote> extends VNoteForm<T> {
 		await cnewNote.cApp.loadRelation();
 		cnewNote.showTo(1);
 	}
+	*/
 }

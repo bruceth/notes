@@ -1,3 +1,4 @@
+import React from 'react';
 import { VNoteForm } from '../views/VNoteForm';
 import { CNoteAssign } from "./CNoteAssign";
 
@@ -8,7 +9,7 @@ export class VEdit extends VNoteForm<CNoteAssign> {
 	}
 
 	content() {
-		return this.renderEdit();
+		return <>this.renderEdit()</>;
 	}
 
 	protected getSaveDisabled():boolean {
@@ -16,12 +17,12 @@ export class VEdit extends VNoteForm<CNoteAssign> {
 	}
 
 	protected async onButtonSave(): Promise<void> {
-		this.checkInputAdd();
+		//this.checkInputAdd();
 		await this.controller.SetNote();
 		this.closePage();
 	}
 
 	protected renderExButtons():JSX.Element {
-		return this.renderDeleteButton();
+		return <>this.renderDeleteButton()</>;
 	}
 }

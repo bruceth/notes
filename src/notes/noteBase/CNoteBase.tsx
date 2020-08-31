@@ -1,15 +1,19 @@
 import React from 'react';
 import { observable } from "mobx";
+import { CUqSub } from '../../tapp';
 import { NoteItem, NoteModel, EnumNoteType, RelativeKey } from '../model';
 import { CNotes } from '../CNotes';
-import { CUqSub } from '../../tapp';
+import { CContent, createCContent, CComments, createCContentFromType, EnumContentType } from '../components';
 import { VNoteBaseView } from './VNoteBaseView';
+import {  } from 'notes/components/content/createCContent';
 
 export abstract class CNoteBase extends CUqSub<CNotes> {
 	disableFrom: boolean = false;
 	@observable noteModel: NoteModel;
 	@observable noteItem: NoteItem;
 	@observable relativeKey: RelativeKey;
+	cContent: CContent;
+	cComments: CComments;
 
 	get groupFolder(): number {
 		if (!this.noteItem)
@@ -18,18 +22,23 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		if (!ret && this.noteItem.type === Number(EnumNoteType.groupFolder)) {
 			ret = this.noteItem.note;
 		}
-
 		return ret;
 	}
 
 	init(param: NoteItem): void {
 		this.noteItem = param;
-		if (!param) return;
+		if (!param) {
+			return;
+		}
 		this.title = param.caption;
+		this.cContent = createCContent(param.content);
+		if (!this.cContent) debugger;
+		/*
 		let { obj } = param;
 		if (obj) {
 			this.noteContent = obj.content;
 		}
+		*/
 	}
 
 	@observable title: string;
@@ -120,8 +129,9 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		}
 	}
 
-	async AddNote(parent: number, type:EnumNoteType) {
+	async AddNote(parent: number) {
 		let noteContent = this.stringifyContent();
+		let type = this.noteItem.type;
 		let ret = await this.owner.addNote(parent, this.title, noteContent, this.buildObj(), type);
 		this.updateChange();
 		return ret;

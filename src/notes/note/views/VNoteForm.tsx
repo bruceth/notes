@@ -1,13 +1,28 @@
 import React from 'react';
 import { computed, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { VCheckableNoteBaseView } from '../../noteBase';
+import { VNoteBaseView } from '../../noteBase';
 import { FA, ConfirmOptions } from 'tonva';
 import { VItemInput, ItemInputProps } from './VItemInput';
 import { CheckItem, EnumCheckType } from '../../model';
 import { CNote } from '../CNote';
 
-export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<T> {
+export abstract class VNoteForm<T extends CNote> extends VNoteBaseView<T> {
+	protected renderTitleInput() {
+		return <div className="py-1 px-1 border-bottom">
+			<input type="text" className="w-100 border-0 form-control font-weight-bold" placeholder="标题" maxLength={80}
+				onChange={this.onTitleChange} autoFocus={true}
+				defaultValue={this.controller.title} />
+		</div>;
+	}
+
+	protected onTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+		this.controller.title = evt.target.value.trim();
+	}
+}
+
+/*
+export abstract class VNoteForm<T extends CNote> extends VNoteBaseView<T> {
 	@observable protected changed: boolean = false;
 	private inputAdd: HTMLInputElement;
 
@@ -90,17 +105,17 @@ export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<
 					{this.renderExButtons()}
 				</div>
 			</div>
-			{/* radios &&
-				<div className="m-2 form-check">
-					{radios.map((v, index) => {
-						let { val, text } = v;
-						return <label key={index} className="mb-0 mx-2">
-							<input className="mr-1" type="radio" value={val}
-								defaultChecked={this.controller.checkType === val} name={'checktype'} onChange={this.onCheckableChanged} />
-							{text}
-					</label>
-					})}
-				</div>*/
+			// radios && {
+			//	<div className="m-2 form-check">
+			//		{radios.map((v, index) => {
+			//			let { val, text } = v;
+			//			return <label key={index} className="mb-0 mx-2">
+			//				<input className="mr-1" type="radio" value={val}
+			//					defaultChecked={this.controller.checkType === val} name={'checktype'} onChange={this.onCheckableChanged} />
+			//				{text}
+			//		</label>
+			//		})}
+			</div>
 			}
 		</div>;
 	}
@@ -240,3 +255,4 @@ export abstract class VNoteForm<T extends CNote> extends VCheckableNoteBaseView<
 		}
 	}
 }
+*/

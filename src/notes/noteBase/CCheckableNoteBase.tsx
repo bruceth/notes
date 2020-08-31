@@ -1,9 +1,10 @@
 import { observable } from "mobx";
 import { NoteItem, CheckItem, EnumCheckType } from '../model';
 import { CNoteBase } from './CNoteBase';
-import { VCheckableNoteBaseView, VNoteBaseView } from './VNoteBaseView';
+import { VNoteBaseView } from './VNoteBaseView';
 
-export abstract class CCheckableNoteBase extends CNoteBase {
+export abstract class CCheckableNoteBase1 extends CNoteBase {
+	/*
 	init(param: NoteItem): void {
 		this.noteItem = param;
 		if (!param) return;
@@ -21,6 +22,7 @@ export abstract class CCheckableNoteBase extends CNoteBase {
 			}
 		}
 	}
+	*/
 
 	@observable checkType: EnumCheckType = EnumCheckType.text;	//0: text, 1: checkable, 2: list, 3: folder
 	@observable items: CheckItem[] = [];
@@ -62,7 +64,7 @@ export abstract class CCheckableNoteBase extends CNoteBase {
 		return obj;
 	}
 
-	protected newVNoteItem():VNoteBaseView<any> {return new VCheckableNoteBaseView(this);}
+	protected newVNoteItem():VNoteBaseView<any> {return new VNoteBaseView(this);}
 
 	onCheckableChanged(type: EnumCheckType) {
 		let oldType = this.checkType;

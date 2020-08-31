@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { VNoteBase } from "./VNoteBase";
 import { CNoteBase } from "./CNoteBase";
 import { VRelatives } from './VRelatives';
-import { CCheckableNoteBase } from "./CCheckableNoteBase";
+//import { CCheckableNoteBase } from "./CCheckableNoteBase";
 import { CheckItem, EnumCheckType } from 'notes/model';
 import { FA } from 'tonva';
 
@@ -41,6 +41,7 @@ export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 
 }
 
+/*
 export class VCheckableNoteBaseView<T extends CCheckableNoteBase> extends VNoteBaseView<T> {
 	protected renderCheckableContentBase(checkable:boolean) {
 		let {checkType} = this.controller;
@@ -56,15 +57,6 @@ export class VCheckableNoteBaseView<T extends CCheckableNoteBase> extends VNoteB
 		}
 		</div>;
 	}
-
-	protected renderContent() {
-		return this.renderCheckableContentBase(false);
-	}
-
-	protected renderItemContent() {
-		return this.renderCheckableContentBase(false);
-	}
-
 	protected renderContentList() {
 		return React.createElement(observer(() => {
 			let items = this.controller.items;
@@ -138,3 +130,4 @@ export class VCheckableNoteBaseView<T extends CCheckableNoteBase> extends VNoteB
 		}
 	}
 }
+*/

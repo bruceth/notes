@@ -1,12 +1,10 @@
 import React from 'react';
-import { VEdit } from './VEdit';
 import { observer } from 'mobx-react';
-import { VNoteBaseView } from '../../noteBase';
+import { VNoteBase } from '../../noteBase';
 import { CNoteText } from './CNoteText';
 import { VTextRelatives } from './VTextRelatives';
-import { CheckItem } from '../../model';
 
-export class VTextView extends VNoteBaseView<CNoteText> {
+export class VTextView extends VNoteBase<CNoteText> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {
 		return this.t('notes')
@@ -28,6 +26,10 @@ export class VTextView extends VNoteBaseView<CNoteText> {
 		}));
 	}
 
+	protected renderContentBase() {
+		return this.controller.cContent.renderContent();
+	}
+
 	protected renderRelatives() {
 		return this.renderVm(VTextRelatives);
 	}
@@ -45,9 +47,9 @@ export class VTextView extends VNoteBaseView<CNoteText> {
 	}
 
 	protected onEdit() {
-		this.openVPage(VEdit);
+		this.controller.showEditPage();
 	}
-
+/*
 	protected renderCheckItem(v:CheckItem, checkable:boolean) {
 		let {key, text, checked} = v;
 		let cn = 'form-control-plaintext ml-3 ';
@@ -74,4 +76,5 @@ export class VTextView extends VNoteBaseView<CNoteText> {
 		let key = Number(t.getAttribute('data-key'));
 		await this.controller.onCheckChange(key, t.checked);
 	}
+*/
 }

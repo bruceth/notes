@@ -56,7 +56,7 @@ export class CNoteAssign extends CInput {
 	}
 
 	showAddAssignPage(parent: number) {
-		this.checkType = EnumCheckType.checkable;
+		//this.checkType = EnumCheckType.checkable;
 		this.openVPage(VAdd, parent);
 	}
 }

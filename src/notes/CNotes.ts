@@ -8,7 +8,7 @@ import { CGroup } from "./group";
 import { Contact } from "../model";
 import { VSent } from "./views/VSent";
 import { VTo } from "./views/VTo";
-import { createNoteBase } from "./factory";
+import { createNoteBase } from "./noteBase/createNoteBase";
 import { createCNoteText, createCNoteTask, createCNoteAssign } from "./note";
 import { VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
 
@@ -124,7 +124,7 @@ export class CNotes extends CUqBase {
 	showAddNotePage(checkType: number) {
 		let parent = this.currentFold.folderId;
 		let cNoteText = createCNoteText(this); // this.newSub(CNoteText);
-		cNoteText.showAddNotePage(parent, checkType);
+		cNoteText.showAddPage(parent, checkType);
 	}
 
 	showAddAssignPage() {

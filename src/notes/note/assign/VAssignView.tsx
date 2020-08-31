@@ -1,12 +1,12 @@
 import React from 'react';
 import { VEdit } from './VEdit';
 import { observer } from 'mobx-react';
-import { VCheckableNoteBaseView } from '../../noteBase';
+import { VNoteBaseView } from '../../noteBase';
 import { CNoteAssign } from './CNoteAssign';
 import { VAssignRelatives } from './VAssignRelatives';
 import { CheckItem } from '../../model';
 
-export class VAssignView extends VCheckableNoteBaseView<CNoteAssign> {
+export class VAssignView extends VNoteBaseView<CNoteAssign> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {
 		return this.t('assign')
@@ -72,6 +72,6 @@ export class VAssignView extends VCheckableNoteBaseView<CNoteAssign> {
 	private onCheckChange = async (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;
 		let key = Number(t.getAttribute('data-key'));
-		await this.controller.onCheckChange(key, t.checked);
+		//await this.controller.onCheckChange(key, t.checked);
 	}
 }

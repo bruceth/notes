@@ -2,15 +2,17 @@ import { NoteItem } from '../../model';
 import { CNotes } from '../../CNotes';
 import { VTextView } from './VTextView';
 import { VAdd } from './VAdd';
-import { CInput } from '../CInput';
 import { renderIcon, VNoteBaseView } from '../../noteBase';
 import { VTextItem } from './VTextItem';
+import { CNote } from '../CNote';
+import { EnumContentType, createCContentFromType } from '../../components';
+import { VEdit } from './VEdit';
 
 export function createCNoteText(cNotes: CNotes): CNoteText {
 	return new CNoteText(cNotes);
 }
 
-export class CNoteText extends CInput {
+export class CNoteText extends CNote {
 	init(param: NoteItem):void {
 		super.init(param);
 		if (param) {
@@ -28,8 +30,13 @@ export class CNoteText extends CInput {
 		this.openVPage(VTextView);
 	}
 
-	showAddNotePage(parent: number, checkType: number) {
-		this.checkType = checkType;
+	showAddPage(parent: number, contentType: EnumContentType) {
+		//this.checkType = checkType;
+		this.cContent = createCContentFromType(contentType);
 		this.openVPage(VAdd, parent);
+	}
+
+	showEditPage() {
+		this.openVPage(VEdit);
 	}
 }

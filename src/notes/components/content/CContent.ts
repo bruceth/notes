@@ -4,10 +4,12 @@ import { EnumContentType } from "./createCContent";
 export abstract class CContent extends Controller {
 	protected async internalStart() {}
 
-	checkType: EnumContentType;
+	abstract get contentType(): EnumContentType;
 	onContentChanged: () => Promise<void>;
+	
+	abstract buildObj(obj:any): void;
 
 	abstract renderInput(): JSX.Element;
 	abstract renderContent(): JSX.Element;
-	abstract buildObj(obj:any): void;
+	renderItemContent(): JSX.Element {return this.renderContent();}
 }

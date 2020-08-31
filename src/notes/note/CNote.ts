@@ -1,4 +1,4 @@
-import { CCheckableNoteBase } from "../noteBase";
+import { CNoteBase } from "../noteBase";
 
-export abstract class CNote extends CCheckableNoteBase {
+export abstract class CNote extends CNoteBase {
 }

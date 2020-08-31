@@ -18,5 +18,7 @@ export const zh = {
 	noteCheckable: '勾选单',
 	noteTask: '派发任务',
 	noteFolder: '小单夹',
-	noteSpace: '空间'
+	noteSpace: '空间',
+
+	content: '内容',
 }

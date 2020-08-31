@@ -9,9 +9,13 @@ export class VEdit extends VNoteForm<CNoteAssign> {
 	}
 
 	content() {
-		return <>this.renderEdit()</>;
+		return <div className="bg-white">
+			{this.renderTitleInput()}
+			{this.controller.cContent.renderInput()}
+		</div>;
 	}
 
+	/*
 	protected getSaveDisabled():boolean {
 		return (this.controller.title === undefined && this.controller.changedNoteContent === undefined);
 	}
@@ -25,4 +29,5 @@ export class VEdit extends VNoteForm<CNoteAssign> {
 	protected renderExButtons():JSX.Element {
 		return <>this.renderDeleteButton()</>;
 	}
+	*/
 }

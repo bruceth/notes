@@ -5,10 +5,15 @@ import { CNoteTask } from "./CNoteTask";
 export class VEdit extends VNoteForm<CNoteTask> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() { return this.t('task') }
+
 	content() {
-		return <>this.renderEdit()</>;
+		return <div className="bg-white">
+			{this.renderTitleInput()}
+			{this.controller.cContent.renderInput()}
+		</div>;
 	}
 
+	/*
 	protected getSaveDisabled():boolean {
 		return (this.controller.title === undefined && this.controller.changedNoteContent === undefined);
 	}
@@ -22,4 +27,5 @@ export class VEdit extends VNoteForm<CNoteTask> {
 	protected renderExButtons():JSX.Element {
 		return;
 	}
+	*/
 }

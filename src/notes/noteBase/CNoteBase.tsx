@@ -31,7 +31,7 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 			return;
 		}
 		this.title = param.caption;
-		this.cContent = createCContent(param.content);
+		this.cContent = createCContent(param.content, param.type);
 		if (!this.cContent) debugger;
 		/*
 		let { obj } = param;
@@ -42,8 +42,8 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	}
 
 	@observable title: string;
-	@observable noteContent: string;
-	@observable changedNoteContent: string;
+	//@observable noteContent: string;
+	//@observable changedNoteContent: string;
 
 	protected async internalStart() { }
 
@@ -74,7 +74,8 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 
 	protected buildObj(): any {
 		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
-		obj.content = this.changedNoteContent || this.noteContent;
+		//obj.content = this.changedNoteContent || this.noteContent;
+		this.cContent.buildObj(obj);
 		return obj;
 	}
 
@@ -110,10 +111,10 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	}
 
 	protected updateChange() {
-		if (this.changedNoteContent) {
-			this.noteContent = this.changedNoteContent;
-			this.changedNoteContent = undefined;
-		}
+		//if (this.changedNoteContent) {
+		//	this.noteContent = this.changedNoteContent;
+		//	this.changedNoteContent = undefined;
+		//}
 		if (this.noteItem) {
 			this.noteItem.$update = new Date();
 			if (this.title && this.title !== this.noteItem.caption) {

@@ -47,6 +47,7 @@ export abstract class CCheckableNoteBase1 extends CNoteBase {
 		return false;
 	}
 
+	/*
 	protected buildObj(): any {
 		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
 		if (this.checkType === EnumCheckType.text || this.checkType === EnumCheckType.folder) {
@@ -63,10 +64,12 @@ export abstract class CCheckableNoteBase1 extends CNoteBase {
 		}
 		return obj;
 	}
+	*/
 
 	protected newVNoteItem():VNoteBaseView<any> {return new VNoteBaseView(this);}
 
 	onCheckableChanged(type: EnumCheckType) {
+		/*
 		let oldType = this.checkType;
 		this.checkType = type;
 		if (oldType === EnumCheckType.text) {
@@ -104,6 +107,7 @@ export abstract class CCheckableNoteBase1 extends CNoteBase {
 			}
 		}
 		this.changedNoteContent = undefined;
+		*/
 	}
 
 	async onCheckChange(key: number, checked: boolean) {

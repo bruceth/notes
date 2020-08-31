@@ -6,6 +6,21 @@ import { CContainer } from '../CContainer';
 import { VNoteBaseView } from '../../noteBase';
 
 export abstract class VContainerForm<T extends CContainer> extends VNoteBaseView<T> {
+	protected renderTitleInput() {
+		return <div className="py-1 px-1 border-bottom">
+			<input type="text" className="w-100 border-0 form-control font-weight-bold" placeholder="标题" maxLength={80}
+				onChange={this.onTitleChange} autoFocus={true}
+				defaultValue={this.controller.title} />
+		</div>;
+	}
+
+	protected onTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+		this.controller.title = evt.target.value.trim();
+	}
+}
+
+/*
+export abstract class VContainerForm<T extends CContainer> extends VNoteBaseView<T> {
 	@observable private changed: boolean = false;
 	private inputAdd: HTMLInputElement;
 
@@ -84,3 +99,4 @@ export abstract class VContainerForm<T extends CContainer> extends VNoteBaseView
 			onChange={this.onContentChange} />;
 	}
 }
+*/

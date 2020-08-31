@@ -10,11 +10,14 @@ export function renderIcon(name:string, cn:string) {
 
 export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	protected renderContentBase() {
+		return this.controller.cContent.renderContent();
+		/*
 		return <div>
 		{
 			this.renderContentText()
 		}
 		</div>;
+		*/
 	}
 
 	protected renderContent() {
@@ -77,9 +80,11 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 		})}</>;
 	}
 
+	/*
 	protected renderContentText() {
 		return <div className="px-3 my-2">{this.renderParagraphs(this.controller.noteContent)}</div>;
 	}
+	*/
 
 	protected renderFrom = () => {
 		let {noteItem, disableFrom: disableOwnerFrom} = this.controller;

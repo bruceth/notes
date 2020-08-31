@@ -3,7 +3,7 @@ import { CText } from "./text";
 import { CCheckable } from "./checkable";
 import { CList } from "./list";
 import { CFolder } from "./folder";
-import { EnumNoteType } from "notes/model";
+import { EnumNoteType } from "../../model";
 
 export enum EnumContentType {text=0, checkable=1, list=2, folder=3}
 
@@ -21,7 +21,7 @@ function cContentFromType(type: EnumContentType): CContent {
 
 export function createCContent(content:string, type: EnumNoteType): CContent { 
 	let ret:CContent;
-	if (type === 2 /*comments*/ || content === undefined) {
+	if (type === EnumNoteType.comment || content === undefined) {
 		ret = new CText(undefined);
 		ret.init(content);
 	}

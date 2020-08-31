@@ -17,13 +17,10 @@ export class VFolderView extends VNoteBaseView<CContainer> {
 
 	content() {
 		return React.createElement(observer(() => {
-			let {title} = this.controller;
 			return <div className="">
 				<div className="bg-white">
 					{this.renderViewTop()}
-					{title && <div className="px-3 py-2">
-						<div><b>{title}</b></div>
-					</div>}
+					{this.renderViewCaption()}
 					{this.renderContent()}
 				</div>
 				{this.renderBottomCommands()}

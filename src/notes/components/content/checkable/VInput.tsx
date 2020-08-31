@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, FA } from "tonva";
 import { CCheckable, CheckItem } from './CCheckable';
-import { ItemInputProps, VItemInput } from 'notes/note/views/VItemInput';
+import { ItemInputProps, VItemInput } from '../VItemInput';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 

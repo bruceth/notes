@@ -14,8 +14,8 @@ export class VAddNoteBase<T extends CNote> extends VNoteForm<T> {
 	}
 
 	protected getSaveDisabled():boolean {
-		if (this.controller.title !== undefined) {
-			return this.controller.title.length === 0;
+		if (this.controller.caption !== undefined) {
+			return this.controller.caption.length === 0;
 		}
 		/*if (this.controller.changedNoteContent !== undefined) {
 			return this.controller.changedNoteContent.length === 0;

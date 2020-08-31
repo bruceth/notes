@@ -7,23 +7,23 @@ import { computed, observable } from 'mobx';
 
 export abstract class VNoteForm<T extends CNote> extends VNoteBase<T> {
 	@observable protected changed: boolean = false;
-	protected renderTitleInput() {
+	protected renderCaptionInput() {
 		return <div className="py-1 px-1 border-bottom">
 			<input type="text" className="w-100 border-0 form-control font-weight-bold" placeholder="标题" maxLength={80}
 				onChange={this.onTitleChange} autoFocus={true}
-				defaultValue={this.controller.title} />
+				defaultValue={this.controller.caption} />
 		</div>;
 	}
 
 	protected onTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-		this.controller.title = evt.target.value.trim();
+		this.controller.caption = evt.target.value.trim();
 		this.changed = true;
 	}
 
 	content() {
 		return <>
 			<div className="bg-white">
-				{this.renderTitleInput()}
+				{this.renderCaptionInput()}
 				{this.controller.cContent.renderInput()}
 			</div>
 			<div className="py-2 pl-3 bg-light border-top d-flex">

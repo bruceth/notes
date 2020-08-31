@@ -27,7 +27,7 @@ export class CList extends CContent {
 
 	get contentType(): EnumContentType {return EnumContentType.list;}
 	renderInput():JSX.Element {return this.renderView(VInput)}
-	renderContent():JSX.Element {return this.renderView(VView)}
+	renderViewContent():JSX.Element {return this.renderView(VView)}
 
 	buildObj(obj:any) {
 		obj.check = this.contentType;

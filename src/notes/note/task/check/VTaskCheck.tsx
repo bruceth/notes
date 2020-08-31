@@ -105,7 +105,7 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 	}
 
 	protected resultPage = ({ pass }: { pass: boolean }) => {
-		let { title } = this.controller;
+		let { caption: title } = this.controller;
 		let content = pass ?
 			<span className="text-success"><FA name="check" /> 验收通过</span>
 			:

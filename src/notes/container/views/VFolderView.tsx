@@ -15,6 +15,7 @@ export class VFolderView extends VNoteBase<CContainer> {
 		return this.t('notes')
 	}
 
+	/*
 	content() {
 		return React.createElement(observer(() => {
 			return <div className="">
@@ -32,7 +33,7 @@ export class VFolderView extends VNoteBase<CContainer> {
 	protected renderRelatives() {
 		return this.renderVm(VFolderRelatives);
 	}
-
+	*/
 
 	protected renderBottomCommands() {
 		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-end">

@@ -17,7 +17,7 @@ export class CNoteText extends CNote {
 	init(param: NoteItem):void {
 		super.init(param);
 		if (param) {
-			if (!this.title) this.title = param.caption;
+			if (!this.caption) this.caption = param.caption;
 		}
 	}
 

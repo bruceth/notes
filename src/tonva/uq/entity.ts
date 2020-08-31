@@ -2,6 +2,7 @@ import { UqApi } from '../net';
 import { LocalCache } from '../tool';
 import { UqMan, Field, ArrFields, FieldMap } from './uqMan';
 import { Tuid } from './tuid';
+import { getObjPropIgnoreCase } from '../tool';
 
 const tab = '\t';
 const ln = '\n';
@@ -231,8 +232,8 @@ export abstract class Entity {
         if (arrs !== undefined) {
             for (let arr of arrs) {
 				let {name, fields} = arr;
-				let arrData = data[name];
-				if (!arrData) arrData = data[name.toLowerCase()];
+				let arrData = getObjPropIgnoreCase(data, name);
+				//if (!arrData) arrData = data[name.toLowerCase()];
                 this.packArr(ret, fields, arrData);
             }
         }

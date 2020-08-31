@@ -12,6 +12,6 @@ export abstract class CContent extends Controller {
 	abstract buildObj(obj:any): void;
 
 	abstract renderInput(): JSX.Element;
-	abstract renderContent(): JSX.Element;
-	renderItemContent(): JSX.Element {return this.renderContent();}
+	abstract renderViewContent(): JSX.Element;
+	renderDirContent(): JSX.Element {return this.renderViewContent();}
 }

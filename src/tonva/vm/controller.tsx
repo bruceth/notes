@@ -4,7 +4,7 @@ import {nav, Page, resOptions} from '../components';
 import { User, env } from '../tool';
 import { VPage } from './vpage';
 import { View } from './view';
-import { messageHub } from 'tonva';
+import { messageHub } from '../net';
 
 export interface ConfirmOptions {
     caption?: string;

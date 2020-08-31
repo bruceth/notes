@@ -13,7 +13,7 @@ export abstract class CContainer extends CNoteBase {
 	init(param: NoteItem):void {
 		super.init(param);
 		if (param) {
-			if (!this.title) this.title = param.caption;
+			if (!this.caption) this.caption = param.caption;
 		}
 		this.relativeKey = 'to';
 

@@ -12,6 +12,7 @@ export class VAssignView extends VNoteBase<CNoteAssign> {
 		return this.t('assign')
 	}
 
+	/*
 	content() {
 		return React.createElement(observer(() => {
 			let {title} = this.controller;
@@ -27,6 +28,7 @@ export class VAssignView extends VNoteBase<CNoteAssign> {
 			</div>;
 		}));
 	}
+	*/
 
 	protected renderRelatives() {
 		return this.renderVm(VAssignRelatives);

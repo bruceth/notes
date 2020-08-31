@@ -11,8 +11,34 @@ export function renderIcon(name:string, cn:string) {
 }
 
 export class VNoteBase<T extends CNoteBase> extends VPage<T> {
+	content() {
+		return this.renderBody();
+	}
+
+	protected renderBody():JSX.Element {
+		return;
+	}
+
+	protected renderTopCaptionContent() {
+		return <div className="bg-white">
+			{this.renderTop()}
+			<div className="py-2">
+				{this.renderCaption()}
+				{this.renderContent()}
+			</div>
+		</div>;
+	}
+
+	protected renderTop():JSX.Element {
+		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
+			{this.controller.renderViewIcon()}
+			<span className="mr-4">{this.renderEditTime()}</span>
+			{this.renderFrom()}
+		</div>;
+	}
+
 	protected renderContentBase() {
-		return this.controller.cContent.renderContent();
+		return this.controller.cContent.renderViewContent();
 	}
 
 	protected renderContent() {
@@ -23,40 +49,13 @@ export class VNoteBase<T extends CNoteBase> extends VPage<T> {
 		return this.renderContentBase();
 	}
 
-	protected renderItemTop() {
-		return <div className="d-flex px-3 py-2 align-items-center border-top">
-			{this.controller.renderItemIcon()}
-			{this.renderFrom()}
-			<div className="ml-auto">{this.renderEditTime()}</div>
-		</div>;
-		//<div className="mr-3 unread-dot">{this.controller.renderItemIcon()}{dot}</div>
-	}
-
-	protected renderViewCaption() {
-		let {title} = this.controller;
+	protected renderCaption() {
+		let {caption: title} = this.controller;
 		if (title) {
 			return <div className="px-3 py-2">
 				<div><b>{title}</b></div>
 			</div>;
 		}
-	}
-
-	protected renderItemCaption() {
-
-	}
-	
-	protected renderViewTop() {
-		let vEditButton:any;
-		let isMe = this.isMe(this.controller.noteItem.owner);
-		if (isMe === true) {
-			vEditButton = <div className="ml-auto">{this.renderEditButton()}</div>;
-		}
-		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
-			{this.controller.renderViewIcon()}
-			<span className="mr-4">{this.renderEditTime()}</span>
-			{this.renderFrom()}
-			{vEditButton}
-		</div>;
 	}
 	
 	protected renderParagraphs(content:string):JSX.Element {
@@ -79,37 +78,6 @@ export class VNoteBase<T extends CNoteBase> extends VPage<T> {
 			}
 			return <div key={index} className="pt-1 pb-2">{c}</div>;
 		})}</>;
-	}
-
-	protected renderRelatives() {
-		return this.renderVm(VRelatives);
-	}
-
-	renderListItem() {
-		return React.createElement(observer(() => {
-			let {caption} = this.controller.noteItem;
-			let divToCount = this.renderToCount();
-			let divSpawnCount = this.renderSpawnCount();
-			let divComment = this.renderCommentFlag();
-			let divBottom:any;
-			if (divToCount || divSpawnCount || divComment) {
-				divBottom = <div className="d-flex align-items-center px-3 mb-1">
-					{divToCount}
-					{divSpawnCount}
-					{divComment}
-					<div className="mr-auto" />
-				</div>;
-			}
-
-			return <div className="d-block bg-white">
-				{this.renderItemTop()}
-				<div className="py-2">
-					{caption && <div className="px-3 my-2"><b>{caption}</b></div>}
-					{this.renderItemContent()}
-				</div>
-				{divBottom}
-			</div>;
-		}));
 	}
 
 	/*
@@ -203,7 +171,7 @@ export class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	protected showActionEndPage({content, onClick}:{content:any; onClick?:()=>void}) {
 		this.openPage(() => {
 			onClick = onClick || (()=>this.closePage());
-			let {title} = this.controller;
+			let {caption: title} = this.controller;
 			return <Page header={title} back="close">
 				<div className="border bg-white rounded m-5">
 					<div className="py-5 text-center">

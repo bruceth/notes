@@ -10,6 +10,7 @@ export class VTextView extends VNoteBase<CNoteText> {
 		return this.t('notes')
 	}
 
+	/*
 	content() {
 		return React.createElement(observer(() => {
 			return <div className="">
@@ -22,10 +23,12 @@ export class VTextView extends VNoteBase<CNoteText> {
 			</div>;
 		}));
 	}
-
+	*/
+	/*
 	protected renderContentBase() {
 		return this.controller.cContent.renderContent();
 	}
+	*/
 
 	protected renderRelatives() {
 		return this.renderVm(VTextRelatives);

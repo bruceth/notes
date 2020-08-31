@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { CheckItem } from '../../model';
-import { VNoteBase } from '../../noteBase';
+import { VNoteBaseView } from '../../noteBase';
 import { EnumTaskState } from "./TaskState"
 import { CNoteTask } from "./CNoteTask";
 import { VEdit } from './VEdit';
@@ -15,16 +15,16 @@ export interface TaskParam {
 	onClick?: () => void;
 }
 
-export abstract class VTaskView<T extends CNoteTask> extends VNoteBase<T> {
+export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
 	header() { return this.t('task') }
 	protected get allowCheck() { return true; }
 	content() {
 		return React.createElement(observer(() => {
 			return <div className="my-2 mx-1 border rounded">
-				{this.renderViewTop()}
+				{this.renderTop()}
 				<div className="bg-white">
-					{this.renderViewCaption()}
+					{this.renderCaption()}
 					{this.renderContent()}
 				</div>
 				{this.renderTaskAdditions()}
@@ -40,7 +40,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBase<T> {
 	}
 
 	protected renderViewCaption() {
-		let { title } = this.controller;
+		let { caption: title } = this.controller;
 		let divCaption = title ? <b className="text-primary">{title}</b> : <span className="text-info">任务</span>;
 		return <div className="px-3 py-2">
 			<span className="mr-2">{divCaption}</span> {this.renderState()}
@@ -132,7 +132,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBase<T> {
 		//await this.controller.onCheckChange(key, t.checked);
 	}
 
-
+	/*
 	renderListItem() {
 		return <div className="d-block bg-white">
 			{this.renderItemTop()}
@@ -140,4 +140,5 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBase<T> {
 			{this.renderItemContent()}
 		</div>;
 	}
+	*/
 }

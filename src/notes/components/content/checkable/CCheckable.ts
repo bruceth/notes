@@ -30,8 +30,8 @@ export class CCheckable extends CContent {
 	}
 
 	renderInput():JSX.Element {return this.renderView(VInput)}
-	renderContent():JSX.Element {return this.renderView(VView)}
-	renderItemContent():JSX.Element {return this.renderView(VItem)}
+	renderViewContent():JSX.Element {return this.renderView(VView)}
+	renderDirContent():JSX.Element {return this.renderView(VItem)}
 
 	buildObj(obj:any) {
 		obj.check = this.contentType;

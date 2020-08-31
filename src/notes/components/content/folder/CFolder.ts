@@ -6,6 +6,6 @@ import { EnumContentType } from "../createCContent";
 export class CFolder extends CTextBase {
 	get contentType(): EnumContentType {return EnumContentType.folder;}
 	renderInput():JSX.Element {return this.renderView(VInput)}
-	renderContent():JSX.Element {return this.renderView(VView)}
+	renderViewContent():JSX.Element {return this.renderView(VView)}
 }
 

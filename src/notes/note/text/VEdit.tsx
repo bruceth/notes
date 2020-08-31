@@ -13,7 +13,7 @@ export class VEdit extends VNoteForm<CNoteText> {
 	}
 
 	protected getSaveDisabled():boolean {
-		return (this.controller.title === undefined /*&& this.controller.changedNoteContent === undefined*/);
+		return (this.controller.caption === undefined /*&& this.controller.changedNoteContent === undefined*/);
 	}
 
 	protected async onButtonSave(): Promise<void> {

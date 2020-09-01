@@ -1,13 +1,12 @@
 import React from 'react';
-import { VEdit } from './VEdit';
+import { VAssignEdit } from './VAssignEdit';
 import { observer } from 'mobx-react';
-import { VNoteBase } from '../../noteBase';
+import { VNoteBaseView } from '../../noteBase';
 import { CNoteAssign } from './CNoteAssign';
 import { VAssignRelatives } from './VAssignRelatives';
 import { CheckItem } from '../../model';
 
-export class VAssignView extends VNoteBase<CNoteAssign> {
-	protected get back(): 'close' | 'back' | 'none' {return 'close'}
+export class VAssignView extends VNoteBaseView<CNoteAssign> {
 	header() {
 		return this.t('assign')
 	}
@@ -47,7 +46,7 @@ export class VAssignView extends VNoteBase<CNoteAssign> {
 	}
 
 	protected onEdit() {
-		this.openVPage(VEdit);
+		this.openVPage(VAssignEdit);
 	}
 
 	protected renderCheckItem(v:CheckItem, checkable:boolean) {

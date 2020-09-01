@@ -31,7 +31,7 @@ export class VRelatives<T extends CNoteBase> extends VNoteBase<T> {
 	}
 
 	protected renderComments = () => {
-		return this.controller.cComments.renderCommentsList();
+		return this.controller.cComments?.renderCommentsList();
 		/*
 		let {comments} = this.controller.noteModel;
 		let {length} = comments;

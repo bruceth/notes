@@ -1,10 +1,11 @@
-import React from "react";
-import { CNoteAssign } from './CNoteAssign';
-import { VNoteBaseAdd } from 'notes/noteBase';
-import { observer } from "mobx-react";
-import { computed } from "mobx";
+import React from 'react';
+//import { VNoteForm } from '../views/VNoteForm';
+import { CNoteAssign } from "./CNoteAssign";
+import { VNoteBaseEdit } from 'notes/noteBase';
+import { observer } from 'mobx-react';
+import { computed } from 'mobx';
 
-export class VAdd extends VNoteBaseAdd<CNoteAssign> {
+export class VAssignEdit extends VNoteBaseEdit<CNoteAssign> { // VNoteForm<CNoteAssign> {
 	header() {
 		return this.t('assign');
 	}
@@ -28,20 +29,19 @@ export class VAdd extends VNoteBaseAdd<CNoteAssign> {
 		return this.getSaveDisabled();
 	}
 
-	protected async onButtonSave(): Promise<void> {
-		//this.checkInputAdd();
-		//let type = EnumNoteType.assign;
-		await this.controller.AddNote(this.parentId);
-		this.closePage();
-		return;
+
+	protected getSaveDisabled():boolean {
+		return (this.controller.caption === undefined/* && this.controller.changedNoteContent === undefined*/);
 	}
 
-	protected onSaveAndSendNote = async () => {
+	protected async onButtonSave(): Promise<void> {
 		//this.checkInputAdd();
-		//let type = EnumNoteType.assign;
-		let cnewNote = await this.controller.AddNote(this.parentId);
+		await this.controller.SetNote();
 		this.closePage();
-		await cnewNote.cApp.loadRelation();
-		cnewNote.showTo(1);
 	}
+
+	protected renderExButtons():JSX.Element {
+		return <>this.renderDeleteButton()</>;
+	}
+	
 }

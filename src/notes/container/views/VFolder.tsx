@@ -76,6 +76,28 @@ export class VFolder extends VNoteBase<CContainer> {
 		</div>
 	}
 
+	private renderParagraphs(content:string):JSX.Element {
+		if (!content) return;
+		return <>{content.trimRight().split('\n').map((v, index) => {
+			let c:any;
+			if (!v) {
+				c = '\u00A0'; //<>&nbsp;</>;
+			}
+			else {
+				c = '';
+				let len = v.length, i=0;
+				for (; i<len; i++) {
+					switch(v.charCodeAt(i)) {
+						case 0x20: c +='\u2000'; continue;
+					}
+					break;
+				}
+				c += v.substr(i);
+			}
+			return <div key={index} className="pt-1 pb-2">{c}</div>;
+		})}</>;
+	}
+
 	renderListView() {
 		return this.content();
 	}
@@ -95,6 +117,6 @@ export class VFolder extends VNoteBase<CContainer> {
 		noteItem.unread = 0;
 		noteItem.commentUnread = 0;
 		item.noteModel = noteModel;
-		return item.showNoteView();
+		return item.showViewPage();
 	}
 }

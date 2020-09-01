@@ -1,10 +1,8 @@
 //import React from "react";
-import { VAddNoteBase } from '../views/VAddNoteBase';
 import { CNoteAssign } from './CNoteAssign';
-import { EnumNoteType } from 'notes/model';
-//import { EnumNoteType } from 'notes/model';
+import { VNoteBaseAdd } from 'notes/noteBase';
 
-export class VAdd extends VAddNoteBase<CNoteAssign> {
+export class VAdd extends VNoteBaseAdd<CNoteAssign> {
 	header() {
 		return this.t('assign');
 	}

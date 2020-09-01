@@ -21,7 +21,7 @@ export class CSpace extends CContainer {
 		this.openVPage(VSpaceView);
 	}
 
-	protected renderIcon(): JSX.Element {
+	renderIcon(): JSX.Element {
 		return renderIcon('folder', 'text-warning');
 	}
 }

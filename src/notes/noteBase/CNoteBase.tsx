@@ -1,12 +1,12 @@
-import React from 'react';
 import { observable } from "mobx";
 import { CUqSub } from '../../tapp';
 import { NoteItem, NoteModel, EnumNoteType, RelativeKey } from '../model';
 import { CNotes } from '../CNotes';
 import { CContent, createCContent, CComments, createCContentFromType, EnumContentType } from '../components';
-import { VNoteBaseDir } from './VNoteBaseDir';
-import { VNoteBaseView } from './VNoteBaseView';
-import { VNoteBaseEdit } from './VNoteBaseEdit';
+import { VNoteBaseDir, VNoteBaseDirView } from './VNoteBaseDir';
+import { VNoteBaseViewPage, VNoteBaseView } from './VNoteBaseView';
+import { VNoteBaseEdit, VNoteBaseEditPage } from './VNoteBaseEdit';
+import { VNoteBaseAdd, VNoteBaseAddPage } from "./VNoteBaseAdd";
 
 export abstract class CNoteBase extends CUqSub<CNotes> {
 	disableFrom: boolean = false;
@@ -44,7 +44,7 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 
 	abstract get type():EnumNoteType;
 
-	initContent(type: EnumContentType) {
+	createCContent(type: EnumContentType) {
 		this.cContent = createCContentFromType(type);
 	}
 
@@ -53,27 +53,39 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	@observable caption: string;
 	get captionChanged() {return this.caption !== this.noteItem.caption;}
 
-	protected newVDir(): VNoteBaseDir<any> {return new VNoteBaseDir<CNoteBase>(this);}
-	protected newVView(): VNoteBaseView<any> {return new VNoteBaseView<CNoteBase>(this);}
-	protected newVEdit(): VNoteBaseEdit<any> {return new VNoteBaseEdit<CNoteBase>(this);}
+	protected newVDir(): (new (controller: CNoteBase) => VNoteBaseDir<any>) {return VNoteBaseDirView;}
+	protected newVView(): (new (controller: CNoteBase) => VNoteBaseView<any>) {return VNoteBaseViewPage;}
+	protected newVEdit(): (new (controller: CNoteBase) => VNoteBaseEdit<any>) {return VNoteBaseEditPage;}
+	protected newVAdd(): (new (controller: CNoteBase) => VNoteBaseAdd<any>) {return VNoteBaseAddPage;}
 
 	renderListItem(index: number): JSX.Element {
-		let vDir = this.newVDir();
-		return vDir.render();
+		return this.renderView(this.newVDir());
 	}
 
-	protected abstract renderIcon(): JSX.Element;
-	renderViewIcon(): JSX.Element {
-		return <div className="mr-3">{this.renderIcon()}</div>;
-	}
-	renderItemIcon(): JSX.Element {
-		let {unread} = this.noteItem;
-		let dot:any;
-		if (unread>0) dot = <u/>;
-		return <div className="mr-3 unread-dot">{this.renderIcon()}{dot}</div>
+	abstract renderIcon(): JSX.Element;
+
+	showViewPage() {
+		if (!this.noteModel) {
+			debugger;
+			throw new Error('noteModel 应该已经赋值了');
+		}
+		this.cComments = new CComments(this.res)
+		this.cComments.init(this.noteModel, {
+			onAddComment: this.addComment,
+			onDeleteComment: this.deleteComment,
+		});
+		this.openVPage(this.newVView());
 	}
 
-	abstract showNoteView(): void;
+	showEditPage() {
+		this.openVPage(this.newVEdit());
+	}
+
+	showAddPage(folderId: number, contentType: EnumContentType) {
+		//this.checkType = checkType;
+		this.cContent = createCContentFromType(contentType);
+		this.openVPage(this.newVAdd(), folderId);
+	}
 
 	protected stringifyContent() {
 		let ret = JSON.stringify(this.buildObj());
@@ -145,7 +157,7 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		return ret;
 	}
 
-	async AddComment(content: string) {
+	async addComment(content: string) {
 		let ret = await this.uqs.notes.AddComment.submit({ note: this.noteModel.id, content });
 		let commentId = ret.comment;
 		// 加入note界面，显示comment
@@ -160,5 +172,9 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 				$update: new Date(),
 			});
 		}
+	}
+
+	async deleteComment(commentId: number) {
+		debugger;
 	}
 }

@@ -29,7 +29,10 @@ export class VRelatives<T extends CNoteBase> extends VNoteBase<T> {
 			{vCount}
 		</>;
 	}
+
 	protected renderComments = () => {
+		return this.controller.cComments.renderCommentsList();
+		/*
 		let {comments} = this.controller.noteModel;
 		let {length} = comments;
 		if (length === 0) return;
@@ -40,13 +43,15 @@ export class VRelatives<T extends CNoteBase> extends VNoteBase<T> {
 				onClick={this.showMoreComments}>更多评论...</div>
 			}
 		</div>;
+		*/
 	}
+	/*
 	private showMoreComments = () => {
 		this.openPageElement(<Page header="评论">
 			<div className="text-muted p-3">更多评论正在开发中...</div>
 		</Page>);
 	}
-
+	*/
 	protected tabShare = (isAction:boolean) => {
 		let {toCount} = this.controller.noteItem;
 		let vCount:any;
@@ -173,6 +178,7 @@ export class VRelatives<T extends CNoteBase> extends VNoteBase<T> {
 		return React.createElement(render);
 	}
 
+	/*
 	protected renderComment(comment:CommentItem) {
 		let {id, owner, assigned, content, $update} = comment;
 		let renderUser = (user:User) => {
@@ -222,4 +228,5 @@ export class VRelatives<T extends CNoteBase> extends VNoteBase<T> {
 			return <div key={index} className="pb-1">{c}</div>;
 		})}</>;
 	}
+	*/
 }

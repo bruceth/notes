@@ -19,7 +19,7 @@ export class VNoteBaseDir<T extends CNoteBase> extends VNoteBase<T> {
 
 	protected renderTop():JSX.Element {
 		return <div className="d-flex px-3 py-2 align-items-center border-top">
-			{this.controller.renderItemIcon()}
+			{this.renderIcon()}
 			{this.renderFrom()}
 			<div className="ml-auto">{this.renderEditTime()}</div>
 		</div>;
@@ -42,4 +42,14 @@ export class VNoteBaseDir<T extends CNoteBase> extends VNoteBase<T> {
 			</div>;
 		}
 	}
+
+	protected renderIcon(): JSX.Element {
+		let {unread} = this.controller.noteItem;
+		let dot:any;
+		if (unread>0) dot = <u/>;
+		return <div className="mr-3 unread-dot">{this.controller.renderIcon()}{dot}</div>
+	}
+}
+
+export class VNoteBaseDirView extends VNoteBaseDir<CNoteBase> {
 }

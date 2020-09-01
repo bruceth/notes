@@ -125,7 +125,7 @@ export abstract class CNoteTask extends CNote {
 		return getTaskView(state);
 	}
 */
-	protected renderIcon(): JSX.Element {
+	renderIcon(): JSX.Element {
 		return renderIcon('tasks', 'text-success');
 	}
 
@@ -145,7 +145,7 @@ export abstract class CNoteTask extends CNote {
 		return super.renderListItem(index);
 	}
 
-	showNoteView() {
+	showViewPage() {
 		let TaskView = this.getTaskView(); // this.getView();
 		this.openVPage(TaskView);
 	}

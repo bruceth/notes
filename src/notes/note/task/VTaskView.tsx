@@ -6,6 +6,7 @@ import { EnumTaskState } from "./TaskState"
 import { CNoteTask } from "./CNoteTask";
 import { VEdit } from './VEdit';
 import { VTaskRelatives } from './VTaskRelatives';
+import { FA } from 'tonva';
 
 const none = <small className="text-muted">[无]</small>;
 
@@ -91,6 +92,10 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 			<div className="mr-auto" />
 			{right}
 		</div>;
+	}
+
+	protected renderCommentButton() {
+		return <span className="cursor-pointer text-primary mr-5" onClick={this.onComment}><FA name="comment-o" /></span>;
 	}
 
 	renderRelatives() {

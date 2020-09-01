@@ -25,7 +25,7 @@ export class CNotes extends CUqBase {
     protected async internalStart() {
 	}
 
-	init(folderId?: number) {
+	init() {
 		this.rootFold =this.currentFold = this.newSub(CFolderRoot);
 		this.foldStack = [];
 	}
@@ -35,10 +35,6 @@ export class CNotes extends CUqBase {
 		item = cNoteBase.convertObj(item);
 		cNoteBase.init(item);
 		return cNoteBase;
-	}
-
-	get items() {
-		return this.currentFold.notesPager;
 	}
 
 	updateFolderTime(note:number, time:Date) {
@@ -123,17 +119,20 @@ export class CNotes extends CUqBase {
 	renderSpaceDropDown() {return this.renderView(VSpaceDropdown)};
 
 	showAddNotePage(type: EnumContentType) {
-		let parent = this.currentFold.folderId;
+		let {folderId} = this.currentFold;
 		let cNoteText = createCNoteText(this); // this.newSub(CNoteText);
-		cNoteText.initContent(type);
-		cNoteText.showAddPage(parent, type);
+		//cNoteText.createCContent(type);
+		cNoteText.showAddPage(folderId, type);
 	}
 
 	showAddAssignPage() {
-		let parent = this.currentFold.folderId;
+		this.showAddNotePage(EnumContentType.checkable);
+		/*
+		let {folderId} = this.currentFold;
 		let cNoteAssign = createCNoteAssign(this); // this.newSub(CNoteText);
-		cNoteAssign.initContent(EnumContentType.checkable);
-		cNoteAssign.showAddAssignPage(parent);
+		//cNoteAssign.createCContent(EnumContentType.checkable);
+		cNoteAssign.showAddPage(folderId, EnumContentType.checkable);
+		*/
 	}
 
 	async showTo(noteItem:NoteItem, backPageCount:Number) {

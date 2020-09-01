@@ -1,8 +1,8 @@
 import React from "react";
 import { CNoteText } from './CNoteText';
-import { VAddNoteBase } from "../views/VAddNoteBase";
+import { VNoteBaseAdd } from "notes/noteBase";
 
-export class VAdd extends VAddNoteBase<CNoteText> {
+export class VTextAdd extends VNoteBaseAdd<CNoteText> {
 	header() {return '新建文字单'}
 
 }

@@ -35,7 +35,7 @@ export abstract class Controller {
 		this.t = (str:string):any => this.internalT(str) || str;
 	}
 
-	init(param?: any) {}
+	init(...param: any[]) {}
 
 	internalT(str:string):any {
 		return this._t[str];

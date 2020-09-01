@@ -1,24 +1,23 @@
 import React from "react";
 import { VPage, User, Image, UserView, Page, EasyTime, FA } from "tonva";
 import { CNoteBase } from "./CNoteBase";
-import { VRelatives } from "./VRelatives";
-import { observer } from "mobx-react";
-
-//type RenderIcon = (noteItem:NoteItem) => JSX.Element;
 
 export function renderIcon(name:string, cn:string) {
 	return <FA name={name} size="lg" className={cn} fixWidth={true} />;
 }
 
 export class VNoteBase<T extends CNoteBase> extends VPage<T> {
+	// VPage 里面的页面主体
 	content() {
 		return this.renderBody();
 	}
 
+	// 页面主体
 	protected renderBody():JSX.Element {
 		return;
 	}
 
+	// 小单的主要部分，top, caption和content
 	protected renderTopCaptionContent() {
 		return <div className="bg-white">
 			{this.renderTop()}
@@ -31,61 +30,13 @@ export class VNoteBase<T extends CNoteBase> extends VPage<T> {
 
 	protected renderTop():JSX.Element {
 		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
-			{this.controller.renderViewIcon()}
+			{this.renderIcon()}
 			<span className="mr-4">{this.renderEditTime()}</span>
 			{this.renderFrom()}
 		</div>;
 	}
-
-	protected renderContentBase() {
-		return this.controller.cContent.renderViewContent();
-	}
-
-	protected renderContent() {
-		return this.renderContentBase();
-	}
-
-	protected renderItemContent() {
-		return this.renderContentBase();
-	}
-
-	protected renderCaption() {
-		let {caption: title} = this.controller;
-		if (title) {
-			return <div className="px-3 py-2">
-				<div><b>{title}</b></div>
-			</div>;
-		}
-	}
+	protected renderIcon():JSX.Element {return;}
 	
-	protected renderParagraphs(content:string):JSX.Element {
-		if (!content) return;
-		return <>{content.trimRight().split('\n').map((v, index) => {
-			let c:any;
-			if (!v) {
-				c = '\u00A0'; //<>&nbsp;</>;
-			}
-			else {
-				c = '';
-				let len = v.length, i=0;
-				for (; i<len; i++) {
-					switch(v.charCodeAt(i)) {
-						case 0x20: c +='\u2000'; continue;
-					}
-					break;
-				}
-				c += v.substr(i);
-			}
-			return <div key={index} className="pt-1 pb-2">{c}</div>;
-		})}</>;
-	}
-
-	/*
-	protected renderContentText() {
-		return <div className="px-3 my-2">{this.renderParagraphs(this.controller.noteContent)}</div>;
-	}
-	*/
-
 	protected renderFrom = () => {
 		let {noteItem, disableFrom: disableOwnerFrom} = this.controller;
 		if (!noteItem) return <div>noteItem undefined in renderFrom</div>;
@@ -135,7 +86,18 @@ export class VNoteBase<T extends CNoteBase> extends VPage<T> {
 		}
 	}
 
-	protected renderToCount = () => {
+	protected renderCaption() {
+		let {caption: title} = this.controller;
+		if (title) {
+			return <div className="px-3 py-2">
+				<div><b>{title}</b></div>
+			</div>;
+		}
+	}
+
+	protected renderContent():JSX.Element {return;}
+
+	protected renderToCount() {
 		let {toCount} = this.controller.noteItem;
 		if (toCount === undefined || toCount <= 0)
 			return;
@@ -144,7 +106,7 @@ export class VNoteBase<T extends CNoteBase> extends VPage<T> {
 		</span>;
 	}
 
-	protected renderSpawnCount = () => {
+	protected renderSpawnCount() {
 		let {spawnCount} = this.controller.noteItem;
 		if (spawnCount === undefined || spawnCount <= 0)
 			return;
@@ -209,11 +171,7 @@ export class VNoteBase<T extends CNoteBase> extends VPage<T> {
 		return <span className="small text-success border border-success rounded px-2">{content}</span>;
 	}
 
-	protected onEdit() {}
-
-	protected renderCommentButton() {
-		return <span className="cursor-pointer text-primary mr-5" onClick={this.onComment}><FA name="comment-o" /></span>;
-	}
+	protected onEdit() {this.controller.showEditPage()}
 
 	protected onComment = () => {
 		let right = <button className="btn btn-sm btn-success mr-1" onClick={this.onCommentSubmit}>提交</button>;
@@ -230,7 +188,7 @@ export class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	}
 
 	private onCommentSubmit = async () => {
-		await this.controller.AddComment(this.comment);
+		await this.controller.addComment(this.comment);
 		this.controller.relativeKey = 'comment';
 		this.closePage();
 	}

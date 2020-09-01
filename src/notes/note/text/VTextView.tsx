@@ -1,15 +1,15 @@
 import React from 'react';
-import { observer } from 'mobx-react';
-import { VNoteBase } from '../../noteBase';
+import { VNoteBaseView } from '../../noteBase';
 import { CNoteText } from './CNoteText';
 import { VTextRelatives } from './VTextRelatives';
 
-export class VTextView extends VNoteBase<CNoteText> {
+export class VTextView extends VNoteBaseView<CNoteText> {
+	/*
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {
 		return this.t('notes')
 	}
-
+	*/
 	/*
 	content() {
 		return React.createElement(observer(() => {
@@ -46,9 +46,11 @@ export class VTextView extends VNoteBase<CNoteText> {
 		</div>;
 	}
 
+	/*
 	protected onEdit() {
 		this.controller.showEditPage();
 	}
+	*/
 /*
 	protected renderCheckItem(v:CheckItem, checkable:boolean) {
 		let {key, text, checked} = v;

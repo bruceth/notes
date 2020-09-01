@@ -3,37 +3,26 @@ import { NoteItem, EnumNoteType } from '../../model';
 import { CNotes } from '../../CNotes';
 import { VAssignView } from './VAssignView';
 import { VAdd } from './VAdd';
-import { CInput } from '../CInput';
 import { renderIcon } from '../../noteBase';
 import { FA } from 'tonva';
+import { CNote } from '../CNote';
+import { VAssignItem } from './VAssignItem';
 
 export function createCNoteAssign(cNotes: CNotes): CNoteAssign {
 	return new CNoteAssign(cNotes);
 }
 
-export class CNoteAssign extends CInput {
+export class CNoteAssign extends CNote {
 	get type():EnumNoteType { return EnumNoteType.assign }
-	init(param: NoteItem):void {
-		super.init(param);
-		if (param) {
-			if (!this.caption) this.caption = param.caption;
-		}
+
+	renderIcon(): JSX.Element {
+		return renderIcon('list', 'text-primary');
 	}
 
-	protected renderIcon(): JSX.Element {
-		return renderIcon('list', 'text-primary');
-		/*
-		//return <FA name={name} size="lg" className={cn} fixWidth={true} />;
-		let name = 'list';
-		let cn = 'text-primary';
-		return React.createElement(FA, {
-			name, 
-			size:'2x',
-			className:cn,
-			fixWidth: true
-		});
-		*/
-	}
+	protected newVDir() {return VAssignItem as any;}
+	protected newVView() {return VAssignView as any;}
+	//protected newVEdit() {return VTextEdit as any;}
+	protected newVAdd() {return VAdd as any;}
 
 	renderViewIcon(): JSX.Element {
 		let name = 'list';
@@ -52,7 +41,8 @@ export class CNoteAssign extends CInput {
 		);
 	}
 
-	showNoteView() {
+	/*
+	showViewPage() {
 		this.openVPage(VAssignView);
 	}
 
@@ -60,4 +50,5 @@ export class CNoteAssign extends CInput {
 		//this.checkType = EnumCheckType.checkable;
 		this.openVPage(VAdd, parent);
 	}
+	*/
 }

@@ -3,6 +3,7 @@ import { NoteItem, EnumNoteType } from '../../model';
 import { CNotes } from '../../CNotes';
 import { VAssignView } from './VAssignView';
 import { VAdd } from './VAdd';
+import { VEdit } from './VEdit'
 import { renderIcon } from '../../noteBase';
 import { FA } from 'tonva';
 import { CNote } from '../CNote';
@@ -21,7 +22,7 @@ export class CNoteAssign extends CNote {
 
 	protected newVDir() {return VAssignItem as any;}
 	protected newVView() {return VAssignView as any;}
-	//protected newVEdit() {return VTextEdit as any;}
+	protected newVEdit() {return VEdit as any;}
 	protected newVAdd() {return VAdd as any;}
 
 	renderViewIcon(): JSX.Element {

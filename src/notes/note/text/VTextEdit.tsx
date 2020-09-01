@@ -1,9 +1,7 @@
 import React from 'react';
-import { VNoteForm } from '../views/VNoteForm';
 import { CNoteText } from "./CNoteText";
 import { DropdownActions, DropdownAction } from 'tonva';
 import { EnumContentType } from 'notes/components';
-import { EnumCheckType } from 'notes/model';
 import { VNoteBaseEdit } from 'notes/noteBase/VNoteBaseEdit';
 import { observer } from 'mobx-react';
 import { computed } from 'mobx';

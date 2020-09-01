@@ -121,18 +121,15 @@ export class CNotes extends CUqBase {
 	showAddNotePage(type: EnumContentType) {
 		let {folderId} = this.currentFold;
 		let cNoteText = createCNoteText(this); // this.newSub(CNoteText);
-		//cNoteText.createCContent(type);
+		cNoteText.createCContent(type);
 		cNoteText.showAddPage(folderId, type);
 	}
 
 	showAddAssignPage() {
-		this.showAddNotePage(EnumContentType.checkable);
-		/*
 		let {folderId} = this.currentFold;
 		let cNoteAssign = createCNoteAssign(this); // this.newSub(CNoteText);
-		//cNoteAssign.createCContent(EnumContentType.checkable);
+		cNoteAssign.createCContent(EnumContentType.checkable);
 		cNoteAssign.showAddPage(folderId, EnumContentType.checkable);
-		*/
 	}
 
 	async showTo(noteItem:NoteItem, backPageCount:Number) {

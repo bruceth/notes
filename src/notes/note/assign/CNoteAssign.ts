@@ -2,11 +2,12 @@ import React from 'react';
 import { NoteItem, EnumNoteType } from '../../model';
 import { CNotes } from '../../CNotes';
 import { VAssignView } from './VAssignView';
-import { VAdd } from './VAdd';
+import { VAssignAdd } from './VAssignAdd';
+import { VAssignEdit } from './VAssignEdit'
 import { renderIcon } from '../../noteBase';
 import { FA } from 'tonva';
 import { CNote } from '../CNote';
-import { VAssignItem } from './VAssignItem';
+import { VAssignDir } from './VAssignDir';
 
 export function createCNoteAssign(cNotes: CNotes): CNoteAssign {
 	return new CNoteAssign(cNotes);
@@ -19,10 +20,10 @@ export class CNoteAssign extends CNote {
 		return renderIcon('list', 'text-primary');
 	}
 
-	protected newVDir() {return VAssignItem as any;}
+	protected newVDir() {return VAssignDir as any;}
 	protected newVView() {return VAssignView as any;}
-	//protected newVEdit() {return VTextEdit as any;}
-	protected newVAdd() {return VAdd as any;}
+	protected newVEdit() {return VAssignEdit as any;}
+	protected newVAdd() {return VAssignAdd as any;}
 
 	renderViewIcon(): JSX.Element {
 		let name = 'list';

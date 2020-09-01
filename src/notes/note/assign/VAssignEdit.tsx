@@ -1,13 +1,15 @@
 import React from 'react';
 //import { VNoteForm } from '../views/VNoteForm';
-import { CNoteTask } from "./CNoteTask";
+import { CNoteAssign } from "./CNoteAssign";
 import { VNoteBaseEdit } from 'notes/noteBase';
 import { observer } from 'mobx-react';
 import { computed } from 'mobx';
 
-export class VEdit extends VNoteBaseEdit<CNoteTask> { //} VNoteForm<CNoteTask> {
-	header() { return this.t('task') }
-	
+export class VAssignEdit extends VNoteBaseEdit<CNoteAssign> { // VNoteForm<CNoteAssign> {
+	header() {
+		return this.t('assign');
+	}
+
 	protected renderEditBottom():JSX.Element {
 		return <div className="py-2 pl-3 bg-light border-top d-flex">
 			<div className="mr-auto" />
@@ -27,6 +29,7 @@ export class VEdit extends VNoteBaseEdit<CNoteTask> { //} VNoteForm<CNoteTask> {
 		return this.getSaveDisabled();
 	}
 
+
 	protected getSaveDisabled():boolean {
 		return (this.controller.caption === undefined/* && this.controller.changedNoteContent === undefined*/);
 	}
@@ -38,7 +41,7 @@ export class VEdit extends VNoteBaseEdit<CNoteTask> { //} VNoteForm<CNoteTask> {
 	}
 
 	protected renderExButtons():JSX.Element {
-		return;
+		return <>this.renderDeleteButton()</>;
 	}
 	
 }

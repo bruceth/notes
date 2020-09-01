@@ -1,9 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { VNoteBase } from '../../noteBase';
+import { VNoteBaseDir } from '../../noteBase';
 import { CNoteAssign } from './CNoteAssign';
 
-export class VAssignItem extends VNoteBase<CNoteAssign> {
+export class VAssignDir extends VNoteBaseDir<CNoteAssign> {
 	/*
 	renderItemForList() {
 		return React.createElement(observer(() => {

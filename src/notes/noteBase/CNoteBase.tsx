@@ -51,7 +51,7 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	protected async internalStart() { }
 
 	@observable caption: string;
-	get captionChanged() {return this.caption !== this.noteItem.caption;}
+	get captionChanged() {return this.caption !== this.noteItem?.caption;}
 
 	protected newVDir(): (new (controller: CNoteBase) => VNoteBaseDir<any>) {return VNoteBaseDirView;}
 	protected newVView(): (new (controller: CNoteBase) => VNoteBaseView<any>) {return VNoteBaseViewPage;}

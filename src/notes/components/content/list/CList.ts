@@ -44,5 +44,6 @@ export class CList extends CContent {
 			key: this.itemKey++,
 			text: value,
 		});
+		this.changed = true;
 	}
 }

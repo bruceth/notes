@@ -1,11 +1,10 @@
-import { NoteItem, EnumNoteType } from '../../model';
+import { EnumNoteType } from '../../model';
 import { CNotes } from '../../CNotes';
 import { VTextView } from './VTextView';
 import { VTextAdd } from './VTextAdd';
 import { renderIcon } from '../../noteBase';
 import { VTextDir } from './VTextDir';
 import { CNote } from '../CNote';
-import { EnumContentType, createCContentFromType } from '../../components';
 import { VTextEdit } from './VTextEdit';
 
 export function createCNoteText(cNotes: CNotes): CNoteText {

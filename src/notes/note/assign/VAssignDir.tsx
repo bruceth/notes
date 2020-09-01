@@ -1,5 +1,4 @@
 import React from 'react';
-import { observer } from 'mobx-react';
 import { VNoteBaseDir } from '../../noteBase';
 import { CNoteAssign } from './CNoteAssign';
 

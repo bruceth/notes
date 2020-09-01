@@ -47,7 +47,7 @@ export class CCheckable extends CContent {
 	async onCheckChange(key: number, checked: boolean) {
 		let item = this.items.find(v => v.key === key);
 		if (item) item.checked = checked;
-		await this.onContentChanged();
+		await this.onContentChanged?.();
 		//await this.SetNote(false);
 	}
 
@@ -57,5 +57,6 @@ export class CCheckable extends CContent {
 			text: value,
 			checked: false,
 		});
+		this.changed = true;
 	}
 }

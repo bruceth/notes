@@ -29,13 +29,12 @@ export class VAssignEdit extends VNoteBaseEdit<CNoteAssign> { // VNoteForm<CNote
 		return this.getSaveDisabled();
 	}
 
-
 	protected getSaveDisabled():boolean {
-		return (this.controller.caption === undefined/* && this.controller.changedNoteContent === undefined*/);
+		return (this.controller.caption === undefined);
 	}
 
 	protected async onButtonSave(): Promise<void> {
-		//this.checkInputAdd();
+		this.controller.cContent.checkHaveNewItem?.();
 		await this.controller.SetNote();
 		this.closePage();
 	}

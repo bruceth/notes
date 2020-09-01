@@ -29,16 +29,14 @@ export class VAssignAdd extends VNoteBaseAdd<CNoteAssign> {
 	}
 
 	protected async onButtonSave(): Promise<void> {
-		//this.checkInputAdd();
-		//let type = EnumNoteType.assign;
+		this.controller.cContent.checkHaveNewItem?.();
 		await this.controller.AddNote(this.parentId);
 		this.closePage();
 		return;
 	}
 
 	protected onSaveAndSendNote = async () => {
-		//this.checkInputAdd();
-		//let type = EnumNoteType.assign;
+		this.controller.cContent.checkHaveNewItem?.();
 		let cnewNote = await this.controller.AddNote(this.parentId);
 		this.closePage();
 		await cnewNote.cApp.loadRelation();

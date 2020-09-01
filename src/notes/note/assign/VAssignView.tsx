@@ -1,6 +1,5 @@
 import React from 'react';
 import { VAssignEdit } from './VAssignEdit';
-import { observer } from 'mobx-react';
 import { VNoteBaseView } from '../../noteBase';
 import { CNoteAssign } from './CNoteAssign';
 import { VAssignRelatives } from './VAssignRelatives';
@@ -10,24 +9,6 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 	header() {
 		return this.t('assign')
 	}
-
-	/*
-	content() {
-		return React.createElement(observer(() => {
-			let {title} = this.controller;
-			return <div className="">
-				{this.renderViewTop()}
-				<div className="bg-white py-2 mb-3">
-					{title && <div className="px-3 py-2">
-						<div><b>{title}</b></div>
-					</div>}
-					{this.renderContent()}
-				</div>
-				{this.renderRelatives()}
-			</div>;
-		}));
-	}
-	*/
 
 	protected renderRelatives() {
 		return this.renderVm(VAssignRelatives);

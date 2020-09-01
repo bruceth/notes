@@ -23,17 +23,14 @@ export class VNoteBaseAdd<T extends CNoteBase> extends VNoteBaseForm<T> {
     }
 
 	protected async onButtonSave(): Promise<void> {
-		//this.checkInputAdd();
-		//let type =  this.controller.checkType === EnumCheckType.folder ? EnumNoteType.folder : EnumNoteType.text;
-		await this.controller.AddNote(this.parentId); //, type);
+		this.controller.cContent.checkHaveNewItem?.();
+		await this.controller.AddNote(this.parentId);
 		this.closePage();
 		return;
 	}
 
 	protected renderExButtons():JSX.Element {
 		return React.createElement(observer(() => {
-			//if (this.controller.checkType === EnumCheckType.folder)
-			//	return;
 			return this.renderShareButton();
 		}));
 	}
@@ -47,7 +44,6 @@ export class VNoteBaseAdd<T extends CNoteBase> extends VNoteBaseForm<T> {
 
 	protected onSaveAndSendNote = async () => {
 		//this.checkInputAdd();
-		//let type = this.controller.cContent.contentType;/ .checkType === EnumCheckType.folder ? EnumNoteType.folder : EnumNoteType.text;
 		let cnewNote = await this.controller.AddNote(this.parentId);
 		this.closePage();
 		await cnewNote.cApp.loadRelation();

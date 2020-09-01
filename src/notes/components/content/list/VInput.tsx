@@ -55,4 +55,13 @@ export class VInput extends View<CList> {
 			evt.currentTarget.value = '';
 		}
 	}
+
+	checkInputAdd = () => {
+		if (this.inputAdd) {
+			let {value} = this.inputAdd;
+			if (value.trim().length === 0) return;
+			this.controller.addItem(value);
+			this.inputAdd.value = '';
+		}
+	}
 }

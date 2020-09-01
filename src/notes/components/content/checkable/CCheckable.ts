@@ -29,7 +29,12 @@ export class CCheckable extends CContent {
 		}
 	}
 
-	renderInput():JSX.Element {return this.renderView(VInput)}
+	renderInput():JSX.Element {
+		let v = new VInput(this);
+		this.checkHaveNewItem = v.checkInputAdd;
+		return v.render();
+	}
+
 	renderViewContent():JSX.Element {return this.renderView(VView)}
 	renderDirContent():JSX.Element {return this.renderView(VItem)}
 

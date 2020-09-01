@@ -5,16 +5,8 @@ import { EnumContentType } from 'notes/components';
 import { VNoteBaseEdit } from 'notes/noteBase/VNoteBaseEdit';
 import { observer } from 'mobx-react';
 import { computed } from 'mobx';
-//import { DropdownAction, DropdownActions } from 'tonva';
 
-export class VTextEdit extends VNoteBaseEdit<CNoteText> { // VNoteForm<CNoteText> {
-	/*
-	protected get back(): 'close' | 'back' | 'none' {return 'close'}
-	header() {
-		return this.t('noteText');
-	}
-	*/
-
+export class VTextEdit extends VNoteBaseEdit<CNoteText> {
 	protected renderEditBottom():JSX.Element {
 		return <div className="py-2 pl-3 bg-light border-top d-flex">
 			{this.renderButtonLeft()}
@@ -41,6 +33,7 @@ export class VTextEdit extends VNoteBaseEdit<CNoteText> { // VNoteForm<CNoteText
 
 	protected async onButtonSave(): Promise<void> {
 		//this.checkInputAdd();
+		this.controller.cContent.checkHaveNewItem?.();
 		await this.controller.SetNote();
 		this.closePage();
 	}

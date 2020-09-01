@@ -25,8 +25,7 @@ export class VAddNoteBase<T extends CNote> extends VNoteForm<T> {
 
 	protected async onButtonSave(): Promise<void> {
 		//this.checkInputAdd();
-		//let type =  this.controller.checkType === EnumCheckType.folder ? EnumNoteType.folder : EnumNoteType.text;
-		await this.controller.AddNote(this.parentId); //, type);
+		await this.controller.AddNote(this.parentId);
 		this.closePage();
 		return;
 	}

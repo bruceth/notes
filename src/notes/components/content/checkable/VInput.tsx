@@ -79,8 +79,7 @@ export class VInput extends View<CCheckable> {
 		this.changed = true;
 	}
 
-
-	protected checkInputAdd() {
+	checkInputAdd = () => {
 		if (this.inputAdd) {
 			let {value} = this.inputAdd;
 			if (value.trim().length === 0) return;

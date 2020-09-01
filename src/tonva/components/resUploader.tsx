@@ -110,7 +110,8 @@ interface ImageUploaderProps {
     id?: string;
     label?: string;
     size?: 'sm' | 'md' | 'lg';
-    onSaved?: (imageId:string) => Promise<void>;
+	onSaved?: (imageId:string) => Promise<void>;
+	imageTypes?: string[];
 }
 
 const largeSize = 800;
@@ -120,7 +121,8 @@ const smallSize = 180;
 @observer
 export class ImageUploader extends React.Component<ImageUploaderProps> {
 	private static imageTypes = ['gif', 'jpg', 'jpeg', 'png', 'svg', 'apng', 'bmp', 'ico', 'cur', 'tiff', 'tif', 'webp'];
-    private imgBaseSize: number;
+	private imgBaseSize: number;
+	private imageTypes: string[];
     private suffix: string;
     private resUploader: ResUploader;
     @observable private file: File;    
@@ -139,7 +141,8 @@ export class ImageUploader extends React.Component<ImageUploaderProps> {
 
     constructor(props: ImageUploaderProps) {
         super(props);
-        this.resId = props.id;
+		this.resId = props.id;
+		this.imageTypes = props.imageTypes || ImageUploader.imageTypes;
     }
 
     private onFileChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,8 +153,8 @@ export class ImageUploader extends React.Component<ImageUploaderProps> {
             this.file = evt.target.files[0];
             let pos = this.file.name.lastIndexOf('.');
             if (pos >= 0) this.suffix = this.file.name.substr(pos+1).toLowerCase();
-            if(ImageUploader.imageTypes.indexOf(this.suffix) < 0){
-                this.fileError = `图片类型必须是 ${ImageUploader.imageTypes.join(', ')} 中的一种`;
+            if(this.imageTypes.indexOf(this.suffix) < 0){
+                this.fileError = `图片类型必须是 ${this.imageTypes.join(', ')} 中的一种`;
                 return;
             }
             let reader = new FileReader();
@@ -317,7 +320,7 @@ export class ImageUploader extends React.Component<ImageUploaderProps> {
                             multiple={false} maxSize={2048} 
                             label="选择图片文件"
                             onFilesChange={this.onFileChange} />
-                        <div className="small text-muted">支持 {ImageUploader.imageTypes.join(', ')} 格式图片。</div>
+                        <div className="small text-muted">支持 {this.imageTypes.join(', ')} 格式图片。</div>
                         {this.fileError && <div className="text-danger">{this.fileError}</div>}
                     </div>
                     <LMR left=

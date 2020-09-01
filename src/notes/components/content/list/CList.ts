@@ -26,7 +26,11 @@ export class CList extends CContent {
 	}
 
 	get contentType(): EnumContentType {return EnumContentType.list;}
-	renderInput():JSX.Element {return this.renderView(VInput)}
+	renderInput():JSX.Element {
+		let v = new VInput(this);
+		this.checkHaveNewItem = v.checkInputAdd;
+		return v.render();
+	}
 	renderViewContent():JSX.Element {return this.renderView(VView)}
 
 	buildObj(obj:any) {
@@ -40,5 +44,6 @@ export class CList extends CContent {
 			key: this.itemKey++,
 			text: value,
 		});
+		this.changed = true;
 	}
 }

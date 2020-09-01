@@ -6,6 +6,8 @@ export abstract class CContent extends Controller {
 	@observable changed: boolean = false;
 	protected async internalStart() {}
 
+	checkHaveNewItem: () => void;
+
 	abstract get contentType(): EnumContentType;
 	onContentChanged: () => Promise<void>;
 	

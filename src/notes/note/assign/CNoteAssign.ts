@@ -1,5 +1,5 @@
 import React from 'react';
-import { NoteItem, EnumNoteType } from '../../model';
+import { EnumNoteType } from '../../model';
 import { CNotes } from '../../CNotes';
 import { VAssignView } from './VAssignView';
 import { VAssignAdd } from './VAssignAdd';

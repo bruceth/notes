@@ -2,11 +2,9 @@ import React from 'react';
 import { View, FA } from "tonva";
 import { CCheckable, CheckItem } from './CCheckable';
 import { ItemInputProps, VItemInput } from '../VItemInput';
-import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 
 export class VInput extends View<CCheckable> {
-	@observable protected changed: boolean = false;
 	private inputAdd: HTMLInputElement;
 	render() {
 		return <div className="py-1 px-1">
@@ -76,11 +74,10 @@ export class VInput extends View<CCheckable> {
 	private onItemChanged = (key: number, value: string) => {
 		let item = this.controller.items.find(v => v.key === key);
 		if (item) item.text = value;
-		this.changed = true;
+		this.controller.changed = true;
 	}
 
-
-	protected checkInputAdd() {
+	checkInputAdd = () => {
 		if (this.inputAdd) {
 			let {value} = this.inputAdd;
 			if (value.trim().length === 0) return;
@@ -94,5 +91,6 @@ export class VInput extends View<CCheckable> {
 		let key = Number(t.getAttribute('data-key'));
 		let item = this.controller.items.find(v => v.key === key);
 		if (item) item.checked = t.checked;
+		this.controller.changed = true;
 	}
 }

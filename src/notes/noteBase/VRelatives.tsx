@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { EasyTime, User, Image, UserView, FA, Page, List, LMR } from "tonva";
+import { EasyTime, User, Image, UserView, FA, List, LMR } from "tonva";
 import { CNoteBase } from "./CNoteBase";
-import { CommentItem, RelativeKey, Relative, NoteItem } from '../model';
+import { RelativeKey, Relative, NoteItem } from '../model';
 import { VNoteBase } from './VNoteBase';
 import { GetTaskStateContent } from 'notes/note/task/TaskState';
 

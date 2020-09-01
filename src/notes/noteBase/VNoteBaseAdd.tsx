@@ -1,9 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { CNoteBase } from "./CNoteBase";
-import { VNoteBaseForm } from './VNoteBaseForm';
+import { VNoteBaseEdit } from './VNoteBaseEdit';
 
-export class VNoteBaseAdd<T extends CNoteBase> extends VNoteBaseForm<T> {	
+export class VNoteBaseAdd<T extends CNoteBase> extends VNoteBaseEdit<T> {	
 	protected parentId: number;
 
 	init(param?:any):void 
@@ -12,28 +12,15 @@ export class VNoteBaseAdd<T extends CNoteBase> extends VNoteBaseForm<T> {
 		this.parentId = param;
 	}
 
-	protected getSaveDisabled():boolean {
-		if (this.controller.caption !== undefined) {
-			return this.controller.caption.length === 0;
-		}
-		/*if (this.controller.changedNoteContent !== undefined) {
-			return this.controller.changedNoteContent.length === 0;
-		}*/
-		return true;
-    }
-
 	protected async onButtonSave(): Promise<void> {
-		//this.checkInputAdd();
-		//let type =  this.controller.checkType === EnumCheckType.folder ? EnumNoteType.folder : EnumNoteType.text;
-		await this.controller.AddNote(this.parentId); //, type);
+		this.controller.cContent.checkHaveNewItem?.();
+		await this.controller.AddNote(this.parentId);
 		this.closePage();
 		return;
 	}
 
 	protected renderExButtons():JSX.Element {
 		return React.createElement(observer(() => {
-			//if (this.controller.checkType === EnumCheckType.folder)
-			//	return;
 			return this.renderShareButton();
 		}));
 	}
@@ -46,8 +33,7 @@ export class VNoteBaseAdd<T extends CNoteBase> extends VNoteBaseForm<T> {
 	}
 
 	protected onSaveAndSendNote = async () => {
-		//this.checkInputAdd();
-		//let type = this.controller.cContent.contentType;/ .checkType === EnumCheckType.folder ? EnumNoteType.folder : EnumNoteType.text;
+		this.controller.cContent.checkHaveNewItem?.();
 		let cnewNote = await this.controller.AddNote(this.parentId);
 		this.closePage();
 		await cnewNote.cApp.loadRelation();

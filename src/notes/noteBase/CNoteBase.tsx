@@ -6,7 +6,6 @@ import { CContent, createCContent, CComments, createCContentFromType, EnumConten
 import { VNoteBaseDir, VNoteBaseDirView } from './VNoteBaseDir';
 import { VNoteBaseViewPage, VNoteBaseView } from './VNoteBaseView';
 import { VNoteBaseEdit, VNoteBaseEditPage } from './VNoteBaseEdit';
-import { VNoteBaseAdd, VNoteBaseAddPage } from "./VNoteBaseAdd";
 
 export abstract class CNoteBase extends CUqSub<CNotes> {
 	disableFrom: boolean = false;
@@ -56,7 +55,7 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	protected newVDir(): (new (controller: CNoteBase) => VNoteBaseDir<any>) {return VNoteBaseDirView;}
 	protected newVView(): (new (controller: CNoteBase) => VNoteBaseView<any>) {return VNoteBaseViewPage;}
 	protected newVEdit(): (new (controller: CNoteBase) => VNoteBaseEdit<any>) {return VNoteBaseEditPage;}
-	protected newVAdd(): (new (controller: CNoteBase) => VNoteBaseAdd<any>) {return VNoteBaseAddPage;}
+	protected newVAdd(): (new (controller: CNoteBase) => VNoteBaseEdit<any>) {return VNoteBaseEditPage;}
 
 	renderListItem(index: number): JSX.Element {
 		return this.renderView(this.newVDir());

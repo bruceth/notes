@@ -3,14 +3,6 @@ import { VTextEdit } from "./VTextEdit";
 import { observer } from "mobx-react";
 
 export class VTextAdd extends VTextEdit {
-	protected parentId: number;
-
-	init(param?:any):void 
-	{
-		super.init(param);
-		this.parentId = param;
-	}
-
 	header() {return '新建文字单'}
 
 	protected async onButtonSave(): Promise<void> {
@@ -34,7 +26,7 @@ export class VTextAdd extends VTextEdit {
 	}
 
 	protected onSaveAndSendNote = async () => {
-		//this.checkInputAdd();
+		this.controller.cContent.checkHaveNewItem?.();
 		let cnewNote = await this.controller.AddNote(this.parentId);
 		this.closePage();
 		await cnewNote.cApp.loadRelation();

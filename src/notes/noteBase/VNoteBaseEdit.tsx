@@ -5,6 +5,14 @@ import { computed } from 'mobx';
 import { observer } from 'mobx-react';
 
 export class VNoteBaseEdit<T extends CNoteBase> extends VNoteBaseForm<T> {	
+	protected parentId: number;
+
+	init(param?:any):void 
+	{
+		super.init(param);
+		this.parentId = param;
+	}
+
 	@computed protected get btnSaveDisabled():boolean {
 		if (this.controller.cContent.changed) return false;
 		if (this.changed === true) return false;

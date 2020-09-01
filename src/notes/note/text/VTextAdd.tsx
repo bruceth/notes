@@ -1,47 +1,44 @@
 import React from "react";
-import { CNoteText } from './CNoteText';
-import { VNoteBaseAdd } from "notes/noteBase";
+import { VTextEdit } from "./VTextEdit";
 import { observer } from "mobx-react";
-import { DropdownActions, DropdownAction } from "tonva";
-import { EnumContentType } from "notes/components";
-import { computed } from "mobx";
 
-export class VTextAdd extends VNoteBaseAdd<CNoteText> {
+export class VTextAdd extends VTextEdit {
+	protected parentId: number;
+
+	init(param?:any):void 
+	{
+		super.init(param);
+		this.parentId = param;
+	}
+
 	header() {return '新建文字单'}
 
-	protected renderEditBottom():JSX.Element {
-		return <div className="py-2 pl-3 bg-light border-top d-flex">
-			{this.renderButtonLeft()}
-			<div className="mr-auto" />
-			{React.createElement(observer(() => <>
-				<button onClick={() => this.onButtonSave()}
-					className="btn btn-primary mr-3" disabled={this.btnSaveDisabled}>
-					保存
-				</button>
-			</>))}
-			{this.renderExButtons()}
-		</div>;
+	protected async onButtonSave(): Promise<void> {
+		this.controller.cContent.checkHaveNewItem?.();
+		await this.controller.AddNote(this.parentId);
+		this.closePage();
+		return;
 	}
 
-	@computed protected get btnSaveDisabled():boolean {
-		if (this.controller.cContent.changed) return false;
-		if (this.changed === true) return false;
-		return this.getSaveDisabled();
+	protected renderExButtons():JSX.Element {
+		return React.createElement(observer(() => {
+			return this.renderShareButton();
+		}));
 	}
 
-	protected renderButtonLeft():JSX.Element { 
-		return <DropdownActions actions={this.dropdownActions} icon="th-list" itemIconClass="text-info" isRight={false}
-		className="cursor-pointer btn btn-lg p-1 mr-1"/>;
+	protected renderShareButton() {
+		return <button onClick={this.onSaveAndSendNote}
+			className="btn btn-outline-primary mr-3">
+			发给
+		</button>;
 	}
 
-	private dropdownActions: DropdownAction[] = [
-		{icon:'file-o', caption:this.t('noteText'), action: ()=>this.actionSwitchType(EnumContentType.text)},
-		{icon:'list', caption:this.t('noteList'), action: ()=>this.actionSwitchType(EnumContentType.list)},
-		{icon:'check-square-o', caption:this.t('noteCheckable'), action: ()=>this.actionSwitchType(EnumContentType.checkable)},
-	];
-
-	private actionSwitchType(type: number) {
-	 	//this.changed = true;
-	 	//this.controller.onCheckableChanged(type);
+	protected onSaveAndSendNote = async () => {
+		//this.checkInputAdd();
+		let cnewNote = await this.controller.AddNote(this.parentId);
+		this.closePage();
+		await cnewNote.cApp.loadRelation();
+		cnewNote.showTo(1);
 	}
+
 }

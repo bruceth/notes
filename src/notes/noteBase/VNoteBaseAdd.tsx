@@ -1,9 +1,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { CNoteBase } from "./CNoteBase";
-import { VNoteBaseForm } from './VNoteBaseForm';
+import { VNoteBaseEdit } from './VNoteBaseEdit';
 
-export class VNoteBaseAdd<T extends CNoteBase> extends VNoteBaseForm<T> {	
+export class VNoteBaseAdd<T extends CNoteBase> extends VNoteBaseEdit<T> {	
 	protected parentId: number;
 
 	init(param?:any):void 
@@ -11,16 +11,6 @@ export class VNoteBaseAdd<T extends CNoteBase> extends VNoteBaseForm<T> {
 		super.init(param);
 		this.parentId = param;
 	}
-
-	protected getSaveDisabled():boolean {
-		if (this.controller.caption !== undefined) {
-			return this.controller.caption.length === 0;
-		}
-		/*if (this.controller.changedNoteContent !== undefined) {
-			return this.controller.changedNoteContent.length === 0;
-		}*/
-		return true;
-    }
 
 	protected async onButtonSave(): Promise<void> {
 		this.controller.cContent.checkHaveNewItem?.();
@@ -43,7 +33,7 @@ export class VNoteBaseAdd<T extends CNoteBase> extends VNoteBaseForm<T> {
 	}
 
 	protected onSaveAndSendNote = async () => {
-		//this.checkInputAdd();
+		this.controller.cContent.checkHaveNewItem?.();
 		let cnewNote = await this.controller.AddNote(this.parentId);
 		this.closePage();
 		await cnewNote.cApp.loadRelation();

@@ -4,7 +4,6 @@ import { DropdownActions, DropdownAction } from 'tonva';
 import { EnumContentType } from 'notes/components';
 import { VNoteBaseEdit } from 'notes/noteBase/VNoteBaseEdit';
 import { observer } from 'mobx-react';
-import { computed } from 'mobx';
 
 export class VTextEdit extends VNoteBaseEdit<CNoteText> {
 	protected renderEditBottom():JSX.Element {
@@ -21,22 +20,6 @@ export class VTextEdit extends VNoteBaseEdit<CNoteText> {
 		</div>;
 	}
 
-	protected getSaveDisabled():boolean {
-		return (this.controller.caption === undefined /*&& this.controller.changedNoteContent === undefined*/);
-	}
-
-	@computed protected get btnSaveDisabled():boolean {
-		if (this.controller.cContent.changed) return false;
-		if (this.changed === true) return false;
-		return true;
-	}
-
-	protected async onButtonSave(): Promise<void> {
-		this.controller.cContent.checkHaveNewItem?.();
-		await this.controller.SetNote();
-		this.closePage();
-	}
-
 	protected renderExButtons():JSX.Element {
 		return this.renderDeleteButton();
 	}
@@ -46,13 +29,13 @@ export class VTextEdit extends VNoteBaseEdit<CNoteText> {
 		className="cursor-pointer btn btn-lg p-1 mr-1"/>;
 	}
 
-	private dropdownActions: DropdownAction[] = [
+	protected dropdownActions: DropdownAction[] = [
 		{icon:'file-o', caption:this.t('noteText'), action: ()=>this.actionSwitchType(EnumContentType.text)},
 		{icon:'list', caption:this.t('noteList'), action: ()=>this.actionSwitchType(EnumContentType.list)},
 		{icon:'check-square-o', caption:this.t('noteCheckable'), action: ()=>this.actionSwitchType(EnumContentType.checkable)},
 	];
 
-	private actionSwitchType(type: number) {
+	protected actionSwitchType(type: number) {
 	 	//this.changed = true;
 	 	//this.controller.onCheckableChanged(type);
 	}

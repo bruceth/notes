@@ -19,11 +19,12 @@ export class VInput extends View<CList> {
 			{
 				items.map((v, index) => {
 					let {key, text} = v;
-					let onItemUpdate = async (v:string) => {
-						this.onItemChanged(key, v);
+					let onItemChange = async (v:string) => {
+						//this.onItemChanged(key, v);
+						this.controller.onItemChanged(key, v);
 					}
 					let param:ItemInputProps = {
-						onUpdate: onItemUpdate,
+						onChange: onItemChange,
 						content: text,
 					}
 					return <li key={key} className="ml-3 align-items-center">
@@ -39,21 +40,15 @@ export class VInput extends View<CList> {
 		</>;
 	}
 
-	private onItemChanged = (key: number, value: string) => {
-		let item = this.controller.items.find(v => v.key === key);
-		if (item) item.text = value;
-		this.controller.changed = true;
-	}
-
 	private onAddEnter = (evt:React.KeyboardEvent<HTMLInputElement>) => {
 		if (evt.keyCode === 13) {
-			let {value} = evt.currentTarget;
-			if (value.trim().length === 0) return;
-			this.controller.addItem(value);
+			//let {value} = evt.currentTarget;
+			//if (value.trim().length === 0) return;
+			this.controller.addNewItem();
 			evt.currentTarget.value = '';
 		}
 	}
-
+	/*
 	checkInputAdd = () => {
 		if (this.inputAdd) {
 			let {value} = this.inputAdd;
@@ -62,4 +57,5 @@ export class VInput extends View<CList> {
 			this.inputAdd.value = '';
 		}
 	}
+	*/
 }

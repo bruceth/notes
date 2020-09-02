@@ -9,8 +9,6 @@ import { CTaskPass } from './pass';
 import { CTaskFail } from './fail';
 import { CTaskRated } from './rated';
 
-export {CNoteTask} from './CNoteTask';
-
 export function createCNoteTask(cNotes: CNotes, noteItem: NoteItem): CNoteTask {
 	switch (noteItem.state as EnumTaskState) {
 		default:

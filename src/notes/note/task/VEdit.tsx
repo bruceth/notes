@@ -22,7 +22,7 @@ export class VEdit extends VNoteBaseEdit<CNoteTask> { //} VNoteForm<CNoteTask> {
 	}
 
 	@computed protected get btnSaveDisabled():boolean {
-		if (this.controller.cContent.changed) return false;
+		if (this.controller.isContentChanged) return false;
 		if (this.changed === true) return false;
 		return this.getSaveDisabled();
 	}

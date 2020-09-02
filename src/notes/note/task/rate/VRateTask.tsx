@@ -1,13 +1,11 @@
 import React from 'react';
 import { FA } from 'tonva';
 import { VTaskView } from '../VTaskView';
-import { TaskCheckItem } from '../CNoteTask';
 import { CTaskRate } from './CTaskRate';
+import { TaskCheckItem } from '../model';
 
 export class VTaskRate extends VTaskView<CTaskRate> {
 	protected rateValue: number = 0;
-
-	protected get allowCheck() { return false; }
 
 	protected renderState(): JSX.Element {
 		return this.renderStateSpan('待评价');

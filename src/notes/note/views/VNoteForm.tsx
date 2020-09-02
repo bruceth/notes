@@ -24,7 +24,7 @@ export abstract class VNoteForm<T extends CNote> extends VNoteBase<T> {
 		return <>
 			<div className="bg-white">
 				{this.renderCaptionInput()}
-				{this.controller.cContent.renderInput()}
+				{this.controller.renderContentInput()}
 			</div>
 			<div className="py-2 pl-3 bg-light border-top d-flex">
 					{this.renderButtonLeft()}
@@ -68,7 +68,7 @@ export abstract class VNoteForm<T extends CNote> extends VNoteBase<T> {
 	protected abstract onButtonSave(): Promise<void>;
 
 	@computed protected get btnSaveDisabled():boolean {
-		if (this.controller.cContent.changed) return false;
+		if (this.controller.isContentChanged) return false;
 		if (this.changed === true) return false;
 		return this.getSaveDisabled();
 	}

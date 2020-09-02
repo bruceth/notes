@@ -26,7 +26,7 @@ export class VNoteBaseDir<T extends CNoteBase> extends VNoteBase<T> {
 	}
 
 	protected renderContent():JSX.Element {
-		return this.controller.cContent.renderDirContent();
+		return this.controller.renderContentDir();
 	}
 
 	protected renderDirBottom():JSX.Element {

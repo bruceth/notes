@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, FA } from "tonva";
-import { CCheckable, CheckItem } from './CCheckable';
+import { CCheckable } from './CCheckable';
 import { ItemInputProps, VItemInput } from '../VItemInput';
 import { observer } from 'mobx-react';
 
@@ -13,22 +13,17 @@ export class VInput extends View<CCheckable> {
 	}
 
 	private renderContentCheckList() {
-		let uncheckedItems:CheckItem[] = [];
-		let checkedItems:CheckItem[] = [];
-		for (let ci of this.controller.items) {
-			let {checked} = ci;
-			if (checked === true) checkedItems.push(ci);
-			else uncheckedItems.push(ci);
-		}
+		let {uncheckedItems, checkedItems} = this.controller.getItems();
 		return <div className="">
 			{
 				uncheckedItems.map((v, index) => {
 					let {key, text, checked} = v;
-					let onItemUpdate = async (v:string) => {
-						this.onItemChanged(key, v);
+					let onItemChange = async (v:string) => {
+						//this.onItemChanged(key, v);
+						this.controller.onItemChanged(key, v);
 					}
 					let param:ItemInputProps = {
-						onUpdate: onItemUpdate,
+						onChange: onItemChange,
 						content: text,
 					}
 					return <div key={key} className="d-flex mx-3 my-2 align-items-center form-check">
@@ -42,7 +37,12 @@ export class VInput extends View<CCheckable> {
 			}
 			<div className="d-flex mx-3 my-2 align-items-center">
 				<FA name="plus" className="text-info mr-2" />
-				<input ref={t => this.inputAdd = t} className="flex-fill form-control" type="text" placeholder="新增" onKeyDown={this.onAddEnter} />
+				<input ref={t => this.inputAdd = t} 
+					className="flex-fill form-control" 
+					type="text" 
+					placeholder="新增" 
+					onChange={(e) => this.controller.onItemChanged(0, e.target.value)}
+					onKeyDown={this.onAddEnter} />
 			</div>
 			{
 				checkedItems.length > 0 && <div className="border-top mt-2 py-2">
@@ -64,19 +64,14 @@ export class VInput extends View<CCheckable> {
 
 	private onAddEnter = (evt:React.KeyboardEvent<HTMLInputElement>) => {
 		if (evt.keyCode === 13) {
-			let {value} = evt.currentTarget;
-			if (value.trim().length === 0) return;
-			this.controller.addItem(value);
+			//let {value} = evt.currentTarget;
+			//if (value.trim().length === 0) return;
+			this.controller.addNewItem();
 			evt.currentTarget.value = '';
 		}
 	}
 
-	private onItemChanged = (key: number, value: string) => {
-		let item = this.controller.items.find(v => v.key === key);
-		if (item) item.text = value;
-		this.controller.changed = true;
-	}
-
+	/*
 	checkInputAdd = () => {
 		if (this.inputAdd) {
 			let {value} = this.inputAdd;
@@ -85,6 +80,7 @@ export class VInput extends View<CCheckable> {
 			this.inputAdd.value = '';
 		}
 	}
+	*/
 	
 	private onCheckChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
 		let t = evt.currentTarget;

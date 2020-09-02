@@ -1,19 +1,21 @@
-import { observable } from "mobx";
+import { observable, computed } from "mobx";
 import { CUqSub } from '../../tapp';
-import { NoteItem, NoteModel, EnumNoteType, RelativeKey } from '../model';
+import { NoteItem, NoteModel, EnumNoteType } from '../model';
 import { CNotes } from '../CNotes';
-import { CContent, createCContent, CComments, createCContentFromType, EnumContentType } from '../components';
+import { CContent, createCContent, createCContentFromType, EnumContentType } from '../components';
 import { VNoteBaseDir, VNoteBaseDirView } from './VNoteBaseDir';
-import { VNoteBaseViewPage, VNoteBaseView } from './VNoteBaseView';
-import { VNoteBaseEdit, VNoteBaseEditPage } from './VNoteBaseEdit';
+import { VNoteBase, VNoteBasePage } from "./VNoteBase";
 
 export abstract class CNoteBase extends CUqSub<CNotes> {
 	disableFrom: boolean = false;
 	@observable noteModel: NoteModel;
 	@observable noteItem: NoteItem;
-	@observable relativeKey: RelativeKey;
-	cContent: CContent;
-	cComments: CComments;
+	protected cContent: CContent;
+
+	@computed get isContentChanged():boolean {return this.cContent.changed}
+	renderContentInput() {return this.cContent.renderInput()}
+	renderContentDir() {return this.cContent.renderDirContent()}
+	renderContentView() {return this.cContent.renderViewContent()}
 
 	get groupFolder(): number {
 		if (!this.noteItem)
@@ -53,9 +55,9 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	get captionChanged() {return this.caption !== this.noteItem?.caption;}
 
 	protected newVDir(): (new (controller: CNoteBase) => VNoteBaseDir<any>) {return VNoteBaseDirView;}
-	protected newVView(): (new (controller: CNoteBase) => VNoteBaseView<any>) {return VNoteBaseViewPage;}
-	protected newVEdit(): (new (controller: CNoteBase) => VNoteBaseEdit<any>) {return VNoteBaseEditPage;}
-	protected newVAdd(): (new (controller: CNoteBase) => VNoteBaseEdit<any>) {return VNoteBaseEditPage;}
+	protected newVView(): (new (controller: CNoteBase) => VNoteBase<any>) {return VNoteBasePage;}
+	protected newVEdit(): (new (controller: CNoteBase) => VNoteBase<any>) {return VNoteBasePage;}
+	protected newVAdd(): (new (controller: CNoteBase) => VNoteBase<any>) {return VNoteBasePage;}
 
 	renderListItem(index: number): JSX.Element {
 		return this.renderView(this.newVDir());
@@ -64,16 +66,6 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	abstract renderIcon(): JSX.Element;
 
 	showViewPage() {
-		if (!this.noteModel) {
-			debugger;
-			throw new Error('noteModel 应该已经赋值了');
-		}
-		this.cComments = new CComments(this.res)
-		this.cComments.init(this.noteModel, {
-			onAddComment: this.addComment,
-			onDeleteComment: this.deleteComment,
-		});
-		this.openVPage(this.newVView());
 	}
 
 	showEditPage() {
@@ -86,15 +78,26 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		this.openVPage(this.newVAdd(), folderId);
 	}
 
+	/*
 	protected stringifyContent() {
 		let ret = JSON.stringify(this.buildObj());
 		return ret;
 	}
+	*/
 
+	/*
 	protected buildObj(): any {
 		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
 		//obj.content = this.changedNoteContent || this.noteContent;
-		this.cContent.buildObj(obj);
+		return this.cContent.endInput(obj);
+		//return obj;
+	}
+	*/
+
+	protected endContentInput():any {
+		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
+		//obj.content = this.changedNoteContent || this.noteContent;
+		this.cContent.endInput(obj);
 		return obj;
 	}
 
@@ -120,12 +123,13 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	}
 
 	async SetNote(showWaiting: boolean = true) {
-		let noteContent = this.stringifyContent();
+		let obj = this.endContentInput();
+		let noteContent = JSON.stringify(obj);
 		await this.owner.editNote(showWaiting,
 			this.noteItem,
 			this.caption,
 			noteContent,
-			this.buildObj());
+			obj);
 		this.updateChange();
 	}
 
@@ -150,12 +154,13 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	}
 
 	async AddNote(parent: number) {
-		let noteContent = this.stringifyContent();
-		let ret = await this.owner.addNote(parent, this.caption, noteContent, this.buildObj(), this.type);
+		let obj = this.endContentInput();
+		let noteContent = JSON.stringify(obj);
+		let ret = await this.owner.addNote(parent, this.caption, noteContent, obj, this.type);
 		this.updateChange();
 		return ret;
 	}
-
+/*
 	async addComment(content: string) {
 		let ret = await this.uqs.notes.AddComment.submit({ note: this.noteModel.id, content });
 		let commentId = ret.comment;
@@ -176,4 +181,5 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	async deleteComment(commentId: number) {
 		debugger;
 	}
+*/
 }

@@ -1,24 +1,24 @@
+import { observable } from "mobx";
+import { EnumContentType } from "../createCContent";
 import { CContent } from "../CContent";
 import { VInput } from "./VInput";
 import { VView } from "./VView";
-import { observable } from "mobx";
-import { EnumContentType } from "../createCContent";
 import { VItem } from "./VItem";
 
-export interface CheckItem {
+export interface ContentCheckItem {
 	key: number;
 	text: string;
 	checked: boolean;
 }
 
 export class CCheckable extends CContent {
-	@observable items: CheckItem[];
+	private inputingText: string;
+	@observable items: ContentCheckItem[];
 	itemKey: number = 1;
 
 	get contentType(): EnumContentType {return EnumContentType.checkable;}
 
 	init(obj:any) {
-		//this.items.splice(0, this.items.length);
 		if (obj) {
 			this.itemKey = obj.itemKey;
 			this.items = obj.items;
@@ -31,14 +31,19 @@ export class CCheckable extends CContent {
 
 	renderInput():JSX.Element {
 		let v = new VInput(this);
-		this.checkHaveNewItem = v.checkInputAdd;
+		//this.checkHaveNewItem = v.checkInputAdd;
 		return v.render();
 	}
 
 	renderViewContent():JSX.Element {return this.renderView(VView)}
 	renderDirContent():JSX.Element {return this.renderView(VItem)}
 
-	buildObj(obj:any) {
+	endInput(obj:any): void {
+		this.addNewItem();
+		this.buildObj(obj);
+	}
+
+	protected buildObj(obj:any): void {
 		obj.check = this.contentType;
 		obj.itemKey = this.itemKey;
 		obj.items = this.items;
@@ -51,12 +56,38 @@ export class CCheckable extends CContent {
 		//await this.SetNote(false);
 	}
 
-	addItem(value: string): void {
+	onItemChanged = (key: number, value: string) => {
+		let item = key && this.items.find(v => v.key === key);
+		if (item) {
+			item.text = value;
+		}
+		else {
+			this.inputingText = value;
+		}
+		this.changed = true;
+	}
+
+	addNewItem(): void {
+		if (this.inputingText === undefined) return;
+		let text = this.inputingText.trim();
+		if (text.length === 0) return;
 		this.items.push({
 			key: this.itemKey++,
-			text: value,
+			text,
 			checked: false,
 		});
 		this.changed = true;
+		this.inputingText = undefined;
+	}
+
+	getItems():{uncheckedItems:ContentCheckItem[], checkedItems: ContentCheckItem[]} {
+		let uncheckedItems:ContentCheckItem[] = [];
+		let checkedItems:ContentCheckItem[] = [];
+		for (let ci of this.items) {
+			let {checked} = ci;
+			if (checked === true) checkedItems.push(ci);
+			else uncheckedItems.push(ci);
+		}
+		return {uncheckedItems, checkedItems};
 	}
 }

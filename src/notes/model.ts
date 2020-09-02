@@ -73,15 +73,3 @@ export function numberFromId(id:number|BoxId):number {
 	}
 	return _id;
 }
-
-export type RelativeKey = 'comment'|'to'|'flow'|'spawn'|'contain';
-export interface Relative {
-	caption: (isAction:boolean) => JSX.Element;
-	render: () => JSX.Element;
-}
-
-export interface CheckItem {
-	key: number;
-	text: string;
-	checked?: boolean;
-}

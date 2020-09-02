@@ -1,24 +1,11 @@
 import { observable } from "mobx";
-import { Contact } from "../../../model";
-import { NoteItem, numberFromId, CheckItem, EnumNoteType } from '../../model';
+import { NoteItem, numberFromId, EnumNoteType } from '../../model';
 import { renderIcon, VNoteBase } from '../../noteBase';
 import { CNote } from "../CNote";
 import { VTaskParams } from "./VTaskParams";
 import { EnumTaskState, TaskStateResult } from "./TaskState"
 import { VTaskView } from './VTaskView';
-
-export interface AssignTaskParam {
-	contacts: Contact[];
-	checker: Contact;
-	rater: Contact;
-	point?: number;
-	hours?: number;
-}
-
-export interface TaskCheckItem extends CheckItem {
-	checkInfo?: string;
-	rateInfo?: string;
-}
+import { TaskCheckItem, AssignTaskParam } from "./model";
 
 export abstract class CNoteTask extends CNote {
 	get type():EnumNoteType { return EnumNoteType.task }
@@ -55,8 +42,8 @@ export abstract class CNoteTask extends CNote {
 		}
 	}
 
-	protected buildObj():any {
-		let obj = super.buildObj();
+	protected endContentInput():any {
+		let obj = super.endContentInput();
 		if (this.checkInfo) {
 			obj.checkInfo = this.checkInfo;
 		}
@@ -190,7 +177,8 @@ export abstract class CNoteTask extends CNote {
 
 	async DoneTask() {
 		let { note: noteId, caption } = this.noteItem;
-		let content = this.stringifyContent();
+		let obj = this.endContentInput();
+		let content = JSON.stringify(obj);
 		let data = {
 			groupFolder: this.owner.currentFold.groupFolder,
 			folder: this.owner.currentFold.folderId,
@@ -229,7 +217,8 @@ export abstract class CNoteTask extends CNote {
 		await this.CheckSaveInfo();
 
 		let { note: noteId } = this.noteItem;
-		let content = this.stringifyContent();
+		let obj = this.endContentInput();
+		let content = JSON.stringify(obj);
 		let data = {
 			groupFolder: this.owner.currentFold.groupFolder,
 			folder: this.owner.currentFold.folderId,
@@ -247,7 +236,8 @@ export abstract class CNoteTask extends CNote {
 		await this.CheckSaveInfo();
 
 		let { note: noteId } = this.noteItem;
-		let content = this.stringifyContent();
+		let obj = this.endContentInput();
+		let content = JSON.stringify(obj);
 		let data = {
 			groupFolder: this.owner.currentFold.groupFolder,
 			folder: this.owner.currentFold.folderId,
@@ -282,7 +272,8 @@ export abstract class CNoteTask extends CNote {
 
 	protected async SaveX() {
 		let { note: noteId } = this.noteItem;
-		let flowContent = this.stringifyContent();
+		let obj = this.endContentInput();
+		let flowContent = JSON.stringify(obj);
 		let param = { note: noteId, content: flowContent };
 		await this.uqs.notes.SetNoteX.submit(param, false);
 	}

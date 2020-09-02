@@ -35,8 +35,7 @@ export class VTextEdit extends VNoteBaseEdit<CNoteText> {
 		{icon:'check-square-o', caption:this.t('noteCheckable'), action: ()=>this.actionSwitchType(EnumContentType.checkable)},
 	];
 
-	protected actionSwitchType(type: number) {
-	 	//this.changed = true;
-	 	//this.controller.onCheckableChanged(type);
+	protected actionSwitchType(type: EnumContentType) {
+		this.controller.changeContentType(type);
 	}
 }

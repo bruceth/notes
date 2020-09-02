@@ -41,15 +41,4 @@ export class CNoteAssign extends CNote {
 			icon
 		);
 	}
-
-	/*
-	showViewPage() {
-		this.openVPage(VAssignView);
-	}
-
-	showAddAssignPage(parent: number) {
-		//this.checkType = EnumCheckType.checkable;
-		this.openVPage(VAdd, parent);
-	}
-	*/
 }

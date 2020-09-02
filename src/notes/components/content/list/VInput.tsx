@@ -5,7 +5,6 @@ import { ItemInputProps, VItemInput } from '../VItemInput';
 import { observer } from 'mobx-react';
 
 export class VInput extends View<CList> {
-	private inputAdd: HTMLInputElement;
 	render() {
 		return <div className="py-1 px-1">
 			{React.createElement(observer(() => this.renderContentEditList()))}
@@ -35,7 +34,9 @@ export class VInput extends View<CList> {
 			</ul>
 			<div className="d-flex mx-3 my-2 align-items-center">
 				<FA name="plus" className="text-info mr-2" />
-				<input ref={t => this.inputAdd = t} className="flex-fill form-control" type="text" placeholder="新增" onKeyDown={this.onAddEnter} />
+				<input className="flex-fill form-control" type="text" placeholder="新增" 
+					onChange={(e)=>{this.controller.onItemChanged(0, e.currentTarget.value)}}
+					onKeyDown={this.onAddEnter} />
 			</div>
 		</>;
 	}
@@ -48,14 +49,4 @@ export class VInput extends View<CList> {
 			evt.currentTarget.value = '';
 		}
 	}
-	/*
-	checkInputAdd = () => {
-		if (this.inputAdd) {
-			let {value} = this.inputAdd;
-			if (value.trim().length === 0) return;
-			this.controller.addItem(value);
-			this.inputAdd.value = '';
-		}
-	}
-	*/
 }

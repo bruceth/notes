@@ -7,5 +7,10 @@ export class CText extends CTextBase {
 	get contentType(): EnumContentType {return EnumContentType.text;}
 	renderInput():JSX.Element {return this.renderView<this>(VInput)}
 	renderViewContent():JSX.Element {return this.renderView<this>(VView)}
+
+	toString():string { return this.changedNoteContent || this.noteContent }
+	initFromString(v: string) {
+		this.noteContent = v.trim();
+	}
 }
 

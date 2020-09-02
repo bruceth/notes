@@ -31,7 +31,6 @@ export class CCheckable extends CContent {
 
 	renderInput():JSX.Element {
 		let v = new VInput(this);
-		//this.checkHaveNewItem = v.checkInputAdd;
 		return v.render();
 	}
 
@@ -47,6 +46,26 @@ export class CCheckable extends CContent {
 		obj.check = this.contentType;
 		obj.itemKey = this.itemKey;
 		obj.items = this.items;
+	}
+
+	toString():string { 
+		return this.items?.map(v => v.text).join('\n')
+	}
+
+	initFromString(value: string) {
+		if (value) {
+			this.items = [];
+			this.itemKey = 1;
+			this.items.push(...value.split('\n').filter((v, index) => {
+				return v.trim().length > 0;
+			}).map((v, index) => {
+				return {
+					key: this.itemKey++,
+					text: v,
+					checked: false
+				}
+			}));
+		}
 	}
 
 	async onCheckChange(key: number, checked: boolean) {

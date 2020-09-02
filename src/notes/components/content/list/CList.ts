@@ -29,7 +29,6 @@ export class CList extends CContent {
 	get contentType(): EnumContentType {return EnumContentType.list;}
 	renderInput():JSX.Element {
 		let v = new VInput(this);
-		//this.checkHaveNewItem = v.checkInputAdd;
 		return v.render();
 	}
 	renderViewContent():JSX.Element {return this.renderView(VView)}
@@ -43,6 +42,25 @@ export class CList extends CContent {
 		obj.check = this.contentType;
 		obj.itemKey = this.itemKey;
 		obj.items = this.items;
+	}
+
+	toString():string { 
+		return this.items?.map(v => v.text).join('\n')
+	}
+
+	initFromString(value: string) {
+		if (value) {
+			this.items = [];
+			this.itemKey = 1;
+			this.items.push(...value.split('\n').filter((v, index) => {
+				return v.trim().length > 0;
+			}).map((v, index) => {
+				return {
+					key: this.itemKey++,
+					text: v,
+				}
+			}));
+		}
 	}
 
 	onItemChanged = (key: number, value: string) => {

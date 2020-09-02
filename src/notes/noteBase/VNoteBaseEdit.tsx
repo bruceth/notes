@@ -33,7 +33,6 @@ export class VNoteBaseEdit<T extends CNoteBase> extends VNoteBaseForm<T> {
 	}
 
 	protected async onButtonSave(): Promise<void> {
-		//this.controller.cContent.checkHaveNewItem?.();
 		await this.controller.SetNote();
 		this.closePage();
 	}

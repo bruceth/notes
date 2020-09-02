@@ -10,7 +10,7 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	disableFrom: boolean = false;
 	@observable noteModel: NoteModel;
 	@observable noteItem: NoteItem;
-	protected cContent: CContent;
+	@observable protected cContent: CContent;
 
 	@computed get isContentChanged():boolean {return this.cContent.changed}
 	renderContentInput() {return this.cContent.renderInput()}

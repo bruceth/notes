@@ -6,7 +6,6 @@ export class VTextAdd extends VTextEdit {
 	header() {return '新建文字单'}
 
 	protected async onButtonSave(): Promise<void> {
-		//this.controller.cContent.checkHaveNewItem?.();
 		await this.controller.AddNote(this.parentId);
 		this.closePage();
 		return;
@@ -26,7 +25,6 @@ export class VTextAdd extends VTextEdit {
 	}
 
 	protected onSaveAndSendNote = async () => {
-		this.controller.cContent.checkHaveNewItem?.();
 		let cnewNote = await this.controller.AddNote(this.parentId);
 		this.closePage();
 		await cnewNote.cApp.loadRelation();

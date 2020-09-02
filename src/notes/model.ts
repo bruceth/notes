@@ -2,7 +2,7 @@ import { BoxId } from "tonva";
 
 export enum EnumNoteType {text=0, task=1, comment=2, folder=3, group=4, groupFolder=5, unit=6, assign=7}
 
-export enum EnumCheckType {text=0, checkable=1, list=2, folder=3}
+//export enum EnumCheckType {text=0, checkable=1, list=2, folder=3}
 
 export interface NoteItem {
 	seconds: number;

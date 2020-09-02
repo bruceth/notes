@@ -6,6 +6,7 @@ import { renderIcon } from '../../noteBase';
 import { VTextDir } from './VTextDir';
 import { CNote } from '../CNote';
 import { VTextEdit } from './VTextEdit';
+import { EnumContentType, createCContentFromType } from 'notes/components';
 
 export function createCNoteText(cNotes: CNotes): CNoteText {
 	return new CNoteText(cNotes);
@@ -23,15 +24,15 @@ export class CNoteText extends CNote {
 	protected newVEdit() {return VTextEdit as any;}
 	protected newVAdd() {return VTextAdd as any;}
 
-	/*
-	showNoteView() {
-		this.openVPage(VTextView);
-	}
-	*/
+	changeContentType(type: EnumContentType) {
+		if (type === this.cContent?.contentType) {
+			return;
+		}
 
-	/*
-	showEditPage() {
-		this.openVPage(VEdit);
+		let value = this.cContent?.toString();
+		let nc = createCContentFromType(type);
+		nc.initFromString(value);
+		this.cContent = nc;
+		this.cContent.changed = true;
 	}
-	*/
 }

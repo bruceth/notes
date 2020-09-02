@@ -12,6 +12,8 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	@observable noteItem: NoteItem;
 	@observable protected cContent: CContent;
 
+	@observable activeRelativeTab: string;
+
 	@computed get isContentChanged():boolean {return this.cContent.changed}
 	renderContentInput() {return this.cContent.renderInput()}
 	renderContentDir() {return this.cContent.renderDirContent()}

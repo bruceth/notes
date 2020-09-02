@@ -1,9 +1,10 @@
 import React from 'react';
 import { VEdit } from './VEdit';
-import { VNoteBase } from '../../noteBase';
+import { VNoteBaseView } from '../../noteBase';
 import { CContainer } from '../CContainer';
+import { VFolderRelatives } from './VFolderRelatives';
 
-export class VFolderView extends VNoteBase<CContainer> {
+export class VFolderView extends VNoteBaseView<CContainer> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {
 		let {noteItem} = this.controller;
@@ -21,5 +22,9 @@ export class VFolderView extends VNoteBase<CContainer> {
 
 	protected onEdit() {
 		this.openVPage(VEdit);
+	}
+
+	protected renderRelatives() {
+		return this.renderVm(VFolderRelatives);
 	}
 }

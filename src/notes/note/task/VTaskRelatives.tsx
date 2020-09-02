@@ -1,6 +1,6 @@
 import { CNoteTask } from "./CNoteTask";
-import { VRelativesBase, TabRelative } from '../views';
+import { VRelativesNoteBase, TabRelative } from '../views';
 
-export class VTaskRelatives extends VRelativesBase<CNoteTask> {
+export class VTaskRelatives extends VRelativesNoteBase<CNoteTask> {
 	protected get tabs():TabRelative[] { return [this.tabComment] };
 }

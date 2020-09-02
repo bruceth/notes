@@ -1,4 +1,3 @@
-import { observable } from "mobx";
 import { CNoteBase } from "../noteBase";
 import { NoteItem } from "../model";
 import { CComments } from "./components";
@@ -6,7 +5,6 @@ import { VNoteRelatives } from "./views";
 
 export abstract class CNote extends CNoteBase {
 	protected cComments: CComments;
-	@observable activeRelativeTab: string;
 
 	init(param: NoteItem):void {
 		super.init(param);
@@ -55,7 +53,7 @@ export abstract class CNote extends CNoteBase {
 	}
 
 	renderCommentsList() {
-		return this.cComments.renderCommentsList();
+		return this.cComments?.renderCommentsList();
 	}
 
 	protected renderRelatives() {

@@ -88,6 +88,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 			{right}
 		</div>;
 	}
+
 	/*
 	protected renderCommentButton() {
 		return <span className="cursor-pointer text-primary mr-5" onClick={this.onComment}><FA name="comment-o" /></span>;

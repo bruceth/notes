@@ -109,11 +109,12 @@ function formatSize(size:number, pointLength:number=2, units?:string[]) {
 interface ImageUploaderProps {
     id?: string;
     label?: string;
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'sm' | 'md' | 'lg' | 'xl' | 'raw';
 	onSaved?: (imageId:string) => Promise<void>;
 	imageTypes?: string[];
 }
 
+const xlargeSize = 1600;
 const largeSize = 800;
 const mediumSize = 400;
 const smallSize = 180;
@@ -175,7 +176,7 @@ export class ImageUploader extends React.Component<ImageUploaderProps> {
         }
     }
 
-    private async setSize(size?: 'sm' | 'md' | 'lg') {
+    private async setSize(size?: 'sm' | 'md' | 'lg' | 'xl' | 'raw') {
         switch (size) {
             default:
             case 'sm':
@@ -183,7 +184,11 @@ export class ImageUploader extends React.Component<ImageUploaderProps> {
             case 'md':
                 this.imgBaseSize = mediumSize; break;
             case 'lg':
-                this.imgBaseSize = largeSize; break;
+				this.imgBaseSize = largeSize; break;
+			case 'xl':
+				this.imgBaseSize = xlargeSize; break;
+			case 'raw':
+				this.imgBaseSize = -1; break;
 		}
 		this.desImage = await this.compress();
     }
@@ -199,8 +204,12 @@ export class ImageUploader extends React.Component<ImageUploaderProps> {
                 this.srcImgWidth = width;
                 this.srcImgHeight = height;
                 let scale = width / height;
-                let w:number, h:number;
-                if (width <= this.imgBaseSize && height <= this.imgBaseSize) {
+				let w:number, h:number;
+				if (this.imgBaseSize < 0) {
+					w = width;
+					h = height;
+				}
+                else if (width <= this.imgBaseSize && height <= this.imgBaseSize) {
                     w = width;
                     h = height;
                 }
@@ -296,6 +305,10 @@ export class ImageUploader extends React.Component<ImageUploaderProps> {
         }
         if (this.srcImgHeight > largeSize || this.srcImgWidth > largeSize) {
             arr.push({caption:'大图', size:'lg'});
+        }
+        if (this.srcImgHeight > xlargeSize || this.srcImgWidth > xlargeSize) {
+			arr.push({caption:'超大图', size:'xl'});
+			arr.push({caption:'原图', size:'raw'});
         }
         if (arr.length < 2) return;
         return <div>{arr.map((v, index) => {

@@ -1,10 +1,10 @@
 import React from 'react';
 import { VBase } from "./VBase";
-import { CheckItem } from "./CCheckable";
+import { ContentCheckItem } from "./CCheckable";
 import { FA } from 'tonva';
 
 export class VItem extends VBase {
-	protected renderCheckItem(v:CheckItem) {
+	protected renderCheckItem(v:ContentCheckItem) {
 		let {key, text, checked} = v;
 		let cn = 'ml-3 ';
 		let content: any;
@@ -24,7 +24,7 @@ export class VItem extends VBase {
 		</div>;
 	}
 
-	protected renderCheckedItems(checkedItems:CheckItem[]):JSX.Element {
+	protected renderCheckedItems(checkedItems:ContentCheckItem[]):JSX.Element {
 		let checkedCount = checkedItems.length;
 		if (checkedCount > 0) {
 			return <div className="">

@@ -5,11 +5,10 @@ import { VNoteBaseEdit } from 'notes/noteBase';
 
 export class VAssignEdit extends VNoteBaseEdit<CNoteAssign> { // VNoteForm<CNoteAssign> {
 	header() {
-		return this.t('assign');
+		return this.t('noteTask');
 	}
 
 	protected renderExButtons():JSX.Element {
 		return <>{this.renderDeleteButton()}</>;
 	}
-	
 }

@@ -1,12 +1,7 @@
 //import React from 'react';
-import { VRelatives } from '../../noteBase';
+import { VRelativesBase, TabRelative } from '../views';
 import { CNoteText } from './CNoteText';
-import { RelativeKey } from '../../model';
 
-export class VTextRelatives extends VRelatives<CNoteText> {
-	protected arr:RelativeKey[] = ['comment', 'to'];
-
-	render() {
-		return super.render();
-	}
+export class VTextRelatives extends VRelativesBase<CNoteText> {
+	protected get tabs():TabRelative[] { return [this.tabComment, this.tabShare] };
 }

@@ -3,11 +3,11 @@ import { VAssignEdit } from './VAssignEdit';
 import { VNoteBaseView } from '../../noteBase';
 import { CNoteAssign } from './CNoteAssign';
 import { VAssignRelatives } from './VAssignRelatives';
-import { CheckItem } from '../../model';
+//import { CheckItem } from '../../model';
 
 export class VAssignView extends VNoteBaseView<CNoteAssign> {
 	header() {
-		return this.t('assign')
+		return this.t('noteTask')
 	}
 
 	protected renderRelatives() {
@@ -21,15 +21,14 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 	protected renderBottomCommands() {
 		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-center">
 			{this.renderShareButton()}
-			<div className="flex-fill rounded-pill mr-3 border bg-white px-3 py-1 small cursor-pointer"
-				onClick={this.onComment}>写评论...</div>
+			{this.controller.renderWriteComment()}
 		</div>;
 	}
 
 	protected onEdit() {
 		this.openVPage(VAssignEdit);
 	}
-
+/*
 	protected renderCheckItem(v:CheckItem, checkable:boolean) {
 		let {key, text, checked} = v;
 		let cn = 'form-control-plaintext ml-3 ';
@@ -56,4 +55,5 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 		//let key = Number(t.getAttribute('data-key'));
 		//await this.controller.onCheckChange(key, t.checked);
 	}
+*/
 }

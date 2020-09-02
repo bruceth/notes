@@ -11,7 +11,7 @@ export class VEdit extends VContainerForm<CContainer> {
 	content() {
 		return <div className="bg-white">
 			{this.renderTitleInput()}
-			{this.controller.cContent.renderInput()}
+			{this.controller.renderContentInput()}
 		</div>;
 	}
 

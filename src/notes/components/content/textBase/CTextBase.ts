@@ -14,7 +14,7 @@ export abstract class CTextBase extends CContent {
 		}
 	}
 
-	buildObj(obj:any) {
+	protected buildObj(obj:any) {
 		obj.check = this.contentType;
 		obj.content = this.changedNoteContent || this.noteContent;
 	}

@@ -23,7 +23,7 @@ export class VNoteBaseForm<T extends CNoteBase> extends VNoteBase<T> {
 	protected renderTopCaptionContent():JSX.Element {
 		return <div className="bg-white">
 			{this.renderCaptionInput()}
-			{this.controller.cContent.renderInput()}
+			{this.controller.renderContentInput()}
 		</div>;
 	}
 

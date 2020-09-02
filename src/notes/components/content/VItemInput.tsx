@@ -5,7 +5,7 @@ import { observer } from "mobx-react";
 import { isNullOrUndefinedOrEmpty } from "tool";
 
 export interface ItemInputProps {
-	onUpdate: (inputContent: string) => Promise<void>;
+	onChange: (inputContent: string) => Promise<void>;
 	content: string;
 	placeholder?: string;
 }
@@ -52,8 +52,8 @@ export class VItemInput<T extends Controller> extends View<T> {
 			this.lostFocusTimeoutHandler = undefined;
 			this.isFocused = false;
 		}, 200);
-		if (this.inputContent !== this.props.content && this.props?.onUpdate) {
-			this.props.onUpdate(this.inputContent);
+		if (this.inputContent !== this.props.content && this.props?.onChange) {
+			this.props.onChange(this.inputContent);
 		}
 	}
 	protected onInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,8 +72,8 @@ export class VItemInput<T extends Controller> extends View<T> {
 		if (!this.input) return;
 		if (!this.inputContent) return;
 		this.input.disabled = true;
-		if (this.inputContent !== this.props.content && this.props?.onUpdate) {
-			this.props.onUpdate(this.inputContent);
+		if (this.inputContent !== this.props.content && this.props?.onChange) {
+			this.props.onChange(this.inputContent);
 		}
 		this.input.disabled = false;
 		this.isFocused = false;

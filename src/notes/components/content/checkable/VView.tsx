@@ -1,9 +1,9 @@
 import React from 'react';
-import { CheckItem } from './CCheckable';
+import { ContentCheckItem } from './CCheckable';
 import { VBase } from './VBase';
 
 export class VView extends VBase {
-	protected renderCheckItem(v:CheckItem) {
+	protected renderCheckItem(v:ContentCheckItem) {
 		let {key, text, checked} = v;
 		let cn = 'ml-3 ';
 		let content: any;
@@ -22,7 +22,7 @@ export class VView extends VBase {
 		</div>;
 	}
 
-	protected renderCheckedItems(checkedItems:CheckItem[]):JSX.Element {
+	protected renderCheckedItems(checkedItems:ContentCheckItem[]):JSX.Element {
 		let checkedCount = checkedItems.length;
 		if (checkedCount > 0) {
 			return <div className="border-top py-2">

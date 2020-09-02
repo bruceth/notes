@@ -10,6 +10,7 @@ export interface ListItem {
 }
 
 export class CList extends CContent {
+	private inputingText: string;
 	@observable items: ListItem[];
 	itemKey: number = 1;
 
@@ -28,22 +29,42 @@ export class CList extends CContent {
 	get contentType(): EnumContentType {return EnumContentType.list;}
 	renderInput():JSX.Element {
 		let v = new VInput(this);
-		this.checkHaveNewItem = v.checkInputAdd;
+		//this.checkHaveNewItem = v.checkInputAdd;
 		return v.render();
 	}
 	renderViewContent():JSX.Element {return this.renderView(VView)}
 
-	buildObj(obj:any) {
+	endInput(obj:any): void {
+		this.addNewItem();
+		this.buildObj(obj);
+	}
+
+	protected buildObj(obj:any): void {
 		obj.check = this.contentType;
 		obj.itemKey = this.itemKey;
 		obj.items = this.items;
 	}
 
-	addItem(value: string): void {
+	onItemChanged = (key: number, value: string) => {
+		let item = this.items.find(v => v.key === key);
+		if (item) {
+			item.text = value;
+		}
+		else {
+			this.inputingText = value;
+		}
+		this.changed = true;
+	}
+
+	addNewItem(): void {
+		if (this.inputingText === undefined) return;
+		let text = this.inputingText.trim();
+		if (text.length === 0) return;
 		this.items.push({
 			key: this.itemKey++,
-			text: value,
+			text: text,
 		});
 		this.changed = true;
+		this.inputingText = undefined;
 	}
 }

@@ -1,12 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { CheckItem } from '../../model';
+import { TaskCheckItemBase } from './model';
 import { VNoteBaseView } from '../../noteBase';
 import { EnumTaskState } from "./TaskState"
 import { CNoteTask } from "./CNoteTask";
 import { VEdit } from './VEdit';
 import { VTaskRelatives } from './VTaskRelatives';
-import { FA } from 'tonva';
 
 const none = <small className="text-muted">[无]</small>;
 
@@ -19,15 +18,11 @@ export interface TaskParam {
 export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
 	header() { return this.t('task') }
-	protected get allowCheck() { return true; }
+	protected get allowCheck() { return false; }
 	content() {
 		return React.createElement(observer(() => {
 			return <div className="my-2 mx-1 border rounded">
-				{this.renderTop()}
-				<div className="bg-white">
-					{this.renderCaption()}
-					{this.renderContent()}
-				</div>
+				{this.renderTopCaptionContent()}
 				{this.renderTaskAdditions()}
 				{this.renderBottomCommands()}
 				{this.renderRelatives()}
@@ -88,15 +83,16 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 			right = <>{this.renderEditButton()}</>;
 		}
 		return <div className="py-2 bg-light border-top d-flex align-items-end">
-			{this.renderCommentButton()}
+			{this.controller.renderCommentButton()}
 			<div className="mr-auto" />
 			{right}
 		</div>;
 	}
-
+	/*
 	protected renderCommentButton() {
 		return <span className="cursor-pointer text-primary mr-5" onClick={this.onComment}><FA name="comment-o" /></span>;
 	}
+	*/
 
 	renderRelatives() {
 		return this.renderVm(VTaskRelatives as any);
@@ -110,7 +106,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		this.openVPage(VEdit as any);
 	}
 
-	protected renderCheckItem(v:CheckItem, checkable:boolean) {
+	protected renderCheckItem(v:TaskCheckItemBase, checkable:boolean) {
 		let {key, text, checked} = v;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;

@@ -6,7 +6,7 @@ export function renderIcon(name:string, cn:string) {
 	return <FA name={name} size="lg" className={cn} fixWidth={true} />;
 }
 
-export class VNoteBase<T extends CNoteBase> extends VPage<T> {
+export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	// VPage 里面的页面主体
 	content() {
 		return this.renderBody();
@@ -172,24 +172,7 @@ export class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	}
 
 	protected onEdit() {this.controller.showEditPage()}
+}
 
-	protected onComment = () => {
-		let right = <button className="btn btn-sm btn-success mr-1" onClick={this.onCommentSubmit}>提交</button>;
-		this.openPageElement(<Page header="评论" right={right}>
-			<textarea rows={10} 
-				className="w-100 border-0 form-control"
-				placeholder="请输入" maxLength={20000}
-				onChange={this.onCommentChange} />
-		</Page>);
-	}
-	private comment:string;
-	private onCommentChange = (evt:React.ChangeEvent<HTMLTextAreaElement>) => {
-		this.comment = evt.target.value;
-	}
-
-	private onCommentSubmit = async () => {
-		await this.controller.addComment(this.comment);
-		this.controller.relativeKey = 'comment';
-		this.closePage();
-	}
+export class VNoteBasePage extends VNoteBase<CNoteBase> {	
 }

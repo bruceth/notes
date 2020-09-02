@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { VNoteBase } from "./VNoteBase";
 import { CNoteBase } from "./CNoteBase";
-import { VRelatives } from './VRelatives';
+//import { VRelatives } from '../note/VRelatives';
 
 export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 	header() {return this.t('notes')}
@@ -32,7 +32,7 @@ export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 	}
 
 	protected renderContent() {
-		return this.controller.cContent.renderViewContent();
+		return this.controller.renderContentView();
 	}
 
 	protected renderViewBottom():JSX.Element {
@@ -40,7 +40,7 @@ export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 	}
 
 	protected renderRelatives() {
-		return this.renderVm(VRelatives);
+		//return this.renderVm(VRelatives);
 	}
 
 	protected renderIcon(): JSX.Element {

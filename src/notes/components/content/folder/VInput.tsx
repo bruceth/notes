@@ -20,5 +20,6 @@ export class VInput extends View<CFolder> {
 
 	private onContentChange = (evt:React.ChangeEvent<HTMLTextAreaElement>) => {
 		this.controller.changedNoteContent = evt.target.value;
+		this.controller.changed = true;
 	}
 }

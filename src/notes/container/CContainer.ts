@@ -135,15 +135,22 @@ export abstract class CContainer extends CNoteBase {
 		await SetNote.submit({note, caption, content, type}, waiting);
 		// Note.resetCache(note); 现在不调用NoteTuid的cache，所以不需要了
 		// noteItem.unread = 1; 自己修改自己的小单，只是移到最前面，并不显示unread
-		let {items} = this.notesPager;
-		let index = items.findIndex(v => v.noteItem.note===note);
-		if (index >= 0) {
-			let theItems = items.splice(index, 1);
-			let theItem = theItems[0];
-			theItem.noteItem.caption = caption;
-			theItem.noteItem.content = content;
-			theItem.noteItem.obj = obj;
-			items.unshift(theItem);
+		if (note === this.noteItem?.note) {
+			this.noteItem.caption = caption;
+			this.noteItem.content = content;
+			this.noteItem.obj = obj;
+		}
+		else {
+			let {items} = this.notesPager;
+			let index = items.findIndex(v => v.noteItem.note===note);
+			if (index >= 0) {
+				let theItems = items.splice(index, 1);
+				let theItem = theItems[0];
+				theItem.noteItem.caption = caption;
+				theItem.noteItem.content = content;
+				theItem.noteItem.obj = obj;
+				items.unshift(theItem);
+			}
 		}
 	}
 

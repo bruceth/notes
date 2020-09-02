@@ -14,6 +14,14 @@ export abstract class CTextBase extends CContent {
 		}
 	}
 
+	endInput(obj:any): void {
+		if (this.changedNoteContent !== undefined) {
+			this.noteContent = this.changedNoteContent;
+			this.changedNoteContent = undefined;
+		}
+		this.buildObj(obj);
+	}
+
 	protected buildObj(obj:any) {
 		obj.check = this.contentType;
 		obj.content = this.changedNoteContent || this.noteContent;

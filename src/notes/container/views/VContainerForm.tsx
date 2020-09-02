@@ -1,19 +1,7 @@
-import React from 'react';
 import { CContainer } from '../CContainer';
-import { VNoteBase } from '../../noteBase';
+import { VNoteBaseEdit } from 'notes/noteBase';
 
-export abstract class VContainerForm<T extends CContainer> extends VNoteBase<T> {
-	protected renderTitleInput() {
-		return <div className="py-1 px-1 border-bottom">
-			<input type="text" className="w-100 border-0 form-control font-weight-bold" placeholder="标题" maxLength={80}
-				onChange={this.onTitleChange} autoFocus={true}
-				defaultValue={this.controller.caption} />
-		</div>;
-	}
-
-	protected onTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-		this.controller.caption = evt.target.value.trim();
-	}
+export abstract class VContainerForm<T extends CContainer> extends VNoteBaseEdit<T> {
 }
 
 /*

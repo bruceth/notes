@@ -28,11 +28,10 @@ export class VEdit extends VNoteBaseEdit<CNoteTask> { //} VNoteForm<CNoteTask> {
 	}
 
 	protected getSaveDisabled():boolean {
-		return (this.controller.caption === undefined/* && this.controller.changedNoteContent === undefined*/);
+		return (this.controller.caption === undefined);
 	}
 
 	protected async onButtonSave(): Promise<void> {
-		//this.checkInputAdd();
 		await this.controller.SetNote();
 		this.closePage();
 	}

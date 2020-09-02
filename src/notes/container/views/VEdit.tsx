@@ -1,5 +1,6 @@
 import React from 'react';
 import { CContainer } from "../CContainer";
+import { observer } from 'mobx-react';
 import { VContainerForm } from './VContainerForm';
 
 export class VEdit extends VContainerForm<CContainer> {
@@ -8,29 +9,15 @@ export class VEdit extends VContainerForm<CContainer> {
 		return '编辑目录';
 	}
 
-	content() {
-		return <div className="bg-white">
-			{this.renderTitleInput()}
-			{this.controller.renderContentInput()}
+	protected renderEditBottom():JSX.Element {
+		return <div className="py-2 pl-3 bg-light border-top d-flex">
+			<div className="mr-auto" />
+			{React.createElement(observer(() => <>
+				<button onClick={() => this.onButtonSave()}
+					className="btn btn-primary mr-3" disabled={this.btnSaveDisabled}>
+					保存
+				</button>
+			</>))}
 		</div>;
 	}
-
-	/*
-	protected getOptions(): {val:number, text:string}[] {
-		return undefined;
-	}
-
-	protected getSaveDisabled():boolean {
-		return (this.controller.title === undefined && this.controller.changedNoteContent === undefined);
-	}
-
-	protected async onButtonSave(): Promise<void> {
-		await this.controller.SetNote();
-		this.closePage();
-	}
-
-	protected renderExButtons():JSX.Element {
-		return this.renderDeleteButton();
-	}
-	*/
 }

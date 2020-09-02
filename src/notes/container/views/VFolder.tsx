@@ -2,6 +2,7 @@ import React from 'react';
 import { List, FA, User, Image, UserView } from 'tonva';
 import { CContainer } from '../CContainer';
 import { CNoteBase, VNoteBase } from "../../noteBase";
+import { observer } from 'mobx-react';
 
 export class VFolder extends VNoteBase<CContainer> {
 	afterBack() {
@@ -69,7 +70,7 @@ export class VFolder extends VNoteBase<CContainer> {
 	content() {
 		let {notesPager} = this.controller;
 		return <div>
-			{this.top()}
+			{React.createElement(observer(() => this.top()))}
 			<List className="" 
 				items={notesPager} 
 				item={{render: this.renderItemInFolder, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />

@@ -75,30 +75,12 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	}
 
 	showAddPage(folderId: number, contentType: EnumContentType) {
-		//this.checkType = checkType;
 		this.cContent = createCContentFromType(contentType);
 		this.openVPage(this.newVAdd(), folderId);
 	}
 
-	/*
-	protected stringifyContent() {
-		let ret = JSON.stringify(this.buildObj());
-		return ret;
-	}
-	*/
-
-	/*
-	protected buildObj(): any {
-		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
-		//obj.content = this.changedNoteContent || this.noteContent;
-		return this.cContent.endInput(obj);
-		//return obj;
-	}
-	*/
-
 	protected endContentInput():any {
 		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
-		//obj.content = this.changedNoteContent || this.noteContent;
 		this.cContent.endInput(obj);
 		return obj;
 	}
@@ -136,10 +118,6 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	}
 
 	protected updateChange() {
-		//if (this.changedNoteContent) {
-		//	this.noteContent = this.changedNoteContent;
-		//	this.changedNoteContent = undefined;
-		//}
 		if (this.noteItem) {
 			this.noteItem.$update = new Date();
 			if (this.caption && this.caption !== this.noteItem.caption) {

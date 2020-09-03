@@ -11,8 +11,8 @@ export class CTaskCheck extends CNoteTask {
 		return {content: 'check', isEnd: false}
 	}
 
-	async CheckTask(pass: boolean) {
-		await this.CheckSaveInfo();
+	async checkTask(pass: boolean) {
+		await this.checkSaveInfo();
 
 		let { note: noteId } = this.noteItem;
 		let obj = this.endContentInput();
@@ -36,6 +36,6 @@ export class CTaskCheck extends CNoteTask {
 		else {
 			item.checkInfo = v;
 		}
-		await this.SaveX();
+		await this.saveX();
 	}
 }

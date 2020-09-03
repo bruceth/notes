@@ -11,9 +11,9 @@ export class CTaskRate extends CNoteTask {
 		return {content: 'rate', isEnd: true}
 	}
 
-	async RateTask(value: number) {
+	async rateTask(value: number) {
 		this.rateValueInput = value;
-		await this.CheckSaveInfo();
+		await this.checkSaveInfo();
 
 		let { note: noteId } = this.noteItem;
 		let obj = this.endContentInput();
@@ -37,6 +37,6 @@ export class CTaskRate extends CNoteTask {
 		else {
 			item.rateInfo = v;
 		}
-		await this.SaveX();
+		await this.saveX();
 	}
 }

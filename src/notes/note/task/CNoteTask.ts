@@ -182,7 +182,7 @@ export abstract class CNoteTask extends CNote {
 		await this.uqs.notes.AssignTask.submit(data);
 	}
 
-	async CheckSaveInfo() {
+	async checkSaveInfo() {
 		let change = false;
 		if (this.rateInfo !== this.rateInfoInput) {
 			this.rateInfo = this.rateInfoInput;
@@ -198,11 +198,11 @@ export abstract class CNoteTask extends CNote {
 		}
 
 		if (change) {
-			await this.SaveX();
+			await this.saveX();
 		}
 	}
 
-	protected async SaveX() {
+	protected async saveX() {
 		let { note: noteId } = this.noteItem;
 		let obj = this.endContentInput();
 		let flowContent = JSON.stringify(obj);

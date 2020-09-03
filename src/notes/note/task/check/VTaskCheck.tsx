@@ -68,7 +68,7 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 
 	private onDiscribeKeyDown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
 		if (evt.keyCode === 13) {
-			this.controller.CheckSaveInfo();
+			this.controller.checkSaveInfo();
 		}
 	}
 
@@ -91,7 +91,7 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 	}
 
 	protected onCheck = async (pass: boolean) => {
-		await this.controller.CheckTask(pass);
+		await this.controller.checkTask(pass);
 		this.closePage();
 		let content = pass ?
 			<span className="text-success"><FA name="check" /> 验收通过</span>

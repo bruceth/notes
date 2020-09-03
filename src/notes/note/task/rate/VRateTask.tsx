@@ -72,7 +72,7 @@ export class VTaskRate extends VTaskView<CTaskRate> {
 
 	private onDiscribeKeyDown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
 		if (evt.keyCode === 13) {
-			this.controller.CheckSaveInfo();
+			this.controller.checkSaveInfo();
 		}
 	}
 
@@ -116,7 +116,7 @@ export class VTaskRate extends VTaskView<CTaskRate> {
 	}
 
 	private onRate = async () => {
-		await this.controller.RateTask(this.rateValue);
+		await this.controller.rateTask(this.rateValue);
 		this.closePage();
 		let content = <>评价完成</>;
 		this.showActionEndPage({ content });

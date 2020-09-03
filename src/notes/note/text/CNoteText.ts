@@ -1,4 +1,4 @@
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { EnumNoteType, NoteItem } from '../../model';
 import { VTextView } from './VTextView';
 import { VTextAdd } from './VTextAdd';
@@ -9,18 +9,23 @@ import { CContent, CText, CCheckable, CList } from '../../components';
 import { CNote } from '../CNote';
 
 export class CNoteText extends CNote {
-	cContent: CContent;
+	@observable cContent: CContent;
+	protected ctype: EnumNoteType;
 
 	createTextContent(): void {
 		this.cContent = new CText(this.res);
+		this.ctype = EnumNoteType.text;
 	}
 	
 	createListContent(): void {
 		this.cContent = new CList(this.res);
+		this.ctype = EnumNoteType.textList;
 	}
 
 	createCheckableContent(): void {
 		this.cContent = new CCheckable(this.res);
+		this.ctype = EnumNoteType.textCheckable;
+
 	}
 	
 	init(param: NoteItem): void {
@@ -35,7 +40,7 @@ export class CNoteText extends CNote {
 	}
 
 	@computed get isContentChanged():boolean {return this.cContent.changed}
-	get type():EnumNoteType { return this.noteItem ? this.noteItem.type : EnumNoteType.text }
+	get type():EnumNoteType { return this.ctype; }
 
 	renderIcon(): JSX.Element {
 		return renderIcon(this.noteItem.toCount>0? 'files-o': 'file-o', 'text-info');
@@ -64,30 +69,39 @@ export class CNoteText extends CNote {
 	}
 
 	changeToText = () => {
-		if (this.noteItem.type === EnumNoteType.text)
+		if (this.ctype === EnumNoteType.text)
 			return;
 		let content = this.cContent.toString();
 		this.cContent = new CText(this.res);
 		this.resetCCContent(content);
-		this.noteItem.type = EnumNoteType.text;
+		this.ctype = EnumNoteType.text;
+		if (this.noteItem) {
+			this.noteItem.type = EnumNoteType.text;
+		}
 	}
 
 	changeToList = () => {
-		if (this.noteItem.type === EnumNoteType.textList)
+		if (this.ctype === EnumNoteType.textList)
 			return;
 		let content = this.cContent.toString();
 		this.cContent = new CList(this.res);
 		this.resetCCContent(content);
-		this.noteItem.type = EnumNoteType.textList;
+		this.ctype = EnumNoteType.textList;
+		if (this.noteItem) {
+			this.noteItem.type = EnumNoteType.textList;
+		}
 	}
 
 	changeToCheckable = () => {
-		if (this.noteItem.type === EnumNoteType.textCheckable)
+		if (this.ctype === EnumNoteType.textCheckable)
 			return;
 		let content = this.cContent.toString();
 		this.cContent = new CCheckable(this.res);
 		this.resetCCContent(content);
-		this.noteItem.type = EnumNoteType.textCheckable;
+		this.ctype = EnumNoteType.textCheckable;
+		if (this.noteItem) {
+			this.noteItem.type = EnumNoteType.textCheckable;
+		}
 	}
 
 	private resetCCContent(content: string) {

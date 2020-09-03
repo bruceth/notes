@@ -27,4 +27,8 @@ export class VFolderView extends VNoteBaseView<CContainer> {
 	protected renderRelatives() {
 		return this.renderVm(VFolderRelatives);
 	}
+
+	protected renderContent() {
+		return this.controller.cContent.renderViewContent();
+	}
 }

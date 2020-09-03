@@ -1,5 +1,5 @@
 export * from './VEdit';
 export * from './VFolder';
-export * from './VFolderNoteItem';
+export * from './VFolderDir';
 export * from './VFolderRelatives';
 export * from './VFolderView';

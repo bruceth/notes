@@ -16,8 +16,10 @@ export class CCheckable extends CContent {
 	itemKey: number = 1;
 
 	init(obj:any) {
-		this.itemKey = obj.itemKey;
-		this.items = obj.items;
+		if (obj) {
+			this.itemKey = obj.itemKey;
+			this.items = obj.items;
+		}
 	}
 
 	renderInput():JSX.Element {

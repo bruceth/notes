@@ -47,7 +47,7 @@ export class CNoteText extends CNote {
 		return obj;
 	}
 
-	renderListItem(index: number): JSX.Element {
+	renderDirItem(index: number): JSX.Element {
 		return this.renderView(VTextDir);
 	}
 

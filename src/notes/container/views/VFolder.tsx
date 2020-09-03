@@ -109,7 +109,7 @@ export class VFolder extends VNoteBase<CContainer> {
 	}
 
 	private renderItemInFolder = (cNoteBase: CNoteBase, index:number) => {
-		return <div className="d-block mb-2 bg-white">{cNoteBase.renderListItem(index)}</div>;
+		return <div className="d-block mb-2 bg-white">{cNoteBase.renderDirItem(index)}</div>;
 	}
 
 	private onNoteClick = async (item: CNoteBase) => {

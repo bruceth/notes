@@ -4,7 +4,7 @@ import { CSpace } from './CSpace';
 import { observer } from 'mobx-react';
 import { VNoteBase } from '../../noteBase/VNoteBase';
 
-export class VSpaceItem extends VNoteBase<CSpace> {
+export class VSpaceDir extends VNoteBase<CSpace> {
 	render() {
 		return React.createElement(observer(() => {
 			let {noteItem} = this.controller;

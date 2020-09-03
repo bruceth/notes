@@ -12,6 +12,7 @@ import { createCNoteTask } from "./note";
 import { VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
 import { CNoteText } from "./note/text";
 import { CNoteAssign } from "./note/assign";
+import { CFolderMy } from "./container/folderMy";
 
 export class CNotes extends CUqBase {
 	protected foldStack: CContainer[];
@@ -154,14 +155,15 @@ export class CNotes extends CUqBase {
 		cNoteText.showAddPage();
 	}
 	showAddMyFolderPage = () => {
-		let cNoteText = this.createCNoteText();
-		cNoteText.showAddPage();
+		let cFolder = new CFolderMy(this);
+		cFolder.init(undefined);
+		cFolder.showAddPage();
 	}
 
 	showAddAssignPage = () => {
-		let {folderId} = this.currentFold;
 		let cNoteAssign = new CNoteAssign(this);
-		cNoteAssign.showAddPage(folderId);
+		cNoteAssign.init(undefined);
+		cNoteAssign.showAddPage();
 	}
 
 	async showTo(noteItem:NoteItem, backPageCount:Number) {

@@ -127,14 +127,4 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		//let key = Number(t.getAttribute('data-key'));
 		//await this.controller.onCheckChange(key, t.checked);
 	}
-
-	/*
-	renderListItem() {
-		return <div className="d-block bg-white">
-			{this.renderItemTop()}
-			{this.renderViewCaption()}
-			{this.renderItemContent()}
-		</div>;
-	}
-	*/
 }

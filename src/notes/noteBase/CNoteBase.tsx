@@ -33,10 +33,10 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	get captionChanged() {return this.caption !== this.noteItem?.caption;}
 
 	abstract renderIcon(): JSX.Element;
-	abstract renderListItem(index: number): JSX.Element;
+	abstract renderDirItem(index: number): JSX.Element;
 	abstract showViewPage():void;
 	abstract showEditPage():void;
-	abstract showAddPage(folderId: number):void;
+	abstract showAddPage():void;
 
 	protected endContentInput():any {
 		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
@@ -96,7 +96,9 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		let noteContent = JSON.stringify(obj);
 		let {folderId} = this.owner.currentFold;
 		let ret = await this.owner.addNote(folderId, this.caption, noteContent, obj, this.type);
-		this.updateChange();
+		if (this.noteItem) {
+			this.updateChange();
+		}
 		return ret;
 	}
 }

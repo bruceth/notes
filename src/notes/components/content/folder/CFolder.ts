@@ -4,6 +4,8 @@ import { CTextBase } from "../textBase";
 
 export class CFolder extends CTextBase {
 	renderInput():JSX.Element {return this.renderView(VInput)}
-	renderViewContent():JSX.Element {return this.renderView(VView)}
+	renderViewContent():JSX.Element {
+		return this.renderView(VView)
+	}
 }
 

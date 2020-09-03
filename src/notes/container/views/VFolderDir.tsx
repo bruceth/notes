@@ -4,7 +4,7 @@ import { CContainer } from '../CContainer';
 import { observer } from 'mobx-react';
 import { VNoteBase } from '../../noteBase/VNoteBase';
 
-export class VFolderNoteItem extends VNoteBase<CContainer> {
+export class VFolderDir extends VNoteBase<CContainer> {
 	render() {
 		return React.createElement(observer(() => {
 			let {noteItem} = this.controller;

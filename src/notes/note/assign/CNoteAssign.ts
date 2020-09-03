@@ -40,7 +40,7 @@ export class CNoteAssign extends CNote {
 		return obj;
 	}
 
-	renderListItem(index: number): JSX.Element {
+	renderDirItem(index: number): JSX.Element {
 		return this.renderView(VAssignDir);
 	}
 
@@ -52,8 +52,8 @@ export class CNoteAssign extends CNote {
 		this.openVPage(VAssignEdit);
 	}
 
-	showAddPage(folderId: number) {
-		this.openVPage(VAssignAdd, folderId);
+	showAddPage() {
+		this.openVPage(VAssignAdd);
 	}
 
 	renderViewIcon(): JSX.Element {

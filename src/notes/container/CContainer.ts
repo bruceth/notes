@@ -3,17 +3,22 @@ import { NoteItem, NoteModel, EnumNoteType } from '../model';
 import { QueryPager } from "tonva";
 import { EnumSpecFolder } from "tapp";
 import { VFolder } from "./views/VFolder"
-import { VFolderNoteItem } from "./views/VFolderNoteItem";
+import { VFolderDir } from "./views/VFolderDir";
 import { VFolderView } from "./views/VFolderView";
+import { observable, computed } from "mobx";
+import { CContent, CFolder } from "notes/components";
 
 export abstract class CContainer extends CNoteBase {
+	@observable cContent: CContent;
 	folderId: number;
 	notesPager: QueryPager<CNoteBase>;
 
 	init(param: NoteItem):void {
 		super.init(param);
+		this.cContent = new CFolder(this.res)
 		if (param) {
-			if (!this.caption) this.caption = param.caption;
+			this.caption = param.caption;
+			this.cContent.init(param.obj);
 		}
 		//this.relativeKey = 'to';
 
@@ -24,6 +29,8 @@ export abstract class CContainer extends CNoteBase {
 		this.notesPager = new QueryPager<CNoteBase>(this.uqs.notes.GetNotes, undefined, undefined, true);
 		this.notesPager.setItemConverter(this.getItemConverter());
 	}
+
+	@computed get isContentChanged():boolean {return this.cContent.changed}
 
 	protected getItemConverter() {
 		return this.owner.noteItemConverter;
@@ -172,8 +179,8 @@ export abstract class CContainer extends CNoteBase {
 		if (index >= 0) this.notesPager.items.splice(index, 1);
 	}
 
-	renderListItem(index: number): JSX.Element {
-		let vNoteItem = new VFolderNoteItem(this);
+	renderDirItem(index: number): JSX.Element {
+		let vNoteItem = new VFolderDir(this);
 		return vNoteItem.render();
 	}
 

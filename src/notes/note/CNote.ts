@@ -4,10 +4,12 @@ import { CComments } from "./components";
 import { VNoteRelatives } from "./views";
 
 export abstract class CNote extends CNoteBase {
-	protected cComments: CComments;
+	cComments: CComments;
 
 	init(param: NoteItem):void {
 		super.init(param);
+		this.cComments = new CComments(this.res);
+		this.cComments.init(this);
 		if (param) {
 			if (!this.caption) this.caption = param.caption;
 		}
@@ -27,33 +29,13 @@ export abstract class CNote extends CNoteBase {
 				$create: new Date(),
 				$update: new Date(),
 			});
+			this.activeRelativeTab = 'comment';
+			this.updateChange();
 		}
 	}
 
 	deleteComment = async (commentId: number) => {
 		debugger;
-	}
-
-	showViewPage() {
-		if (!this.noteModel) {
-			debugger;
-			throw new Error('noteModel 应该已经赋值了');
-		}
-		this.cComments = new CComments(this.res);
-		this.cComments.init(this);
-		this.openVPage(this.newVView());
-	}
-
-	renderWriteComment() {
-		return this.cComments.renderWriteComment();
-	}
-
-	renderCommentButton() {
-		return this.cComments.renderCommentButton();
-	}
-
-	renderCommentsList() {
-		return this.cComments?.renderCommentsList();
 	}
 
 	protected renderRelatives() {

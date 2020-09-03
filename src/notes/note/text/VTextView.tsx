@@ -15,7 +15,11 @@ export class VTextView extends VNoteBaseView<CNoteText> {
 	protected renderBottomCommands() {
 		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-center">
 			{this.renderShareButton()}
-			{this.controller.renderWriteComment()}
+			{this.controller.cComments.renderWriteComment()}
 		</div>;
+	}
+
+	protected renderContent() {
+		return this.controller.cContent.renderViewContent();
 	}
 }

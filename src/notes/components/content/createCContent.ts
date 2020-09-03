@@ -5,6 +5,7 @@ import { CList } from "./list";
 import { CFolder } from "./folder";
 import { EnumNoteType } from "../../model";
 
+/*
 export enum EnumContentType {text=0, checkable=1, list=2, folder=3}
 
 function cContentFromType(type: EnumContentType): CContent {
@@ -45,3 +46,4 @@ export function createCContentFromType(type: EnumContentType): CContent {
 	ret.init(undefined);
 	return ret;
 }
+*/

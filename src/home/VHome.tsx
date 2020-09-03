@@ -39,8 +39,8 @@ export class VHome extends VPage<CHome> {
 	];
 */
 	render() {
-		let {cNode} = this.controller;
-		let right = this.controller.cNode.renderHomeDropDown();
+		let {cNodes} = this.controller;
+		let right = this.controller.cNodes.renderHomeDropDown();
 		/*
 		<>
 			<DropdownActions actions={this.dropdownActions} icon="plus" itemIconClass="text-info"
@@ -48,7 +48,7 @@ export class VHome extends VPage<CHome> {
 		</>;*/
 
 		return <Page header={this.t('home')} right={right}>
-			{cNode.renderListView()}
+			{cNodes.renderNotesView()}
 		</Page>;
 
 		/*

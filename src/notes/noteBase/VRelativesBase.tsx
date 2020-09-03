@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { User, Image, UserView, FA } from "tonva";
-import { VNoteBase, CNoteBase } from '../../noteBase';
+import { VNoteBase, CNoteBase } from '.';
 
 export interface TabRelative {
 	name: string;
@@ -57,7 +57,7 @@ export class VRelativesBase<T extends CNoteBase> extends VNoteBase<T> {
 				<div className="d-flex px-3 pt-3">
 					{tabs.map(v => {
 						let {name, caption} = v;
-						let isActive = name === activeRelativeTab;
+						let isActive = v === tab;
 						return this.renderTab(isActive, name, caption(isActive));
 					})}
 				</div>
@@ -74,15 +74,9 @@ export class VRelativesBase<T extends CNoteBase> extends VNoteBase<T> {
 	}
 
 	private renderTab(isAction:boolean, tabName:string, tabContent:any) {
-		let cn:string;
-		if (isAction === true) {
-			cn = ' bg-white border-left border-top border-right rounded-top';
-		}
-		else {
-			cn = ' bg-light text-muted';
-		}
+		let cn:string = isAction === true? ' bg-white' : ' bg-light text-muted border-bottom';
 		return <div key={tabName}
-			className={'px-3 py-2 cursor-pointer' + cn}
+			className={'border-left border-top border-right rounded-top px-3 py-2 cursor-pointer' + cn}
 			onClick={()=>this.controller.activeRelativeTab = tabName}>
 			{tabContent}
 		</div>;

@@ -2,7 +2,6 @@ import { CContent } from "../CContent";
 import { VInput } from "./VInput";
 import { VView } from "./VView";
 import { observable } from "mobx";
-import { EnumContentType } from "../createCContent";
 
 export interface ListItem {
 	key: number;
@@ -11,22 +10,14 @@ export interface ListItem {
 
 export class CList extends CContent {
 	private inputingText: string;
-	@observable items: ListItem[];
+	@observable items: ListItem[] = [];
 	itemKey: number = 1;
 
 	init(obj:any) {
-		//this.items.splice(0, this.items.length);
-		if (obj) {
-			this.itemKey = obj.itemKey;
-			this.items = obj.items;
-		}
-		else {
-			this.items = [];
-			this.itemKey = 1;
-		}
+		this.itemKey = obj.itemKey;
+		this.items = obj.items;
 	}
 
-	get contentType(): EnumContentType {return EnumContentType.list;}
 	renderInput():JSX.Element {
 		let v = new VInput(this);
 		return v.render();
@@ -39,7 +30,6 @@ export class CList extends CContent {
 	}
 
 	protected buildObj(obj:any): void {
-		obj.check = this.contentType;
 		obj.itemKey = this.itemKey;
 		obj.items = this.items;
 	}

@@ -31,10 +31,6 @@ export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 		</div>;
 	}
 
-	protected renderContent() {
-		return this.controller.renderContentView();
-	}
-
 	protected renderViewBottom():JSX.Element {
 		return;
 	}
@@ -47,6 +43,7 @@ export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 		return <div className="mr-3">{this.controller.renderIcon()}</div>;
 	}
 }
-
+/*
 export class VNoteBaseViewPage extends VNoteBaseView<CNoteBase> {	
 }
+*/

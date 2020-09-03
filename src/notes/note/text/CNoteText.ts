@@ -1,38 +1,88 @@
-import { EnumNoteType } from '../../model';
-import { CNotes } from '../../CNotes';
+import { EnumNoteType, NoteItem } from '../../model';
 import { VTextView } from './VTextView';
 import { VTextAdd } from './VTextAdd';
 import { renderIcon } from '../../noteBase';
 import { VTextDir } from './VTextDir';
-import { CNote } from '../CNote';
 import { VTextEdit } from './VTextEdit';
-import { EnumContentType, createCContentFromType } from 'notes/components';
-
-export function createCNoteText(cNotes: CNotes): CNoteText {
-	return new CNoteText(cNotes);
-}
+import { CContent, CText, CCheckable, CList } from '../../components';
+import { computed } from 'mobx';
+import { CNote } from '../CNote';
 
 export class CNoteText extends CNote {
+	cContent: CContent;
+
+	createTextContent(): void {
+		this.cContent = new CText(this.res);
+	}
+	
+	createListContent(): void {
+		this.cContent = new CList(this.res);
+	}
+
+	createCheckableContent(): void {
+		this.cContent = new CCheckable(this.res);
+	}
+	
+	init(param: NoteItem): void {
+		super.init(param);
+		if (param) {
+			if (this.cContent === undefined) {
+				debugger;
+				throw new Error('this.cContent should have created');
+			}
+			this.cContent.init(param.obj);
+		}
+	}
+
+	@computed get isContentChanged():boolean {return this.cContent.changed}
 	get type():EnumNoteType { return EnumNoteType.text }
 
 	renderIcon(): JSX.Element {
 		return renderIcon(this.noteItem.toCount>0? 'files-o': 'file-o', 'text-info');
 	}
 
-	protected newVDir() {return VTextDir as any;}
-	protected newVView() {return VTextView as any;}
-	protected newVEdit() {return VTextEdit as any;}
-	protected newVAdd() {return VTextAdd as any;}
+	protected endContentInput():any {
+		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
+		this.cContent.endInput(obj);
+		return obj;
+	}
 
-	changeContentType(type: EnumContentType) {
-		if (type === this.cContent?.contentType) {
-			return;
-		}
+	renderListItem(index: number): JSX.Element {
+		return this.renderView(VTextDir);
+	}
 
-		let value = this.cContent?.toString();
-		let nc = createCContentFromType(type);
-		nc.initFromString(value);
-		this.cContent = nc;
+	showViewPage() {
+		this.openVPage(VTextView);
+	}
+
+	showEditPage() {
+		this.openVPage(VTextEdit);
+	}
+
+	showAddPage() {
+		this.openVPage(VTextAdd);
+	}
+
+	changeToText = () => {
+		let content = this.cContent.toString();
+		this.cContent = new CText(this.res);
+		this.resetCCContent(content);
+	}
+
+	changeToList = () => {
+		let content = this.cContent.toString();
+		this.cContent = new CList(this.res);
+		this.resetCCContent(content);
+	}
+
+	changeToCheckable = () => {
+		let content = this.cContent.toString();
+		this.cContent = new CCheckable(this.res);
+		this.resetCCContent(content);
+	}
+
+	private resetCCContent(content: string) {
+		this.cContent.initFromString(content);
 		this.cContent.changed = true;
 	}
 }

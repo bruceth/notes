@@ -1,6 +1,5 @@
 import React from 'react';
-import { EnumNoteType } from '../../model';
-import { CNotes } from '../../CNotes';
+import { EnumNoteType, NoteItem } from '../../model';
 import { VAssignView } from './VAssignView';
 import { VAssignAdd } from './VAssignAdd';
 import { VAssignEdit } from './VAssignEdit'
@@ -8,22 +7,54 @@ import { renderIcon } from '../../noteBase';
 import { FA } from 'tonva';
 import { CNote } from '../CNote';
 import { VAssignDir } from './VAssignDir';
-
-export function createCNoteAssign(cNotes: CNotes): CNoteAssign {
-	return new CNoteAssign(cNotes);
-}
+import { computed, observable } from 'mobx';
+import { CContent, CCheckable } from '../../components';
+import {  } from '../../components';
 
 export class CNoteAssign extends CNote {
+	@observable cContent: CContent;
+
+	init(param: NoteItem): void {
+		super.init(param);
+		this.cContent = new CCheckable(this.res); // createCContent(param.content, param.type);
+		if (!param) {
+			this.cContent.init();
+			return;
+		}
+		
+		let {caption, obj} = param;
+		this.cContent.init(obj);
+		this.caption = caption;
+	}
+
+	@computed get isContentChanged():boolean {return this.cContent.changed}
 	get type():EnumNoteType { return EnumNoteType.assign }
 
 	renderIcon(): JSX.Element {
 		return renderIcon('list', 'text-primary');
 	}
 
-	protected newVDir() {return VAssignDir as any;}
-	protected newVView() {return VAssignView as any;}
-	protected newVEdit() {return VAssignEdit as any;}
-	protected newVAdd() {return VAssignAdd as any;}
+	protected endContentInput():any {
+		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
+		this.cContent.endInput(obj);
+		return obj;
+	}
+
+	renderListItem(index: number): JSX.Element {
+		return this.renderView(VAssignDir);
+	}
+
+	showViewPage() {
+		this.openVPage(VAssignView);
+	}
+
+	showEditPage() {
+		this.openVPage(VAssignEdit);
+	}
+
+	showAddPage(folderId: number) {
+		this.openVPage(VAssignAdd, folderId);
+	}
 
 	renderViewIcon(): JSX.Element {
 		let name = 'list';

@@ -1,5 +1,4 @@
 import { observable } from "mobx";
-import { EnumContentType } from "../createCContent";
 import { CContent } from "../CContent";
 import { VInput } from "./VInput";
 import { VView } from "./VView";
@@ -13,20 +12,12 @@ export interface ContentCheckItem {
 
 export class CCheckable extends CContent {
 	private inputingText: string;
-	@observable items: ContentCheckItem[];
+	@observable items: ContentCheckItem[] = [];
 	itemKey: number = 1;
 
-	get contentType(): EnumContentType {return EnumContentType.checkable;}
-
 	init(obj:any) {
-		if (obj) {
-			this.itemKey = obj.itemKey;
-			this.items = obj.items;
-		}
-		else {
-			this.items = [];
-			this.itemKey = 1;
-		}
+		this.itemKey = obj.itemKey;
+		this.items = obj.items;
 	}
 
 	renderInput():JSX.Element {
@@ -43,7 +34,6 @@ export class CCheckable extends CContent {
 	}
 
 	protected buildObj(obj:any): void {
-		obj.check = this.contentType;
 		obj.itemKey = this.itemKey;
 		obj.items = this.items;
 	}

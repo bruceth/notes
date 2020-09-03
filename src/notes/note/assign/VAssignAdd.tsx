@@ -3,7 +3,7 @@ import { VAssignEdit } from './VAssignEdit';
 
 export class VAssignAdd extends VAssignEdit {
 	protected async onButtonSave(): Promise<void> {
-		await this.controller.AddNote(this.parentId);
+		await this.controller.AddNote();
 		this.closePage();
 		return;
 	}
@@ -20,7 +20,7 @@ export class VAssignAdd extends VAssignEdit {
 		</button>;
 	}
 	protected onSaveAndSendNote = async () => {
-		let cnewNote = await this.controller.AddNote(this.parentId);
+		let cnewNote = await this.controller.AddNote();
 		this.closePage();
 		await cnewNote.cApp.loadRelation();
 		cnewNote.showTo(1);

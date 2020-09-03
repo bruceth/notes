@@ -1,1 +1,1 @@
-export { createCNoteText } from './CNoteText';
+export { CNoteText } from './CNoteText';

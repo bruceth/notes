@@ -3,15 +3,15 @@ import { observable } from "mobx";
 import { VSelectContact, SelectContactOptions } from "./views";
 import { EnumNoteType, NoteItem, NoteModel } from "./model";
 import { CNoteBase } from "./noteBase";
-import { CContainer, CFolderRoot } from "./container";
+import { CContainer, CFolderRoot, createCSpace } from "./container";
 import { CGroup } from "./group";
 import { Contact } from "../model";
 import { VSent } from "./views/VSent";
 import { VTo } from "./views/VTo";
-import { createNoteBase } from "./noteBase/createNoteBase";
-import { createCNoteText, createCNoteTask, createCNoteAssign } from "./note";
+import { createCNoteTask } from "./note";
 import { VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
-import { EnumContentType } from "./components";
+import { CNoteText } from "./note/text";
+import { CNoteAssign } from "./note/assign";
 
 export class CNotes extends CUqBase {
 	protected foldStack: CContainer[];
@@ -31,34 +31,35 @@ export class CNotes extends CUqBase {
 	}
 
 	noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteBase => {
-		let cNoteBase = this.getCNoteBase(item);
-		item = cNoteBase.convertObj(item);
+		let {type, content} = item;
+		if (content) {
+			if (content[0] === '{') {
+				let obj = JSON.parse(content);
+				if (type === EnumNoteType.text) {
+					switch (obj.check) {
+						case 1: item.type = EnumNoteType.textList; break;
+						case 2: item.type = EnumNoteType.textCheckable; break;
+					}
+				}
+				item.obj = obj;
+			}
+			else {
+				item.obj = content;
+			}
+		}
+
+		let cNoteBase = this.createCNoteBase(item);
 		cNoteBase.init(item);
 		return cNoteBase;
 	}
 
-	updateFolderTime(note:number, time:Date) {
-		this.currentFold.updateTime(time);
-		if (!this.currentFold.noteItem)
-			return;
-		let fnote = this.currentFold.noteItem.note;
+	itemChanged(noteItem: NoteItem) {
+		let folderNoteItem = this.currentFold.itemChanged(noteItem);
 		if (this.foldStack.length > 0) {
-			for (var folderItem of this.foldStack) {
-				if (this.updateSubFolderItem(folderItem, fnote)) {
-					folderItem.updateTime(time);
-				}
+			for (let folder of this.foldStack) {
+				folderNoteItem = folder.itemChanged(folderNoteItem)
 			}
 		}
-	}
-
-	protected updateSubFolderItem(folder:CContainer, fnote:number) {
-		let {items} = folder.notesPager;
-		let index = items.findIndex(v=>v.noteItem?.note === fnote);
-		if (index > 0) {
-			let fItem = items.splice(index, 1);
-			items.unshift(...fItem);
-		}
-		return index >= 0;
 	}
 
 	openFolder(foldItem:CContainer) {
@@ -71,15 +72,37 @@ export class CNotes extends CUqBase {
 		this.currentFold = this.foldStack.pop();
 	}
 
-	getCNoteBase(noteItem: NoteItem): CNoteBase {
-		let ret = createNoteBase(noteItem, this); // NoteTypes[type];
-		if (ret === undefined) {
-			debugger;
-			throw new Error(`type ${noteItem.type} CNoteItem not defined`);
+	createCNoteBase(noteItem: NoteItem): CNoteBase {
+		switch (noteItem.type) {
+			default: throw Error("unknown type");
+			case EnumNoteType.text: return this.createCNoteText();
+			case EnumNoteType.textList: return this.createCNoteList(); 
+			case EnumNoteType.textCheckable: return this.createCNoteCheckable(); 
+			case EnumNoteType.folder: return this.createCNoteText();
+			case EnumNoteType.task: return createCNoteTask(this, noteItem); 
+			case EnumNoteType.group: debugger; throw Error("type group undefined");
+			case EnumNoteType.groupFolder: return createCSpace(this); 
+			case EnumNoteType.unit:  debugger; throw Error("type unit undefined");
+			case EnumNoteType.assign: return new CNoteAssign(this);
 		}
+	}
+
+	private createCNoteText(): CNoteText {
+		let ret = new CNoteText(this);
+		ret.createTextContent();
 		return ret;
-		//ret.init()
-		//return this.newSub(ret);
+	}
+
+	private createCNoteList(): CNoteText {
+		let ret = new CNoteText(this);
+		ret.createListContent();
+		return ret;
+	}
+
+	private createCNoteCheckable(): CNoteText {
+		let ret = new CNoteText(this);
+		ret.createCheckableContent();
+		return ret;
 	}
 
 	async load() {
@@ -111,25 +134,34 @@ export class CNotes extends CUqBase {
 		await this.currentFold.hideNote(note, x);
 	}
 
-	renderListView() {
+	renderNotesView() {
 		return this.currentFold.renderListView();
 	}
 
 	renderHomeDropDown() {return this.renderView(VHomeDropdown)};
 	renderSpaceDropDown() {return this.renderView(VSpaceDropdown)};
 
-	showAddNotePage(type: EnumContentType) {
-		let {folderId} = this.currentFold;
-		let cNoteText = createCNoteText(this); // this.newSub(CNoteText);
-		cNoteText.createCContent(type);
-		cNoteText.showAddPage(folderId, type);
+	showAddNoteTextPage = () => {
+		let cNoteText = this.createCNoteText();
+		cNoteText.showAddPage();
+	}
+	showAddNoteListPage = () => {
+		let cNoteText = this.createCNoteList();
+		cNoteText.showAddPage();
+	}
+	showAddNoteCheckablePage = () => {
+		let cNoteText = this.createCNoteCheckable();
+		cNoteText.showAddPage();
+	}
+	showAddMyFolderPage = () => {
+		let cNoteText = this.createCNoteText();
+		cNoteText.showAddPage();
 	}
 
-	showAddAssignPage() {
+	showAddAssignPage = () => {
 		let {folderId} = this.currentFold;
-		let cNoteAssign = createCNoteAssign(this); // this.newSub(CNoteText);
-		cNoteAssign.createCContent(EnumContentType.checkable);
-		cNoteAssign.showAddPage(folderId, EnumContentType.checkable);
+		let cNoteAssign = new CNoteAssign(this);
+		cNoteAssign.showAddPage(folderId);
 	}
 
 	async showTo(noteItem:NoteItem, backPageCount:Number) {
@@ -156,7 +188,7 @@ export class CNotes extends CUqBase {
 		cNoteTask.showAssignTaskPage();
 	}
 
-	showAddGroupPage() {
+	showAddGroupPage = () => {
 		let cGroup = this.newSub(CGroup);
 		cGroup.showAddPage();
 	}

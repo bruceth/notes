@@ -44,7 +44,7 @@ export class VTaskParams extends VPage<CNoteTask> {
 		];
 		//let {owner} = this.controller;
 		return <div className="py-2">
-			{this.controller.renderBaseItem(0)}
+			{this.controller.renderListItem(0)}
 			{rows.map(v => this.renderParam(v))}
 			<div className="px-3 py-2"><button className="btn btn-primary" onClick={this.onSendTask}>发送</button></div>
 		</div>;

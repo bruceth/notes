@@ -83,17 +83,11 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 			right = <>{this.renderEditButton()}</>;
 		}
 		return <div className="py-2 bg-light border-top d-flex align-items-end">
-			{this.controller.renderCommentButton()}
+			{this.controller.cComments.renderCommentButton()}
 			<div className="mr-auto" />
 			{right}
 		</div>;
 	}
-
-	/*
-	protected renderCommentButton() {
-		return <span className="cursor-pointer text-primary mr-5" onClick={this.onComment}><FA name="comment-o" /></span>;
-	}
-	*/
 
 	renderRelatives() {
 		return this.renderVm(VTaskRelatives as any);

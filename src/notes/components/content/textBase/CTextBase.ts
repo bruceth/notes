@@ -5,12 +5,12 @@ export abstract class CTextBase extends CContent {
 	@observable noteContent: string;
 	@observable changedNoteContent: string;
 
-	init(content: string|any): void {
-		switch (typeof content) {
+	init(obj: any): void {
+		switch (typeof obj) {
 			default: break;				// Add状态，没有初始值
 			case 'undefined': break;
-			case "string": this.noteContent = content.trim(); break;
-			case "object": this.noteContent = content.content?.trim(); break;
+			case "string":  this.noteContent = (obj as string).trim(); break;
+			case "object": this.noteContent = obj.content?.trim(); break;
 		}
 	}
 
@@ -23,7 +23,6 @@ export abstract class CTextBase extends CContent {
 	}
 
 	protected buildObj(obj:any) {
-		obj.check = this.contentType;
 		obj.content = this.changedNoteContent || this.noteContent;
 	}
 }

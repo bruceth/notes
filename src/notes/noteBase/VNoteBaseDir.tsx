@@ -25,10 +25,6 @@ export class VNoteBaseDir<T extends CNoteBase> extends VNoteBase<T> {
 		</div>;
 	}
 
-	protected renderContent():JSX.Element {
-		return this.controller.renderContentDir();
-	}
-
 	protected renderDirBottom():JSX.Element {
 		let divToCount = this.renderToCount();
 		let divSpawnCount = this.renderSpawnCount();

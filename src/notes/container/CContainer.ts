@@ -1,4 +1,4 @@
-import { CNoteBase, VNoteBase } from "../noteBase";
+import { CNoteBase } from "../noteBase";
 import { NoteItem, NoteModel, EnumNoteType } from '../model';
 import { QueryPager } from "tonva";
 import { EnumSpecFolder } from "tapp";
@@ -66,6 +66,18 @@ export abstract class CContainer extends CNoteBase {
 		return noteModel;
 	}
 
+	// return the folder noteItem
+	itemChanged(noteItem: NoteItem):NoteItem {
+		let {items} = this.notesPager;
+		let index = items.findIndex(v => v.noteItem === noteItem);
+		if (index > 0) {
+			let fItem = items.splice(index, 1);
+			items.unshift(...fItem);
+		}
+		//return index >= 0;
+		return this.noteItem;
+	}
+
 	showFolder() {
 		this.load();
 		this.openVPage(VFolder);
@@ -121,7 +133,7 @@ export abstract class CContainer extends CNoteBase {
 		if (type === Number(EnumNoteType.folder)) {
 			noteItem.groupFolder = this.groupFolder;
 		}
-		let cNoteItem = this.owner.getCNoteBase(noteItem);
+		let cNoteItem = this.owner.createCNoteBase(noteItem);
 		cNoteItem.init(noteItem);
 		if (folder === this.folderId) {
 			this.notesPager.items.unshift(cNoteItem);
@@ -160,14 +172,10 @@ export abstract class CContainer extends CNoteBase {
 		if (index >= 0) this.notesPager.items.splice(index, 1);
 	}
 
-	protected newVNoteItem():VNoteBase<any> {return new VFolderNoteItem(this);}
-
-	/*
 	renderListItem(index: number): JSX.Element {
 		let vNoteItem = new VFolderNoteItem(this);
 		return vNoteItem.render();
 	}
-	*/
 
 	async addGroup(caption:string, content:string, members:{member:number}[]) {
 		let ret = await this.uqs.notes.AddGroup.submit({caption, content, members});
@@ -191,7 +199,7 @@ export abstract class CContainer extends CNoteBase {
 			$create: date,
 			$update: date,
 		}
-		let cNoteItem = this.owner.getCNoteBase(noteItem);
+		let cNoteItem = this.owner.createCNoteBase(noteItem);
 		cNoteItem.init(noteItem);
 		this.notesPager.items.unshift(cNoteItem);
 		return cNoteItem;

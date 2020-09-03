@@ -9,7 +9,7 @@ export class VCommentsList extends View<CComments> {
 	}
 	
 	protected renderComments = () => {
-		let {comments} = this.controller.noteModel;
+		let {comments} = this.controller.cNote.noteModel;
 		let {length} = comments;
 		if (length === 0) return;
 		return <div className="py-3">

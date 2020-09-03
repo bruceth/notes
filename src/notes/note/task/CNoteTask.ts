@@ -1,11 +1,11 @@
 import { observable } from "mobx";
 import { NoteItem, numberFromId, EnumNoteType } from '../../model';
 import { renderIcon, VNoteBase } from '../../noteBase';
-import { CNote } from "../CNote";
 import { VTaskParams } from "./VTaskParams";
 import { EnumTaskState, TaskStateResult } from "./TaskState"
 import { VTaskView } from './VTaskView';
 import { TaskCheckItem, AssignTaskParam } from "./model";
+import { CNote } from "../CNote";
 
 export abstract class CNoteTask extends CNote {
 	get type():EnumNoteType { return EnumNoteType.task }
@@ -81,18 +81,23 @@ export abstract class CNoteTask extends CNote {
 	updateRateInfo(v:string) {
 		this.rateInfoInput = v;
 	}
-
+/*
 	convertObj(item: NoteItem): NoteItem {
 		let content = item.flowContent;
 		if (!content) {
 			content = item.content;
 		}
-		item.obj = this.parseContent(content);
+		if (content) {
+			item.obj = JSON.parse(content);
+		}
 		return item;
 	}
-
+*/
 	protected abstract getTaskView():(new (controller: any) => VTaskView<any>);
 	abstract get taskStateResult(): TaskStateResult;
+
+	showAddPage() {/*CNoteTask no need to Add*/}
+	showEditPage() {/*CNoteTask no need to Edit*/}
 /*
 	private getView() {
 		let state = this.noteItem.state as EnumTaskState;
@@ -128,8 +133,8 @@ export abstract class CNoteTask extends CNote {
 	}
 	*/
 
-	renderBaseItem(index: number): JSX.Element {
-		return super.renderListItem(index);
+	renderListItem(index: number): JSX.Element {
+		return ;
 	}
 
 	showViewPage() {

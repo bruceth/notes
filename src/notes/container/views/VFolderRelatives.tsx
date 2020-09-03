@@ -1,5 +1,5 @@
 //import React from 'react';
-import { VRelativesBase, TabRelative } from "notes/note/views";
+import { VRelativesBase, TabRelative } from "../../noteBase";
 import { CFolder } from "../CFolder";
 
 export class VFolderRelatives extends VRelativesBase<CFolder> {

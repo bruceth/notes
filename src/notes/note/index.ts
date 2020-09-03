@@ -1,4 +1,3 @@
-export { createCNoteText } from './text';
+export { CNoteAssign } from './assign'; 
+export { CNoteText } from './text';
 export { createCNoteTask } from './task'; 
-export { createCNoteAssign } from './assign'; 
-// export { VRelativesBase } from './VRelatives';

@@ -1,23 +1,15 @@
-import { observable, computed } from "mobx";
+import { observable } from "mobx";
 import { CUqSub } from '../../tapp';
 import { NoteItem, NoteModel, EnumNoteType } from '../model';
 import { CNotes } from '../CNotes';
-import { CContent, createCContent, createCContentFromType, EnumContentType } from '../components';
-import { VNoteBaseDir, VNoteBaseDirView } from './VNoteBaseDir';
-import { VNoteBase, VNoteBasePage } from "./VNoteBase";
 
 export abstract class CNoteBase extends CUqSub<CNotes> {
 	disableFrom: boolean = false;
 	@observable noteModel: NoteModel;
 	@observable noteItem: NoteItem;
-	@observable protected cContent: CContent;
 
 	@observable activeRelativeTab: string;
-
-	@computed get isContentChanged():boolean {return this.cContent.changed}
-	renderContentInput() {return this.cContent.renderInput()}
-	renderContentDir() {return this.cContent.renderDirContent()}
-	renderContentView() {return this.cContent.renderViewContent()}
+	get isContentChanged():boolean {return false;}; // {return this.cContent.changed}
 
 	get groupFolder(): number {
 		if (!this.noteItem)
@@ -31,76 +23,38 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 
 	init(param: NoteItem): void {
 		this.noteItem = param;
-		if (!param) {
-			return;
-		}
-		this.caption = param.caption;
-		this.cContent = createCContent(param.content, param.type);
-		if (!this.cContent) debugger;
-		/*
-		let { obj } = param;
-		if (obj) {
-			this.noteContent = obj.content;
-		}
-		*/
 	}
 
 	abstract get type():EnumNoteType;
-
-	createCContent(type: EnumContentType) {
-		this.cContent = createCContentFromType(type);
-	}
 
 	protected async internalStart() { }
 
 	@observable caption: string;
 	get captionChanged() {return this.caption !== this.noteItem?.caption;}
 
-	protected newVDir(): (new (controller: CNoteBase) => VNoteBaseDir<any>) {return VNoteBaseDirView;}
-	protected newVView(): (new (controller: CNoteBase) => VNoteBase<any>) {return VNoteBasePage;}
-	protected newVEdit(): (new (controller: CNoteBase) => VNoteBase<any>) {return VNoteBasePage;}
-	protected newVAdd(): (new (controller: CNoteBase) => VNoteBase<any>) {return VNoteBasePage;}
-
-	renderListItem(index: number): JSX.Element {
-		return this.renderView(this.newVDir());
-	}
-
 	abstract renderIcon(): JSX.Element;
-
-	showViewPage() {
-	}
-
-	showEditPage() {
-		this.openVPage(this.newVEdit());
-	}
-
-	showAddPage(folderId: number, contentType: EnumContentType) {
-		this.cContent = createCContentFromType(contentType);
-		this.openVPage(this.newVAdd(), folderId);
-	}
+	abstract renderListItem(index: number): JSX.Element;
+	abstract showViewPage():void;
+	abstract showEditPage():void;
+	abstract showAddPage(folderId: number):void;
 
 	protected endContentInput():any {
 		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
-		this.cContent.endInput(obj);
 		return obj;
 	}
 
+	/*
 	// convertObj 可以在不同的继承中被重载
 	convertObj(item: NoteItem): NoteItem {
-		item.obj = this.parseContent(item.content);
+		let {content} = item;
+		if (content) {
+			if (content[0] === '{') {
+				item.obj = JSON.parse(content);
+			}
+		}
 		return item;
 	}
-
-	protected parseContent(content: string): any {
-		try {
-			if (!content) return undefined;
-			return JSON.parse(content);
-		}
-		catch (err) {
-			console.error(err);
-			return undefined;
-		}
-	}
+	*/
 
 	async showTo(backPageCount: number) {
 		await this.owner.showTo(this.noteItem, backPageCount);
@@ -118,48 +72,31 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	}
 
 	protected updateChange() {
-		if (this.noteItem) {
-			this.noteItem.$update = new Date();
-			if (this.caption && this.caption !== this.noteItem.caption) {
-				this.noteItem.caption = this.caption;
-			}
-			this.owner.updateFolderTime(this.noteItem.note, this.noteItem.$update);
+		if (!this.noteItem) {
+			debugger;
+			throw new Error('this.noteItem can not be undefined');
 		}
+		this.noteItem.$update = new Date();
+		if (this.caption && this.caption !== this.noteItem.caption) {
+			this.noteItem.caption = this.caption;
+		}
+		this.owner.itemChanged(this.noteItem);
 	}
 
-	updateTime(time:Date) {
-		if (this.noteItem) {
-			this.noteItem.$update = time;
-		}
+	// return the folder noteItem
+	itemChanged(noteItem: NoteItem):NoteItem {
+		//if (this.noteItem) {
+		this.noteItem.$update = noteItem.$update;
+		return this.noteItem;
+		//}
 	}
 
-	async AddNote(parent: number) {
+	async AddNote() {
 		let obj = this.endContentInput();
 		let noteContent = JSON.stringify(obj);
-		let ret = await this.owner.addNote(parent, this.caption, noteContent, obj, this.type);
+		let {folderId} = this.owner.currentFold;
+		let ret = await this.owner.addNote(folderId, this.caption, noteContent, obj, this.type);
 		this.updateChange();
 		return ret;
 	}
-/*
-	async addComment(content: string) {
-		let ret = await this.uqs.notes.AddComment.submit({ note: this.noteModel.id, content });
-		let commentId = ret.comment;
-		// 加入note界面，显示comment
-		if (commentId) {
-			this.noteItem.commentCount++;
-			this.noteModel.comments.unshift({
-				id: commentId,
-				content: content,
-				owner: this.user.id,
-				assigned: undefined,
-				$create: new Date(),
-				$update: new Date(),
-			});
-		}
-	}
-
-	async deleteComment(commentId: number) {
-		debugger;
-	}
-*/
 }

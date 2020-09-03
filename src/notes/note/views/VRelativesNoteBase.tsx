@@ -1,7 +1,7 @@
 import React from 'react';
 import { FA } from "tonva";
 import { CNote } from "../CNote";
-import { VRelativesBase, TabRelative } from './VRelativesBase';
+import { VRelativesBase, TabRelative } from '../../noteBase';
 
 export class VRelativesNoteBase<T extends CNote> extends VRelativesBase<T> {
 	protected tabComment:TabRelative = {
@@ -15,7 +15,7 @@ export class VRelativesNoteBase<T extends CNote> extends VRelativesBase<T> {
 				{vCount}
 			</>
 		},
-		render: () => this.controller.renderCommentsList()
+		render: () => this.controller.cComments.renderCommentsList(),
 	}
 
 	protected tabFlow:TabRelative = {

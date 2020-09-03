@@ -31,14 +31,20 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	}
 
 	protected renderContent() {
-		return <>VTaskView</>;
+		return this.controller.cContent.renderViewContentA(this.allowCheck);
 		//return this.renderCheckableContentBase(this.allowCheck);
 	}
 
 	renderDirView() {
 		return React.createElement(observer(() => {
 			return <div className="d-block bg-white">
-				{this.renderTopCaptionContent()}
+				<div className="bg-white">
+			{this.renderTop()}
+			<div className="py-2">
+				{this.renderCaption()}
+				{this.controller.cContent.renderViewContentA(false)}
+			</div>
+		</div>
 				{this.renderDirBottom()}
 			</div>;
 		}));

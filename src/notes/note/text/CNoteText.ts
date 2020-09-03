@@ -35,7 +35,7 @@ export class CNoteText extends CNote {
 	}
 
 	@computed get isContentChanged():boolean {return this.cContent.changed}
-	get type():EnumNoteType { return EnumNoteType.text }
+	get type():EnumNoteType { return this.noteItem ? this.noteItem.type : EnumNoteType.text }
 
 	renderIcon(): JSX.Element {
 		return renderIcon(this.noteItem.toCount>0? 'files-o': 'file-o', 'text-info');

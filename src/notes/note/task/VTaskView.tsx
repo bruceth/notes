@@ -24,7 +24,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 			return <div className="my-2 mx-1 border rounded">
 				{this.renderTopCaptionContent()}
 				{this.renderTaskAdditions()}
-				{this.renderBottomCommands()}
+				{this.renderViewBottom()}
 				{this.renderRelatives()}
 			</div>;
 		}));
@@ -75,7 +75,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		</div>;
 	}
 
-	protected renderBottomCommands() {
+	protected renderViewBottom() {
 		let { owner, state } = this.controller.noteItem;
 		let right: any;
 		let isMe = this.isMe(owner);		

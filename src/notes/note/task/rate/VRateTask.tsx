@@ -76,7 +76,7 @@ export class VTaskRate extends VTaskView<CTaskRate> {
 		}
 	}
 
-	protected renderBottomCommands() {
+	protected renderViewBottom() {
 		let left = <div>
 			<button onClick={() => this.onRate()} className="btn btn-success mx-3">
 				评价

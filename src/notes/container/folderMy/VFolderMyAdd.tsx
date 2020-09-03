@@ -1,4 +1,3 @@
-import React from "react";
 import { VFolderMyEdit } from "./VFolderMyEdit";
 
 export class VFolderMyAdd extends VFolderMyEdit {

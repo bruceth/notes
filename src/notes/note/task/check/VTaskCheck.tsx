@@ -72,7 +72,7 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 		}
 	}
 
-	protected renderBottomCommands() {
+	protected renderViewBottom() {
 		let left = <div>
 			<button onClick={()=>this.onCheck(true)} className="btn btn-success mx-3">
 				<FA name="check" /> 通过

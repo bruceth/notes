@@ -106,7 +106,11 @@ export abstract class CContainer extends CNoteBase {
 		noteItem.unread = 0;
 		noteItem.commentUnread = 0;
 		this.noteModel = noteModel;
-		this.openVPage(VFolderView);
+		this.showFolderViewPage();
+	}
+
+	showFolderViewPage() {
+		this.openVPage(VFolderView as any);
 	}
 
 	async addNote(folder:number, caption:string, content:string, obj:any, type:EnumNoteType) {

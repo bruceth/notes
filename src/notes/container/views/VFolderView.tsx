@@ -1,10 +1,8 @@
-import React from 'react';
-import { VEdit } from './VEdit';
 import { VNoteBaseView } from '../../noteBase';
 import { CContainer } from '../CContainer';
 import { VFolderRelatives } from './VFolderRelatives';
 
-export class VFolderView extends VNoteBaseView<CContainer> {
+export class VFolderView<T extends CContainer> extends VNoteBaseView<T> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {
 		let {noteItem} = this.controller;
@@ -14,18 +12,8 @@ export class VFolderView extends VNoteBaseView<CContainer> {
 		return this.t('notes')
 	}
 
-	protected renderBottomCommands() {
-		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-end">
-			{this.renderShareButton()}
-		</div>;
-	}
-
-	protected onEdit() {
-		this.openVPage(VEdit);
-	}
-
 	protected renderRelatives() {
-		return this.renderVm(VFolderRelatives);
+		return this.renderVm(VFolderRelatives as any);
 	}
 
 	protected renderContent() {

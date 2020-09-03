@@ -9,7 +9,7 @@ export class VTaskStart extends VTaskView<CTaskStart> {
 		return this.renderStateSpan('待办');
 	}
 
-	protected renderBottomCommands() {
+	protected renderViewBottom() {
 		let { owner } = this.controller.noteItem;
 		let left: any, right: any;
 		let isMe = this.isMe(owner);

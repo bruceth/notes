@@ -2,6 +2,7 @@ import { CFolderDisableItemFrom } from "../CFolder";
 import { renderIcon } from "../../noteBase";
 import { VFolderMyEdit } from "./VFolderMyEdit";
 import { VFolderMyAdd } from "./VFolderMyAdd";
+import { VFolderMyView } from "./VFolderMyView";
 
 // 小单夹
 export class CFolderMy extends CFolderDisableItemFrom {
@@ -13,6 +14,10 @@ export class CFolderMy extends CFolderDisableItemFrom {
 	}
 	showEditPage() {
 		this.openVPage(VFolderMyEdit);
+	}
+
+	showFolderViewPage() {
+		this.openVPage(VFolderMyView);
 	}
 
 	protected endContentInput():any {

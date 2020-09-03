@@ -64,21 +64,30 @@ export class CNoteText extends CNote {
 	}
 
 	changeToText = () => {
+		if (this.noteItem.type === EnumNoteType.text)
+			return;
 		let content = this.cContent.toString();
 		this.cContent = new CText(this.res);
 		this.resetCCContent(content);
+		this.noteItem.type = EnumNoteType.text;
 	}
 
 	changeToList = () => {
+		if (this.noteItem.type === EnumNoteType.textList)
+			return;
 		let content = this.cContent.toString();
 		this.cContent = new CList(this.res);
 		this.resetCCContent(content);
+		this.noteItem.type = EnumNoteType.textList;
 	}
 
 	changeToCheckable = () => {
+		if (this.noteItem.type === EnumNoteType.textCheckable)
+			return;
 		let content = this.cContent.toString();
 		this.cContent = new CCheckable(this.res);
 		this.resetCCContent(content);
+		this.noteItem.type = EnumNoteType.textCheckable;
 	}
 
 	private resetCCContent(content: string) {

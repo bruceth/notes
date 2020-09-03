@@ -3,7 +3,7 @@ import { observable } from "mobx";
 import { VSelectContact, SelectContactOptions } from "./views";
 import { EnumNoteType, NoteItem, NoteModel } from "./model";
 import { CNoteBase } from "./noteBase";
-import { CContainer, CFolderRoot, createCSpace } from "./container";
+import { CContainer, CFolderRoot, createCSpace, createCFolder } from "./container";
 import { CGroup } from "./group";
 import { Contact } from "../model";
 import { VSent } from "./views/VSent";
@@ -78,7 +78,7 @@ export class CNotes extends CUqBase {
 			case EnumNoteType.text: return this.createCNoteText();
 			case EnumNoteType.textList: return this.createCNoteList(); 
 			case EnumNoteType.textCheckable: return this.createCNoteCheckable(); 
-			case EnumNoteType.folder: return this.createCNoteText();
+			case EnumNoteType.folder: return createCFolder(this, noteItem);
 			case EnumNoteType.task: return createCNoteTask(this, noteItem); 
 			case EnumNoteType.group: debugger; throw Error("type group undefined");
 			case EnumNoteType.groupFolder: return createCSpace(this); 

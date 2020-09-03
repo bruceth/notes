@@ -6,6 +6,9 @@ import { TaskCheckItem } from "../model";
 
 export class CTaskRate extends CNoteTask {	
 	showViewPage():void {this.openVPage(VTaskRate) };
+	renderDirItem(index: number): JSX.Element {
+		return this.renderViewForTaskDir(VTaskRate);
+	}
 
 	get taskStateResult(): TaskStateResult {
 		return {content: 'rate', isEnd: true}

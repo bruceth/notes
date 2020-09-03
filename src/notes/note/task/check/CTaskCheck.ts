@@ -6,6 +6,9 @@ import { TaskCheckItem } from "../model";
 
 export class CTaskCheck extends CNoteTask {	
 	showViewPage():void {this.openVPage(VTaskCheck) };
+	renderDirItem(index: number): JSX.Element {
+		return this.renderViewForTaskDir(VTaskCheck);
+	}
 	
 	get taskStateResult(): TaskStateResult {
 		return {content: 'check', isEnd: false}

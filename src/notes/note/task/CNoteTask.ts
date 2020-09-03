@@ -5,6 +5,7 @@ import { VTaskParams } from "./VTaskParams";
 import { TaskStateResult } from "./TaskState"
 import { AssignTaskParam } from "./model";
 import { CNote } from "../CNote";
+import { VTaskView } from "./VTaskView";
 
 export abstract class CNoteTask extends CNote {
 	get type():EnumNoteType { return EnumNoteType.task }
@@ -127,9 +128,11 @@ export abstract class CNoteTask extends CNote {
 	}
 	*/
 
-	renderDirItem(index: number): JSX.Element {
-		return ;
-	}
+	abstract renderDirItem(index: number): JSX.Element;
+
+    protected renderViewForTaskDir<C extends CNoteTask>(view: new (controller: C)=>VTaskView<C>, param?:any) {
+        return (new view((this as any) as C)).renderDirView();
+    }
 
 	//abstract showViewPage():void;
 	/* {

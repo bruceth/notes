@@ -35,7 +35,30 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		//return this.renderCheckableContentBase(this.allowCheck);
 	}
 
-	protected renderViewCaption() {
+	renderDirView() {
+		return React.createElement(observer(() => {
+			return <div className="d-block bg-white">
+				{this.renderTopCaptionContent()}
+				{this.renderDirBottom()}
+			</div>;
+		}));
+	}
+
+	protected renderDirBottom():JSX.Element {
+		let divToCount = this.renderToCount();
+		let divSpawnCount = this.renderSpawnCount();
+		let divComment = this.renderCommentFlag();
+		if (divToCount || divSpawnCount || divComment) {
+			return <div className="d-flex align-items-center px-3 mb-1">
+				{divToCount}
+				{divSpawnCount}
+				{divComment}
+				<div className="mr-auto" />
+			</div>;
+		}
+	}
+
+	protected renderCaption() {
 		let { caption: title } = this.controller;
 		let divCaption = title ? <b className="text-primary">{title}</b> : <span className="text-info">任务</span>;
 		return <div className="px-3 py-2">

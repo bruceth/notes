@@ -17,7 +17,6 @@ export class VTaskStart extends VTaskView<CTaskStart> {
 			left = <button onClick={this.onDone} className="btn btn-primary mx-3">
 				完成
 			</button>;
-			right = <>{this.renderEditButton()}</>;
 		}
 
 		return <div className="py-2 bg-light border-top d-flex">

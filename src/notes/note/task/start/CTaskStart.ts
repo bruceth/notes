@@ -5,7 +5,9 @@ import { TaskStateResult, EnumTaskState } from "../TaskState";
 
 export class CTaskStart extends CNoteTask {	
 	showViewPage():void {this.openVPage(VTaskStart);};
-
+	renderDirItem(index: number): JSX.Element {
+		return this.renderViewForTaskDir(VTaskStart);
+	}
 	get taskStateResult(): TaskStateResult {
 		return {content: '待办', isEnd: false}
 	}

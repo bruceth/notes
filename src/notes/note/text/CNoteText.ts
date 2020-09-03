@@ -1,3 +1,4 @@
+import { computed } from 'mobx';
 import { EnumNoteType, NoteItem } from '../../model';
 import { VTextView } from './VTextView';
 import { VTextAdd } from './VTextAdd';
@@ -5,7 +6,6 @@ import { renderIcon } from '../../noteBase';
 import { VTextDir } from './VTextDir';
 import { VTextEdit } from './VTextEdit';
 import { CContent, CText, CCheckable, CList } from '../../components';
-import { computed } from 'mobx';
 import { CNote } from '../CNote';
 
 export class CNoteText extends CNote {

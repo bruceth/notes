@@ -1,9 +1,9 @@
 import { observable } from "mobx";
 import { NoteItem, numberFromId, EnumNoteType } from '../../model';
-import { renderIcon, VNoteBase } from '../../noteBase';
+import { renderIcon } from '../../noteBase';
 import { VTaskParams } from "./VTaskParams";
 import { EnumTaskState, TaskStateResult } from "./TaskState"
-import { VTaskView } from './VTaskView';
+//import { VTaskView } from './VTaskView';
 import { TaskCheckItem, AssignTaskParam } from "./model";
 import { CNote } from "../CNote";
 
@@ -93,7 +93,7 @@ export abstract class CNoteTask extends CNote {
 		return item;
 	}
 */
-	protected abstract getTaskView():(new (controller: any) => VTaskView<any>);
+	//protected abstract getTaskView():(new (controller: any) => VTaskView<any>);
 	abstract get taskStateResult(): TaskStateResult;
 
 	showAddPage() {/*CNoteTask no need to Add*/}
@@ -121,10 +121,12 @@ export abstract class CNoteTask extends CNote {
 		return renderIcon('tasks', 'text-success');
 	}
 
+	/*
 	protected newVNoteItem():VNoteBase<any> {
 		let TaskView = this.getTaskView(); //this.noteItem.state as EnumTaskState);
 		return new TaskView(this);
 	}
+	*/
 	/*
 	renderListItem(index: number): JSX.Element {
 		let TaskView = this.getTaskView(); //this.noteItem.state as EnumTaskState);
@@ -137,10 +139,11 @@ export abstract class CNoteTask extends CNote {
 		return ;
 	}
 
-	showViewPage() {
+	//abstract showViewPage():void;
+	/* {
 		let TaskView = this.getTaskView(); // this.getView();
 		this.openVPage(TaskView);
-	}
+	} */
 
 	showAssignTaskPage() {
 		this.openVPage(VTaskParams, { contacts: this.owner.contacts }, () => this.closePage());
@@ -149,7 +152,6 @@ export abstract class CNoteTask extends CNote {
 	async assignTask(param: AssignTaskParam) {
 		let { note: noteId } = this.noteItem;
 		let { contacts, checker, rater, point, hours } = param;
-		//let note: NoteModel = await this.uqs.notes.Note.assureBox(noteId);
 		let { caption, content } = this.noteItem;
 		let cObj = JSON.parse(content);
 		if (checker) {
@@ -180,24 +182,6 @@ export abstract class CNoteTask extends CNote {
 		await this.uqs.notes.AssignTask.submit(data);
 	}
 
-	async DoneTask() {
-		let { note: noteId, caption } = this.noteItem;
-		let obj = this.endContentInput();
-		let content = JSON.stringify(obj);
-		let data = {
-			groupFolder: this.owner.currentFold.groupFolder,
-			folder: this.owner.currentFold.folderId,
-			note: numberFromId(noteId),
-			content: content,
-			caption: caption,
-			hours: this.hours
-		}
-
-		await this.uqs.notes.DoneTask.submit(data);
-		this.noteItem.state = Number(EnumTaskState.Done);
-		this.noteItem.$update = new Date();
-	}
-
 	async CheckSaveInfo() {
 		let change = false;
 		if (this.rateInfo !== this.rateInfoInput) {
@@ -216,63 +200,6 @@ export abstract class CNoteTask extends CNote {
 		if (change) {
 			await this.SaveX();
 		}
-	}
-
-	async CheckTask(pass: boolean) {
-		await this.CheckSaveInfo();
-
-		let { note: noteId } = this.noteItem;
-		let obj = this.endContentInput();
-		let content = JSON.stringify(obj);
-		let data = {
-			groupFolder: this.owner.currentFold.groupFolder,
-			folder: this.owner.currentFold.folderId,
-			note: numberFromId(noteId),
-			action: pass ? 1 : 2,
-			content: content
-		}
-
-		await this.uqs.notes.CheckTask.submit(data);
-		this.noteItem.state = Number(pass ? EnumTaskState.Pass : EnumTaskState.Fail);
-	}
-
-	async RateTask(value: number) {
-		this.rateValueInput = value;
-		await this.CheckSaveInfo();
-
-		let { note: noteId } = this.noteItem;
-		let obj = this.endContentInput();
-		let content = JSON.stringify(obj);
-		let data = {
-			groupFolder: this.owner.currentFold.groupFolder,
-			folder: this.owner.currentFold.folderId,
-			note: numberFromId(noteId),
-			value: value,
-			content: content
-		}
-
-		await this.uqs.notes.RateTask.submit(data);
-		this.noteItem.state = Number(EnumTaskState.Rated);
-	}
-
-	async setCheckInfo(item: TaskCheckItem, v:string) {
-		if (v === undefined || v.length === 0) {
-			delete item.checkInfo;
-		}
-		else {
-			item.checkInfo = v;
-		}
-		await this.SaveX();
-	}
-
-	async setRateInfo(item: TaskCheckItem, v:string) {
-		if (v === undefined || v.length === 0) {
-			delete item.rateInfo;
-		}
-		else {
-			item.rateInfo = v;
-		}
-		await this.SaveX();
 	}
 
 	protected async SaveX() {

@@ -5,10 +5,13 @@ import { VTaskParams } from "./VTaskParams";
 import { TaskStateResult } from "./TaskState"
 import { AssignTaskParam } from "./model";
 import { CNote } from "../CNote";
+import { CTaskItem } from "notes/components/content/taskitem/CTaskItem";
 
 export abstract class CNoteTask extends CNote {
 	get type():EnumNoteType { return EnumNoteType.task }
 	//private getTaskView = new TaskViewFactory().getView;
+
+	cContent: CTaskItem;
 
 	@observable checkInfo: string;
 	@observable rateInfo: string;
@@ -24,10 +27,14 @@ export abstract class CNoteTask extends CNote {
 
 	init(param: NoteItem):void {
 		super.init(param);
-		if (!param)
+		this.cContent = new CTaskItem(this.res);
+		if (!param) {
+			this.cContent.init(undefined);
 			return;
+		}
 		let {obj} = param;
 		if (obj) {
+			this.cContent.init(obj);
 			this.checkInfo = obj.checkInfo;
 			this.checkInfoInput = this.checkInfo;
 			this.rateInfo = obj.rateInfo;
@@ -69,7 +76,7 @@ export abstract class CNoteTask extends CNote {
 		}
 		obj.hours = this.hours;
 		obj.point = this.point;
-
+		this.cContent.endInput(obj);
 		return obj;
 	}
 
@@ -127,9 +134,7 @@ export abstract class CNoteTask extends CNote {
 	}
 	*/
 
-	renderDirItem(index: number): JSX.Element {
-		return ;
-	}
+	abstract renderDirItem(index: number): JSX.Element;
 
 	//abstract showViewPage():void;
 	/* {

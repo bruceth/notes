@@ -1,11 +1,14 @@
 import { numberFromId } from "../../../model";
 import { CNoteTask } from "../CNoteTask";
-import { VTaskCheck } from "./VTaskCheck";
+import { VTaskCheck, VTaskCheckDir } from "./VTaskCheck";
 import { TaskStateResult, EnumTaskState } from "../TaskState";
 import { TaskCheckItem } from "../model";
 
 export class CTaskCheck extends CNoteTask {	
 	showViewPage():void {this.openVPage(VTaskCheck) };
+	renderDirItem(index: number): JSX.Element {
+		return this.renderView(VTaskCheckDir);
+	}
 	
 	get taskStateResult(): TaskStateResult {
 		return {content: 'check', isEnd: false}
@@ -26,7 +29,10 @@ export class CTaskCheck extends CNoteTask {
 		}
 
 		await this.uqs.notes.CheckTask.submit(data);
-		this.noteItem.state = Number(pass ? EnumTaskState.Pass : EnumTaskState.Fail);
+		this.noteItem.state = pass ? EnumTaskState.Pass : EnumTaskState.Fail;
+		this.noteItem.flowContent = content;
+		this.noteItem.$update = new Date();
+		this.owner.currentFold.taskUpdateState(this.noteItem);
 	}
 
 	async setCheckInfo(item: TaskCheckItem, v:string) {

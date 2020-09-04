@@ -30,12 +30,56 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		}));
 	}
 
-	protected renderContent() {
-		return <>VTaskView</>;
-		//return this.renderCheckableContentBase(this.allowCheck);
+	protected renderTop():JSX.Element {
+		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
+			{this.renderIcon()}
+			<span className="mr-4">{this.renderEditTime()}</span>
+			{this.renderFrom()}
+		</div>;
 	}
 
-	protected renderViewCaption() {
+	protected renderContent() {
+		return this.controller.cContent.renderViewContentA(this.allowCheck);
+	}
+
+	renderDirView() {
+		return React.createElement(observer(() => {
+			return <div className="d-block bg-white">
+				<div className="bg-white">
+			{this.renderDirTop()}
+			<div className="py-2">
+				{this.renderCaption()}
+				{this.controller.cContent.renderViewContentA(false)}
+			</div>
+		</div>
+				{this.renderDirBottom()}
+			</div>;
+		}));
+	}
+
+	protected renderDirTop():JSX.Element {
+		return <div className="d-flex px-3 py-2 align-items-center border-top">
+			{this.renderIcon()}
+			{this.renderFrom()}
+			<div className="ml-auto">{this.renderEditTime()}</div>
+		</div>;
+	}
+
+	protected renderDirBottom():JSX.Element {
+		let divToCount = this.renderToCount();
+		let divSpawnCount = this.renderSpawnCount();
+		let divComment = this.renderCommentFlag();
+		if (divToCount || divSpawnCount || divComment) {
+			return <div className="d-flex align-items-center px-3 mb-1">
+				{divToCount}
+				{divSpawnCount}
+				{divComment}
+				<div className="mr-auto" />
+			</div>;
+		}
+	}
+
+	protected renderCaption() {
 		let { caption: title } = this.controller;
 		let divCaption = title ? <b className="text-primary">{title}</b> : <span className="text-info">任务</span>;
 		return <div className="px-3 py-2">

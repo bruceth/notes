@@ -16,7 +16,7 @@ export class VActions extends VBasePage<CNotes> {
 	header() {return '操作'}
 	content() {
 		let {type} = this.controller.noteItem;
-		let assign = type === Number(EnumNoteType.assign);
+		let assign = type === EnumNoteType.assign;
 		let cn = 'px-3 py-2 cursor-pointer bg-white mt-1';
 		return <div className="">
 			<div className="text-muted small px-3 py-1 mt-2">收件人</div>

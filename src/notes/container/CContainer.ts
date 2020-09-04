@@ -141,7 +141,7 @@ export abstract class CContainer extends CNoteBase {
 			$create: date,
 			$update: date,
 		}
-		if (type === Number(EnumNoteType.folder)) {
+		if (type === EnumNoteType.folder) {
 			noteItem.groupFolder = this.groupFolder;
 		}
 		let cNoteItem = this.owner.createCNoteBase(noteItem);
@@ -216,4 +216,15 @@ export abstract class CContainer extends CNoteBase {
 		return cNoteItem;
 	}
 
+	taskUpdateState(noteItem:NoteItem) {
+		let {items} = this.notesPager;
+		let {note} = noteItem;
+		let index = items.findIndex(v => v.noteItem.note===note);
+		if (index >= 0) {
+			items.splice(index, 1);
+			let c = this.getItemConverter();
+			let newItem = c(noteItem, undefined);
+			items.unshift(newItem);
+		}
+	}
 }

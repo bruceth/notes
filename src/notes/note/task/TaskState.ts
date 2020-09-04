@@ -16,8 +16,7 @@ const stateContents: {[key in EnumTaskState]: TaskStateResult} = {
 }
 
 export function GetTaskStateContent(type:number, state:number) {
-	if (type !== Number(EnumNoteType.task))
+	if (type !== EnumNoteType.task)
 		return;
 	return stateContents[state as EnumTaskState];
 }
-

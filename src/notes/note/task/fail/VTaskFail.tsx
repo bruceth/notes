@@ -7,3 +7,9 @@ export class VTaskFail extends VTaskView<CTaskFail> {
 		return this.renderStateSpan('拒签', true);
 	}
 }
+
+export class VTaskFailDir extends VTaskFail {
+	render() {
+		return this.renderDirView();
+	}
+}

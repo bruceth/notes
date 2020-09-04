@@ -7,3 +7,9 @@ export class VTaskRated extends VTaskView<CTaskRated> {
 		return this.renderStateSpan('已评价', true);
 	}
 }
+
+export class VTaskRatedDir extends VTaskRated {
+	render() {
+		return this.renderDirView();
+	}
+}

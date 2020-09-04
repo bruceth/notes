@@ -1,4 +1,5 @@
 import { BoxId } from "tonva";
+import { EnumTaskState } from "./note/task/TaskState";
 
 export enum EnumNoteType {
 	text=0, task=1, comment=2, folder=3, group=4, groupFolder=5, unit=6, assign=7,
@@ -15,7 +16,7 @@ export interface NoteItem {
 	assigned: string;
 	from: number | BoxId;
 	fromAssigned: string;
-	state: number;
+	state: EnumTaskState;
 	flowContent?: string;
 	groupFolder?:number;
 	unread: number;

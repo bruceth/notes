@@ -1,11 +1,14 @@
 import { numberFromId } from "../../../model";
 import { CNoteTask } from "../CNoteTask";
-import { VTaskRate } from "./VRateTask";
+import { VTaskRate, VTaskRateDir } from "./VRateTask";
 import { TaskStateResult, EnumTaskState } from "../TaskState";
 import { TaskCheckItem } from "../model";
 
 export class CTaskRate extends CNoteTask {	
 	showViewPage():void {this.openVPage(VTaskRate) };
+	renderDirItem(index: number): JSX.Element {
+		return this.renderView(VTaskRateDir);
+	}
 
 	get taskStateResult(): TaskStateResult {
 		return {content: 'rate', isEnd: true}
@@ -27,7 +30,10 @@ export class CTaskRate extends CNoteTask {
 		}
 
 		await this.uqs.notes.RateTask.submit(data);
-		this.noteItem.state = Number(EnumTaskState.Rated);
+		this.noteItem.state = EnumTaskState.Rated;
+		this.noteItem.flowContent = content;
+		this.noteItem.$update = new Date();
+		this.owner.currentFold.taskUpdateState(this.noteItem);
 	}
 
 	async setRateInfo(item: TaskCheckItem, v:string) {

@@ -1,12 +1,23 @@
 import React from 'react';
-import { CNoteText } from "./CNoteText";
-import { DropdownActions, DropdownAction } from 'tonva';
-import { VNoteBaseEdit } from '../../noteBase/VNoteBaseEdit';
 import { observer } from 'mobx-react';
+import { DropdownActions, DropdownAction } from 'tonva';
+import { VNoteBaseEdit } from '../../noteBase';
+import { CNoteText } from "./CNoteText";
+import { VTextHeader } from './VTextHeader';
 
 export class VTextEdit extends VNoteBaseEdit<CNoteText> {
+	header() {
+		return this.renderVm(VTextHeader);
+	}
+
 	protected renderContent():JSX.Element {
-		return this.controller.cContent.renderInput()
+		return React.createElement(observer(() =>{
+			let {noteType, cContent} = this.controller;
+			return <>
+				<span className="d-none">{noteType}</span>
+				{cContent.renderInput()}
+			</>;
+		}));
 	}
 
 	protected renderEditBottom():JSX.Element {

@@ -1,9 +1,11 @@
-import React from 'react';
-import { View, t } from "tonva";
+//import React from 'react';
+//import { View, t } from "tonva";
 import { CFolder } from './CFolder';
-import { observer } from 'mobx-react';
+//import { observer } from 'mobx-react';
+import { VTextBaseInput } from '../textBase';
 
-export class VInput extends View<CFolder> {
+export class VInput extends VTextBaseInput<CFolder> {
+	/*
 	render() {
 		return <div className="py-1 px-1">
 			{React.createElement(observer(() => this.renderContentTextArea()))}
@@ -22,4 +24,5 @@ export class VInput extends View<CFolder> {
 		this.controller.changedNoteContent = evt.target.value;
 		this.controller.changed = true;
 	}
+	*/
 }

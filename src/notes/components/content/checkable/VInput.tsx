@@ -1,19 +1,57 @@
 import React from 'react';
 import { View, FA } from "tonva";
-import { CCheckable } from './CCheckable';
+import { CCheckable, ContentCheckItem } from './CCheckable';
 import { ItemInputProps, VItemInput } from '../VItemInput';
 import { observer } from 'mobx-react';
+import { CheckableListInput } from './CheckableListInput';
+import { observable } from 'mobx';
 
 export class VInput extends View<CCheckable> {
+	private items: ContentCheckItem[];
+	@observable private uncheckedItems: ContentCheckItem[] = [];
+	@observable private checkedItems: ContentCheckItem[] = [];
+	private inputingText: string;
+
+	constructor(c: CCheckable, items: ContentCheckItem[]) {
+		super(c);
+		this.items = items;
+		let {uncheckedItems, checkedItems} = this.controller.doneItems;
+		this.uncheckedItems = uncheckedItems;
+		this.checkedItems = checkedItems;
+	}
+
 	render() {
 		return <div className="py-1 px-1">
-			{React.createElement(observer(() => this.renderContentCheckList()))}
+			{React.createElement(observer(this.renderContentCheckList))}
 		</div>;
 	}
 
-	private renderContentCheckList() {
-		let {uncheckedItems, checkedItems} = this.controller.getItems();
+	private onInputChange = (text:string) => {
+		this.inputingText = text;
+	}
+	private onAddNewItem = () => {
+		if (this.inputingText === undefined) return;
+		let text = this.inputingText.trimRight();
+		if (text.length === 0) return;
+		this.uncheckedItems.push({key: this.controller.itemKey++, text, checked: false});
+
+	}
+	private onItemChecked = (item:ContentCheckItem) => {
+
+	}
+
+	private renderContentCheckList = () => {
+		let listInput = new CheckableListInput({
+			items: this.uncheckedItems,
+			uniqueKey: () => this.controller.itemKey++,
+			onInputChange: this.onInputChange,
+			onAddNewItem: this.onAddNewItem,
+			onItemChecked: this.onItemChecked,
+		});
+		let {uncheckedItems, checkedItems} = this.controller.doneItems;
+
 		return <div className="">
+			{listInput.render()}
 			{
 				uncheckedItems.map((v, index) => {
 					let {key, text, checked} = v;

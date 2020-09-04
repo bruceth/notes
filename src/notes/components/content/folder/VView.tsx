@@ -1,8 +1,10 @@
-import React from 'react';
-import { View } from "tonva";
+//import React from 'react';
+//import { View } from "tonva";
 import { CFolder } from './CFolder';
+import { VTextBaseView } from '../textBase';
 
-export class VView extends View<CFolder> {
+export class VView extends VTextBaseView<CFolder> {
+	/*
 	render() {
 		return <div className="px-3 my-2">
 			{this.renderParagraphs(this.controller.noteContent)}
@@ -30,4 +32,5 @@ export class VView extends View<CFolder> {
 			return <div key={index} className="pt-1 pb-2">{c}</div>;
 		})}</>;
 	}
+	*/
 }

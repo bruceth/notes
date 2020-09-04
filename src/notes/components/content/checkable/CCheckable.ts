@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+import { observable, computed } from "mobx";
 import { CContent } from "../CContent";
 import { VInput } from "./VInput";
 import { VView } from "./VView";
@@ -23,7 +23,7 @@ export class CCheckable extends CContent {
 	}
 
 	renderInput():JSX.Element {
-		let v = new VInput(this);
+		let v = new VInput(this, this.items);
 		return v.render();
 	}
 
@@ -91,7 +91,7 @@ export class CCheckable extends CContent {
 		this.inputingText = undefined;
 	}
 
-	getItems():{uncheckedItems:ContentCheckItem[], checkedItems: ContentCheckItem[]} {
+	@computed get doneItems():{uncheckedItems:ContentCheckItem[], checkedItems: ContentCheckItem[]} {
 		let uncheckedItems:ContentCheckItem[] = [];
 		let checkedItems:ContentCheckItem[] = [];
 		for (let ci of this.items) {

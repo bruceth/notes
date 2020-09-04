@@ -3,7 +3,7 @@ import { VTextEdit } from "./VTextEdit";
 import { observer } from "mobx-react";
 
 export class VTextAdd extends VTextEdit {
-	header() {return '新建'}
+	header() {return <>新建</>}
 
 	protected async onButtonSave(): Promise<void> {
 		await this.controller.AddNote();

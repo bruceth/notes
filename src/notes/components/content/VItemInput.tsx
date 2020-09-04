@@ -43,9 +43,9 @@ export class VItemInput<T extends Controller> extends View<T> {
 	protected input: HTMLInputElement;
 	protected lostFocusTimeoutHandler: NodeJS.Timeout;
 	protected onKeyDown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
-		if (evt.keyCode === 13) {
+		// if (evt.keyCode === 13) {
 			this.onUpdateAction();
-		}
+		//}
 	}
 	protected onBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
 		this.lostFocusTimeoutHandler = setTimeout(() => {

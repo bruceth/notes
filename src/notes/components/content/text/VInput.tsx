@@ -1,9 +1,11 @@
-import React from 'react';
+//import React from 'react';
 import { CText } from './CText';
-import { observer } from 'mobx-react';
-import { View, t } from 'tonva';
+//import { observer } from 'mobx-react';
+//import { View, t } from 'tonva';
+import { VTextBaseInput } from '../textBase';
 
-export class VInput<T extends CText> extends View<T> {
+export class VInput<T extends CText> extends VTextBaseInput<T> {
+	/*
 	render() {
 		return <div className="py-1 px-1">
 			{React.createElement(observer(() => this.renderContentTextArea()))}
@@ -22,4 +24,5 @@ export class VInput<T extends CText> extends View<T> {
 		this.controller.changedNoteContent = evt.target.value;
 		this.controller.changed = true;
 	}
+	*/
 }

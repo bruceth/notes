@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 export abstract class VBase extends View<CCheckable> {
 	render() {
 		return React.createElement(observer(() => {
-			let {uncheckedItems, checkedItems} = this.controller.getItems();
+			let {uncheckedItems, checkedItems} = this.controller.doneItems;
 			return <div className="mb-2">
 				{uncheckedItems.map((v, index) => this.renderCheckItem(v))}
 				{this.renderCheckedItems(checkedItems)}

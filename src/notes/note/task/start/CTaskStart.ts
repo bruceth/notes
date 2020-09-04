@@ -1,12 +1,12 @@
 import { numberFromId } from "../../../model";
 import { CNoteTask } from "../CNoteTask";
-import { VTaskStart } from "./VTaskStart";
+import { VTaskStart, VTaskStartDir } from "./VTaskStart";
 import { TaskStateResult, EnumTaskState } from "../TaskState";
 
 export class CTaskStart extends CNoteTask {	
 	showViewPage():void {this.openVPage(VTaskStart);};
 	renderDirItem(index: number): JSX.Element {
-		return this.renderViewForTaskDir(VTaskStart);
+		return this.renderView(VTaskStartDir);
 	}
 	get taskStateResult(): TaskStateResult {
 		return {content: '待办', isEnd: false}

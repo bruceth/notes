@@ -1,11 +1,11 @@
 import { CNoteTask } from "../CNoteTask";
-import { VTaskCanceled } from "./VTaskCanceled";
+import { VTaskCanceled, VTaskCanceledDir } from "./VTaskCanceled";
 import { TaskStateResult } from "../TaskState";
 
 export class CTaskCanceled extends CNoteTask {	
 	//protected getTaskView() {return VTaskCanceled };
 	renderDirItem(index: number): JSX.Element {
-		return this.renderViewForTaskDir(VTaskCanceled);
+		return this.renderView(VTaskCanceledDir);
 	}
 	showViewPage():void {this.openVPage(VTaskCanceled);}
 

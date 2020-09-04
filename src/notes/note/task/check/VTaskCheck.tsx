@@ -119,3 +119,9 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 		</Page>;
 	}
 }
+
+export class VTaskCheckDir extends VTaskCheck {
+	render() {
+		return this.renderDirView();
+	}
+}

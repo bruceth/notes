@@ -64,3 +64,9 @@ export class VTaskStart extends VTaskView<CTaskStart> {
 	}
 	*/
 }
+
+export class VTaskStartDir extends VTaskStart {
+	render() {
+		return this.renderDirView();
+	}
+}

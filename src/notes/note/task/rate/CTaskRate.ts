@@ -1,13 +1,13 @@
 import { numberFromId } from "../../../model";
 import { CNoteTask } from "../CNoteTask";
-import { VTaskRate } from "./VRateTask";
+import { VTaskRate, VTaskRateDir } from "./VRateTask";
 import { TaskStateResult, EnumTaskState } from "../TaskState";
 import { TaskCheckItem } from "../model";
 
 export class CTaskRate extends CNoteTask {	
 	showViewPage():void {this.openVPage(VTaskRate) };
 	renderDirItem(index: number): JSX.Element {
-		return this.renderViewForTaskDir(VTaskRate);
+		return this.renderView(VTaskRateDir);
 	}
 
 	get taskStateResult(): TaskStateResult {

@@ -20,3 +20,8 @@ export class VTaskDone extends VTaskView<CTaskDone> {
 	}
 }
 
+export class VTaskDoneDir extends VTaskDone {
+	render() {
+		return this.renderDirView();
+	}
+}

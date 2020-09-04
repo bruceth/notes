@@ -1,11 +1,11 @@
 import { CNoteTask } from "../CNoteTask";
-import { VTaskRated } from "./VTaskRated";
+import { VTaskRated, VTaskRatedDir } from "./VTaskRated";
 import { TaskStateResult } from "../TaskState";
 
 export class CTaskRated extends CNoteTask {	
 	showViewPage():void {this.openVPage(VTaskRated) };
 	renderDirItem(index: number): JSX.Element {
-		return this.renderViewForTaskDir(VTaskRated);
+		return this.renderView(VTaskRatedDir);
 	}
 
 	get taskStateResult(): TaskStateResult {

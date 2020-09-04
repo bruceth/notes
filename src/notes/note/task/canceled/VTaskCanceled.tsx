@@ -7,3 +7,9 @@ export class VTaskCanceled extends VTaskView<CTaskCanceled> {
 		return this.renderStateSpan('已取消', true);
 	}
 }
+
+export class VTaskCanceledDir extends VTaskCanceled {
+	render() {
+		return this.renderDirView();
+	}
+}

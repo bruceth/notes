@@ -122,3 +122,9 @@ export class VTaskRate extends VTaskView<CTaskRate> {
 		this.showActionEndPage({ content });
 	}
 }
+
+export class VTaskRateDir extends VTaskRate {
+	render() {
+		return this.renderDirView();
+	}
+}

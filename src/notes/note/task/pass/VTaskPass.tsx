@@ -16,3 +16,8 @@ export class VTaskPass extends VTaskView<CTaskPass> {
 	}
 }
 
+export class VTaskPassDir extends VTaskPass {
+	render() {
+		return this.renderDirView();
+	}
+}

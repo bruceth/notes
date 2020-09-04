@@ -32,7 +32,7 @@ PAGE (
 	assigned CHAR(100),
 	from ID,
 	fromAssigned CHAR(100),
-	state TEXT,
+	state TINYINT,
 	flowContent TEXT,
 	groupFolder ID,
 	unread TINYINT,

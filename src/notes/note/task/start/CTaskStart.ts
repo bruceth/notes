@@ -26,7 +26,7 @@ export class CTaskStart extends CNoteTask {
 		}
 
 		await this.uqs.notes.DoneTask.submit(data);
-		this.noteItem.state = Number(EnumTaskState.Done);
+		this.noteItem.state = EnumTaskState.Done;
 		this.noteItem.$update = new Date();
 	}
 }

@@ -15,7 +15,7 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		if (!this.noteItem)
 			return undefined;
 		let ret = this.noteItem.groupFolder;
-		if (!ret && this.noteItem.type === Number(EnumNoteType.groupFolder)) {
+		if (!ret && this.noteItem.type === EnumNoteType.groupFolder) {
 			ret = this.noteItem.note;
 		}
 		return ret;

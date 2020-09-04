@@ -10,8 +10,9 @@ import { CTaskFail } from './fail';
 import { CTaskRated } from './rated';
 
 export function createCNoteTask(cNotes: CNotes, noteItem: NoteItem): CNoteTask {
-	switch (noteItem.state as EnumTaskState) {
+	switch (noteItem.state) {
 		default:
+			throw Error("unknown task state");
 		case EnumTaskState.Start:
 			return new CTaskStart(cNotes);
 		case EnumTaskState.Done:

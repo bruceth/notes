@@ -43,7 +43,8 @@ export class CNoteText extends CNote {
 	get type():EnumNoteType { return this.ctype; }
 
 	renderIcon(): JSX.Element {
-		return renderIcon(this.noteIcon, this.noteItem.toCount>0? 'text-success' : 'text-info');
+		//return renderIcon(this.noteIcon, this.noteItem.toCount>0? 'text-success' : 'text-info');
+		return renderIcon(this.noteItem.toCount>0? 'files-o': 'file-o', 'text-info');
 	}
 
 	protected endContentInput():any {

@@ -29,7 +29,10 @@ export class CTaskCheck extends CNoteTask {
 		}
 
 		await this.uqs.notes.CheckTask.submit(data);
-		this.noteItem.state = Number(pass ? EnumTaskState.Pass : EnumTaskState.Fail);
+		this.noteItem.state = pass ? EnumTaskState.Pass : EnumTaskState.Fail;
+		this.noteItem.flowContent = content;
+		this.noteItem.$update = new Date();
+		this.owner.currentFold.taskUpdateState(this.noteItem);
 	}
 
 	async setCheckInfo(item: TaskCheckItem, v:string) {

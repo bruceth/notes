@@ -32,8 +32,12 @@ export class CNotes extends CUqBase {
 	}
 
 	noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteBase => {
-		let {type, content} = item;
-		if (content) {
+		let {type, content, flowContent} = item;
+		if (flowContent) {
+			let obj = JSON.parse(flowContent);
+			item.obj = obj;
+		}
+		else if (content) {
 			if (content[0] === '{') {
 				let obj = JSON.parse(content);
 				if (type === EnumNoteType.text) {

@@ -31,6 +31,9 @@ export class CTaskRate extends CNoteTask {
 
 		await this.uqs.notes.RateTask.submit(data);
 		this.noteItem.state = EnumTaskState.Rated;
+		this.noteItem.flowContent = content;
+		this.noteItem.$update = new Date();
+		this.owner.currentFold.taskUpdateState(this.noteItem);
 	}
 
 	async setRateInfo(item: TaskCheckItem, v:string) {

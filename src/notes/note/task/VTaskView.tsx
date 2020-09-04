@@ -30,16 +30,23 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		}));
 	}
 
+	protected renderTop():JSX.Element {
+		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
+			{this.renderIcon()}
+			<span className="mr-4">{this.renderEditTime()}</span>
+			{this.renderFrom()}
+		</div>;
+	}
+
 	protected renderContent() {
 		return this.controller.cContent.renderViewContentA(this.allowCheck);
-		//return this.renderCheckableContentBase(this.allowCheck);
 	}
 
 	renderDirView() {
 		return React.createElement(observer(() => {
 			return <div className="d-block bg-white">
 				<div className="bg-white">
-			{this.renderTop()}
+			{this.renderDirTop()}
 			<div className="py-2">
 				{this.renderCaption()}
 				{this.controller.cContent.renderViewContentA(false)}
@@ -48,6 +55,14 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 				{this.renderDirBottom()}
 			</div>;
 		}));
+	}
+
+	protected renderDirTop():JSX.Element {
+		return <div className="d-flex px-3 py-2 align-items-center border-top">
+			{this.renderIcon()}
+			{this.renderFrom()}
+			<div className="ml-auto">{this.renderEditTime()}</div>
+		</div>;
 	}
 
 	protected renderDirBottom():JSX.Element {

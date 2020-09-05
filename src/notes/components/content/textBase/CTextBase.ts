@@ -24,5 +24,7 @@ export abstract class CTextBase extends CContent {
 
 	protected buildObj(obj:any) {
 		obj.content = this.changedNoteContent || this.noteContent;
+		delete obj.itemKey;
+		delete obj.items;
 	}
 }

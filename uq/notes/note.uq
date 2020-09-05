@@ -233,12 +233,13 @@ RETURNS ret (
 
 ACTION SetNote (
 	note ID,
+	type SMALLINT,
 	caption CHAR(200),
 	content TEXT,
 ) {
 	IF exists(SELECT id FROM Note WHERE id=note and owner=$user) {
 		VAR noteId ID, folderId ID, seconds INT;
-		TUID Note ID note SET caption=caption, content=content;
+		TUID Note ID note SET caption=caption, content=content, type=type;
 		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
 		Proc NotifyNote(note, seconds, 0);
 	}

@@ -5,7 +5,7 @@ import { VTaskParams } from "./VTaskParams";
 import { TaskStateResult } from "./TaskState"
 import { AssignTaskParam } from "./model";
 import { CNote } from "../CNote";
-import { CTaskItem } from "notes/components/content/taskitem/CTaskItem";
+import { CTaskItem } from "../../components/content/taskitem/CTaskItem";
 
 export abstract class CNoteTask extends CNote {
 	get type():EnumNoteType { return EnumNoteType.task }

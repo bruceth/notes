@@ -49,10 +49,12 @@ export class CNoteAssign extends CNote {
 	}
 
 	showEditPage() {
+		this.cContent.startInput();
 		this.openVPage(VAssignEdit);
 	}
 
 	showAddPage() {
+		this.cContent.startInput();
 		this.openVPage(VAssignAdd);
 	}
 

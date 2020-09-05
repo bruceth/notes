@@ -3,26 +3,22 @@ import { observer } from 'mobx-react';
 import { DropdownActions, DropdownAction } from 'tonva';
 import { VNoteBaseEdit } from '../../noteBase';
 import { CNoteText } from "./CNoteText";
-//import { VTextHeader } from './VTextHeader';
+import { VTextHeader } from './VTextHeader';
 
 export class VTextEdit extends VNoteBaseEdit<CNoteText> {
-	/*
 	header() {
 		return this.renderVm(VTextHeader);
 	}
-	*/
 
 	protected renderContent():JSX.Element {
-		return this.controller.cContent.renderInput();
-		/*
+		//return this.controller.cContent.renderInput();
 		return React.createElement(observer(() =>{
-			let {noteType, cContent} = this.controller;
+			let {cType, cContent} = this.controller;
 			return <>
-				<span className="d-none">{noteType}</span>
+				<span className="d-none">{cType}</span>
 				{cContent.renderInput()}
 			</>;
 		}));
-		*/
 	}
 
 	protected renderEditBottom():JSX.Element {
@@ -43,35 +39,30 @@ export class VTextEdit extends VNoteBaseEdit<CNoteText> {
 		return this.renderDeleteButton();
 	}
 
+	private dropdownActions: {[type: string]: DropdownAction} = {
+		text: {
+			icon:'file-o', 
+			caption:this.t('noteText'), 
+			action: this.controller.changeToText,
+		},
+		list: {
+			icon:'list', 
+			caption:this.t('noteList'), 
+			action: this.controller.changeToList,
+		},
+		checkable: {
+			icon:'check-square-o', 
+			caption:this.t('noteCheckable'), 
+			action: this.controller.changeToCheckable,
+		},
+	};
+
 	protected renderButtonLeft():JSX.Element { 
 		return <DropdownActions
-			actions={this.dropdownActions} 
+			actions={this.controller.dropdowns.map(v => this.dropdownActions[v])} 
 			icon="th-list" 
 			itemIconClass="text-info" 
 			isRight={false}
 			className="cursor-pointer btn btn-lg p-1 mr-1"/>;
 	}
-
-	protected dropdownActions: DropdownAction[] = [
-		{
-			icon:'file-o', 
-			caption:this.t('noteText'), 
-			action: () => this.controller.changeToText(), // this.actionSwitchType(EnumContentType.text)
-		},
-		{
-			icon:'list', 
-			caption:this.t('noteList'), 
-			action: () => this.controller.changeToList(), // this.actionSwitchType(EnumContentType.list)
-		},
-		{
-			icon:'check-square-o', 
-			caption:this.t('noteCheckable'), 
-			action: () => this.controller.changeToCheckable(), // this.actionSwitchType(EnumContentType.checkable)
-		},
-	];
-/*
-	private actionSwitchType(type: EnumContentType) {
-		this.controller.changeContentType(type);
-	}
-*/
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { observable } from 'mobx';
+import { observable, toJS } from 'mobx';
+import { FA } from 'tonva';
 
 interface Focusable<T> {
 	item: T;
@@ -10,91 +11,142 @@ interface Focusable<T> {
 export interface ListInputProps<T> {
 	items: T[];
 	uniqueKey: () => number;
-	onInputChange: (text:string) => void;
-	onAddNewItem: () => void;
-	onItemChecked: (item:T) => void;
+	onChanged: () => void;
 }
 
 export abstract class ListInputBase<T> {
-	private props: ListInputProps<T>;
+	protected props: ListInputProps<T>;
 	@observable private focusables: Focusable<T>[];
 	private currentFocusable: Focusable<T>;
-	private currentItemIndex: number = -1;
 	private inputingText: string;
+	private focuseTimeout: any;
 
 	constructor(props: ListInputProps<T>) {
 		this.props = props;
 		let {items} = props;
-		this.focusables = items.map(item => ({item, focused: false}));
+		this.focusables = items? items.map(item => ({
+			item: toJS(item), 
+			focused: false
+		})) : [];
 	}
 
-	protected abstract getItemKey(item:T): string|number;
+	protected abstract getItemKey(item:T): number;
 	protected abstract getItemText(item:T): string;
 	protected abstract setItemText(item:T, text:string): void;
 	protected abstract newItem(key:number, text:string): T;
 
+	getList():T[] { return this.focusables.map(v => toJS(v.item))}
+
 	render(): JSX.Element {
-		return <div>
+		return React.createElement(observer(() => <div>
 			{this.focusables.map(this.renderItem)}
-			{this.renderAddNew()}
-		</div>;
+			{this.renderNewInput()}
+		</div>));
 	}
 
 	protected renderItem = (focusable: Focusable<T>):JSX.Element => {
-		let {focused, item} = focusable;
-		return focused === true? this.renderInputItem(item) : this.renderTextItem(focusable);
-	}
-
-	protected renderAddNew():JSX.Element {
-		return <div className="d-flex mx-3 my-2 align-items-center">
-			<span className="mr-2">new:</span> {this.renderInput()}
-		</div>;
+		let {focused} = focusable;
+		return focused === true? this.renderInputItem(focusable) : this.renderTextItem(focusable);
 	}
 
 	protected renderTextItem(focusable:Focusable<T>):JSX.Element {
 		let {item} = focusable;
 		let key = this.getItemKey(item);
 		let text = this.getItemText(item);
-		return <div key={key} className="px-3 py-2" onClick={() => this.onItemClick(focusable)}>{text}</div>
+		return <div key={key} className="d-flex mr-3 align-items-stretch">
+			{this.renderItemHeader(item)}
+			<div className="flex-fill py-2" onMouseDown={() => this.onItemClick(focusable)}>{text}</div>
+		</div>;
 	}
 
-	private onItemClick(focusable: Focusable<T>) {
+	protected renderItemHeader(item:T):JSX.Element {
+		return <span>item</span>;
+	}
+
+	protected onItemClick(focusable: Focusable<T>) {
 		if (this.currentFocusable) {
 			this.currentFocusable.focused = false;
 		}
 		this.currentFocusable = focusable;
 		focusable.focused = true;
+		if (this.focuseTimeout) {
+			clearTimeout(this.focuseTimeout);
+			this.focuseTimeout = undefined;
+		}
+		this.focuseTimeout = setTimeout(() => {
+			this.input?.focus();
+			console.log('this.input ' + (this.input? 'null' : 'focus') );
+		}, 10);
 	}
 
-	protected renderInputItem(item: T):JSX.Element {
+	protected renderInputItem(focusable: Focusable<T>):JSX.Element {
+		let {item} = focusable;
 		let key = this.getItemKey(item);
-		return <div key={key} className="d-flex mx-3 my-2 align-items-center">
-			<span className="mr-2">item:</span> {this.renderInput(item)}
+		return <div key={key} className="d-flex mr-3 align-items-stretch">
+			{this.renderItemHeader(item)}
+			{this.renderInput(focusable)}
 		</div>;
 	}
 
-	protected renderInput(item?:T):JSX.Element {
-		return <input className="flex-fill form-control border-0"
-			type="text"
-			defaultValue={this.getItemText(this.currentFocusable?.item)}
+	protected renderInput(focusable?: Focusable<T>):JSX.Element {
+		return <input type="text" className="flex-fill form-control"
+			defaultValue={this.getItemText(focusable?.item)}
 			ref={this.inputRef}
 			onBlur={this.onBlur}
-			onKeyDown={this.onKeyDown} onChange={this.onChange} />;
+			onKeyDown={this.onKeyDown}
+			onChange={this.onChange} />;
 	}
+
+	protected renderNewInput():JSX.Element {
+		return <div className="d-flex mr-3 my-2 align-items-center">
+			<div className="w-3c w-min-3c w-max-3c text-center">
+				<FA name="plus" className="text-info mt-1" fixWidth={true} /> 
+			</div>
+			<input className="flex-fill form-control" 
+				type="text" 
+				placeholder="新增" 
+				onBlur={this.onBlurAddNew}
+				onChange={this.onChange}
+				onKeyDown={this.onAddNewEnter} />
+		</div>;
+	}
+
+	private onAddNewEnter = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+		if (evt.keyCode !== 13) return;
+		evt.currentTarget.value = '';
+		this.addNewItem();
+	}
+
+	private addNewItem() {
+		if (!this.inputingText) return;
+		if (this.inputingText.trim().length === 0) return;
+		this.focusables.push(
+			{
+				item: this.newItem(this.props.uniqueKey(), this.inputingText.trimRight()),
+				focused: false
+			}
+		);
+		this.inputingText = undefined;
+	}
+
 	protected input: HTMLInputElement;
 	private onKeyDown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
-		if (evt.keyCode === 13) {
-			this.onAddNewItem();
-		}
+		if (evt.keyCode !== 13) return;
+		this.currentFocusable.focused = false;
+		evt.currentTarget.value = '';
+		this.inputingText = undefined;
+		this.currentFocusable = undefined;
 	}
 
 	private onBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
+		this.currentFocusable.focused = false;
+		this.currentFocusable = undefined;
 	}
 	private onChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
 		let {value} = evt.target;
-		//this.props.onInputChange(value);
 		this.inputingText = value;
 		if (this.currentFocusable) this.setItemText(this.currentFocusable.item, value);
+		this.props.onChanged();
 	}
 	private inputRef = (input: any) => {
 		if (!input) return;
@@ -102,17 +154,8 @@ export abstract class ListInputBase<T> {
 		this.input = input;
 		//this.input.focus();
 	}
-
-	private onAddNewItem() {
-		//this.props.items.push(this.newItem(this.props.uniqueKey(), this.inputingText));
-		this.focusables.push(
-			{
-				item: this.newItem(this.props.uniqueKey(), this.inputingText),
-				focused: false
-			}
-		);
-		this.inputingText = undefined;
-		this.input.value = '';
-		this.currentFocusable = undefined;
+	private onBlurAddNew = (evt: React.FocusEvent<HTMLInputElement>) => {
+		evt.currentTarget.value = '';
+		this.addNewItem();
 	}
 }

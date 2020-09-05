@@ -1,7 +1,8 @@
 import { CContent } from "../CContent";
-import { VInput } from "./VInput";
+//import { VInput } from "./VInput";
 import { VView } from "./VView";
 import { observable } from "mobx";
+import { ListInput } from "./ListInput";
 
 export interface ListItem {
 	key: number;
@@ -9,7 +10,7 @@ export interface ListItem {
 }
 
 export class CList extends CContent {
-	private inputingText: string;
+	private listInput: ListInput;
 	@observable items: ListItem[] = [];
 	itemKey: number = 1;
 
@@ -18,20 +19,31 @@ export class CList extends CContent {
 		this.items = obj.items;
 	}
 
+	startInput(): void {
+		super.startInput();
+		this.listInput = new ListInput({
+			items: this.items,
+			uniqueKey: () => this.itemKey++,
+			onChanged: () => this.changed = true,					
+		});
+	}
+
 	renderInput():JSX.Element {
-		let v = new VInput(this);
-		return v.render();
+		return this.listInput.render();
+		//let v = new VInput(this);
+		//return v.render();
 	}
 	renderViewContent():JSX.Element {return this.renderView(VView)}
 
 	endInput(obj:any): void {
-		this.addNewItem();
+		this.items = this.listInput.getList();
 		this.buildObj(obj);
 	}
 
 	protected buildObj(obj:any): void {
 		obj.itemKey = this.itemKey;
 		obj.items = this.items;
+		delete obj.content;
 	}
 
 	toString():string { 
@@ -52,7 +64,7 @@ export class CList extends CContent {
 			}));
 		}
 	}
-
+/*
 	onItemChanged = (key: number, value: string) => {
 		let item = this.items.find(v => v.key === key);
 		if (item) {
@@ -75,4 +87,5 @@ export class CList extends CContent {
 		this.changed = true;
 		this.inputingText = undefined;
 	}
+*/
 }

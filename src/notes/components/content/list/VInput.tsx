@@ -3,7 +3,8 @@ import { View, FA } from "tonva";
 import { CList } from './CList';
 import { ItemInputProps, VItemInput } from '../VItemInput';
 import { observer } from 'mobx-react';
-
+import { ListInput } from './ListInput';
+/*
 export class VInput extends View<CList> {
 	render() {
 		return <div className="py-1 px-1">
@@ -13,7 +14,14 @@ export class VInput extends View<CList> {
 
 	private renderContentEditList() {
 		let items = this.controller.items;
+		let listInput = new ListInput({
+			items: items,
+			uniqueKey: () => this.controller.itemKey++,
+			onChanged: () => {},
+		});
+		
 		return <>
+			{listInput.render()}
 			<ul className="note-content-list px-3">
 			{
 				items.map((v, index) => {
@@ -50,3 +58,4 @@ export class VInput extends View<CList> {
 		}
 	}
 }
+*/

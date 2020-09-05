@@ -1,23 +1,21 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import { View, FA } from "tonva";
 import { CCheckable, ContentCheckItem } from './CCheckable';
 import { ItemInputProps, VItemInput } from '../VItemInput';
-import { observer } from 'mobx-react';
 import { CheckableListInput } from './CheckableListInput';
-import { observable } from 'mobx';
 
 export class VInput extends View<CCheckable> {
 	private items: ContentCheckItem[];
-	@observable private uncheckedItems: ContentCheckItem[] = [];
-	@observable private checkedItems: ContentCheckItem[] = [];
-	private inputingText: string;
+	//@observable private uncheckedItems: ContentCheckItem[] = [];
+	//@observable private checkedItems: ContentCheckItem[] = [];
 
 	constructor(c: CCheckable, items: ContentCheckItem[]) {
 		super(c);
 		this.items = items;
-		let {uncheckedItems, checkedItems} = this.controller.doneItems;
-		this.uncheckedItems = uncheckedItems;
-		this.checkedItems = checkedItems;
+		//let {uncheckedItems, checkedItems} = this.controller.doneItems;
+		//this.uncheckedItems = uncheckedItems;
+		//this.checkedItems = checkedItems;
 	}
 
 	render() {
@@ -26,76 +24,64 @@ export class VInput extends View<CCheckable> {
 		</div>;
 	}
 
-	private onInputChange = (text:string) => {
-		this.inputingText = text;
-	}
-	private onAddNewItem = () => {
-		if (this.inputingText === undefined) return;
-		let text = this.inputingText.trimRight();
-		if (text.length === 0) return;
-		this.uncheckedItems.push({key: this.controller.itemKey++, text, checked: false});
-
-	}
-	private onItemChecked = (item:ContentCheckItem) => {
-
-	}
-
 	private renderContentCheckList = () => {
 		let listInput = new CheckableListInput({
-			items: this.uncheckedItems,
+			items: this.items,
 			uniqueKey: () => this.controller.itemKey++,
-			onInputChange: this.onInputChange,
-			onAddNewItem: this.onAddNewItem,
-			onItemChecked: this.onItemChecked,
+			onChanged: () => this.controller.changed = true,
 		});
-		let {uncheckedItems, checkedItems} = this.controller.doneItems;
 
+		//let {uncheckedItems, checkedItems} = this.controller.doneItems;
 		return <div className="">
 			{listInput.render()}
-			{
-				uncheckedItems.map((v, index) => {
-					let {key, text, checked} = v;
-					let onItemChange = async (v:string) => {
-						//this.onItemChanged(key, v);
-						this.controller.onItemChanged(key, v);
-					}
-					let param:ItemInputProps = {
-						onChange: onItemChange,
-						content: text,
-					}
-					return <div key={key} className="d-flex mx-3 my-2 align-items-center form-check">
-						<input className="form-check-input mr-3 mt-0" type="checkbox"
-							defaultChecked={checked}
-							onChange={this.onCheckChange}
-							data-key={key} />
-						{this.renderVm(VItemInput, param)}
-					</div>
-				})
-			}
-			<div className="d-flex mx-3 my-2 align-items-center">
-				<FA name="plus" className="text-info mr-2" />
-				<input className="flex-fill form-control" 
-					type="text" 
-					placeholder="新增" 
-					onChange={(e) => this.controller.onItemChanged(0, e.target.value)}
-					onKeyDown={this.onAddEnter} />
-			</div>
-			{
-				checkedItems.length > 0 && <div className="border-top mt-2 py-2">
-					<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
-					{checkedItems.map((v, index) => {
-						let {key, text, checked} = v;
-						return <div key={key} className="d-flex mx-3 my-2 align-items-center form-check">
-							<input className="form-check-input mr-3 mt-0" type="checkbox" 
-								defaultChecked={checked} 
-								onChange={this.onCheckChange} 
-								data-key={key} />
-							<div className="text-muted form-control-plaintext ml-3"><del>{text}</del></div>
-						</div>
-					})}
-				</div>
-			}
 		</div>;
+	}
+
+	/*
+	{
+		uncheckedItems.map((v, index) => {
+			let {key, text, checked} = v;
+			let onItemChange = async (v:string) => {
+				//this.onItemChanged(key, v);
+				this.controller.onItemChanged(key, v);
+			}
+			let param:ItemInputProps = {
+				onChange: onItemChange,
+				content: text,
+			}
+			return <div key={key} className="d-flex mx-3 my-2 align-items-center form-check">
+				<input className="form-check-input mr-3 mt-0" type="checkbox"
+					defaultChecked={checked}
+					onChange={this.onCheckChange}
+					data-key={key} />
+				{this.renderVm(VItemInput, param)}
+			</div>
+		})
+	}
+
+	/*
+	<div className="d-flex mx-3 my-2 align-items-center">
+		<FA name="plus" className="text-info mr-2" />
+		<input className="flex-fill form-control" 
+			type="text" 
+			placeholder="新增" 
+			onChange={(e) => this.controller.onItemChanged(0, e.target.value)}
+			onKeyDown={this.onAddEnter} />
+	</div>
+	{
+		checkedItems.length > 0 && <div className="border-top mt-2 py-2">
+			<div className="px-3 pt-2 small text-muted">{checkedItems.length}项完成</div>
+			{checkedItems.map((v, index) => {
+				let {key, text, checked} = v;
+				return <div key={key} className="d-flex mx-3 my-2 align-items-center form-check">
+					<input className="form-check-input mr-3 mt-0" type="checkbox" 
+						defaultChecked={checked} 
+						onChange={this.onCheckChange} 
+						data-key={key} />
+					<div className="text-muted form-control-plaintext ml-3"><del>{text}</del></div>
+				</div>
+			})}
+		</div>
 	}
 
 	private onAddEnter = (evt:React.KeyboardEvent<HTMLInputElement>) => {
@@ -114,4 +100,5 @@ export class VInput extends View<CCheckable> {
 		if (item) item.checked = t.checked;
 		this.controller.changed = true;
 	}
+	*/
 }

@@ -2,15 +2,13 @@ import React from 'react';
 import { VNoteBaseView } from '../../noteBase';
 import { CNoteText } from './CNoteText';
 import { VTextRelatives } from './VTextRelatives';
-//import { VTextHeader } from './VTextHeader';
-import { observer } from 'mobx-react';
+import { VTextHeader } from './VTextHeader';
 
 export class VTextView extends VNoteBaseView<CNoteText> {
-	/*
 	header() {
 		return this.renderVm(VTextHeader);
 	}
-*/
+
 	protected renderRelatives() {
 		return this.renderVm(VTextRelatives);
 	}

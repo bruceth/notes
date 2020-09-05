@@ -5,15 +5,23 @@ export abstract class CContent extends Controller {
 	@observable changed: boolean = false;
 	protected async internalStart() {}
 
-	//abstract get contentType(): EnumContentType;
 	onContentChanged: () => Promise<void>;
 	toString(): string {return};
-	initFromString(v:string):void {};
+	protected initFromString(v:string):void {};
 	
+	startInput(): void {
+		this.changed = false;
+	}
 	endInput(obj:any): void {this.buildObj(obj)}
 	protected abstract buildObj(obj:any): void;
 
 	abstract renderInput(): JSX.Element;
 	abstract renderViewContent(): JSX.Element;
 	renderDirContent(): JSX.Element {return this.renderViewContent();}
+
+	reset(content:string) {
+		this.initFromString(content);
+		this.startInput();
+		this.changed = true;
+	}
 }

@@ -9,23 +9,30 @@ import { CContent, CText, CCheckable, CList } from '../../components';
 import { CNote } from '../CNote';
 
 export class CNoteText extends CNote {
+	@observable header: string;
 	@observable cContent: CContent;
-	protected ctype: EnumNoteType;
+	@observable cType: EnumNoteType;
+	@observable dropdowns: string[];
 
 	createTextContent(): void {
+		this.header = this.t('noteText');
 		this.cContent = new CText(this.res);
-		this.ctype = EnumNoteType.text;
+		this.cType = EnumNoteType.text;
+		this.dropdowns = ['list', 'checkable'];
 	}
 	
 	createListContent(): void {
+		this.header = this.t('noteList');
 		this.cContent = new CList(this.res);
-		this.ctype = EnumNoteType.textList;
+		this.cType = EnumNoteType.textList;
+		this.dropdowns = ['text', 'checkable'];
 	}
 
 	createCheckableContent(): void {
+		this.header = this.t('noteCheckable');
 		this.cContent = new CCheckable(this.res);
-		this.ctype = EnumNoteType.textCheckable;
-
+		this.cType = EnumNoteType.textCheckable;
+		this.dropdowns = ['text', 'list'];
 	}
 	
 	init(param: NoteItem): void {
@@ -40,7 +47,7 @@ export class CNoteText extends CNote {
 	}
 
 	@computed get isContentChanged():boolean {return this.cContent.changed}
-	get type():EnumNoteType { return this.ctype; }
+	get type():EnumNoteType { return this.cType; }
 
 	renderIcon(): JSX.Element {
 		//return renderIcon(this.noteIcon, this.noteItem.toCount>0? 'text-success' : 'text-info');
@@ -62,51 +69,45 @@ export class CNoteText extends CNote {
 	}
 
 	showEditPage() {
+		this.cContent.startInput();
 		this.openVPage(VTextEdit);
 	}
 
 	showAddPage() {
+		this.cContent.startInput();
 		this.openVPage(VTextAdd);
 	}
 
 	changeToText = () => {
-		if (this.ctype === EnumNoteType.text)
+		if (this.cType === EnumNoteType.text)
 			return;
 		let content = this.cContent.toString();
 		this.createTextContent();
-		this.resetCCContent(content);
-		this.ctype = EnumNoteType.text;
+		this.cContent.reset(content);
 		if (this.noteItem) {
 			this.noteItem.type = EnumNoteType.text;
 		}
 	}
 
 	changeToList = () => {
-		if (this.ctype === EnumNoteType.textList)
+		if (this.cType === EnumNoteType.textList)
 			return;
 		let content = this.cContent.toString();
 		this.createListContent();
-		this.resetCCContent(content);
-		this.ctype = EnumNoteType.textList;
+		this.cContent.reset(content);
 		if (this.noteItem) {
 			this.noteItem.type = EnumNoteType.textList;
 		}
 	}
 
 	changeToCheckable = () => {
-		if (this.ctype === EnumNoteType.textCheckable)
+		if (this.cType === EnumNoteType.textCheckable)
 			return;
 		let content = this.cContent.toString();
 		this.createCheckableContent();
-		this.resetCCContent(content);
-		this.ctype = EnumNoteType.textCheckable;
+		this.cContent.reset(content);
 		if (this.noteItem) {
 			this.noteItem.type = EnumNoteType.textCheckable;
 		}
-	}
-
-	private resetCCContent(content: string) {
-		this.cContent.initFromString(content);
-		this.cContent.changed = true;
 	}
 }

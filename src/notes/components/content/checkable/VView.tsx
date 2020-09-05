@@ -14,12 +14,17 @@ export class VView extends VBase {
 		else {
 			content = text;
 		}
-		return <div key={key} className="d-flex mx-3 align-items-center form-check">
+		return <label key={key} className="d-flex mx-3 align-items-center form-check mb-0">
 			<input className="form-check-input mr-3 mt-0" type="checkbox"
 				defaultChecked={checked}
-				data-key={key} />
+				data-key={key}
+				onChange={e => this.onCheckChange(v, e.currentTarget.checked)} />
 			<div className={'form-control-plaintext ' + cn}>{content}</div>
-		</div>;
+		</label>;
+	}
+
+	private onCheckChange(item:ContentCheckItem, checked:boolean) {
+		item.checked = checked;
 	}
 
 	protected renderCheckedItems(checkedItems:ContentCheckItem[]):JSX.Element {

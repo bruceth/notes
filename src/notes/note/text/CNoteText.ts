@@ -10,9 +10,9 @@ import { CNote } from '../CNote';
 
 export class CNoteText extends CNote {
 	@observable header: string;
-	@observable cContent: CContent;
 	@observable cType: EnumNoteType;
 	@observable dropdowns: string[];
+	cContent: CContent;
 
 	createTextContent(): void {
 		this.header = this.t('noteText');

@@ -4,10 +4,10 @@ import { TaskCheckItemBase } from './model';
 import { VNoteBaseView } from '../../noteBase';
 import { EnumTaskState } from "./TaskState"
 import { CNoteTask } from "./CNoteTask";
-import { VEdit } from './VEdit';
 import { VTaskRelatives } from './VTaskRelatives';
+import { none } from 'tool';
 
-const none = <small className="text-muted">[无]</small>;
+//const none = <small className="text-muted">[无]</small>;
 
 export interface TaskParam {
 	label: string;
@@ -18,7 +18,6 @@ export interface TaskParam {
 export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
 	header() { return this.t('task') }
-	protected get allowCheck() { return false; }
 	content() {
 		return React.createElement(observer(() => {
 			return <div className="my-2 mx-1 border rounded">
@@ -39,7 +38,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	}
 
 	protected renderContent() {
-		return this.controller.cContent.renderViewContentA(this.allowCheck);
+		return this.controller.cContent.renderViewContent();
 	}
 
 	renderDirView() {
@@ -49,7 +48,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 			{this.renderDirTop()}
 			<div className="py-2">
 				{this.renderCaption()}
-				{this.controller.cContent.renderViewContentA(false)}
+				{this.controller.cContent.renderDirContent()}
 			</div>
 		</div>
 				{this.renderDirBottom()}
@@ -140,10 +139,11 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	protected renderState(): JSX.Element {
 		return <>state</>;
 	}
-
+	/*
 	protected onEdit() {
 		this.openVPage(VEdit as any);
 	}
+	*/
 
 	protected renderCheckItem(v:TaskCheckItemBase, checkable:boolean) {
 		let {key, text, checked} = v;

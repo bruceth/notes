@@ -3,8 +3,6 @@ import { VTaskView, TaskParam } from '../VTaskView';
 import { CTaskStart } from './CTaskStart';
 
 export class VTaskStart extends VTaskView<CTaskStart> {
-	protected get allowCheck() { return this.isMe(this.controller.noteItem.owner); }
-
 	protected renderState(): JSX.Element {
 		return this.renderStateSpan('待办');
 	}

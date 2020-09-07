@@ -57,7 +57,7 @@ export class CCheckable extends CContent {
 		return this.items?.map(v => v.text).join('\n')
 	}
 
-	initFromString(value: string) {
+	fromString(value: string) {
 		if (value) {
 			this.items = [];
 			this.itemKey = 1;

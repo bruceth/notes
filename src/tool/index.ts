@@ -1,1 +1,2 @@
-export * from './isempty';
+export { none } from './none';
+

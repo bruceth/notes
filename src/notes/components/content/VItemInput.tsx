@@ -2,7 +2,6 @@ import React from "react";
 import { Controller, View } from "tonva";
 import { observable, computed } from "mobx";
 import { observer } from "mobx-react";
-import { isNullOrUndefinedOrEmpty } from "tool";
 
 export interface ItemInputProps {
 	onChange: (inputContent: string) => Promise<void>;
@@ -15,7 +14,7 @@ export class VItemInput<T extends Controller> extends View<T> {
 	@observable protected inputContent: string;
 	@computed get content() {
 		let content: any = this.inputContent;
-		if (isNullOrUndefinedOrEmpty(content) && this.props.placeholder) {
+		if (!content && this.props.placeholder) {
 			content = <small className="text-muted">{this.props.placeholder}</small>;
 		}
 

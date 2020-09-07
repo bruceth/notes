@@ -2,11 +2,11 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { VNoteBase } from "./VNoteBase";
 import { CNoteBase } from "./CNoteBase";
-import { computed } from 'mobx';
+//import { computed } from 'mobx';
 import { ConfirmOptions, FA } from 'tonva';
 
 export class VNoteBaseForm<T extends CNoteBase> extends VNoteBase<T> {
-	@computed protected get changed(): boolean {return this.controller.captionChanged};
+	//@computed protected get changed(): boolean {return this.controller.captionChanged};
 
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return this.t('notes')};

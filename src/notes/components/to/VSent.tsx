@@ -1,8 +1,8 @@
 import React from 'react';
-import { VBasePage } from './VBasePage';
-import { CNotes } from '../CNotes';
+import { VBasePage } from '../../views/VBasePage';
+import { CTo } from './CTo';
 
-export class VSent extends VBasePage<CNotes> {
+export class VSent extends VBasePage<CTo> {
 	protected get back(): 'close' | 'back' | 'none' {return 'close'}
 	header() {return '已发送'}
 	content() {

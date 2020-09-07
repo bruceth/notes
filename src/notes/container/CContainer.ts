@@ -12,6 +12,7 @@ export abstract class CContainer extends CNoteBase {
 	@observable cContent: CContent;
 	folderId: number;
 	notesPager: QueryPager<CNoteBase>;
+	currentNoteItem: NoteItem;
 
 	init(param: NoteItem):void {
 		super.init(param);
@@ -61,7 +62,7 @@ export abstract class CContainer extends CNoteBase {
 		}
 	}
 
-	async getNote(id: number): Promise<NoteModel> {
+	private async getNote(id: number): Promise<NoteModel> {
 		let folderId = this.owner.currentFold?.folderId;
 		let ret = await this.uqs.notes.GetNote.query({folder: folderId, note: id});
 		let noteModel:NoteModel = ret.ret[0];
@@ -73,7 +74,15 @@ export abstract class CContainer extends CNoteBase {
 		return noteModel;
 	}
 
-	// return the folder noteItem
+	showNoteItem = async (item: CNoteBase) => {
+		let noteItem = this.currentNoteItem = item.noteItem;
+		let noteModel = await this.getNote(noteItem.note);
+		noteItem.unread = 0;
+		noteItem.commentUnread = 0;
+		item.noteModel = noteModel;
+		return item.showViewPage();
+	}
+
 	itemChanged(noteItem: NoteItem):NoteItem {
 		let {items} = this.notesPager;
 		let index = items.findIndex(v => v.noteItem === noteItem);

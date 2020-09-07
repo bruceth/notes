@@ -1,5 +1,4 @@
 import React from 'react';
-import { VAssignEdit } from './VAssignEdit';
 import { VNoteBaseView } from '../../noteBase';
 import { CNoteAssign } from './CNoteAssign';
 import { VAssignRelatives } from './VAssignRelatives';
@@ -14,10 +13,10 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 	}
 
 	footer() {
-		return this.renderBottomCommands();
+		return this.renderFooter();
 	}
 
-	protected renderBottomCommands() {
+	protected renderFooter() {
 		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-center">
 			{this.renderShareButton()}
 			{this.controller.cComments.renderWriteComment()}
@@ -28,7 +27,10 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 		return this.controller.cContent.renderViewContent();
 	}
 
-	protected onEdit() {
-		this.openVPage(VAssignEdit);
+	protected renderViewBottom():JSX.Element {
+		if (this.isMe(this.controller.noteItem.owner) === false) return;
+		return <div className="px-3 py-2 bg-light">
+			<button className="btn btn-primary" onClick={()=>alert('分派')}>分派</button>
+		</div>;
 	}
 }

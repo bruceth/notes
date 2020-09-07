@@ -9,7 +9,7 @@ export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 
 	protected renderBody() {
 		return React.createElement(observer(() => {
-			return <div className="d-block bg-white">
+			return <div className="d-block">
 				{this.renderTopCaptionContent()}
 				{this.renderViewBottom()}
 				{this.renderRelatives()}
@@ -32,18 +32,14 @@ export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 	}
 
 	protected renderViewBottom():JSX.Element {
-		return;
+		return <div className="h-1c"></div>;
 	}
 
-	protected renderRelatives() {
-		//return this.renderVm(VRelatives);
+	protected renderRelatives():JSX.Element {
+		return;
 	}
 
 	protected renderIcon(): JSX.Element {
 		return <div className="mr-3">{this.controller.renderIcon()}</div>;
 	}
 }
-/*
-export class VNoteBaseViewPage extends VNoteBaseView<CNoteBase> {	
-}
-*/

@@ -4,6 +4,8 @@ import { VTaskStart, VTaskStartDir } from "./VTaskStart";
 import { TaskStateResult, EnumTaskState } from "../TaskState";
 
 export class CTaskStart extends CNoteTask {	
+	get allowCheck() { return this.isMe(this.noteItem.owner); }
+
 	showViewPage():void {this.openVPage(VTaskStart);};
 	renderDirItem(index: number): JSX.Element {
 		return this.renderView(VTaskStartDir);

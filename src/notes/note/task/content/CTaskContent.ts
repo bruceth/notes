@@ -1,10 +1,11 @@
 import { observable } from "mobx";
-import { CContent } from "../CContent";
+import { CContent } from "../../../components";
 import { VView } from "./VView";
 import { VItem } from "./VItem";
-import { TaskCheckItem } from "notes/note/task/model";
+import { TaskCheckItem } from "../model";
 
-export class CTaskItem extends CContent {
+export class CTaskContent extends CContent {
+	allowCheck: boolean;
 	private inputingText: string;
 	@observable items: TaskCheckItem[] = [];
 	itemKey: number = 1;
@@ -20,9 +21,8 @@ export class CTaskItem extends CContent {
 		return;
 	}
 
-	renderViewContent():JSX.Element {return}
-	renderViewContentA(allowCheck:boolean):JSX.Element {return this.renderView(VView, allowCheck)}
-	renderDirContentA(allowCheck:boolean):JSX.Element {return this.renderView(VItem, allowCheck)}
+	renderViewContent():JSX.Element {return this.renderView(VView)}
+	renderDirContent():JSX.Element {return this.renderView(VItem)}
 
 	endInput(obj:any): void {
 		this.addNewItem();
@@ -38,7 +38,7 @@ export class CTaskItem extends CContent {
 		return this.items?.map(v => v.text).join('\n')
 	}
 
-	initFromString(value: string) {
+	fromString(value: string) {
 		if (value) {
 			this.items = [];
 			this.itemKey = 1;
@@ -57,10 +57,10 @@ export class CTaskItem extends CContent {
 	async onCheckChange(key: number, checked: boolean) {
 		let item = this.items.find(v => v.key === key);
 		if (item) item.checked = checked;
-		await this.onContentChanged?.();
+		//await this.onContentChanged?.();
 		//await this.SetNote(false);
 	}
-
+	/*
 	onItemChanged = (key: number, value: string) => {
 		let item = key && this.items.find(v => v.key === key);
 		if (item) {
@@ -71,6 +71,7 @@ export class CTaskItem extends CContent {
 		}
 		this.changed = true;
 	}
+	*/
 
 	addNewItem(): void {
 		if (this.inputingText === undefined) return;

@@ -1,26 +1,29 @@
 import { CUqBase } from "tapp";
-import { observable } from "mobx";
+//import { observable } from "mobx";
 import { VSelectContact, SelectContactOptions } from "./views";
-import { EnumNoteType, NoteItem, NoteModel } from "./model";
+import { EnumNoteType, NoteItem } from "./model";
 import { CNoteBase } from "./noteBase";
 import { CContainer, CFolderRoot, createCSpace, createCFolder } from "./container";
 import { CGroup } from "./group";
 import { Contact } from "../model";
-import { VSent } from "./views/VSent";
-import { VTo } from "./views/VTo";
+//import { VSent } from "./views/VSent";
+//import { VTo } from "./views/VTo";
 import { createCNoteTask } from "./note";
 import { VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
 import { CNoteText } from "./note/text";
 import { CNoteAssign } from "./note/assign";
 import { CFolderMy } from "./container/folderMy";
+//import { CTo } from "./components/to";
+//import { VActions } from "./views/VActions";
+import { CShareTo } from "./CShareTo";
 
 export class CNotes extends CUqBase {
 	protected foldStack: CContainer[];
 	rootFold: CContainer;
 	currentFold: CContainer;
 
-	@observable groupMembers: Contact[];
-	@observable contacts: Contact[];
+	//@observable groupMembers: Contact[];
+	//@observable contacts: Contact[];
 	noteItem: NoteItem;
 
     protected async internalStart() {
@@ -117,10 +120,11 @@ export class CNotes extends CUqBase {
 	async refresh() {
 		await this.currentFold.refresh();
 	}
-
+	/*
 	async getNote(id: number): Promise<NoteModel> {
 		return await this.currentFold.getNote(id);
 	}
+	*/
 
 	async addNote(folder:number, caption:string, content:string, obj:any, type: EnumNoteType) {
 		return await this.currentFold.addNote(folder, caption, content, obj, type);
@@ -130,7 +134,9 @@ export class CNotes extends CUqBase {
 		return await this.currentFold.editNote(waiting, noteItem, caption, content, obj);
 	}
 
-	async sendNoteTo(groupFolder:number, note:number, toList:number[]) {
+	async sendNoteTo(toList:number[]) {
+		let {groupFolder} = this.currentFold;
+		let {note} = this.noteItem;
 		let tos = toList.join('|');
 		await this.uqs.notes.SendNoteTo.submit({groupFolder, note, tos});
 	}
@@ -169,30 +175,54 @@ export class CNotes extends CUqBase {
 		cNoteAssign.init(undefined);
 		cNoteAssign.showAddPage();
 	}
-
-	async showTo(noteItem:NoteItem, backPageCount:Number) {
-		this.noteItem = noteItem;
+	
+	async showShareTo() {
+		//this.noteItem = noteItem;
+		/*
 		let ret = await this.uqs.notes.GetMyContacts.page(
 			{
 				groupFolder: this.currentFold.groupFolder
 			}, 0, 50, true);
 		this.groupMembers = ret.$page;
 		this.openVPage(VTo, backPageCount);
+		*/
+		//let {groupFolder} = this.currentFold;
+		//let {note} = noteItem;
+		/*
+		let props: CToProps = {
+			currentGroupFolder: groupFolder,
+			onAfterContactsSelected: async () => {
+				this.openVPage(VActions); //, {contacts, noteId: this.currentNoteId});
+			},
+			sendOut: async (toList: number[]) => {
+				let tos = toList.join('|');
+				await this.uqs.notes.SendNoteTo.submit({groupFolder, note, tos});
+			},
+		};
+		let cTo = new CTo(this.cApp, props);
+		await cTo.start();
+		*/
+		let cShareTo = new CShareTo(this.cApp, this);
+		await cShareTo.start();
 	}
 
+	/*
 	showSentPage() {
 		this.openVPage(VSent);
 	}
+	*/
 
 	async callSelectContact(options: SelectContactOptions): Promise<Contact[]> {
 		return await this.vCall(VSelectContact, options);
 	}
 
+	/*
 	showAssignTaskPage() {
 		let cNoteTask = createCNoteTask(this, this.noteItem); // this.newSub(CNoteTask);
 		cNoteTask.init(this.noteItem);
 		cNoteTask.showAssignTaskPage();
 	}
+	*/
 
 	showAddGroupPage = () => {
 		let cGroup = this.newSub(CGroup);

@@ -2,6 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { User, Image, UserView, FA } from "tonva";
 import { VNoteBase, CNoteBase } from '.';
+import { none } from 'tool';
 
 export interface TabRelative {
 	name: string;
@@ -62,7 +63,7 @@ export class VRelativesBase<T extends CNoteBase> extends VNoteBase<T> {
 					})}
 				</div>
 				<div className="border-top" style={{marginTop: '-1px'}}>
-					{tab.render() || <div className="p-3 text-muted small">[无]</div>}
+					{tab.render() || <div className="p-3">{none}</div>}
 				</div>
 			</div>
 		});

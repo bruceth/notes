@@ -14,10 +14,10 @@ export class VTextView extends VNoteBaseView<CNoteText> {
 	}
 
 	footer() {
-		return this.renderBottomCommands();
+		return this.renderFooter();
 	}
 
-	protected renderBottomCommands() {
+	protected renderFooter() {
 		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-center">
 			{this.renderShareButton()}
 			{this.controller.cComments.renderWriteComment()}
@@ -26,14 +26,5 @@ export class VTextView extends VNoteBaseView<CNoteText> {
 
 	protected renderContent() {
 		return this.controller.cContent.renderViewContent();
-		/*
-		return React.createElement(observer(() => {
-			let {noteType, cContent} = this.controller;
-			return <>
-				<span className="d-none">{noteType}</span>
-				{cContent.renderViewContent()}
-			</>;
-		}));
-		*/
 	}
 }

@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+import { observable, computed } from "mobx";
 import { CUqSub } from '../../tapp';
 import { NoteItem, NoteModel, EnumNoteType } from '../model';
 import { CNotes } from '../CNotes';
@@ -30,7 +30,10 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	protected async internalStart() { }
 
 	@observable caption: string;
-	get captionChanged() {return this.caption !== this.noteItem?.caption;}
+	get isCaptionChanged() {return this.caption !== this.noteItem?.caption;}
+	@computed get isNoteChanged(): boolean {
+		return this.isContentChanged || this.isCaptionChanged;
+	}
 
 	abstract renderIcon(): JSX.Element;
 	abstract renderDirItem(index: number): JSX.Element;
@@ -56,8 +59,8 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 	}
 	*/
 
-	async showTo(backPageCount: number) {
-		await this.owner.showTo(this.noteItem, backPageCount);
+	async showShareTo() {
+		await this.owner.showShareTo();
 	}
 
 	async SetNote(showWaiting: boolean = true) {

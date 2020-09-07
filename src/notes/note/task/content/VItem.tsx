@@ -1,7 +1,7 @@
 import React from 'react';
-import { VBase } from "./VBase";
 import { FA } from 'tonva';
-import { TaskCheckItem } from 'notes/note/task/model';
+import { TaskCheckItem } from '../model';
+import { VBase } from "./VBase";
 
 export class VItem extends VBase {
 	protected renderCheckItem(v:TaskCheckItem) {

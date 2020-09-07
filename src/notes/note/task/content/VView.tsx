@@ -1,9 +1,9 @@
 import React from 'react';
+import { TaskCheckItem } from '../model';
 import { VBase } from './VBase';
-import { TaskCheckItem } from 'notes/note/task/model';
 
 export class VView extends VBase {
-	protected renderCheckItem(v:TaskCheckItem, allowCheck:boolean) {
+	protected renderCheckItem(v:TaskCheckItem) {
 		let {key, text, checked} = v;
 		let cn = 'ml-3 ';
 		let content: any;
@@ -17,18 +17,18 @@ export class VView extends VBase {
 		return <div key={key} className="d-flex mx-3 align-items-center form-check">
 			<input className="form-check-input mr-3 mt-0" type="checkbox"
 				defaultChecked={checked}
-				disabled={!allowCheck}
+				disabled={!this.controller.allowCheck}
 				data-key={key} />
 			<div className={'form-control-plaintext ' + cn}>{content}</div>
 		</div>;
 	}
 
-	protected renderCheckedItems(checkedItems:TaskCheckItem[], allowCheck:boolean):JSX.Element {
+	protected renderCheckedItems(checkedItems:TaskCheckItem[]):JSX.Element {
 		let checkedCount = checkedItems.length;
 		if (checkedCount > 0) {
 			return <div className="border-top py-2">
 				<div className="px-3 pt-2 small text-muted">{checkedCount}项完成</div>
-				{checkedItems.map((v, index) => this.renderCheckItem(v, allowCheck))}
+				{checkedItems.map((v, index) => this.renderCheckItem(v))}
 			</div>;
 		}
 	}

@@ -5,9 +5,9 @@ export abstract class CContent extends Controller {
 	@observable changed: boolean = false;
 	protected async internalStart() {}
 
-	onContentChanged: () => Promise<void>;
+	//onContentChanged: () => Promise<void>;
 	toString(): string {return};
-	protected initFromString(v:string):void {};
+	protected fromString(v:string):void {};
 	
 	startInput(): void {
 		this.changed = false;
@@ -20,7 +20,7 @@ export abstract class CContent extends Controller {
 	renderDirContent(): JSX.Element {return this.renderViewContent();}
 
 	reset(content:string) {
-		this.initFromString(content);
+		this.fromString(content);
 		this.startInput();
 		this.changed = true;
 	}

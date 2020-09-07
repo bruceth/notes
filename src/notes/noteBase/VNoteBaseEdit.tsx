@@ -1,22 +1,23 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import { CNoteBase } from "./CNoteBase";
 import { VNoteBaseForm } from './VNoteBaseForm';
-import { computed } from 'mobx';
-import { observer } from 'mobx-react';
 
 export class VNoteBaseEdit<T extends CNoteBase> extends VNoteBaseForm<T> {
+	/*
 	@computed protected get btnSaveDisabled():boolean {
-		if (this.controller.isContentChanged) return false;
-		if (this.changed === true) return false;
+		if (this.controller.isContentChanged === true) return false;
+		if (this.controller.isCaptionChanged === true) return false;
 		return true;
 	}
+	*/
 
 	protected renderEditBottom():JSX.Element {
 		return <div className="py-2 pl-3 bg-light border-top d-flex">
 			<div className="mr-auto" />
 			{React.createElement(observer(() => <>
 				<button onClick={() => this.onButtonSave()}
-					className="btn btn-primary mr-3" disabled={this.btnSaveDisabled}>
+					className="btn btn-primary mr-3" disabled={!this.controller.isNoteChanged}>
 					保存
 				</button>
 			</>))}

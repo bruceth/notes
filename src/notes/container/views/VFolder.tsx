@@ -68,12 +68,16 @@ export class VFolder extends VNoteBase<CContainer> {
 	}
 
 	content() {
-		let {notesPager} = this.controller;
+		let {notesPager, showNoteItem} = this.controller;
 		return <div>
 			{React.createElement(observer(() => this.top()))}
 			<List className="" 
 				items={notesPager} 
-				item={{render: this.renderItemInFolder, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
+				item={{
+					render: this.renderItemInFolder,
+					key: this.noteKey, 
+					onClick: showNoteItem,
+					className:'notes'}} />
 		</div>
 	}
 
@@ -110,14 +114,5 @@ export class VFolder extends VNoteBase<CContainer> {
 
 	private renderItemInFolder = (cNoteBase: CNoteBase, index:number) => {
 		return <div className="d-block mb-2 bg-white">{cNoteBase.renderDirItem(index)}</div>;
-	}
-
-	private onNoteClick = async (item: CNoteBase) => {
-		let noteItem = item.noteItem;
-		let noteModel = await this.controller.getNote(noteItem.note);
-		noteItem.unread = 0;
-		noteItem.commentUnread = 0;
-		item.noteModel = noteModel;
-		return item.showViewPage();
 	}
 }

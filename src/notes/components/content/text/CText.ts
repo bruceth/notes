@@ -7,7 +7,7 @@ export class CText extends CTextBase {
 	renderViewContent():JSX.Element {return this.renderView<this>(VView)}
 
 	toString():string { return this.changedNoteContent || this.noteContent }
-	initFromString(v: string) {
+	fromString(v: string) {
 		this.noteContent = v.trim();
 	}
 }

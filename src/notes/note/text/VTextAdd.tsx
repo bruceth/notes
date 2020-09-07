@@ -28,7 +28,7 @@ export class VTextAdd extends VTextEdit {
 		let cnewNote = await this.controller.AddNote();
 		this.closePage();
 		await cnewNote.cApp.loadRelation();
-		cnewNote.showTo(1);
+		cnewNote.showShareTo();
 	}
 
 }

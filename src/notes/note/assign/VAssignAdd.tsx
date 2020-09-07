@@ -23,6 +23,6 @@ export class VAssignAdd extends VAssignEdit {
 		let cnewNote = await this.controller.AddNote();
 		this.closePage();
 		await cnewNote.cApp.loadRelation();
-		cnewNote.showTo(1);
+		cnewNote.showShareTo();
 	}
 }

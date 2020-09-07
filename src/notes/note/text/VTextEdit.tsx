@@ -27,7 +27,7 @@ export class VTextEdit extends VNoteBaseEdit<CNoteText> {
 			<div className="mr-auto" />
 			{React.createElement(observer(() => <>
 				<button onClick={() => this.onButtonSave()}
-					className="btn btn-primary mr-3" disabled={this.btnSaveDisabled}>
+					className="btn btn-primary mr-3" disabled={!this.controller.isNoteChanged}>
 					保存
 				</button>
 			</>))}

@@ -2,19 +2,20 @@ import React from 'react';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { List, FA } from 'tonva';
-import { Contact } from '../../model';
-import { CNotes } from '../CNotes';
-import { VBasePage } from './VBasePage';
-import { VActions } from './VActions';
+import { Contact } from '../../../model';
+import { VBasePage } from '../../views/VBasePage';
+//import { VActions } from './VActions';
+import { CTo } from './CTo';
 
-export class VTo extends VBasePage<CNotes> {
-	protected backPageCount = 2;
-
+export class VTo extends VBasePage<CTo> {
+	//protected backPageCount = 2;
+	/*
 	init(param?:any):void {
 		if (param) {
 			this.backPageCount = Number(param);
 		}	
 	}
+	*/
 
 	@observable private anySelected:boolean = false;
 	private list: List;
@@ -37,26 +38,14 @@ export class VTo extends VBasePage<CNotes> {
 		</div>
 	}
 
-/*
-	private renderContact = (item:Contact, index:number) => {
-		let {contact, assigned} = item;
-		let renderUser = (user:User) => {
-			let {name, nick, icon} = user;
-			return <div className="px-3 py-2">
-				<Image className="w-2c h-2c mr-3" src={icon} />
-				{name} {nick} {assigned}
-			</div>
-		}
-		return <UserView user={contact} render={renderUser} />;
-	}
-*/
 	private onContactSelect = (item:Contact, isSelected:boolean, anySelected:boolean):void => {
 		this.anySelected = anySelected;
 	}
 
-	private onNext = () => {
+	private onNext = async () => {
 		let contacts = this.list.selectedItems;
-		this.controller.contacts = contacts;
-		this.openVPage(VActions, this.backPageCount + 1); //, {contacts, noteId: this.currentNoteId});
+		await this.controller.onContactsSelected(contacts);
+		//this.controller.contacts = contacts;
+		//this.openVPage(VActions, this.backPageCount + 1); //, {contacts, noteId: this.currentNoteId});
 	}
 }

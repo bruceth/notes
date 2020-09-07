@@ -10,7 +10,7 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 		return this.renderStateSpan('待验收');
 	}
 
-	protected renderCheckItem(item: TaskCheckItem, allowCheck: boolean) {
+	protected renderCheckItem(item: TaskCheckItem) {
 		let { key, text, checked, checkInfo } = item;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;
@@ -31,7 +31,7 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 				<input className="form-check-input mr-3 mt-0" type="checkbox"
 					defaultChecked={checked}
 					data-key={key}
-					disabled={!allowCheck} />
+					disabled={!this.controller.allowCheck} />
 				<div className="flex-grow-1">
 					<div className={cn}>{content}</div>
 					{checkInfo && <div className="mt-1 ml-3 small">

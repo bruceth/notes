@@ -25,8 +25,9 @@ export interface ListProps {
     className?: string|string[];
     items: any[] | IObservableArray<any> | PageItems<any>;
     item: ItemProps;
-    compare?:(item:any, selectItem:any)=>boolean;
-    selectedItems?:any[];
+	isItemSelected?: (item:any) => boolean;
+    compare?: (item:any, selectItem:any) => boolean;
+	selectedItems?:any[];
     header?: StaticRow;
     footer?: StaticRow;
     before?: StaticRow;

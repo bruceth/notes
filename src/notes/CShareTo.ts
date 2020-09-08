@@ -1,14 +1,19 @@
 import { CTo } from "./components";
 import { VActions } from "./views/VActions";
 import { CNotes } from "./CNotes";
+import { Query } from "tonva";
 
 export class CShareTo extends CTo {
 	private cNotes:CNotes;
 	constructor(cApp:any, cNotes:CNotes) {
-		super(cApp, cNotes.currentFold.groupFolder);
+		let {currentFold} = cNotes;
+		let {groupFolder, currentNoteItem} = currentFold;
+		super(cApp, groupFolder, currentNoteItem);
 		this.cNotes = cNotes;
 	}
 	
+	protected get GetContacts(): Query {return this.uqs.notes.GetShareContacts}
+
 	protected async sendOut(toList:number[]):Promise<void> {
 		await this.cNotes.sendNoteTo(toList);
 	}

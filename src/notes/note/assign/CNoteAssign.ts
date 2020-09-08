@@ -62,7 +62,7 @@ export class CNoteAssign extends CNote {
 		this.openVPage(VAssignAdd);
 	}
 
-	async showAssignTo() {
+	showAssignTo = async () => {
 		let cAssignTo = new CAssignTo(this.cApp, this);
 		await cAssignTo.start();
 	}
@@ -91,7 +91,7 @@ export class CNoteAssign extends CNote {
 			note,
 			caption,
 			content: JSON.stringify(cObj),
-			tos: toList,
+			tos: toList.map(v => ({to:v})),
 			checker: this.checker?.contact,
 			rater: this.rater?.contact,
 			point: this.point,

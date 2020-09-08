@@ -135,8 +135,8 @@ export class CNotes extends CUqBase {
 	}
 
 	async sendNoteTo(toList:number[]) {
-		let {groupFolder} = this.currentFold;
-		let {note} = this.noteItem;
+		let {groupFolder, currentNoteItem} = this.currentFold;
+		let {note} = currentNoteItem;
 		let tos = toList.join('|');
 		await this.uqs.notes.SendNoteTo.submit({groupFolder, note, tos});
 	}

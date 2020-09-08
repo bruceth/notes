@@ -26,6 +26,8 @@ export interface Notes {
 	GetNotes: Query;
 	GetMyContacts: Query;
 	GetNote: Query;
+	GetShareContacts: Query;
+	GetSpawnContacts: Query;
 
 	GetBookProjects: Query;
 	GetProjectFlow: Query;

@@ -3,26 +3,32 @@ import { CUqBase } from "../../../tapp";
 import { Contact } from "../../../model";
 import { VSent } from "./VSent";
 import { VTo } from "./VTo";
+import { Query } from "tonva";
+import { NoteItem } from "notes/model";
 
 export abstract class CTo extends CUqBase {
-	protected currentGroupFolder: number
-	@observable groupMembers: Contact[];
+	protected currentGroupFolder: number;
+	currentNoteItem: NoteItem;
+	@observable groupContacts: Contact[];
 	@observable contacts: Contact[];
 
-	constructor(cApp:any, currentGroupFolder: number) {
+	constructor(cApp:any, currentGroupFolder: number, currentNoteItem: NoteItem) {
 		super(cApp);
 		this.currentGroupFolder = currentGroupFolder;
+		this.currentNoteItem = currentNoteItem;
 	}
 
+	protected abstract get GetContacts(): Query; // this.uqs.notes.GetMyContacts
 	protected abstract sendOut(toList:number[]):Promise<void>;
 	protected abstract afterContactsSelected(): Promise<void>;
 
 	protected async internalStart():Promise<void> { 
-		let ret = await this.uqs.notes.GetMyContacts.page(
+		let ret = await this.GetContacts.page(
 			{
-				groupFolder: this.currentGroupFolder
+				groupFolder: this.currentGroupFolder,
+				note: this.currentNoteItem.note,
 			}, 0, 50, true);
-		this.groupMembers = ret.$page;
+		this.groupContacts = ret.$page;
 		this.startAction();
 		this.openVPage(VTo);
 	}

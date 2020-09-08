@@ -86,3 +86,73 @@ PAGE (
 			LIMIT $pageSize;
 	}
 };
+
+QUERY GetShareContacts (
+	groupFolder ID,
+	note ID Note,
+)
+PAGE (
+	contact ID [$User] ASC,
+	assigned TEXT(TINY),
+	already TINYINT,
+	state TINYINT,
+) {
+	IF groupFolder IS NULL OR groupFolder <= 0 {
+		PAGE SELECT b.contact, b.assigned, CASE WHEN c.access IS NULL OR c.access=0 THEN 0 ELSE 1 END as already, b.state
+			FROM MyContact as b
+				LEFT JOIN NoteAccess as c ON b.contact=c.user AND c.note=note
+			WHERE b.me=$user AND b.contact>$pageStart
+			ORDER BY b.contact ASC
+			LIMIT $pageSize;
+	}
+	ELSE {
+		VAR groupId ID;
+		SET groupId=a.group FROM GroupFolder as a WHERE a.folder=groupFolder;
+
+		-- GroupFolder里面包含自己
+		-- GroupFolder JOIN MyContact 自动去掉了自己
+		PAGE SELECT b.contact, b.assigned, CASE WHEN c.access IS NULL OR c.access=0 THEN 0 ELSE 1 END as already, b.state
+			FROM GroupFolder as a 
+				JOIN MyContact as b ON b.me=$user AND b.contact=a.member
+				LEFT JOIN NoteAccess as c ON b.contact=c.user AND c.note=note
+			WHERE a.group=groupId AND b.contact>$pageStart
+			ORDER BY b.contact ASC
+			LIMIT $pageSize;
+	}
+};
+
+QUERY GetSpawnContacts (
+	groupFolder ID,
+	note ID Note,				-- assign id
+)
+PAGE (
+	contact ID [$User] ASC,
+	assigned TEXT(TINY),
+	already TINYINT,
+	state TINYINT,
+) {
+	IF groupFolder IS NULL OR groupFolder <= 0 {
+		PAGE SELECT a.contact, a.assigned, CASE WHEN d.owner IS NULL THEN 0 ELSE 1 END as already, a.state
+			FROM MyContact as a
+				LEFT JOIN Note2Note as c ON c.note0=note AND c.type=EnumNoteMapType.Spawn
+				LEFT JOIN Note as d ON c.note1=d.id
+			WHERE a.me=$user AND a.contact>$pageStart
+			ORDER BY a.contact ASC
+			LIMIT $pageSize;
+	}
+	ELSE {
+		VAR groupId ID;
+		SET groupId=a.group FROM GroupFolder as a WHERE a.folder=groupFolder;
+
+		-- GroupFolder里面包含自己
+		-- GroupFolder JOIN MyContact 自动去掉了自己
+		PAGE SELECT b.contact, b.assigned, CASE WHEN d.owner IS NULL THEN 0 ELSE 1 END as already, b.state
+			FROM GroupFolder as a 
+				JOIN MyContact as b ON b.me=$user AND b.contact=a.member
+				LEFT JOIN Note2Note as c ON c.note0=note AND c.type=EnumNoteMapType.Spawn
+				LEFT JOIN Note as d ON c.note1=d.id
+			WHERE a.group=groupId AND b.contact>$pageStart
+			ORDER BY b.contact ASC
+			LIMIT $pageSize;
+	}
+};

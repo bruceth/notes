@@ -30,7 +30,7 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 	protected renderViewBottom():JSX.Element {
 		if (this.isMe(this.controller.noteItem.owner) === false) return;
 		return <div className="px-3 py-2 bg-light">
-			<button className="btn btn-primary" onClick={()=>alert('分派')}>分派</button>
+			<button className="btn btn-primary" onClick={this.controller.showAssignTo}>分派</button>
 		</div>;
 	}
 }

@@ -81,7 +81,7 @@ export class VFolder extends VNoteBase<CContainer> {
 		</div>
 	}
 
-	private renderParagraphs(content:string):JSX.Element {
+	protected renderParagraphs(content:string):JSX.Element {
 		if (!content) return;
 		return <>{content.trimRight().split('\n').map((v, index) => {
 			let c:any;

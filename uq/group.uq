@@ -76,11 +76,14 @@ QUERY GetGroupFolderMemberCount(
 RETURNS ret (
 	[group] ID,
 	count INT,
+	owner ID [$User],
 ) {
-	VAR groupId ID, [count] INT;
-	SET groupId=a.group FROM GroupFolder as a WHERE a.folder=folder;
+	VAR groupId ID, [count] INT, [owner] ID;
+	SET groupId=a.group, [owner]=b.owner FROM GroupFolder as a 
+		LEFT JOIN Note as b ON a.group=b.id
+		WHERE a.folder=folder;
 	SET [count]=count(*) FROM GroupFolder as a WHERE a.group=groupId;
-	INTO ret select groupId as [group], [count];
+	INTO ret select groupId as [group], [count], [owner];
 };
 
 QUERY GetGroupMembers(
@@ -145,3 +148,20 @@ ACTION RemoveGroupMember (
 		BOOK GroupFolder AT(group, member) SET state=0;
 	}
 };
+
+ACTION SetGroup (
+	group ID,
+	caption CHAR(200),
+	content TEXT,
+) {
+	IF exists(SELECT id FROM Note WHERE id=group and owner=$user) {
+		VAR seconds INT;
+		TUID Note ID group SET caption=caption, content=content;
+		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+		FOREACH (var folder ID OF SELECT a.folder FROM GroupFolder as a WHERE a.group=group) {
+			TUID Note ID folder SET caption=caption, content=content;
+			Proc NotifyNote(folder, seconds, 0);
+		}
+	}
+};
+

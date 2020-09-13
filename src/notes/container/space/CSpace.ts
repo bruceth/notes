@@ -1,14 +1,16 @@
 import { CContainer } from "../CContainer";
 import { VSpaceDir } from "./VSpaceDir";
 import { renderIcon } from "../../noteBase";
-import { EnumNoteType } from "notes/model";
+import { EnumNoteType, NoteItem } from "notes/model";
 import { observable } from "mobx";
 import { Contact } from "model";
 import { VSpaceMembers } from "./VSpaceMembers";
 import { VSpaceView } from "./VSpaceView";
+import { VSpaceEdit } from "./VSpaceEdit";
 
 export class CSpace extends CContainer {
 	groupId: number;
+	groupOwner: number;
 	@observable memberCount: number;
 	@observable members:Contact[];
 	@observable contacts:Contact[];
@@ -22,8 +24,9 @@ export class CSpace extends CContainer {
 
 	async loadSpace() {
 		let resulte = await this.uqs.notes.GetGroupFolderMemberCount.query({folder: this.folderId});
-		let {group, count} = resulte.ret[0];
+		let {group, count, owner} = resulte.ret[0];
 		this.groupId = group;
+		this.groupOwner = owner;
 		this.memberCount = count;
 	}
 
@@ -48,7 +51,9 @@ export class CSpace extends CContainer {
 		return item.render();
 	}
 	showAddPage() {}
-	showEditPage() {}
+	showEditPage() {
+		this.openVPage(VSpaceEdit);
+	}
 
 	showMembers = async () => {
 		await this.loadMembers();
@@ -60,4 +65,33 @@ export class CSpace extends CContainer {
 		//this.openVPage(VContacts);
 		this.owner.callSelectContact(undefined);
 	}
+
+	protected endContentInput():any {
+		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
+		this.cContent.endInput(obj);
+		return obj;
+	}
+
+	async SetGroup(showWaiting: boolean = true) {
+		let obj = this.endContentInput();
+		let noteContent = JSON.stringify(obj);
+		await this.editGroup(showWaiting,
+			this.noteItem,
+			this.caption,
+			noteContent,
+			obj);
+		this.updateChange();
+	}
+
+	async editGroup(waiting:boolean, noteItem:NoteItem, caption:string, content:string, obj:any) {
+		let {SetGroup} = this.uqs.notes;
+		let {note} = noteItem;
+		await SetGroup.submit({group:this.groupId, caption, content}, waiting);
+		if (note === this.noteItem?.note) {
+			this.noteItem.caption = caption;
+			this.noteItem.content = content;
+			this.noteItem.obj = obj;
+		}
+	}
+
 }

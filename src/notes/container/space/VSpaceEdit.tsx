@@ -20,4 +20,9 @@ export class VSpaceEdit extends VContainerForm<CSpace> {
 			</>))}
 		</div>;
 	}
+
+	protected async onButtonSave(): Promise<void> {
+		await this.controller.SetGroup();
+		this.closePage();
+	}
 }

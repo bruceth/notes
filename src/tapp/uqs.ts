@@ -21,6 +21,7 @@ export interface Notes {
 	AddComment: Action;
 
 	AddGroup: Action;
+	SetGroup: Action;
 
 	$Poked: Query;
 	GetNotes: Query;

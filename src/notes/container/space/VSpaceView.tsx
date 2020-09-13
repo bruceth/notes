@@ -24,9 +24,14 @@ export class VSpaceView extends VFolder<CSpace> {
 			}
 		}
 		let left: any;
+		let vEditButton:any;
+		if (this.isMe(this.controller.groupOwner)) {
+			vEditButton = <div className="ml-3">{this.renderEditButton()}</div>;
+		}
 		left = <>
 			<FA className="mr-3 text-warning py-3" name="users" size="2x" />
 			<div className="small text-muted py-3">{this.renderParagraphs(paragraphs)}</div>
+			{vEditButton}
 		</>;
 		let vMembers:any;
 		let {memberCount} = this.controller;
@@ -36,7 +41,7 @@ export class VSpaceView extends VFolder<CSpace> {
 				<FA className="ml-2" name="angle-right" />
 			</div>
 		}
-		return <div className="p-3 d-flex">
+		return <div className="p-3 d-flex align-items-center">
 			{left}
 			{vMembers}
 		</div>;

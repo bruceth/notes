@@ -29,6 +29,12 @@ export interface Notes {
 	GetShareContacts: Query;
 	GetSpawnContacts: Query;
 
+	AddGroupMember: Action;
+	RemoveGroupMember: Action;
+	GetGroupFolderMemberCount: Query;
+	GetGroupMembers: Query;
+	GetGroupContacts: Query;
+
 	GetBookProjects: Query;
 	GetProjectFlow: Query;
 	GetProjectYearSum: Query;

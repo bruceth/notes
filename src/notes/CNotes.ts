@@ -149,8 +149,16 @@ export class CNotes extends CUqBase {
 		return this.currentFold.renderListView();
 	}
 
-	renderHomeDropDown() {return this.renderView(VHomeDropdown)};
-	renderSpaceDropDown() {return this.renderView(VSpaceDropdown)};
+	renderHomeDropDown() {
+		let vHomeDropdown = new VHomeDropdown(this);
+		return vHomeDropdown.render();
+		//return this.renderView(VHomeDropdown)
+	};
+	renderSpaceDropDown() {
+		let vSpaceDropdown = new VSpaceDropdown(this);
+		return vSpaceDropdown.render();
+		//return this.renderView(VSpaceDropdown)
+	};
 
 	showAddNoteTextPage = () => {
 		let cNoteText = this.createCNoteText();

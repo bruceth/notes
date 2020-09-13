@@ -70,6 +70,54 @@ ACTION SetGroupProp(
 	}
 };
 
+QUERY GetGroupFolderMemberCount(
+	folder ID Note,
+)
+RETURNS ret (
+	[group] ID,
+	count INT,
+) {
+	VAR groupId ID, [count] INT;
+	SET groupId=a.group FROM GroupFolder as a WHERE a.folder=folder;
+	SET [count]=count(*) FROM GroupFolder as a WHERE a.group=groupId;
+	INTO ret select groupId as [group], [count];
+};
+
+QUERY GetGroupMembers(
+	group ID NOTE,
+)
+RETURNS ret (
+	contact ID [$User],
+	assigned TEXT(TINY),
+	already TINYINT,
+	state TINYINT,
+) {
+	INTO ret SELECT a.member as contact, b.assigned,
+		1 as already,
+		b.state
+		FROM GroupFolder as a 
+			LEFT JOIN MyContact as b ON a.member=b.contact and b.me=$user
+		WHERE a.group=[group]; -- AND b.state=EnumContactState.OK;
+};
+
+-- MyContact with already
+QUERY GetGroupContacts (
+	group ID NOTE,
+)
+RETURNS ret (
+	contact ID [$User],
+	assigned TEXT(TINY),
+	already TINYINT,
+	state TINYINT,
+) {
+	INTO ret SELECT b.contact, b.assigned,
+		CASE WHEN a.member IS NULL THEN 0 ELSE 1 END as already,
+		b.state
+		FROM MyContact as b
+			LEFT JOIN GroupFolder as a ON a.member=b.contact and b.me=$user
+		WHERE a.group=[group] AND b.state=EnumContactState.OK;
+};
+
 ACTION AddGroupMember (
 	group ID Note,
 	member ID [$User],
@@ -94,7 +142,7 @@ ACTION RemoveGroupMember (
 	member ID [$User],
 ) {
 	IF exists(SELECT id FROM Note WHERE owner=$user AND id=[group] AND type=EnumNoteType.Group) {
-		-- TUID Note ID group SET x=1;
+		BOOK GroupFolder AT(group, member) SET state=0;
 	}
 };
 

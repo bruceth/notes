@@ -4,7 +4,7 @@ import { CContainer } from '../CContainer';
 import { CNoteBase, VNoteBase } from "../../noteBase";
 import { observer } from 'mobx-react';
 
-export class VFolder extends VNoteBase<CContainer> {
+export class VFolder<T extends CContainer> extends VNoteBase<T> {
 	afterBack() {
 		this.controller.owner.popFolder();
 	}

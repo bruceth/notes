@@ -94,10 +94,11 @@ export abstract class CContainer extends CNoteBase {
 		return this.noteItem;
 	}
 
-	showFolder() {
+	abstract showFolder(): void;
+	/* {
 		this.load();
 		this.openVPage(VFolder);
-	}
+	}*/
 
 	renderListView() {
 		return (new VFolder(this)).renderListView();

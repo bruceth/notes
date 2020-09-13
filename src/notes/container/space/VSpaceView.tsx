@@ -1,5 +1,5 @@
 import React from 'react';
-import { DropdownAction, FA, Muted } from 'tonva';
+import { DropdownAction, FA } from 'tonva';
 import { VFolder } from "../views/VFolder";
 import { CSpace } from './CSpace';
 import { VNotesDropDown } from '../../views';
@@ -11,6 +11,23 @@ export class VSpaceView extends VFolder<CSpace> {
 		return dd.render();
 	}
 	protected top():JSX.Element {
+		let {noteItem} = this.controller;
+		if (!noteItem) return;
+
+		let paragraphs: string = '空间';
+		let {content: contentString} = noteItem;
+		if (contentString) {
+			let json = JSON.parse(contentString);
+			if (json) {
+				let {content} = json;
+				paragraphs = (content as string)?.trimEnd();
+			}
+		}
+		let left: any;
+		left = <>
+			<FA className="mr-3 text-warning py-3" name="users" size="2x" />
+			<div className="small text-muted py-3">{this.renderParagraphs(paragraphs)}</div>
+		</>;
 		let vMembers:any;
 		let {memberCount} = this.controller;
 		if (memberCount) {
@@ -20,11 +37,10 @@ export class VSpaceView extends VFolder<CSpace> {
 			</div>
 		}
 		return <div className="p-3 d-flex">
-			<Muted>[群说明:无]</Muted>
+			{left}
 			{vMembers}
 		</div>;
 	}
-
 }
 
 class  VSpaceDropdown extends VNotesDropDown {

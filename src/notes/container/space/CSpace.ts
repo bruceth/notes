@@ -1,12 +1,10 @@
 import { CContainer } from "../CContainer";
 import { VSpaceDir } from "./VSpaceDir";
-import { VSpace } from "./VSpace";
 import { renderIcon } from "../../noteBase";
 import { EnumNoteType } from "notes/model";
 import { observable } from "mobx";
 import { Contact } from "model";
 import { VSpaceMembers } from "./VSpaceMembers";
-import { VContacts } from "./VContacts";
 import { VSpaceView } from "./VSpaceView";
 
 export class CSpace extends CContainer {

@@ -1,8 +1,9 @@
 import React from 'react';
 import { VFolder } from "../views/VFolder";
+import { CSpace } from './CSpace';
 import { FA } from 'tonva';
 
-export class VSpace extends VFolder {
+export class VSpace extends VFolder<CSpace> {
 	protected top():JSX.Element {
 		let {noteItem} = this.controller;
 		if (!noteItem) return;

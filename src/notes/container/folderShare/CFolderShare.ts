@@ -1,5 +1,6 @@
 import { CFolderDisableItemFrom } from "../CFolder";
 import { renderIcon } from "../../noteBase";
+import { VFolderShare } from "./VFolderShare";
 
 export class CFolderShare extends CFolderDisableItemFrom {
 	renderIcon(): JSX.Element {
@@ -10,6 +11,6 @@ export class CFolderShare extends CFolderDisableItemFrom {
 
 	showFolder(): void {
 		this.load();
-		//this.openVPage(VFolder);
+		this.openVPage(VFolderShare);
 	}
 }

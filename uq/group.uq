@@ -97,3 +97,25 @@ ACTION RemoveGroupMember (
 		-- TUID Note ID group SET x=1;
 	}
 };
+
+QUERY GetGroup ver 1.0 (
+	groupfolder ID,	
+)
+RETURNS ret (
+	id ID,
+	caption CHAR(200),
+	content TEXT,
+	owner ID,	
+	x TINYINT DEFAULT 0,			-- 删除标志
+	[$create] TIMESTAMP,
+	[$update] TIMESTAMP,
+)
+RETURNS member (
+	user ID [$User],
+) {
+	VAR groupid ID;
+	SET groupid = group FROM GroupFolder WHERE folder=groupfolder AND member=$user;
+	INTO ret SELECT a.id, a.caption, a.content, a.owner, a.x, a.[$create], a.[$update]
+		FROM Note as a WHERE a.id=groupid;
+	INTO member SELECT a.member as user FROM GroupFolder as a WHERE a.group=groupid;
+};

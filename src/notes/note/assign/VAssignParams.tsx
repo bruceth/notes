@@ -1,13 +1,13 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-//import { observable } from 'mobx';
 import { VPage, FA, UserView, Image, User } from "tonva";
 import { none } from 'tool';
 import { Contact } from '../../../model';
 import { SelectContactOptions } from '../../views';
 import { CNoteAssign } from "./CNoteAssign";
 import { CAssignTo } from './CAssignTo';
-//import { TaskParam } from './VTaskView';
+import { CNotes } from 'notes/CNotes';
+import { CSelectContact } from 'notes/components/selectContact';
 
 export interface Row {
 	label: string;
@@ -131,6 +131,9 @@ export class VAssignParams extends VPage<CAssignTo> {
 	}
 
 	private onClickChecker = async () => {
+		let cSelectContact = new CNotesSelectContact(this.cNoteAssign.owner, '检查人')
+		await cSelectContact.start();
+
 		let options: SelectContactOptions = {title: '检查人', single: true};
 		let contacts = await this.cNoteAssign.owner.callSelectContact(options);
 		this.closePage();
@@ -143,9 +146,25 @@ export class VAssignParams extends VPage<CAssignTo> {
 	}
 
 	private onClickRater = async () => {
+		let cSelectContact = new CNotesSelectContact(this.cNoteAssign.owner, '评价人')
+		await cSelectContact.start();
+
 		let options: SelectContactOptions = {title: '评价人', single: true};
 		let contacts = await this.cNoteAssign.owner.callSelectContact(options);
 		this.closePage();
 		this.cNoteAssign.rater = contacts[0];
+	}
+}
+
+class CNotesSelectContact extends CSelectContact {
+	protected cNotes: CNotes;
+	title: string;
+	constructor(cNotes:CNotes, title: string) {
+		super(cNotes.cApp);
+		this.cNotes = cNotes;
+		this.title = title;
+	}
+
+	protected async loadContacts() {
 	}
 }

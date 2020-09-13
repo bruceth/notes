@@ -75,6 +75,9 @@ export class DropdownActions extends React.Component<DropdownActionsProps, Dropd
             <div ref={v => this.menu=v} className={classNames({"dropdown-menu":true, "dropdown-menu-right":isRight, "show":dropdownOpen})}>
                 {
                     actions.map((v,index) => {
+						if (!v) {
+                            return <div className="dropdown-divider" />;
+						}
                         let {icon, caption, action, iconClass, captionClass} = v;
                         if (icon === undefined && caption === undefined) 
                             return <div className="dropdown-divider" />;

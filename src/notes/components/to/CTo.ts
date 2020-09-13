@@ -22,7 +22,7 @@ export abstract class CTo extends CUqBase {
 	protected abstract sendOut(toList:number[]):Promise<void>;
 	protected abstract afterContactsSelected(): Promise<void>;
 
-	protected async internalStart():Promise<void> { 
+	protected async internalStart():Promise<void> {
 		let ret = await this.GetContacts.page(
 			{
 				groupFolder: this.currentGroupFolder,

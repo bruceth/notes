@@ -2,7 +2,7 @@ import React from 'react';
 import { View, DropdownActions, DropdownAction } from "tonva";
 import { CNotes } from "../CNotes";
 
-abstract class VNotesDropDown extends View<CNotes> {
+export abstract class VNotesDropDown extends View<CNotes> {
 	protected text = {
 		icon:'file-o', 
 		caption:this.t('noteText'), 
@@ -56,6 +56,6 @@ export class VHomeDropdown extends VNotesDropDown {
 
 export class  VSpaceDropdown extends VNotesDropDown {
 	protected get dropdownActions(): DropdownAction[] {
-		return [this.text, this.list, this.checkable, this.task, this.folder];
+		return [this.text, this.list, this.checkable, this.task, this.folder/*, undefined, this.space*/];
 	}
 }

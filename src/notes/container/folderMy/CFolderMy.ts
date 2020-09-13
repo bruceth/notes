@@ -20,6 +20,11 @@ export class CFolderMy extends CFolderDisableItemFrom {
 		this.openVPage(VFolderMyView);
 	}
 
+	showFolder(): void {
+		this.load();
+		//this.openVPage(VFolder);
+	}
+
 	protected endContentInput():any {
 		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
 		this.cContent.endInput(obj);

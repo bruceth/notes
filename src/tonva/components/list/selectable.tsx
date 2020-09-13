@@ -166,7 +166,6 @@ export class Selectable extends ListBase {
     //m-0 w-100
     render = (item:SelectableItem, index:number):JSX.Element => {
         let {key} = this.list.props.item;
-		//return <this.row item={item} index={index} key={key===undefined?index:key(item)} />;
 		return React.createElement(this.row, {item, index, key:key===undefined?index:key(item)});
     }
 

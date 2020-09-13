@@ -26,13 +26,8 @@ export class VSpaceView extends VFolder<CSpace> {
 		let left: any;
 		let vEditButton:any;
 		if (this.isMe(this.controller.groupOwner)) {
-			vEditButton = <div className="ml-3">{this.renderEditButton()}</div>;
+			vEditButton = <span className="ml-3">{this.renderEditButton()}</span>;
 		}
-		left = <>
-			<FA className="mr-3 text-warning py-3" name="users" size="2x" />
-			<div className="small text-muted py-3">{this.renderParagraphs(paragraphs)}</div>
-			{vEditButton}
-		</>;
 		let vMembers:any;
 		let {memberCount} = this.controller;
 		if (memberCount) {
@@ -41,9 +36,11 @@ export class VSpaceView extends VFolder<CSpace> {
 				<FA className="ml-2" name="angle-right" />
 			</div>
 		}
-		return <div className="p-3 d-flex align-items-center">
-			{left}
-			{vMembers}
+		return <div className="px-3 py-2 d-flex cursor-pointer" onClick={this.controller.showSpaceContent}>
+			<FA className="mr-3 mt-1 text-warning" name="users" size="2x" />
+			<div className="text-muted">
+				{this.renderParagraphs(paragraphs)}
+			</div>
 		</div>;
 	}
 }

@@ -23,19 +23,6 @@ export class VSpaceView extends VFolder<CSpace> {
 				paragraphs = (content as string)?.trimEnd();
 			}
 		}
-		let left: any;
-		let vEditButton:any;
-		if (this.isMe(this.controller.groupOwner)) {
-			vEditButton = <span className="ml-3">{this.renderEditButton()}</span>;
-		}
-		let vMembers:any;
-		let {memberCount} = this.controller;
-		if (memberCount) {
-			vMembers = <div className="ml-auto cursor-pointer" onClick={this.controller.showMembers}>
-				<span>{memberCount}成员</span>
-				<FA className="ml-2" name="angle-right" />
-			</div>
-		}
 		return <div className="px-3 py-2 d-flex cursor-pointer" onClick={this.controller.showSpaceContent}>
 			<FA className="mr-3 mt-1 text-warning" name="users" size="2x" />
 			<div className="text-muted">

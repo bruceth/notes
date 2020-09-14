@@ -10,11 +10,13 @@ export class VFolder<T extends CContainer> extends VNoteBase<T> {
 		this.controller.owner.popFolder();
 	}
 	header() {
-		let {noteItem} = this.controller;
-		if (noteItem) {
-			return noteItem.caption;
-		}
-		return this.t('notes')
+		return React.createElement(observer(() => {
+				let {noteItem} = this.controller;
+			if (noteItem) {
+				return noteItem.caption;
+			}
+			return this.t('notes');
+		}));
 	}
 
 	right() {

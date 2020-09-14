@@ -1,12 +1,13 @@
+import { VBasePage } from "notes/views/VBasePage";
 import React from "react";
-import { VPage, User, Image, UserView, Page, EasyTime, FA } from "tonva";
+import { User, Image, UserView, Page, EasyTime, FA } from "tonva";
 import { CNoteBase } from "./CNoteBase";
 
 export function renderIcon(name:string, cn:string) {
 	return <FA name={name} size="lg" className={cn} fixWidth={true} />;
 }
 
-export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
+export abstract class VNoteBase<T extends CNoteBase> extends VBasePage<T> {
 	// VPage 里面的页面主体
 	content() {
 		return this.renderBody();

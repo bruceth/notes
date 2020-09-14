@@ -7,6 +7,7 @@ import { Contact } from "model";
 import { VSpaceMembers } from "./VSpaceMembers";
 import { VSpaceView } from "./VSpaceView";
 import { VSpaceEdit } from "./VSpaceEdit";
+import { VContentView } from "./VContentView";
 
 export class CSpace extends CContainer {
 	groupId: number;
@@ -58,6 +59,11 @@ export class CSpace extends CContainer {
 	showMembers = async () => {
 		await this.loadMembers();
 		this.openVPage(VSpaceMembers);
+	}
+
+	showSpaceContent = async() => {
+		await this.loadMembers();
+		this.openVPage(VContentView);
 	}
 
 	showAddMember = async () => {

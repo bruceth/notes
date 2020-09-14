@@ -3,7 +3,7 @@ import { List, FA, User, Image, UserView } from 'tonva';
 import { CContainer } from '../CContainer';
 import { CNoteBase, VNoteBase } from "../../noteBase";
 import { observer } from 'mobx-react';
-import { renderParagraphs } from 'notes/components/renderParagraphs';
+import { renderParagraphs } from '../../components';
 
 export class VFolder<T extends CContainer> extends VNoteBase<T> {
 	afterBack() {

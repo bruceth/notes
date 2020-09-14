@@ -1,4 +1,4 @@
-import { renderParagraphs } from 'notes/components/renderParagraphs';
+import { renderParagraphs } from '../../../components';
 import React from 'react';
 import { View } from "tonva";
 import { CTextBase } from './CTextBase';

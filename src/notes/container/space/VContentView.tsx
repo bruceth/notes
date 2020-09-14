@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import { renderParagraphs } from 'notes/components/renderParagraphs';
+import { renderParagraphs } from '../../components';
 import React from 'react';
 import { FA, List } from 'tonva';
 import { VNoteBase } from "../../noteBase";

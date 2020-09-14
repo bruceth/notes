@@ -75,3 +75,7 @@ export function numberFromId(id:number|BoxId):number {
 	}
 	return _id;
 }
+
+export function compareID(id1:number|BoxId, id2:number|BoxId):boolean {
+	return numberFromId(id1) === numberFromId(id2);
+}

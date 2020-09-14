@@ -4,12 +4,22 @@ import { VFolder } from "../views/VFolder";
 import { CSpace } from './CSpace';
 import { VNotesDropDown } from '../../views';
 import { CNotes } from 'notes/CNotes';
+import { observer } from 'mobx-react';
 
 export class VSpaceView extends VFolder<CSpace> {
+	header() {
+		return React.createElement(observer(() => {
+			let {noteItem} = this.controller;
+			let caption = noteItem ? noteItem.caption : this.t('noteSpace');
+			return <div>{caption}</div>
+		}));
+	}
+
 	right() {
 		let dd = new VSpaceDropdown(this.controller.owner, this.controller);
 		return dd.render();
 	}
+
 	protected top():JSX.Element {
 		let {noteItem} = this.controller;
 		if (!noteItem) return;
@@ -21,6 +31,9 @@ export class VSpaceView extends VFolder<CSpace> {
 			if (json) {
 				let {content} = json;
 				paragraphs = (content as string)?.trimEnd();
+				if (paragraphs.length > 50) {
+					paragraphs = paragraphs.substr(0, 50) + '...';
+				}
 			}
 		}
 		return <div className="px-3 py-2 d-flex cursor-pointer" onClick={this.controller.showSpaceContent}>

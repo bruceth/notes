@@ -40,18 +40,23 @@ export class VContentView extends VNoteBase<CSpace> {
 				</div>
 			</div>;
 			let {memberCount} = this.controller;
+			let members = this.controller.members.filter((value, index)=>value.already===1);
 			return <div>
 				{left}
 				<div className="d-flex mt-2 align-items-end">
 					<div className="ml-3 mb-2 small text-muted">{memberCount}成员</div>
-					<div className="ml-auto cursor-pointer text-success border border-success rounded bg-white px-1 mr-2 mb-1"
-						onClick={this.controller.showAddMember}>
-						<FA name="plus" />
-					</div>
+					{ this.isMe(this.controller.groupOwner) ?
+						<div className="ml-auto cursor-pointer text-success border border-success rounded bg-white px-1 mr-2 mb-1"
+							onClick={this.controller.showAddMember}>
+							<FA name="plus" />
+						</div>
+						:
+						undefined
+					}
 				</div>
 				<div>
 					<div className="text-success px-3 py-2 bg-white border-bottom">[自己]</div>
-					<List items={this.controller.members} item={{render: this.renderContactItem}} />
+					<List items={members} item={{render: this.renderContactItem}} />
 				</div>
 			</div>;
 		}));

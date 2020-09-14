@@ -1,13 +1,14 @@
 import { CContainer } from "../CContainer";
 import { VSpaceDir } from "./VSpaceDir";
 import { renderIcon } from "../../noteBase";
-import { EnumNoteType, NoteItem } from "notes/model";
+import { compareID, EnumNoteType, NoteItem } from "notes/model";
 import { observable } from "mobx";
 import { Contact } from "model";
 import { VSpaceMembers } from "./VSpaceMembers";
 import { VSpaceView } from "./VSpaceView";
 import { VSpaceEdit } from "./VSpaceEdit";
 import { VContentView } from "./VContentView";
+import { VContacts } from "./VContacts";
 
 export class CSpace extends CContainer {
 	groupId: number;
@@ -41,7 +42,10 @@ export class CSpace extends CContainer {
 
 	async loadContacts() {
 		let result = await this.uqs.notes.GetGroupMembers.query({group: this.groupId});
-		this.contacts = result.ret;
+		let ret:any[] = result.ret;
+		let index = ret.findIndex(v => this.isMe(v.contact));
+		if (index >= 0) ret.splice(index, 1);
+		this.contacts = ret;
 	}
 
 	renderIcon(): JSX.Element {
@@ -68,8 +72,32 @@ export class CSpace extends CContainer {
 
 	showAddMember = async () => {
 		await this.loadContacts();
-		//this.openVPage(VContacts);
-		this.owner.callSelectContact(undefined);
+		await this.loadMembers();
+		this.openVPage(VContacts);
+		//this.owner.callSelectContact(undefined);
+	}
+
+	async selectMember(item:Contact, isSelected:boolean) {
+		let i = this.contacts.findIndex(v=>compareID(v.contact, item.contact));
+		if (i < 0)
+			return;
+		let c = this.contacts[i];
+		if (isSelected) {
+			await this.uqs.notes.AddGroupMember.submit({group:this.groupId, member:c.contact});
+			c.already = 1;
+		}
+		else {
+			await this.uqs.notes.RemoveGroupMember.submit({group:this.groupId, member:c.contact})
+			c.already = 0;
+		}
+		let mi = this.members.findIndex(v=>compareID(v.contact, item.contact));
+		if (mi >= 0) {
+			let m = this.members[mi];
+			m.already = c.already;
+		}
+		else if (isSelected) {
+			this.members.push({...c});
+		}
 	}
 
 	protected endContentInput():any {

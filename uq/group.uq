@@ -82,7 +82,7 @@ RETURNS ret (
 	SET groupId=a.group, [owner]=b.owner FROM GroupFolder as a 
 		LEFT JOIN Note as b ON a.group=b.id
 		WHERE a.folder=folder;
-	SET [count]=count(*) FROM GroupFolder as a WHERE a.group=groupId;
+	SET [count]=count(*) FROM GroupFolder as a WHERE a.group=groupId and a.state=1;
 	INTO ret select groupId as [group], [count], [owner];
 };
 
@@ -96,7 +96,7 @@ RETURNS ret (
 	state TINYINT,
 ) {
 	INTO ret SELECT a.member as contact, b.assigned,
-		1 as already,
+		a.state as already,
 		b.state
 		FROM GroupFolder as a 
 			LEFT JOIN MyContact as b ON a.member=b.contact and b.me=$user
@@ -114,7 +114,7 @@ RETURNS ret (
 	state TINYINT,
 ) {
 	INTO ret SELECT b.contact, b.assigned,
-		CASE WHEN a.member IS NULL THEN 0 ELSE 1 END as already,
+		CASE WHEN a.member IS NULL or a.state=1 THEN 0 ELSE 1 END as already,
 		b.state
 		FROM MyContact as b
 			LEFT JOIN GroupFolder as a ON a.member=b.contact and b.me=$user
@@ -128,14 +128,18 @@ ACTION AddGroupMember (
 	IF exists(SELECT id FROM Note WHERE owner=$user AND id=[group] AND type=EnumNoteType.Group) {
 		VAR folderId ID, specFolderId ID, caption CHAR(200), content TEXT, seconds INT;
 		SET folderId=a.folder FROM GroupFolder as a WHERE a.group=group AND a.member=member;
+		SET caption=a.caption, content=a.content FROM Note as a WHERE a.id=group;
 		IF folderId IS NULL {
 			SET specFolderId=folder FROM SpecFolder WHERE owner=member AND spec=EnumSpecFolder.notes;
 			SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
-			SET caption=a.caption, content=a.content FROM Note as a WHERE a.id=group;
 			TUID Note INTO folderId SET type=EnumNoteType.GroupFolder, caption=caption, content=content, owner=member;
 			BOOK GroupFolder AT(group, member) SET folder=folderId;
 			BOOK FolderNote AT(specFolderId, folderId) SET seconds=seconds;
 			TUID [$User] ID (member) SET poke=1;
+		}
+		else {
+			TUID Note ID folderId SET caption=caption, content=content;
+			BOOK GroupFolder AT(group, member) SET state=1;
 		}
 	}
 };

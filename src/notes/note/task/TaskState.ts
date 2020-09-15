@@ -1,4 +1,4 @@
-import { EnumNoteType } from "../../model";
+import { EnumNoteType, NoteItem } from "../../model";
 
 export enum EnumTaskState { Start = 0, Done = 1, Pass = 2, Fail = 3, Rated = 4, Canceled = 5 };
 
@@ -19,4 +19,26 @@ export function GetTaskStateContent(type:number, state:number) {
 	if (type !== EnumNoteType.task)
 		return;
 	return stateContents[state as EnumTaskState];
+}
+
+export function getTaskItemState(noteItem: NoteItem): TaskStateResult {
+	let {type, state} = noteItem;
+	if (type !== EnumNoteType.task)
+		return;
+	switch (state) {
+		case EnumTaskState.Done:
+			if (noteItem.obj.checker) {
+				return {content: '待验收', isEnd: false};
+			}
+			else if (noteItem.obj.rater) {
+				return {content: '待评分', isEnd: false};
+			}
+			break;
+		case EnumTaskState.Pass:
+			if (noteItem.obj.rater) {
+				return {content: '待评分', isEnd: false};
+			}
+			break;
+	}
+	return GetTaskStateContent(type, state);
 }

@@ -34,7 +34,7 @@ export class CNotes extends CUqBase {
 		this.foldStack = [];
 	}
 
-	noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteBase => {
+	noteItemInitObj = (item:NoteItem):void => {
 		let {type, content, flowContent} = item;
 		if (flowContent) {
 			let obj = JSON.parse(flowContent);
@@ -55,7 +55,10 @@ export class CNotes extends CUqBase {
 				item.obj = content;
 			}
 		}
+	}
 
+	noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteBase => {
+		this.noteItemInitObj(item);
 		let cNoteBase = this.createCNoteBase(item);
 		cNoteBase.init(item);
 		return cNoteBase;

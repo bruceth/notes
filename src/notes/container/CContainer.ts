@@ -71,6 +71,9 @@ export abstract class CContainer extends CNoteBase {
 		noteModel.spawn = ret.spawn;
 		noteModel.contain = ret.contain;
 		noteModel.comments = ret.comments;
+		for (var sItem of noteModel.spawn) {
+			this.owner.noteItemInitObj(sItem);
+		}
 		return noteModel;
 	}
 

@@ -117,8 +117,11 @@ RETURNS ret (
 		CASE WHEN a.member IS NULL or a.state=1 THEN 0 ELSE 1 END as already,
 		b.state
 		FROM MyContact as b
-			LEFT JOIN GroupFolder as a ON a.member=b.contact and b.me=$user
-		WHERE a.group=[group] AND b.state=EnumContactState.OK;
+			LEFT JOIN GroupFolder as a 
+				ON a.member=b.contact 
+					and a.group=[group]
+					AND b.state=EnumContactState.OK
+		WHERE b.me=$user;
 };
 
 ACTION AddGroupMember (

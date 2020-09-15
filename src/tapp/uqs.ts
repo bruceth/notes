@@ -29,6 +29,7 @@ export interface Notes {
 	GetNote: Query;
 	GetShareContacts: Query;
 	GetSpawnContacts: Query;
+	GetAssignToContacts: Query;
 
 	AddGroupMember: Action;
 	RemoveGroupMember: Action;

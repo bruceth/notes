@@ -13,7 +13,7 @@ export class CAssignTo extends CTo {
 		this.cNoteAssign = cNoteAssign;
 	}
 
-	protected get GetContacts(): Query {return this.uqs.notes.GetSpawnContacts}
+	protected get GetContacts(): Query {return this.uqs.notes.GetAssignToContacts}
 
 	protected async sendOut(toList:number[]): Promise<void> {
 		await this.cNoteAssign.assignTask(toList);

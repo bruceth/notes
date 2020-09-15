@@ -41,7 +41,7 @@ export class CSpace extends CContainer {
 	}
 
 	async loadContacts() {
-		let result = await this.uqs.notes.GetGroupMembers.query({group: this.groupId});
+		let result = await this.uqs.notes.GetGroupContacts.query({group: this.groupId});
 		let ret:any[] = result.ret;
 		let index = ret.findIndex(v => this.isMe(v.contact));
 		if (index >= 0) ret.splice(index, 1);

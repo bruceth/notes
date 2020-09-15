@@ -6,6 +6,7 @@ import { VRelativesBase, TabRelative } from '../../noteBase';
 export class VRelativesNoteBase<T extends CNote> extends VRelativesBase<T> {
 	protected tabComment:TabRelative = {
 		name: 'comment',
+		visible: () => this.controller.noteItem.commentCount>0,
 		caption: (isAction:boolean) => {
 			let {commentCount} = this.controller.noteItem;
 			let vCount:any;
@@ -20,6 +21,7 @@ export class VRelativesNoteBase<T extends CNote> extends VRelativesBase<T> {
 
 	protected tabFlow:TabRelative = {
 		name: 'flow',
+		visible: () => this.controller.noteModel?.flow.length>0,
 		caption: (isAction:boolean) => {
 			return <>流程</>;
 		},

@@ -56,7 +56,7 @@ export class VContentView extends VNoteBase<CSpace> {
 				</div>
 				<div>
 					<div className="text-success px-3 py-2 bg-white border-bottom">[自己]</div>
-					<List items={members} item={{render: this.renderContactItem}} />
+					{members.length>0 && <List items={members} item={{render: this.renderContactItem}} />}
 				</div>
 			</div>;
 		}));

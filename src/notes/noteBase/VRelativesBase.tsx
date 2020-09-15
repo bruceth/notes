@@ -8,12 +8,14 @@ export interface TabRelative {
 	name: string;
 	caption: (isAction:boolean) => JSX.Element;
 	render: () => JSX.Element;
+	visible: () => boolean;
 }
 
 export class VRelativesBase<T extends CNoteBase> extends VNoteBase<T> {
 
 	protected tabShare:TabRelative = {
 		name: 'share',
+		visible: () => this.controller.noteItem.toCount>0,
 		caption: (isAction:boolean) => {
 			let {toCount} = this.controller.noteItem;
 			let vCount:any;
@@ -51,7 +53,8 @@ export class VRelativesBase<T extends CNoteBase> extends VNoteBase<T> {
 	protected renderTabs():JSX.Element {
 		let render = observer(() => {
 			let {activeRelativeTab} = this.controller;
-			let tabs = this.tabs;
+			let tabs = this.tabs.filter(tab => tab.visible?.());
+			if (tabs.length === 0) return;
 			let tab = tabs.find(v => v.name === activeRelativeTab);
 			if (!tab) tab = tabs[0];
 			return <div className="bg-white">

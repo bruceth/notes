@@ -31,15 +31,14 @@ export class VSpaceView extends VFolder<CSpace> {
 			if (json) {
 				let {content} = json;
 				paragraphs = (content as string)?.trimEnd();
-				if (paragraphs.length > 50) {
-					paragraphs = paragraphs.substr(0, 50) + '...';
-				}
+				paragraphs = paragraphs.replace(/(\r|\n)/g, ' ');
 			}
 		}
-		return <div className="px-3 py-2 d-flex cursor-pointer" onClick={this.controller.showSpaceContent}>
+		return <div className="px-3 py-2 d-flex cursor-pointer align-items-center"
+			onClick={this.controller.showSpaceContent}>
 			<FA className="mr-3 mt-1 text-warning" name="users" size="2x" />
-			<div className="text-muted">
-				{this.renderParagraphs(paragraphs)}
+			<div className="text-muted" style={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+				{paragraphs}
 			</div>
 		</div>;
 	}

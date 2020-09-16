@@ -50,7 +50,13 @@ export abstract class VNotesDropDown extends View<CNotes> {
 
 export class VHomeDropdown extends VNotesDropDown {
 	protected get dropdownActions(): DropdownAction[] {
-		return [this.text, this.list, this.checkable, this.task, this.folder, this.space];
+		return [this.text, this.list, this.checkable, this.folder, this.space];
+	}
+}
+
+export class VFolderDropdown extends VNotesDropDown {
+	protected get dropdownActions(): DropdownAction[] {
+		return [this.text, this.list, this.checkable, this.folder];
 	}
 }
 

@@ -132,13 +132,12 @@ export class VAssignParams extends VPage<CAssignTo> {
 
 	private onClickChecker = async () => {
 		let cSelectContact = new CNotesSelectContact(this.cNoteAssign.owner, '检查人')
-		await cSelectContact.start();
+		cSelectContact.SetContacts(this.controller.groupContacts);
 
 		let options: SelectContactOptions = {title: '检查人', single: true};
-		let contacts = await this.cNoteAssign.owner.callSelectContact(options);
+		let contacts = await cSelectContact.callSelectContact(options);
 		this.closePage();
 		this.cNoteAssign.checker = contacts[0];
-
 	}
 
 	private renderRater() {
@@ -147,10 +146,10 @@ export class VAssignParams extends VPage<CAssignTo> {
 
 	private onClickRater = async () => {
 		let cSelectContact = new CNotesSelectContact(this.cNoteAssign.owner, '评价人')
-		await cSelectContact.start();
+		cSelectContact.SetContacts(this.controller.groupContacts);
 
 		let options: SelectContactOptions = {title: '评价人', single: true};
-		let contacts = await this.cNoteAssign.owner.callSelectContact(options);
+		let contacts = await cSelectContact.callSelectContact(options);
 		this.closePage();
 		this.cNoteAssign.rater = contacts[0];
 	}
@@ -163,6 +162,15 @@ class CNotesSelectContact extends CSelectContact {
 		super(cNotes.cApp);
 		this.cNotes = cNotes;
 		this.title = title;
+	}
+
+	SetContacts(contacts:Contact[]) {
+		this.contacts = [];
+		for (var ci of contacts) {
+			let n = {...ci};
+			n.already = 0;
+			this.contacts.push(n);
+		}
 	}
 
 	protected async loadContacts() {

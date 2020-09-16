@@ -2,6 +2,7 @@ import { NoteItem } from 'notes/model';
 import React from 'react';
 import { List } from 'tonva';
 import { VNoteBaseView } from '../../noteBase';
+import { getTaskItemState } from '../task/TaskState';
 import { CNoteAssign } from './CNoteAssign';
 import { VAssignRelatives } from './VAssignRelatives';
 
@@ -54,8 +55,12 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 
 	private renderSpawn = (noteItem: NoteItem, index: number) => {
 		let {owner, assigned} = noteItem;
+		let state = getTaskItemState(noteItem);
+		let {content, isEnd} = state;
 		return <div className="px-3 py-2 bg-light border-top">
 			{this.renderContact(owner as number, assigned)}
+			<div className="ml-2"></div>
+			{this.renderStateSpan(content, isEnd)}
 		</div>
 	}
 }

@@ -2,7 +2,7 @@
 import { computed, observable } from 'mobx';
 //import { FA } from 'tonva';
 import { Contact } from '../../../model';
-import { EnumNoteType, NoteItem } from '../../model';
+import { EnumNoteType, NoteItem, numberFromId } from '../../model';
 import { renderIcon } from '../../noteBase';
 import { CContent, CCheckable } from '../../components';
 import { CNote } from '../CNote';
@@ -72,13 +72,13 @@ export class CNoteAssign extends CNote {
 		let { caption, content } = this.noteItem;
 		let cObj = JSON.parse(content);
 		if (this.checker) {
-			cObj.checker = this.checker.contact;
+			cObj.checker = numberFromId(this.checker.contact);
 		}
 		else {
 			delete cObj.checker;
 		}
 		if (this.rater) {
-			cObj.rater = this.rater.contact;
+			cObj.rater = numberFromId(this.rater.contact);
 		}
 		else {
 			delete cObj.rater;

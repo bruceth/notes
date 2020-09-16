@@ -51,7 +51,7 @@ export class VSelectContact extends VBasePage<CSelectContact> {
 	content() {
 		let render = () => {
 			let list:any;
-			let items = this.controller.cApp.contacts;
+			let items = this.controller.contacts;
 			if (this.multiple === true) {
 				list = <List ref={v => this.list = v}
 					items={items} 

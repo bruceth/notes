@@ -156,3 +156,35 @@ PAGE (
 			LIMIT $pageSize;
 	}
 };
+
+QUERY GetAssignToContacts (
+	groupFolder ID,
+	note ID Note,
+)
+PAGE (
+	contact ID [$User] ASC,
+	assigned TEXT(TINY),
+	already TINYINT,
+	state TINYINT,
+) {
+	IF groupFolder IS NULL OR groupFolder <= 0 {
+		PAGE SELECT b.contact, b.assigned, 0 as already, b.state
+			FROM MyContact as b
+			WHERE b.me=$user AND b.contact>$pageStart
+			ORDER BY b.contact ASC
+			LIMIT $pageSize;
+	}
+	ELSE {
+		VAR groupId ID;
+		SET groupId=a.group FROM GroupFolder as a WHERE a.folder=groupFolder;
+
+		-- GroupFolder里面包含自己
+		-- GroupFolder JOIN MyContact 自动去掉了自己
+		PAGE SELECT b.contact, b.assigned, 0 as already, b.state
+			FROM GroupFolder as a 
+				JOIN MyContact as b ON b.me=$user AND b.contact=a.member
+			WHERE a.group=groupId AND b.contact>$pageStart
+			ORDER BY b.contact ASC
+			LIMIT $pageSize;
+	}
+};

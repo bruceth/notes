@@ -74,7 +74,6 @@ export class CSpace extends CContainer {
 		await this.loadContacts();
 		await this.loadMembers();
 		this.openVPage(VContacts);
-		//this.owner.callSelectContact(undefined);
 	}
 
 	async selectMember(item:Contact, isSelected:boolean) {

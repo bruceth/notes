@@ -9,7 +9,7 @@ import { Contact } from "../model";
 //import { VSent } from "./views/VSent";
 //import { VTo } from "./views/VTo";
 import { createCNoteTask } from "./note";
-import { VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
+import { VFolderDropdown, VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
 import { CNoteText } from "./note/text";
 import { CNoteAssign } from "./note/assign";
 import { CFolderMy } from "./container/folderMy";
@@ -155,12 +155,16 @@ export class CNotes extends CUqBase {
 	renderHomeDropDown() {
 		let vHomeDropdown = new VHomeDropdown(this);
 		return vHomeDropdown.render();
-		//return this.renderView(VHomeDropdown)
 	};
+
+	renderFolderDropDown() {
+		let vHomeDropdown = new VFolderDropdown(this);
+		return vHomeDropdown.render();
+	};
+
 	renderSpaceDropDown() {
 		let vSpaceDropdown = new VSpaceDropdown(this);
 		return vSpaceDropdown.render();
-		//return this.renderView(VSpaceDropdown)
 	};
 
 	showAddNoteTextPage = () => {

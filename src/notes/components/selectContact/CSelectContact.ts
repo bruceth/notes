@@ -1,6 +1,6 @@
 import { observable } from "mobx";
 import { Contact } from "model";
-import { VSelectContact } from "./VSelectContact";
+import { SelectContactOptions, VSelectContact } from "./VSelectContact";
 import { CUqBase } from "tapp";
 
 export abstract class CSelectContact extends CUqBase {
@@ -23,5 +23,15 @@ export abstract class CSelectContact extends CUqBase {
 		this.openVPage(VSelectContact);
 	}
 
+	SetContacts(contacts:Contact[]) {
+		this.contacts = [];
+		for (var ci of contacts) {
+			let n = {...ci};
+			this.contacts.push(n);
+		}
+	}
 
+	async callSelectContact(options: SelectContactOptions): Promise<Contact[]> {
+		return await this.vCall(VSelectContact, options);
+	}
 }

@@ -22,7 +22,7 @@ export class VFolder<T extends CContainer> extends VNoteBase<T> {
 	right() {
 		// 应该任何群成员都可以发小单吧
 		//if (this.isMe(this.controller.noteItem.owner)) {
-			return this.controller.owner.renderSpaceDropDown();
+			return this.controller.owner.renderFolderDropDown();
 		//}
 	}
 

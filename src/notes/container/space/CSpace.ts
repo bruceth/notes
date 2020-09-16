@@ -9,6 +9,7 @@ import { VSpaceView } from "./VSpaceView";
 import { VSpaceEdit } from "./VSpaceEdit";
 import { VContentView } from "./VContentView";
 import { VContacts } from "./VContacts";
+import { VSapceAdd } from "./VSpaceAdd";
 
 export class CSpace extends CContainer {
 	groupId: number;
@@ -55,7 +56,11 @@ export class CSpace extends CContainer {
 		let item = new VSpaceDir(this);
 		return item.render();
 	}
-	showAddPage() {}
+
+	showAddPage() {
+		this.openVPage(VSapceAdd);
+	}
+
 	showEditPage() {
 		this.openVPage(VSpaceEdit);
 	}
@@ -103,6 +108,12 @@ export class CSpace extends CContainer {
 		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
 		this.cContent.endInput(obj);
 		return obj;
+	}
+
+	async addGroup() {
+		let obj = this.endContentInput();
+		let noteContent = JSON.stringify(obj);
+		return await this.owner.rootFold.addGroup(this.caption, noteContent, []);
 	}
 
 	async SetGroup(showWaiting: boolean = true) {

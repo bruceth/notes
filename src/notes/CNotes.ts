@@ -16,6 +16,7 @@ import { CFolderMy } from "./container/folderMy";
 //import { CTo } from "./components/to";
 //import { VActions } from "./views/VActions";
 import { CShareTo } from "./CShareTo";
+import { CSpace } from "./container/space";
 
 export class CNotes extends CUqBase {
 	protected foldStack: CContainer[];
@@ -171,18 +172,29 @@ export class CNotes extends CUqBase {
 		let cNoteText = this.createCNoteText();
 		cNoteText.showAddPage();
 	}
+
 	showAddNoteListPage = () => {
 		let cNoteText = this.createCNoteList();
 		cNoteText.showAddPage();
 	}
+	
 	showAddNoteCheckablePage = () => {
 		let cNoteText = this.createCNoteCheckable();
 		cNoteText.showAddPage();
 	}
+
 	showAddMyFolderPage = () => {
 		let cFolder = new CFolderMy(this);
 		cFolder.init(undefined);
 		cFolder.showAddPage();
+	}
+
+	showAddGroupPage = () => {
+		//let cGroup = this.newSub(CGroup);
+		//cGroup.showAddPage()
+		let cGroup = new CSpace(this);
+		cGroup.init(undefined);
+		cGroup.showAddPage();
 	}
 
 	showAddAssignPage = () => {
@@ -238,9 +250,4 @@ export class CNotes extends CUqBase {
 		cNoteTask.showAssignTaskPage();
 	}
 	*/
-
-	showAddGroupPage = () => {
-		let cGroup = this.newSub(CGroup);
-		cGroup.showAddPage();
-	}
 }

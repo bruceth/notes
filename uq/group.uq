@@ -120,7 +120,7 @@ RETURNS ret (
 			LEFT JOIN GroupFolder as a 
 				ON a.member=b.contact 
 					and a.group=[group]
-					AND b.state=EnumContactState.OK
+					-- AND b.state=EnumContactState.OK
 		WHERE b.me=$user;
 };
 

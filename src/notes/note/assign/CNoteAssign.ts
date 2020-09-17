@@ -84,7 +84,7 @@ export class CNoteAssign extends CNote {
 			delete cObj.rater;
 		}
 		cObj.assignhours = this.assignhours;
-		cObj.hours = this.assignhours;
+		//cObj.hours = this.assignhours;
 		cObj.point = this.point;
 		let data = {
 			groupFolder: this.owner.currentFold.groupFolder,

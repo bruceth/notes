@@ -17,10 +17,20 @@ export class VNoteBaseDir<T extends CNoteBase> extends VNoteBase<T> {
 		}));
 	}
 
+	protected renderTopCaptionContent() {
+		return <div className="bg-white">
+			{this.renderTop()}
+			<div className="py-2">
+				{this.renderContent()}
+			</div>
+		</div>;
+	}
+
 	protected renderTop():JSX.Element {
 		return <div className="d-flex px-3 py-2 align-items-center border-top">
 			{this.renderIcon()}
 			{this.renderFrom()}
+			{this.renderCaption()}
 			<div className="ml-auto">{this.renderEditTime()}</div>
 		</div>;
 	}

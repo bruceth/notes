@@ -52,20 +52,6 @@ export class VAssignParams extends VPage<CAssignTo> {
 		</div>;
 	}
 
-	/*
-	private onSendTask = async () => {
-		await this.controller.assignTask({
-			contacts: this.contacts,
-			checker: this.checker,
-			rater: this.rater,
-			point: this.point,
-			hours: this.hours,
-		});
-		this.closePage(2);
-		this.controller.owner.showSentPage();
-	}
-	*/
-
 	private renderContact = (item:Contact, index?:number) => {
 		if (!item) return none;
 		let {contact, assigned} = item;
@@ -78,25 +64,6 @@ export class VAssignParams extends VPage<CAssignTo> {
 		}
 		return <UserView user={contact} render={renderUser} />;
 	}
-
-	/*
-	private renderContacts() {
-		return React.createElement(observer(() => {
-			let contacts = this.contacts;
-			if (!contacts || contacts.length === 0) return <small className="text-muted">请选择</small>;
-			return <>{contacts.map((v, index) => {
-				return <React.Fragment key={index}>{this.renderContact(v, index)}</React.Fragment>;
-			})}</>;	
-		}));
-	}
-
-	private onClickContacts = async () => {
-		let options: SelectContactOptions = undefined; // {title: 'a', action: 'b', single: true};
-		let contacts = await this.controller.owner.callSelectContact(options);
-		this.closePage();
-		this.contacts = contacts;
-	}
-	*/
 
 	private renderPoint() {
 		return <input className="flex-fill form-control border-0"
@@ -132,7 +99,7 @@ export class VAssignParams extends VPage<CAssignTo> {
 
 	private onClickChecker = async () => {
 		let cSelectContact = new CNotesSelectContact(this.cNoteAssign.owner, '检查人')
-		cSelectContact.SetContacts(this.controller.groupContacts);
+		cSelectContact.SetContacts(this.controller.GetCheckerContacts());
 
 		let options: SelectContactOptions = {title: '检查人', single: true};
 		let contacts = await cSelectContact.callSelectContact(options);
@@ -146,7 +113,7 @@ export class VAssignParams extends VPage<CAssignTo> {
 
 	private onClickRater = async () => {
 		let cSelectContact = new CNotesSelectContact(this.cNoteAssign.owner, '评价人')
-		cSelectContact.SetContacts(this.controller.groupContacts);
+		cSelectContact.SetContacts(this.controller.GetCheckerContacts());
 
 		let options: SelectContactOptions = {title: '评价人', single: true};
 		let contacts = await cSelectContact.callSelectContact(options);

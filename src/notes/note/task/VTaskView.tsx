@@ -6,6 +6,7 @@ import { EnumTaskState } from "./TaskState"
 import { CNoteTask } from "./CNoteTask";
 import { VTaskRelatives } from './VTaskRelatives';
 import { none } from 'tool';
+import { taskTimeToString } from 'notes/model';
 
 //const none = <small className="text-muted">[无]</small>;
 
@@ -95,7 +96,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	}
 
 	protected additionRows: TaskParam[] = [
-		{label: '分值', values: this.renderPoint()}, 
+		//{label: '分值', values: this.renderPoint()}, 
 		{label: '工时', values: this.renderHours()}, 
 	];
 
@@ -114,7 +115,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 
 	protected renderHours() {
 		return <div className="flex-fill form-control border-0">
-			{this.controller.hours}
+			{taskTimeToString(this.controller.hours)}
 		</div>;
 	}
 

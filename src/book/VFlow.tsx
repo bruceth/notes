@@ -14,8 +14,8 @@ export class VFlow extends VPage<CBook> {
 		return <div>
 			<div className="px-3 py-2 d-flex">
 				<div className="w-8c">日期</div>
-				<div className="w-5c text-right">借</div>
-				<div className="w-5c text-right">贷</div>
+				<div className="w-5c text-right">增</div>
+				<div className="w-5c text-right">减</div>
 			</div>
 			<List
 				items={this.controller.projectDetailPager}

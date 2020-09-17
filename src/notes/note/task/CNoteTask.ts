@@ -20,6 +20,7 @@ export abstract class CNoteTask extends CNote {
 	protected rateInfoInput: string;
 	protected rateValue: number;
 	protected rateValueInput: number;
+	assignhours: number;
 	hours: number;
 	point: number;
 
@@ -38,6 +39,7 @@ export abstract class CNoteTask extends CNote {
 				this.rateValueInput = this.rateValue;
 				this.checker = obj.checker;
 				this.rater = obj.rater;
+				this.assignhours = obj.assignhours;
 				this.hours = obj.hours;
 				this.point = obj.point;
 			}
@@ -71,6 +73,7 @@ export abstract class CNoteTask extends CNote {
 		if (this.rater !== undefined) {
 			obj.rater = this.rater;
 		}
+		obj.assignhours = this.assignhours;
 		obj.hours = this.hours;
 		obj.point = this.point;
 		this.cContent.endInput(obj);

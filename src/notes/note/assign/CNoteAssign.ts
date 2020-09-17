@@ -18,7 +18,7 @@ export class CNoteAssign extends CNote {
 	@observable rater: Contact;
 
 	point:number = 100;
-	hours:number = 3;
+	assignhours:number = 0;
 
 	init(param: NoteItem): void {
 		super.init(param);
@@ -83,7 +83,8 @@ export class CNoteAssign extends CNote {
 		else {
 			delete cObj.rater;
 		}
-		cObj.hours = this.hours;
+		cObj.assignhours = this.assignhours;
+		cObj.hours = this.assignhours;
 		cObj.point = this.point;
 		let data = {
 			groupFolder: this.owner.currentFold.groupFolder,

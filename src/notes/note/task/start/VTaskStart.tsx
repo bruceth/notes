@@ -1,3 +1,4 @@
+import { checkHourMinutes, taskTimeToString } from 'notes/model';
 import React from 'react';
 import { VTaskView, TaskParam } from '../VTaskView';
 import { CTaskStart } from './CTaskStart';
@@ -26,19 +27,37 @@ export class VTaskStart extends VTaskView<CTaskStart> {
 
 	protected additionRows: TaskParam[] = [
 		{label: '分值', values: this.renderPoint()}, 
-		{label: '实际工时', values: this.renderHours()}, 
+		{label: '分派工时', values: this.renderHours()}, 
+		{label: '实际工时', values: this.renderRealHours()}, 
 	];
 
 	protected renderHours() {
+		return <div className="flex-fill mr-3 form-control border-0">{taskTimeToString(this.controller.assignhours)}
+		</div>;
+	}
+
+	protected renderRealHours() {
 		return <div className="flex-fill mr-3 "><input className="flex-fill form-control border-0"
-			type="number" step="1" min="1" defaultValue={this.controller.hours}
+			type="text" defaultValue={taskTimeToString(this.controller.assignhours)}
+			placeholder="2.5或者2：30表示两个半小时"
+			onBlur={this.onHoursBlur}
 			onChange={e=>this.onHoursChange(e)}/>
 		</div>;
 	}
 
-
 	protected onHoursChange(evt:React.ChangeEvent<HTMLInputElement>) {
-		this.controller.hours = Number(evt.currentTarget.value);
+		let m = checkHourMinutes(evt.target.value);
+		if (m < 0) {
+			m = 0;
+		}
+		this.controller.hours = m;
+	}
+
+	protected onHoursBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
+		if (checkHourMinutes(evt.target.value) < 0) {
+			evt.target.value = '';
+			this.controller.hours = 0;
+		}
 	}
 
 	private onDone = async () => {

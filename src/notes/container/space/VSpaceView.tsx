@@ -16,8 +16,13 @@ export class VSpaceView extends VFolder<CSpace> {
 	}
 
 	right() {
-		let dd = new VSpaceDropdown(this.controller.owner, this.controller);
-		return dd.render();
+		if (this.isMe(this.controller.groupOwner)) {
+			let dd = new VSpaceDropdown(this.controller.owner, this.controller);
+			return dd.render();
+		}
+		else {
+			return this.controller.owner.renderSpaceDropDown();
+		}
 	}
 
 	protected top():JSX.Element {

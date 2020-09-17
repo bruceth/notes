@@ -5,7 +5,7 @@ export class CFolderRoot extends CFolder {
 	showAddPage() {}
 	showEditPage() {}
 
-	showFolder(): void {
+	async showFolder() {
 		this.load();
 		//this.openVPage(VFolder);
 	}

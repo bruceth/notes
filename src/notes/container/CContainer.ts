@@ -97,7 +97,7 @@ export abstract class CContainer extends CNoteBase {
 		return this.noteItem;
 	}
 
-	abstract showFolder(): void;
+	abstract async showFolder(): Promise<void>;
 	/* {
 		this.load();
 		this.openVPage(VFolder);

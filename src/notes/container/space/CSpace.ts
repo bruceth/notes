@@ -19,9 +19,9 @@ export class CSpace extends CContainer {
 	@observable contacts:Contact[];
 
 	get type():EnumNoteType { return EnumNoteType.groupFolder }
-	showFolder() {
+	async showFolder() {
 		this.load();
-		this.loadSpace();		 
+		await this.loadSpace();		 
 		this.openVPage(VSpaceView);
 	}
 

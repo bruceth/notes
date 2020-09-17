@@ -9,7 +9,7 @@ export class CFolderShare extends CFolderDisableItemFrom {
 	showAddPage() {}
 	showEditPage() {}
 
-	showFolder(): void {
+	async showFolder() {
 		this.load();
 		this.openVPage(VFolderShare);
 	}

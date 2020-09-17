@@ -62,6 +62,6 @@ export class VFolderDropdown extends VNotesDropDown {
 
 export class  VSpaceDropdown extends VNotesDropDown {
 	protected get dropdownActions(): DropdownAction[] {
-		return [this.text, this.list, this.checkable, this.task, this.folder/*, undefined, this.space*/];
+		return [this.text, this.list, this.checkable, this.task, this.folder];
 	}
 }

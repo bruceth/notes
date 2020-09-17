@@ -21,7 +21,7 @@ export class CFolderMy extends CFolderDisableItemFrom {
 		this.openVPage(VFolderMyView);
 	}
 
-	showFolder(): void {
+	async showFolder() {
 		this.load();
 		this.openVPage(VFolderMy);
 	}

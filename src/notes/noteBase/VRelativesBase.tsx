@@ -54,7 +54,9 @@ export class VRelativesBase<T extends CNoteBase> extends VNoteBase<T> {
 		let render = observer(() => {
 			let {activeRelativeTab} = this.controller;
 			let tabs = this.tabs.filter(tab => tab.visible?.());
-			if (tabs.length === 0) return;
+			if (tabs.length === 0) {
+				return;
+			}
 			let tab = tabs.find(v => v.name === activeRelativeTab);
 			if (!tab) tab = tabs[0];
 			return <div className="bg-white">

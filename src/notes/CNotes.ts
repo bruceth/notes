@@ -1,20 +1,14 @@
 import { CUqBase } from "tapp";
-//import { observable } from "mobx";
 import { VSelectContact, SelectContactOptions } from "./views";
 import { EnumNoteType, NoteItem } from "./model";
 import { CNoteBase } from "./noteBase";
 import { CContainer, CFolderRoot, createCSpace, createCFolder } from "./container";
-import { CGroup } from "./group";
 import { Contact } from "../model";
-//import { VSent } from "./views/VSent";
-//import { VTo } from "./views/VTo";
 import { createCNoteTask } from "./note";
 import { VFolderDropdown, VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
 import { CNoteText } from "./note/text";
 import { CNoteAssign } from "./note/assign";
 import { CFolderMy } from "./container/folderMy";
-//import { CTo } from "./components/to";
-//import { VActions } from "./views/VActions";
 import { CShareTo } from "./CShareTo";
 import { CSpace } from "./container/space";
 
@@ -22,9 +16,6 @@ export class CNotes extends CUqBase {
 	protected foldStack: CContainer[];
 	rootFold: CContainer;
 	currentFold: CContainer;
-
-	//@observable groupMembers: Contact[];
-	//@observable contacts: Contact[];
 	noteItem: NoteItem;
 
     protected async internalStart() {

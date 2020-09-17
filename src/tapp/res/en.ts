@@ -13,12 +13,14 @@ export const en = {
 	task: 'Task',
 	assign: 'Assign',
 
+	noteSpace: 'Group',
+
 	noteText: 'Text',
 	noteList: 'List',
 	noteCheckable: 'Checkable',
 	noteTask: 'Task',
 	noteFolder: 'Folder',
-	noteSpace: 'Space',
+	noteCreateSpace: 'Create Group',
 
 	content: 'Content',
 }

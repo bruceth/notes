@@ -1,7 +1,6 @@
 import { CNoteBase } from "../noteBase";
 import { NoteItem } from "../model";
 import { CComments } from "./components";
-import { VNoteRelatives } from "./views";
 
 export abstract class CNote extends CNoteBase {
 	cComments: CComments;
@@ -32,13 +31,5 @@ export abstract class CNote extends CNoteBase {
 			this.activeRelativeTab = 'comment';
 			this.updateChange();
 		}
-	}
-
-	deleteComment = async (commentId: number) => {
-		debugger;
-	}
-
-	protected renderRelatives() {
-		return this.renderView(VNoteRelatives);
 	}
 }

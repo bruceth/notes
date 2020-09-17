@@ -33,7 +33,7 @@ export abstract class VNotesDropDown extends View<CNotes> {
 	};
 	protected space = {
 		icon:'users', 
-		caption:this.t('noteSpace'), 
+		caption:this.t('noteCreateSpace'), 
 		action: this.controller.showAddGroupPage,
 		iconClass: 'text-danger'
 	};
@@ -50,7 +50,7 @@ export abstract class VNotesDropDown extends View<CNotes> {
 
 export class VHomeDropdown extends VNotesDropDown {
 	protected get dropdownActions(): DropdownAction[] {
-		return [this.text, this.list, this.checkable, this.folder, this.space];
+		return [this.text, this.list, this.checkable, this.folder, undefined, this.space];
 	}
 }
 

@@ -118,7 +118,9 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		</div>;
 	}
 
-	protected renderViewBottom() {
+	protected renderViewBottom():JSX.Element {
+		return;
+		/*
 		let { owner, state } = this.controller.noteItem;
 		let right: any;
 		let isMe = this.isMe(owner);		
@@ -130,6 +132,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 			<div className="mr-auto" />
 			{right}
 		</div>;
+		*/
 	}
 
 	renderRelatives() {

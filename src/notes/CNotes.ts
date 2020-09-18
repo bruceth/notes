@@ -1,6 +1,6 @@
 import { CUqBase } from "tapp";
 import { VSelectContact, SelectContactOptions } from "./views";
-import { EnumNoteType, NoteItem } from "./model";
+import { EnumNoteType, initNoteItemObj, NoteItem } from "./model";
 import { CNoteBase } from "./noteBase";
 import { CContainer, CFolderRoot, createCSpace, createCFolder } from "./container";
 import { Contact } from "../model";
@@ -26,31 +26,8 @@ export class CNotes extends CUqBase {
 		this.foldStack = [];
 	}
 
-	noteItemInitObj = (item:NoteItem):void => {
-		let {type, content, flowContent} = item;
-		if (flowContent) {
-			let obj = JSON.parse(flowContent);
-			item.obj = obj;
-		}
-		else if (content) {
-			if (content[0] === '{') {
-				let obj = JSON.parse(content);
-				if (type === EnumNoteType.text) {
-					switch (obj.check) {
-						case 1: item.type = EnumNoteType.textList; break;
-						case 2: item.type = EnumNoteType.textCheckable; break;
-					}
-				}
-				item.obj = obj;
-			}
-			else {
-				item.obj = content;
-			}
-		}
-	}
-
 	noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteBase => {
-		this.noteItemInitObj(item);
+		initNoteItemObj(item);
 		let cNoteBase = this.createCNoteBase(item);
 		cNoteBase.init(item);
 		return cNoteBase;

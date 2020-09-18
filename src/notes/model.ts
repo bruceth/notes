@@ -106,3 +106,26 @@ export function taskTimeToString(t:number):string {
 }
 
 
+export function initNoteItemObj(item:NoteItem):void {
+	let {type, content, flowContent} = item;
+	if (flowContent) {
+		let obj = JSON.parse(flowContent);
+		item.obj = obj;
+	}
+	else if (content) {
+		if (content[0] === '{') {
+			let obj = JSON.parse(content);
+			if (type === EnumNoteType.text) {
+				switch (obj.check) {
+					case 1: item.type = EnumNoteType.textList; break;
+					case 2: item.type = EnumNoteType.textCheckable; break;
+				}
+			}
+			item.obj = obj;
+		}
+		else {
+			item.obj = content;
+		}
+	}
+}
+

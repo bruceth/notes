@@ -1,6 +1,6 @@
 import React from 'react';
-import { CBook, ProjectSum } from './CBook';
-import { VPage, List, EasyTime } from 'tonva';
+import { CBook, ProjectFlowItem, ProjectSum } from './CBook';
+import { VPage, List, EasyTime, FA } from 'tonva';
 
 export class VFlow extends VPage<CBook> {
 	private projectSum: ProjectSum;
@@ -14,8 +14,8 @@ export class VFlow extends VPage<CBook> {
 		return <div>
 			<div className="px-3 py-2 d-flex">
 				<div className="w-8c">日期</div>
-				<div className="w-5c text-right">增</div>
-				<div className="w-5c text-right">减</div>
+				<div className="w-5c text-right"><FA name="plus"/></div>
+				<div className="w-5c text-right"><FA name="minus"/></div>
 			</div>
 			<List
 				items={this.controller.projectDetailPager}
@@ -23,9 +23,9 @@ export class VFlow extends VPage<CBook> {
 		</div>;
 	}
 
-	private renderFlowItem = (flowItem:any) => {
+	private renderFlowItem = (flowItem:ProjectFlowItem) => {
 		let {stamp, memo, debit, credit} = flowItem;
-		return <div className="px-3 py-2 d-flex">
+		return <div className="px-3 py-2 d-flex cursor-pointer" onClick={()=>this.controller.showFlowItem(flowItem)}>
 			<div className="w-8c"><EasyTime date={stamp} /></div>
 			<div className="w-5c text-right">{debit}</div>
 			<div className="w-5c text-right">{credit}</div>

@@ -72,3 +72,43 @@ PAGE (
 		ORDER BY a.seconds desc
 		LIMIT $pageSize;
 };
+
+QUERY GetNoteItemFromId (
+	note ID Note,
+)
+RETURNS ret (
+	seconds INT, 
+	owner ID,
+	note ID, 						--- Note,
+	type SMALLINT,
+	caption CHAR(200),
+	content TEXT,
+	assigned CHAR(100),
+	from ID,
+	fromAssigned CHAR(100),
+	state TINYINT,
+	flowContent TEXT,
+	groupFolder ID,
+	unread TINYINT,
+	[$create] TIMESTAMP,
+	[$update] TIMESTAMP,
+	toCount INT,
+	spawnCount INT,
+	commentCount INT,
+	commentUnread INT,
+) {
+	INTO ret SELECT 0 as seconds, b.owner, b.id as note, b.type
+		, b.caption, b.content, c.assigned
+		, b.[from], e.assigned as fromAssigned
+		, d.state, d.flowContent, 0 as groupFolder, 0 as unread
+		, b.[$create], b.[$update]
+		, 0 as toCount
+		, 0 as spawnCount
+		, 0 as commentCount
+		, 1 as commentUnread
+		FROM Note as b
+			LEFT JOIN MyContact as c ON c.me=$user and b.owner=c.contact
+			LEFT JOIN NoteX as d ON d.note=b.id
+			LEFT JOIN MyContact as e ON e.me=$user and b.from=c.contact
+		WHERE b.id=note;
+};

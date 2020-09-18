@@ -1,5 +1,5 @@
 import { CNoteBase } from "../noteBase";
-import { NoteItem, NoteModel, EnumNoteType } from '../model';
+import { NoteItem, NoteModel, EnumNoteType, initNoteItemObj } from '../model';
 import { QueryPager } from "tonva";
 import { EnumSpecFolder } from "tapp";
 import { VFolder } from "./views/VFolder"
@@ -72,7 +72,7 @@ export abstract class CContainer extends CNoteBase {
 		noteModel.contain = ret.contain;
 		noteModel.comments = ret.comments;
 		for (var sItem of noteModel.spawn) {
-			this.owner.noteItemInitObj(sItem);
+			initNoteItemObj(sItem);
 		}
 		return noteModel;
 	}

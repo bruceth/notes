@@ -27,10 +27,12 @@ export class VNoteBaseDir<T extends CNoteBase> extends VNoteBase<T> {
 	}
 
 	protected renderTop():JSX.Element {
-		return <div className="d-flex px-3 py-2 align-items-center border-top">
+		return <div className="d-flex px-3 py-2 border-top">
 			{this.renderIcon()}
-			{this.renderFrom()}
-			{this.renderCaption()}
+			<div>
+				{this.renderCaption()}
+				{this.renderFrom()}
+			</div>
 			<div className="ml-auto">{this.renderEditTime()}</div>
 		</div>;
 	}

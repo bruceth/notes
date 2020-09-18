@@ -27,6 +27,7 @@ export interface Notes {
 	GetNotes: Query;
 	GetMyContacts: Query;
 	GetNote: Query;
+	GetNoteItemFromId: Query;
 	GetShareContacts: Query;
 	GetSpawnContacts: Query;
 	GetAssignToContacts: Query;

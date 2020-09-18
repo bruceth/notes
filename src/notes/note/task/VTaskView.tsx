@@ -2,13 +2,10 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { TaskCheckItemBase } from './model';
 import { VNoteBaseView } from '../../noteBase';
-import { EnumTaskState } from "./TaskState"
 import { CNoteTask } from "./CNoteTask";
 import { VTaskRelatives } from './VTaskRelatives';
 import { none } from 'tool';
 import { taskTimeToString } from 'notes/model';
-
-//const none = <small className="text-muted">[无]</small>;
 
 export interface TaskParam {
 	label: string;
@@ -21,7 +18,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	header() { return this.t('task') }
 	content() {
 		return React.createElement(observer(() => {
-			return <div className="my-2 mx-1 border rounded">
+			return <div className="">
 				{this.renderTopCaptionContent()}
 				{this.renderTaskAdditions()}
 				{this.renderViewBottom()}
@@ -30,40 +27,63 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		}));
 	}
 
-	protected renderTop():JSX.Element {
-		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
-			{this.renderIcon()}
-			<span className="mr-4">{this.renderEditTime()}</span>
-			{this.renderFrom()}
-		</div>;
-	}
-
 	protected renderContent() {
 		return this.controller.cContent.renderViewContent();
+	}
+
+	footer() {
+		return this.renderFooter();
+	}
+
+	protected renderFooter() {
+		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-center">
+			{this.renderShareButton()}
+			{this.controller.cComments?.renderWriteComment()}
+		</div>;
 	}
 
 	renderDirView() {
 		return React.createElement(observer(() => {
 			return <div className="d-block bg-white">
 				<div className="bg-white">
-			{this.renderDirTop()}
-			<div className="py-2">
-				{this.renderCaption()}
-				{this.controller.cContent.renderDirContent()}
-			</div>
-		</div>
+					{this.renderTaskTop('py-2', 'mt-1')}
+					<div className="py-2">
+						{this.controller.cContent.renderDirContent()}
+					</div>
+				</div>
 				{this.renderDirBottom()}
 			</div>;
 		}));
 	}
 
-	protected renderDirTop():JSX.Element {
-		return <div className="d-flex px-3 py-2 align-items-center border-top">
+	protected renderTop():JSX.Element {
+		return this.renderTaskTop('py-3 border-top border-bottom bg-light', 'mt-2');
+	}
+
+	private renderTaskTop(cnPY:string, cnMtFrom:string):JSX.Element {
+		return <div className={'d-flex px-3 ' + cnPY}>
 			{this.renderIcon()}
-			{this.renderFrom()}
-			<div className="ml-auto">{this.renderEditTime()}</div>
+			<div>
+				{this.renderCaption()}
+				<div className={'d-flex align-items-center ' + cnMtFrom}>
+					{this.renderFrom()}
+					<span className="mx-4">{this.renderEditTime()}</span>
+				</div>
+			</div>
 		</div>;
 	}
+
+	/*
+	protected renderDirTop():JSX.Element {
+		return <div className="d-flex px-3 py-2 border-top">
+			{this.renderIcon()}
+			<div>
+				{this.renderCaption()}
+				{this.renderFrom()}
+			</div>
+			<div className="ml-auto">{this.renderEditTime()}</div>
+		</div>;
+	}*/
 
 	protected renderDirBottom():JSX.Element {
 		let divToCount = this.renderToCount();
@@ -82,14 +102,14 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	protected renderCaption() {
 		let { caption: title } = this.controller;
 		let divCaption = title ? <b className="text-primary">{title}</b> : <span className="text-info">任务</span>;
-		return <div className="px-3 py-2">
+		return <div className="pr-3">
 			<span className="mr-2">{divCaption}</span> {this.renderState()}
 		</div>;
 	}
 
 	protected renderParam(param: TaskParam) {
 		let {label, values, onClick} = param;
-		return <div key={label} className="px-3 py-2 bg-white d-flex cursor-pointer align-items-center border-bottom" onClick={onClick}>
+		return <div key={label} className="px-3 py-2 bg-white d-flex align-items-center border-bottom" onClick={onClick}>
 			<div className="text-muted mr-3 w-5c">{label}</div>
 			<div className="flex-fill mr-3 ">{values || none}</div>
 		</div>

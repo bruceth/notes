@@ -29,7 +29,7 @@ export class VSpaceView extends VFolder<CSpace> {
 		let {noteItem} = this.controller;
 		if (!noteItem) return;
 
-		let paragraphs: string = '空间';
+		let paragraphs: string = '群';
 		let {content: contentString} = noteItem;
 		if (contentString) {
 			let json = JSON.parse(contentString);
@@ -39,10 +39,10 @@ export class VSpaceView extends VFolder<CSpace> {
 				paragraphs = paragraphs.replace(/(\r|\n)/g, ' ');
 			}
 		}
-		return <div className="px-3 py-2 d-flex cursor-pointer align-items-center"
+		return <div className="px-3 py-3 d-flex cursor-pointer align-items-center"
 			onClick={this.controller.showSpaceContent}>
 			<FA className="mr-3 mt-1 text-warning" name="users" size="2x" />
-			<div className="text-muted" style={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+			<div className="text-muted mr-3" style={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
 				{paragraphs}
 			</div>
 		</div>;

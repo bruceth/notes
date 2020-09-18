@@ -2,7 +2,6 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { VNoteBase } from "./VNoteBase";
 import { CNoteBase } from "./CNoteBase";
-//import { VRelatives } from '../note/VRelatives';
 
 export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 	header() {return this.t('notes')}
@@ -23,11 +22,26 @@ export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 		if (isMe === true) {
 			vEditButton = <div className="ml-auto">{this.renderEditButton()}</div>;
 		}
-		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
+		return <div className="d-flex px-3 py-3 border-top border-bottom bg-light">
 			{this.renderIcon()}
-			<span className="mr-4">{this.renderEditTime()}</span>
-			{this.renderFrom()}
-			{vEditButton}
+			<div>
+				{this.renderCaption()}
+				<div className="d-flex align-items-center mt-1">
+					{this.renderFrom()}
+					<span className="mx-4">{this.renderEditTime()}</span>
+					{vEditButton}
+				</div>
+			</div>
+		</div>;
+	}
+
+	// 小单的主要部分，top, caption和content
+	protected renderTopCaptionContent() {
+		return <div className="bg-white">
+			{this.renderTop()}
+			<div className="py-2">
+				{this.renderContent()}
+			</div>
 		</div>;
 	}
 

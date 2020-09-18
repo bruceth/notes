@@ -17,9 +17,9 @@ export class VSpaceDir extends VNoteBase<CSpace> {
 				</small>;
 			}
 			return <div className="d-block bg-white">
-				<div className="d-flex px-3 py-3 align-items-center">
-					<div className="unread-dot mr-3">
-						<FA name="users" className="text-warning" size="2x" fixWidth={true} />
+				<div className="d-flex pr-3 py-3 align-items-center">
+					<div className="unread-dot text-center w-4c">
+						<FA name="users" className="text-warning" size="lg" fixWidth={true} />
 						{unread>0 && <u />}
 					</div>
 					<b className="text-primary">{noteItem.caption}</b>

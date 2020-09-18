@@ -42,25 +42,17 @@ export abstract class VNoteBase<T extends CNoteBase> extends VBasePage<T> {
 		let {noteItem, disableFrom: disableOwnerFrom} = this.controller;
 		if (!noteItem) return <div>noteItem undefined in renderFrom</div>;
 		let {owner, assigned, from} = noteItem;
-		let contact:number; //, contactAssigned:string;
-		if (from) {
-			contact = from as number;
-			//contactAssigned = fromAssigned;
-		}
-		else {
-			contact = owner as number;
-			//contactAssigned = assigned;
-		}
+		let contact:number = from? from as number : owner as number;
 		if (disableOwnerFrom === false && this.isMe(contact) === false) {
 			let renderUser = (user:User) => {
 				let {name, nick, icon} = user;
-				let vImage:any, cnName:string = 'font-weight-bolder';
+				let vImage:any, cnName:string = 'text-muted';
 				if (icon) {
 					cnName += ' small'
 					vImage = <Image className="w-1c h-1c mr-1" src={icon} />;
 				}
 				return <>
-					{vImage} <b className={cnName}>{assigned || nick || name}</b>
+					{vImage} <span className={cnName}>{assigned || nick || name}</span>
 				</>
 			}
 			return <UserView user={contact} render={renderUser} />;
@@ -90,7 +82,7 @@ export abstract class VNoteBase<T extends CNoteBase> extends VBasePage<T> {
 	protected renderCaption() {
 		let {caption: title} = this.controller;
 		if (title) {
-			return <div className="px-3 py-2">
+			return <div className="pr-3">
 				<div><b>{title}</b></div>
 			</div>;
 		}

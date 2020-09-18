@@ -12,8 +12,12 @@ export class CTaskContent extends CContent {
 
 	init(obj:any) {
 		if (obj) {
-			this.itemKey = obj.itemKey;
-			this.items = obj.items;
+			if (obj.itemKey !== undefined) {
+				this.itemKey = obj.itemKey;
+			}
+			if (obj.itmes !== undefined) {
+				this.items = obj.items;
+			}
 		}
 	}
 

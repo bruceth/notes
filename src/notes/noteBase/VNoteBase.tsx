@@ -4,7 +4,11 @@ import { User, Image, UserView, Page, EasyTime, FA } from "tonva";
 import { CNoteBase } from "./CNoteBase";
 
 export function renderIcon(name:string, cn:string) {
-	return <FA name={name} size="lg" className={cn} fixWidth={true} />;
+	return <span className="fa-stack fa-lg">
+		<i className={'fa fa-square-o fa-stack-2x ' + cn}></i>
+		<i className={'fa fa-stack-1x fa-' + name + ' ' + cn}></i>
+	</span>
+	//return <FA name={name} size="lg" className={cn} fixWidth={true} />;
 }
 
 export abstract class VNoteBase<T extends CNoteBase> extends VBasePage<T> {

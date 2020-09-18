@@ -27,7 +27,7 @@ export class VNoteBaseDir<T extends CNoteBase> extends VNoteBase<T> {
 	}
 
 	protected renderTop():JSX.Element {
-		return <div className="d-flex px-3 py-2 border-top">
+		return <div className="d-flex pl-2 pr-3 py-2 border-top">
 			{this.renderIcon()}
 			<div>
 				{this.renderCaption()}

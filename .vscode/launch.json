@@ -10,6 +10,13 @@
 			"name": "Launch Chrome against localhost",
 			"url": "http://localhost:5012/test",
 			"webRoot": "${workspaceFolder}"
-		}
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch Chrome localhost no test",
+			"url": "http://localhost:5012/",
+			"webRoot": "${workspaceFolder}"
+		},
 	]
 }

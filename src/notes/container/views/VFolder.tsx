@@ -1,24 +1,28 @@
 import React from 'react';
 import { List, FA, User, Image, UserView } from 'tonva';
 import { CContainer } from '../CContainer';
-import { CNoteBase, VNoteBaseView } from "../../noteBase";
+import { CNoteBase, VNoteBase } from "../../noteBase";
+import { observer } from 'mobx-react';
+import { renderParagraphs } from '../../components';
 
-export class VFolder extends VNoteBaseView<CContainer> {
+export class VFolder<T extends CContainer> extends VNoteBase<T> {
 	afterBack() {
 		this.controller.owner.popFolder();
 	}
 	header() {
-		let {noteItem} = this.controller;
-		if (noteItem) {
-			return noteItem.caption;
-		}
-		return this.t('notes')
+		return React.createElement(observer(() => {
+				let {noteItem} = this.controller;
+			if (noteItem) {
+				return noteItem.caption;
+			}
+			return this.t('notes');
+		}));
 	}
 
 	right() {
 		// 应该任何群成员都可以发小单吧
 		//if (this.isMe(this.controller.noteItem.owner)) {
-			return this.controller.owner.renderSpaceDropDown();
+			return this.controller.owner.renderFolderDropDown();
 		//}
 	}
 
@@ -67,13 +71,21 @@ export class VFolder extends VNoteBaseView<CContainer> {
 	}
 
 	content() {
-		let {notesPager} = this.controller;
+		let {notesPager, showNoteItem} = this.controller;
 		return <div>
-			{this.top()}
+			{React.createElement(observer(() => this.top()))}
 			<List className="" 
 				items={notesPager} 
-				item={{render: this.renderItemInFolder, key: this.noteKey, onClick: this.onNoteClick, className:'notes'}} />
+				item={{
+					render: this.renderItemInFolder,
+					key: this.noteKey, 
+					onClick: showNoteItem,
+					className:'notes'}} />
 		</div>
+	}
+
+	protected renderParagraphs(content:string):JSX.Element {
+		return renderParagraphs(content);
 	}
 
 	renderListView() {
@@ -86,15 +98,6 @@ export class VFolder extends VNoteBaseView<CContainer> {
 	}
 
 	private renderItemInFolder = (cNoteBase: CNoteBase, index:number) => {
-		return <div className="d-block mb-2 bg-white">{cNoteBase.renderListItem(index)}</div>;
-	}
-
-	private onNoteClick = async (item: CNoteBase) => {
-		let noteItem = item.noteItem;
-		let noteModel = await this.controller.getNote(noteItem.note);
-		noteItem.unread = 0;
-		noteItem.commentUnread = 0;
-		item.noteModel = noteModel;
-		return item.showNoteView();
+		return <div className="d-block mb-2 bg-white">{cNoteBase.renderDirItem(index)}</div>;
 	}
 }

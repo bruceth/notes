@@ -1,13 +1,13 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { CheckItem } from '../../model';
-import { VCheckableNoteBaseView } from '../../noteBase';
-import { EnumTaskState } from "./TaskState"
+import { TaskCheckItemBase } from './model';
+import { VNoteBaseView } from '../../noteBase';
 import { CNoteTask } from "./CNoteTask";
-import { VEdit } from './VEdit';
 import { VTaskRelatives } from './VTaskRelatives';
+import { none } from 'tool';
+import { taskTimeToString } from 'notes/model';
 
-const none = <small className="text-muted">[无]</small>;
+//const none = <small className="text-muted">[无]</small>;
 
 export interface TaskParam {
 	label: string;
@@ -15,36 +15,75 @@ export interface TaskParam {
 	onClick?: () => void;
 }
 
-export abstract class VTaskView<T extends CNoteTask> extends VCheckableNoteBaseView<T> {
+export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	protected get back(): 'close' | 'back' | 'none' { return 'close' }
 	header() { return this.t('task') }
-	protected get allowCheck() { return true; }
 	content() {
 		return React.createElement(observer(() => {
-			let { title } = this.controller;
-			let divCaption = this.renderCaption(title);
 			return <div className="my-2 mx-1 border rounded">
-				{this.renderViewTop()}
-				<div className="bg-white">
-					<div className="px-3 py-2 border-bottom">
-						{divCaption}
-					</div>
-					{this.renderContent()}
-				</div>
+				{this.renderTopCaptionContent()}
 				{this.renderTaskAdditions()}
-				{this.renderBottomCommands()}
+				{this.renderViewBottom()}
 				{this.renderRelatives()}
 			</div>;
 		}));
 	}
 
-	protected renderContent() {
-		return this.renderCheckableContentBase(this.allowCheck);
+	protected renderTop():JSX.Element {
+		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
+			{this.renderIcon()}
+			<span className="mr-4">{this.renderEditTime()}</span>
+			{this.renderFrom()}
+		</div>;
 	}
 
-	private renderCaption(title: string) {
+	protected renderContent() {
+		return this.controller.cContent.renderViewContent();
+	}
+
+	renderDirView() {
+		return React.createElement(observer(() => {
+			return <div className="d-block bg-white">
+				<div className="bg-white">
+			{this.renderDirTop()}
+			<div className="py-2">
+				{this.renderCaption()}
+				{this.controller.cContent.renderDirContent()}
+			</div>
+		</div>
+				{this.renderDirBottom()}
+			</div>;
+		}));
+	}
+
+	protected renderDirTop():JSX.Element {
+		return <div className="d-flex px-3 py-2 align-items-center border-top">
+			{this.renderIcon()}
+			{this.renderFrom()}
+			<div className="ml-auto">{this.renderEditTime()}</div>
+		</div>;
+	}
+
+	protected renderDirBottom():JSX.Element {
+		let divToCount = this.renderToCount();
+		let divSpawnCount = this.renderSpawnCount();
+		let divComment = this.renderCommentFlag();
+		if (divToCount || divSpawnCount || divComment) {
+			return <div className="d-flex align-items-center px-3 mb-1">
+				{divToCount}
+				{divSpawnCount}
+				{divComment}
+				<div className="mr-auto" />
+			</div>;
+		}
+	}
+
+	protected renderCaption() {
+		let { caption: title } = this.controller;
 		let divCaption = title ? <b className="text-primary">{title}</b> : <span className="text-info">任务</span>;
-		return <><span className="mr-2">{divCaption}</span> {this.renderState()}</>;
+		return <div className="px-3 py-2">
+			<span className="mr-2">{divCaption}</span> {this.renderState()}
+		</div>;
 	}
 
 	protected renderParam(param: TaskParam) {
@@ -56,8 +95,9 @@ export abstract class VTaskView<T extends CNoteTask> extends VCheckableNoteBaseV
 	}
 
 	protected additionRows: TaskParam[] = [
-		{label: '分值', values: this.renderPoint()}, 
-		{label: '工时', values: this.renderHours()}, 
+		//{label: '分值', values: this.renderPoint()}, 
+		{label: '分派工时', values: this.renderAssignHours()}, 
+		{label: '实际工时', values: this.renderHours()}, 
 	];
 
 
@@ -73,13 +113,21 @@ export abstract class VTaskView<T extends CNoteTask> extends VCheckableNoteBaseV
 		</div>;
 	}
 
-	protected renderHours() {
+	protected renderAssignHours() {
 		return <div className="flex-fill form-control border-0">
-			{this.controller.hours}
+			{taskTimeToString(this.controller.assignhours)}
 		</div>;
 	}
 
-	protected renderBottomCommands() {
+	protected renderHours() {
+		return <div className="flex-fill form-control border-0">
+			{taskTimeToString(this.controller.hours)}
+		</div>;
+	}
+
+	protected renderViewBottom():JSX.Element {
+		return;
+		/*
 		let { owner, state } = this.controller.noteItem;
 		let right: any;
 		let isMe = this.isMe(owner);		
@@ -87,10 +135,11 @@ export abstract class VTaskView<T extends CNoteTask> extends VCheckableNoteBaseV
 			right = <>{this.renderEditButton()}</>;
 		}
 		return <div className="py-2 bg-light border-top d-flex align-items-end">
-			{this.renderCommentButton()}
+			{this.controller.cComments.renderCommentButton()}
 			<div className="mr-auto" />
 			{right}
 		</div>;
+		*/
 	}
 
 	renderRelatives() {
@@ -100,12 +149,13 @@ export abstract class VTaskView<T extends CNoteTask> extends VCheckableNoteBaseV
 	protected renderState(): JSX.Element {
 		return <>state</>;
 	}
-
+	/*
 	protected onEdit() {
 		this.openVPage(VEdit as any);
 	}
+	*/
 
-	protected renderCheckItem(v:CheckItem, checkable:boolean) {
+	protected renderCheckItem(v:TaskCheckItemBase, checkable:boolean) {
 		let {key, text, checked} = v;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;
@@ -127,21 +177,8 @@ export abstract class VTaskView<T extends CNoteTask> extends VCheckableNoteBaseV
 	}
 
 	private onCheckChange = async (evt:React.ChangeEvent<HTMLInputElement>) => {
-		let t = evt.currentTarget;
-		let key = Number(t.getAttribute('data-key'));
-		await this.controller.onCheckChange(key, t.checked);
-	}
-
-
-	renderListItem() {
-		let { caption } = this.controller.noteItem;
-		let divCaption = this.renderCaption(caption);
-		return <div className="d-block bg-white">
-			{this.renderItemTop()}
-			<div className="px-3 py-2">
-				{divCaption}
-			</div>
-			{this.renderItemContent()}
-		</div>;
+		//let t = evt.currentTarget;
+		//let key = Number(t.getAttribute('data-key'));
+		//await this.controller.onCheckChange(key, t.checked);
 	}
 }

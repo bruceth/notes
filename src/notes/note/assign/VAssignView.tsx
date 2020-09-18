@@ -1,31 +1,14 @@
+import { NoteItem } from 'notes/model';
 import React from 'react';
-import { VEdit } from './VEdit';
-import { observer } from 'mobx-react';
-import { VCheckableNoteBaseView } from '../../noteBase';
+import { List } from 'tonva';
+import { VNoteBaseView } from '../../noteBase';
+import { getTaskItemState } from '../task/TaskState';
 import { CNoteAssign } from './CNoteAssign';
 import { VAssignRelatives } from './VAssignRelatives';
-import { CheckItem } from '../../model';
 
-export class VAssignView extends VCheckableNoteBaseView<CNoteAssign> {
-	protected get back(): 'close' | 'back' | 'none' {return 'close'}
+export class VAssignView extends VNoteBaseView<CNoteAssign> {
 	header() {
-		return this.t('assign')
-	}
-
-	content() {
-		return React.createElement(observer(() => {
-			let {title} = this.controller;
-			return <div className="">
-				{this.renderViewTop()}
-				<div className="bg-white py-2 mb-3">
-					{title && <div className="px-3 py-2">
-						<div><b>{title}</b></div>
-					</div>}
-					{this.renderContent()}
-				</div>
-				{this.renderRelatives()}
-			</div>;
-		}));
+		return this.t('noteTask')
 	}
 
 	protected renderRelatives() {
@@ -33,45 +16,51 @@ export class VAssignView extends VCheckableNoteBaseView<CNoteAssign> {
 	}
 
 	footer() {
-		return this.renderBottomCommands();
+		return this.renderFooter();
 	}
 
-	protected renderBottomCommands() {
+	protected renderFooter() {
 		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-center">
 			{this.renderShareButton()}
-			<div className="flex-fill rounded-pill mr-3 border bg-white px-3 py-1 small cursor-pointer"
-				onClick={this.onComment}>写评论...</div>
+			{this.controller.cComments.renderWriteComment()}
 		</div>;
 	}
 
-	protected onEdit() {
-		this.openVPage(VEdit);
+	protected renderContent() {
+		return this.controller.cContent.renderViewContent();
 	}
 
-	protected renderCheckItem(v:CheckItem, checkable:boolean) {
-		let {key, text, checked} = v;
-		let cn = 'form-control-plaintext ml-3 ';
-		let content: any;
-		if (checked === true) {
-			cn += 'text-muted';
-			content = <del>{text}</del>;
+	protected renderViewBottom():JSX.Element {
+		let {noteItem, noteModel} = this.controller;
+		if (this.isMe(noteItem.owner) === false) return;
+
+		let {spawn} = noteModel;
+		let div:any;
+		if (spawn.length === 0) {
+			div = <div className="px-3 py-2">
+				<button className="btn btn-primary" onClick={this.controller.showAssignTo}>分派</button>
+			</div>;
 		}
 		else {
-			content = text;
+			div = <div className="my-3">
+				<div className="d-flex px-3 py-2 align-items-end">
+					<div className="small text-muted pt-2 pb-1">已分派</div>
+					<button className="ml-auto btn btn-primary btn-sm" onClick={this.controller.showAssignTo}>追加分派</button>
+				</div>
+				<List items={spawn} item={{render: this.renderSpawn, className:'notes'}} />
+			</div>;
 		}
-		return <label key={key} className="d-flex mx-3 my-0 align-items-center form-check">
-			<input className="form-check-input mr-3 mt-0" type="checkbox"
-				defaultChecked={checked}
-				onChange={this.onCheckChange}
-				data-key={key}
-				disabled={!checkable} />
-			<div className={cn}>{content}</div>
-		</label>;
+		return <div className="bg-light">{div}</div>;
 	}
 
-	private onCheckChange = async (evt:React.ChangeEvent<HTMLInputElement>) => {
-		let t = evt.currentTarget;
-		let key = Number(t.getAttribute('data-key'));
-		await this.controller.onCheckChange(key, t.checked);
+	private renderSpawn = (noteItem: NoteItem, index: number) => {
+		let {owner, assigned} = noteItem;
+		let state = getTaskItemState(noteItem);
+		let {content, isEnd} = state;
+		return <div className="px-3 py-2 bg-light border-top">
+			{this.renderContact(owner as number, assigned)}
+			<div className="ml-2"></div>
+			{this.renderStateSpan(content, isEnd)}
+		</div>
 	}
 }

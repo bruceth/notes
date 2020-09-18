@@ -1,19 +1,17 @@
 import React from 'react';
 import { FA } from 'tonva';
 import { VTaskView } from '../VTaskView';
-import { TaskCheckItem } from '../CNoteTask';
 import { CTaskRate } from './CTaskRate';
+import { TaskCheckItem } from '../model';
 
 export class VTaskRate extends VTaskView<CTaskRate> {
 	protected rateValue: number = 0;
-
-	protected get allowCheck() { return false; }
 
 	protected renderState(): JSX.Element {
 		return this.renderStateSpan('待评价');
 	}
 
-	protected renderCheckItem(item: TaskCheckItem, allowCheck: boolean) {
+	protected renderCheckItem(item: TaskCheckItem) {
 		let { key, text, checked, checkInfo } = item;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;
@@ -28,7 +26,7 @@ export class VTaskRate extends VTaskView<CTaskRate> {
 			<input className="form-check-input mr-3 mt-0" type="checkbox"
 				defaultChecked={checked}
 				data-key={key}
-				disabled={!allowCheck} />
+				disabled={!this.controller.allowCheck} />
 			<div className="flex-grow-1">
 				<div className={cn}>{content}</div>
 				{checkInfo && <div className="mt-1 ml-3 small">
@@ -74,11 +72,11 @@ export class VTaskRate extends VTaskView<CTaskRate> {
 
 	private onDiscribeKeyDown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
 		if (evt.keyCode === 13) {
-			this.controller.CheckSaveInfo();
+			this.controller.checkSaveInfo();
 		}
 	}
 
-	protected renderBottomCommands() {
+	protected renderViewBottom() {
 		let left = <div>
 			<button onClick={() => this.onRate()} className="btn btn-success mx-3">
 				评价
@@ -118,9 +116,15 @@ export class VTaskRate extends VTaskView<CTaskRate> {
 	}
 
 	private onRate = async () => {
-		await this.controller.RateTask(this.rateValue);
+		await this.controller.rateTask(this.rateValue);
 		this.closePage();
 		let content = <>评价完成</>;
 		this.showActionEndPage({ content });
+	}
+}
+
+export class VTaskRateDir extends VTaskRate {
+	render() {
+		return this.renderDirView();
 	}
 }

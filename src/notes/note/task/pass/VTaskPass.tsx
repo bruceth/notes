@@ -3,7 +3,6 @@ import { VTaskView } from '../VTaskView';
 import { CTaskPass } from './CTaskPass';
 
 export class VTaskPass extends VTaskView<CTaskPass> {
-	protected get allowCheck() { return false; }
 	protected renderState() {
 		let { noteItem } = this.controller;
 		let obj = noteItem.obj;
@@ -13,7 +12,12 @@ export class VTaskPass extends VTaskView<CTaskPass> {
 				return this.renderStateSpan('待评价');
 			}
 		}
-		return this.renderStateSpan('已验收', true);
+		return this.renderStateSpan('签收', true);
 	}
 }
 
+export class VTaskPassDir extends VTaskPass {
+	render() {
+		return this.renderDirView();
+	}
+}

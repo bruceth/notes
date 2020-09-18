@@ -13,10 +13,14 @@ export const zh = {
 	task: '任务',
 	assign: '作业单',
 
+	noteSpace: '群',
+
 	noteText: '文字单',
 	noteList: '列表单',
 	noteCheckable: '勾选单',
 	noteTask: '派发任务',
 	noteFolder: '小单夹',
-	noteSpace: '空间'
+	noteCreateSpace: '新建群',
+
+	content: '内容',
 }

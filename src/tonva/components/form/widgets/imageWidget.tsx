@@ -28,7 +28,7 @@ export class ImageWidget extends Widget {
     }
 
     render() {
-        return <this.observerRender />;
+        return React.createElement(this.observerRender);
     }
 
     private observerRender = observer(() => {

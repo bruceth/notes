@@ -1,8 +1,9 @@
 import { CContainer } from "./CContainer";
-import { NoteItem } from "../model";
+import { NoteItem, EnumNoteType } from "../model";
 import { CNoteBase } from "../noteBase";
 
 export abstract class CFolder extends CContainer {
+	get type():EnumNoteType { return EnumNoteType.folder }
 }
 
 export abstract class CFolderDisableItemFrom extends CFolder {

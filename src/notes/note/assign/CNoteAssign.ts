@@ -1,62 +1,102 @@
-import React from 'react';
-import { NoteItem } from '../../model';
-import { CNotes } from '../../CNotes';
-import { VAssignView } from './VAssignView';
-import { VAdd } from './VAdd';
-import { CInput } from '../CInput';
+//import React from 'react';
+import { computed, observable } from 'mobx';
+//import { FA } from 'tonva';
+import { Contact } from '../../../model';
+import { EnumNoteType, NoteItem, numberFromId } from '../../model';
 import { renderIcon } from '../../noteBase';
-import { FA } from 'tonva';
+import { CContent, CCheckable } from '../../components';
+import { CNote } from '../CNote';
+import { VAssignView } from './VAssignView';
+import { VAssignAdd } from './VAssignAdd';
+import { VAssignEdit } from './VAssignEdit'
+import { VAssignDir } from './VAssignDir';
+import { CAssignTo } from './CAssignTo';
 
-export function createCNoteAssign(cNotes: CNotes): CNoteAssign {
-	return new CNoteAssign(cNotes);
-}
+export class CNoteAssign extends CNote {
+	cContent: CContent;
+	@observable checker: Contact;
+	@observable rater: Contact;
 
-export class CNoteAssign extends CInput {
-	init(param: NoteItem):void {
+	point:number = 100;
+	assignhours:number = 0;
+
+	init(param: NoteItem): void {
 		super.init(param);
+		this.cContent = new CCheckable(this.res);
+		let obj:any;
 		if (param) {
-			if (!this.title) this.title = param.caption;
+			this.caption = param.caption;
+			obj = param.obj;
 		}
+		this.cContent.init(obj);
 	}
 
-	protected renderIcon(): JSX.Element {
+	@computed get isContentChanged():boolean {return this.cContent.changed}
+	get type():EnumNoteType { return EnumNoteType.assign }
+
+	renderIcon(): JSX.Element {
 		return renderIcon('list', 'text-primary');
-		/*
-		//return <FA name={name} size="lg" className={cn} fixWidth={true} />;
-		let name = 'list';
-		let cn = 'text-primary';
-		return React.createElement(FA, {
-			name, 
-			size:'2x',
-			className:cn,
-			fixWidth: true
-		});
-		*/
 	}
 
-	renderViewIcon(): JSX.Element {
-		let name = 'list';
-		let cn = 'text-primary';
-		let icon = React.createElement(FA, {
-			name, 
-			size:'2x',
-			className:cn,
-			fixWidth: true
-		});
-		return React.createElement('div', 
-			{
-				className:"mr-5"
-			},
-			icon
-		);
+	protected endContentInput():any {
+		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
+		this.cContent.endInput(obj);
+		return obj;
 	}
 
-	showNoteView() {
+	renderDirItem(index: number): JSX.Element {
+		return this.renderView(VAssignDir);
+	}
+
+	showViewPage() {
 		this.openVPage(VAssignView);
 	}
 
-	showAddAssignPage(parent: number) {
-		this.checkType = 1;
-		this.openVPage(VAdd, parent);
+	showEditPage() {
+		this.cContent.startInput();
+		this.openVPage(VAssignEdit);
+	}
+
+	showAddPage() {
+		this.cContent.startInput();
+		this.openVPage(VAssignAdd);
+	}
+
+	showAssignTo = async () => {
+		let cAssignTo = new CAssignTo(this.cApp, this);
+		await cAssignTo.start();
+	}
+
+	assignTask = async (toList: number[]) => {
+		let { note } = this.noteItem;
+		let { caption, content } = this.noteItem;
+		let cObj = JSON.parse(content);
+		if (this.checker) {
+			cObj.checker = numberFromId(this.checker.contact);
+		}
+		else {
+			delete cObj.checker;
+		}
+		if (this.rater) {
+			cObj.rater = numberFromId(this.rater.contact);
+		}
+		else {
+			delete cObj.rater;
+		}
+		cObj.assignhours = this.assignhours;
+		//cObj.hours = this.assignhours;
+		cObj.point = this.point;
+		let data = {
+			groupFolder: this.owner.currentFold.groupFolder,
+			folder: this.owner.currentFold.folderId,
+			note,
+			caption,
+			content: JSON.stringify(cObj),
+			tos: toList.map(v => ({to:v})),
+			checker: this.checker?.contact,
+			rater: this.rater?.contact,
+			point: this.point,
+		}
+		await this.uqs.notes.AssignTask.submit(data);
 	}
 }

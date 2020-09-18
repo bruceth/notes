@@ -3,22 +3,22 @@ import { CNotes } from "../notes";
 import { VHome } from "./VHome";
 
 export class CHome extends CUqBase {
-	cNode: CNotes;
+	cNodes: CNotes;
 
   	protected async internalStart() {
 	}
 
 	async refresh() {
-		await this.cNode.refresh();
+		await this.cNodes.refresh();
 	}
 
 	init() {
-		this.cNode = this.newC(CNotes);
+		this.cNodes = this.newC(CNotes);
 	}
 
 	tab = () => this.renderView(VHome);
 
 	async load() {
-		await this.cNode.load();
+		await this.cNodes.load();
 	}
 }

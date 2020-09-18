@@ -1,86 +1,43 @@
+import { VBasePage } from "notes/views/VBasePage";
 import React from "react";
-import { VPage, User, Image, UserView, Page, EasyTime, FA } from "tonva";
+import { User, Image, UserView, Page, EasyTime, FA } from "tonva";
 import { CNoteBase } from "./CNoteBase";
-
-//type RenderIcon = (noteItem:NoteItem) => JSX.Element;
 
 export function renderIcon(name:string, cn:string) {
 	return <FA name={name} size="lg" className={cn} fixWidth={true} />;
 }
 
-export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
-	protected renderContentBase() {
-		return <div>
-		{
-			this.renderContentText()
-		}
+export abstract class VNoteBase<T extends CNoteBase> extends VBasePage<T> {
+	// VPage 里面的页面主体
+	content() {
+		return this.renderBody();
+	}
+
+	// 页面主体
+	protected renderBody():JSX.Element {
+		return;
+	}
+
+	// 小单的主要部分，top, caption和content
+	protected renderTopCaptionContent() {
+		return <div className="bg-white">
+			{this.renderTop()}
+			<div className="py-2">
+				{this.renderCaption()}
+				{this.renderContent()}
+			</div>
 		</div>;
 	}
 
-	protected renderContent() {
-		return this.renderContentBase();
-	}
-
-	protected renderItemContent() {
-		return this.renderContentBase();
-	}
-
-	protected renderItemTop() {
-		/*
-		let {noteItem} = this.controller;
-		let {type, unread} = noteItem;
-		let dot:any;
-		if (unread>0) dot = <u/>;
-		*/
-		return <div className="d-flex px-3 py-2 align-items-center border-top">
-			{this.controller.renderItemIcon()}
-			{this.renderFrom()}
-			<div className="ml-auto">{this.renderEditTime()}</div>
-		</div>;
-		//<div className="mr-3 unread-dot">{this.controller.renderItemIcon()}{dot}</div>
-	}
-	
-	protected renderViewTop() {
-		let vEditButton:any;
-		let isMe = this.isMe(this.controller.noteItem.owner);
-		if (isMe === true) {
-			vEditButton = <div className="ml-auto">{this.renderEditButton()}</div>;
-		}
+	protected renderTop():JSX.Element {
 		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
-			{this.controller.renderViewIcon()}
+			{this.renderIcon()}
 			<span className="mr-4">{this.renderEditTime()}</span>
 			{this.renderFrom()}
-			{vEditButton}
 		</div>;
-		//<div className="mr-3">{this.controller.renderViewIcon()}</div>
 	}
+	protected renderIcon():JSX.Element {return;}
 	
-	protected renderParagraphs(content:string):JSX.Element {
-		if (!content) return;
-		return <>{content.trimRight().split('\n').map((v, index) => {
-			let c:any;
-			if (!v) {
-				c = '\u00A0'; //<>&nbsp;</>;
-			}
-			else {
-				c = '';
-				let len = v.length, i=0;
-				for (; i<len; i++) {
-					switch(v.charCodeAt(i)) {
-						case 0x20: c +='\u2000'; continue;
-					}
-					break;
-				}
-				c += v.substr(i);
-			}
-			return <div key={index} className="pt-1 pb-2">{c}</div>;
-		})}</>;
-	}
-
-	protected renderContentText() {
-		return <div className="px-3 my-2">{this.renderParagraphs(this.controller.noteContent)}</div>;
-	}
-
 	protected renderFrom = () => {
 		let {noteItem, disableFrom: disableOwnerFrom} = this.controller;
 		if (!noteItem) return <div>noteItem undefined in renderFrom</div>;
@@ -130,7 +87,18 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 		}
 	}
 
-	protected renderToCount = () => {
+	protected renderCaption() {
+		let {caption: title} = this.controller;
+		if (title) {
+			return <div className="px-3 py-2">
+				<div><b>{title}</b></div>
+			</div>;
+		}
+	}
+
+	protected renderContent():JSX.Element {return;}
+
+	protected renderToCount() {
 		let {toCount} = this.controller.noteItem;
 		if (toCount === undefined || toCount <= 0)
 			return;
@@ -139,7 +107,7 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 		</span>;
 	}
 
-	protected renderSpawnCount = () => {
+	protected renderSpawnCount() {
 		let {spawnCount} = this.controller.noteItem;
 		if (spawnCount === undefined || spawnCount <= 0)
 			return;
@@ -166,7 +134,7 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 	protected showActionEndPage({content, onClick}:{content:any; onClick?:()=>void}) {
 		this.openPage(() => {
 			onClick = onClick || (()=>this.closePage());
-			let {title} = this.controller;
+			let {caption: title} = this.controller;
 			return <Page header={title} back="close">
 				<div className="border bg-white rounded m-5">
 					<div className="py-5 text-center">
@@ -188,7 +156,7 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 
 	protected onSendNote = async () => {
 		await this.controller.cApp.loadRelation();
-		this.controller.showTo(2);
+		this.controller.showShareTo();
 	}
 
 	protected renderEditButton() {
@@ -204,29 +172,5 @@ export abstract class VNoteBase<T extends CNoteBase> extends VPage<T> {
 		return <span className="small text-success border border-success rounded px-2">{content}</span>;
 	}
 
-	protected onEdit() {}
-
-	protected renderCommentButton() {
-		return <span className="cursor-pointer text-primary mr-5" onClick={this.onComment}><FA name="comment-o" /></span>;
-	}
-
-	protected onComment = () => {
-		let right = <button className="btn btn-sm btn-success mr-1" onClick={this.onCommentSubmit}>提交</button>;
-		this.openPageElement(<Page header="评论" right={right}>
-			<textarea rows={10} 
-				className="w-100 border-0 form-control"
-				placeholder="请输入" maxLength={20000}
-				onChange={this.onCommentChange} />
-		</Page>);
-	}
-	private comment:string;
-	private onCommentChange = (evt:React.ChangeEvent<HTMLTextAreaElement>) => {
-		this.comment = evt.target.value;
-	}
-
-	private onCommentSubmit = async () => {
-		await this.controller.AddComment(this.comment);
-		this.controller.relativeKey = 'comment';
-		this.closePage();
-	}
+	protected onEdit() {this.controller.showEditPage()}
 }

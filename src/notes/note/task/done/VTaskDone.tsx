@@ -3,7 +3,6 @@ import { VTaskView } from '../VTaskView';
 import { CTaskDone } from './CTaskDone';
 
 export class VTaskDone extends VTaskView<CTaskDone> {
-	protected get allowCheck() { return false; }
 	protected renderState() {
 		let { noteItem } = this.controller;
 		let obj = noteItem.obj;
@@ -21,3 +20,8 @@ export class VTaskDone extends VTaskView<CTaskDone> {
 	}
 }
 
+export class VTaskDoneDir extends VTaskDone {
+	render() {
+		return this.renderDirView();
+	}
+}

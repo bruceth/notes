@@ -1,67 +1,68 @@
 import { CUqBase } from "tapp";
-import { observable } from "mobx";
 import { VSelectContact, SelectContactOptions } from "./views";
-import { EnumNoteType, NoteItem, NoteModel } from "./model";
+import { EnumNoteType, NoteItem } from "./model";
 import { CNoteBase } from "./noteBase";
-import { CContainer, CFolderRoot } from "./container";
-import { CGroup } from "./group";
+import { CContainer, CFolderRoot, createCSpace, createCFolder } from "./container";
 import { Contact } from "../model";
-import { VSent } from "./views/VSent";
-import { VTo } from "./views/VTo";
-import { createNoteBase } from "./factory";
-import { createCNoteText, createCNoteTask, createCNoteAssign } from "./note";
-import { VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
+import { createCNoteTask } from "./note";
+import { VFolderDropdown, VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
+import { CNoteText } from "./note/text";
+import { CNoteAssign } from "./note/assign";
+import { CFolderMy } from "./container/folderMy";
+import { CShareTo } from "./CShareTo";
+import { CSpace } from "./container/space";
 
 export class CNotes extends CUqBase {
 	protected foldStack: CContainer[];
 	rootFold: CContainer;
 	currentFold: CContainer;
-
-	@observable groupMembers: Contact[];
-	@observable contacts: Contact[];
 	noteItem: NoteItem;
 
     protected async internalStart() {
 	}
 
-	init(folderId?: number) {
+	init() {
 		this.rootFold =this.currentFold = this.newSub(CFolderRoot);
 		this.foldStack = [];
 	}
 
-	noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteBase => {
-		let cNoteBase = this.getCNoteBase(item);
-		item = cNoteBase.convertObj(item);
-		cNoteBase.init(item);
-		return cNoteBase;
-	}
-
-	get items() {
-		return this.currentFold.notesPager;
-	}
-
-	updateFolderTime(note:number, time:Date) {
-		this.currentFold.updateTime(time);
-		if (!this.currentFold.noteItem)
-			return;
-		let fnote = this.currentFold.noteItem.note;
-		if (this.foldStack.length > 0) {
-			for (var folderItem of this.foldStack) {
-				if (this.updateSubFolderItem(folderItem, fnote)) {
-					folderItem.updateTime(time);
+	noteItemInitObj = (item:NoteItem):void => {
+		let {type, content, flowContent} = item;
+		if (flowContent) {
+			let obj = JSON.parse(flowContent);
+			item.obj = obj;
+		}
+		else if (content) {
+			if (content[0] === '{') {
+				let obj = JSON.parse(content);
+				if (type === EnumNoteType.text) {
+					switch (obj.check) {
+						case 1: item.type = EnumNoteType.textList; break;
+						case 2: item.type = EnumNoteType.textCheckable; break;
+					}
 				}
+				item.obj = obj;
+			}
+			else {
+				item.obj = content;
 			}
 		}
 	}
 
-	protected updateSubFolderItem(folder:CContainer, fnote:number) {
-		let {items} = folder.notesPager;
-		let index = items.findIndex(v=>v.noteItem?.note === fnote);
-		if (index > 0) {
-			let fItem = items.splice(index, 1);
-			items.unshift(...fItem);
+	noteItemConverter = (item:NoteItem, queryResults:{[name:string]:any[]}):CNoteBase => {
+		this.noteItemInitObj(item);
+		let cNoteBase = this.createCNoteBase(item);
+		cNoteBase.init(item);
+		return cNoteBase;
+	}
+
+	itemChanged(noteItem: NoteItem) {
+		let folderNoteItem = this.currentFold.itemChanged(noteItem);
+		if (this.foldStack.length > 0) {
+			for (let folder of this.foldStack) {
+				folderNoteItem = folder.itemChanged(folderNoteItem)
+			}
 		}
-		return index >= 0;
 	}
 
 	openFolder(foldItem:CContainer) {
@@ -74,15 +75,37 @@ export class CNotes extends CUqBase {
 		this.currentFold = this.foldStack.pop();
 	}
 
-	getCNoteBase(noteItem: NoteItem): CNoteBase {
-		let ret = createNoteBase(noteItem, this); // NoteTypes[type];
-		if (ret === undefined) {
-			debugger;
-			throw new Error(`type ${noteItem.type} CNoteItem not defined`);
+	createCNoteBase(noteItem: NoteItem): CNoteBase {
+		switch (noteItem.type) {
+			default: throw Error("unknown type");
+			case EnumNoteType.text: return this.createCNoteText();
+			case EnumNoteType.textList: return this.createCNoteList(); 
+			case EnumNoteType.textCheckable: return this.createCNoteCheckable(); 
+			case EnumNoteType.folder: return createCFolder(this, noteItem);
+			case EnumNoteType.task: return createCNoteTask(this, noteItem); 
+			case EnumNoteType.group: debugger; throw Error("type group undefined");
+			case EnumNoteType.groupFolder: return createCSpace(this); 
+			case EnumNoteType.unit:  debugger; throw Error("type unit undefined");
+			case EnumNoteType.assign: return new CNoteAssign(this);
 		}
+	}
+
+	private createCNoteText(): CNoteText {
+		let ret = new CNoteText(this);
+		ret.createTextContent();
 		return ret;
-		//ret.init()
-		//return this.newSub(ret);
+	}
+
+	private createCNoteList(): CNoteText {
+		let ret = new CNoteText(this);
+		ret.createListContent();
+		return ret;
+	}
+
+	private createCNoteCheckable(): CNoteText {
+		let ret = new CNoteText(this);
+		ret.createCheckableContent();
+		return ret;
 	}
 
 	async load() {
@@ -92,10 +115,11 @@ export class CNotes extends CUqBase {
 	async refresh() {
 		await this.currentFold.refresh();
 	}
-
+	/*
 	async getNote(id: number): Promise<NoteModel> {
 		return await this.currentFold.getNote(id);
 	}
+	*/
 
 	async addNote(folder:number, caption:string, content:string, obj:any, type: EnumNoteType) {
 		return await this.currentFold.addNote(folder, caption, content, obj, type);
@@ -105,7 +129,9 @@ export class CNotes extends CUqBase {
 		return await this.currentFold.editNote(waiting, noteItem, caption, content, obj);
 	}
 
-	async sendNoteTo(groupFolder:number, note:number, toList:number[]) {
+	async sendNoteTo(toList:number[]) {
+		let {groupFolder, currentNoteItem} = this.currentFold;
+		let {note} = currentNoteItem;
 		let tos = toList.join('|');
 		await this.uqs.notes.SendNoteTo.submit({groupFolder, note, tos});
 	}
@@ -114,51 +140,105 @@ export class CNotes extends CUqBase {
 		await this.currentFold.hideNote(note, x);
 	}
 
-	renderListView() {
+	renderNotesView() {
 		return this.currentFold.renderListView();
 	}
 
-	renderHomeDropDown() {return this.renderView(VHomeDropdown)};
-	renderSpaceDropDown() {return this.renderView(VSpaceDropdown)};
+	renderHomeDropDown() {
+		let vHomeDropdown = new VHomeDropdown(this);
+		return vHomeDropdown.render();
+	};
 
-	showAddNotePage(checkType: number) {
-		let parent = this.currentFold.folderId;
-		let cNoteText = createCNoteText(this); // this.newSub(CNoteText);
-		cNoteText.showAddNotePage(parent, checkType);
+	renderFolderDropDown() {
+		let vHomeDropdown = new VFolderDropdown(this);
+		return vHomeDropdown.render();
+	};
+
+	renderSpaceDropDown() {
+		let vSpaceDropdown = new VSpaceDropdown(this);
+		return vSpaceDropdown.render();
+	};
+
+	showAddNoteTextPage = () => {
+		let cNoteText = this.createCNoteText();
+		cNoteText.showAddPage();
 	}
 
-	showAddAssignPage() {
-		let parent = this.currentFold.folderId;
-		let cNoteAssign = createCNoteAssign(this); // this.newSub(CNoteText);
-		cNoteAssign.showAddAssignPage(parent);
+	showAddNoteListPage = () => {
+		let cNoteText = this.createCNoteList();
+		cNoteText.showAddPage();
+	}
+	
+	showAddNoteCheckablePage = () => {
+		let cNoteText = this.createCNoteCheckable();
+		cNoteText.showAddPage();
 	}
 
-	async showTo(noteItem:NoteItem, backPageCount:Number) {
-		this.noteItem = noteItem;
+	showAddMyFolderPage = () => {
+		let cFolder = new CFolderMy(this);
+		cFolder.init(undefined);
+		cFolder.showAddPage();
+	}
+
+	showAddGroupPage = () => {
+		//let cGroup = this.newSub(CGroup);
+		//cGroup.showAddPage()
+		let cGroup = new CSpace(this);
+		cGroup.init(undefined);
+		cGroup.showAddPage();
+	}
+
+	showAddAssignPage = () => {
+		let cNoteAssign = new CNoteAssign(this);
+		cNoteAssign.init(undefined);
+		cNoteAssign.showAddPage();
+	}
+	
+	async showShareTo() {
+		//this.noteItem = noteItem;
+		/*
 		let ret = await this.uqs.notes.GetMyContacts.page(
 			{
 				groupFolder: this.currentFold.groupFolder
 			}, 0, 50, true);
 		this.groupMembers = ret.$page;
 		this.openVPage(VTo, backPageCount);
+		*/
+		//let {groupFolder} = this.currentFold;
+		//let {note} = noteItem;
+		/*
+		let props: CToProps = {
+			currentGroupFolder: groupFolder,
+			onAfterContactsSelected: async () => {
+				this.openVPage(VActions); //, {contacts, noteId: this.currentNoteId});
+			},
+			sendOut: async (toList: number[]) => {
+				let tos = toList.join('|');
+				await this.uqs.notes.SendNoteTo.submit({groupFolder, note, tos});
+			},
+		};
+		let cTo = new CTo(this.cApp, props);
+		await cTo.start();
+		*/
+		let cShareTo = new CShareTo(this.cApp, this);
+		await cShareTo.start();
 	}
 
+	/*
 	showSentPage() {
 		this.openVPage(VSent);
 	}
+	*/
 
 	async callSelectContact(options: SelectContactOptions): Promise<Contact[]> {
 		return await this.vCall(VSelectContact, options);
 	}
 
+	/*
 	showAssignTaskPage() {
 		let cNoteTask = createCNoteTask(this, this.noteItem); // this.newSub(CNoteTask);
 		cNoteTask.init(this.noteItem);
 		cNoteTask.showAssignTaskPage();
 	}
-
-	showAddGroupPage() {
-		let cGroup = this.newSub(CGroup);
-		cGroup.showAddPage();
-	}
+	*/
 }

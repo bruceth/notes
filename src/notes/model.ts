@@ -1,6 +1,10 @@
 import { BoxId } from "tonva";
+import { EnumTaskState } from "./note/task/TaskState";
 
-export enum EnumNoteType {text=0, task=1, folder=3, group=4, groupFolder=5, unit=6, assign=7}
+export enum EnumNoteType {
+	text=0, task=1, comment=2, folder=3, group=4, groupFolder=5, unit=6, assign=7,
+	textList=8, textCheckable=9,
+}
 
 export interface NoteItem {
 	seconds: number;
@@ -12,7 +16,7 @@ export interface NoteItem {
 	assigned: string;
 	from: number | BoxId;
 	fromAssigned: string;
-	state: number;
+	state: EnumTaskState;
 	flowContent?: string;
 	groupFolder?:number;
 	unread: number;
@@ -72,14 +76,33 @@ export function numberFromId(id:number|BoxId):number {
 	return _id;
 }
 
-export type RelativeKey = 'comment'|'to'|'flow'|'spawn'|'contain';
-export interface Relative {
-	caption: (isAction:boolean) => JSX.Element;
-	render: () => JSX.Element;
+export function compareID(id1:number|BoxId, id2:number|BoxId):boolean {
+	return numberFromId(id1) === numberFromId(id2);
 }
 
-export interface CheckItem {
-	key: number;
-	text: string;
-	checked?: boolean;
+export function checkHourMinutes(v:string): number {
+	let reTime = /^(?:(?:[0-9])|(?:[0-2][0-3])|(?:[0-1][0-9])):[0-5][0-9]$/;
+	if (reTime.test(v)) {
+		let r = v.split(':');
+		return Number(r[0]) * 60 + Number(r[1]);
+	}
+	let h = Number(v);
+	if (isNaN(h) || h > 20 || h < 0) {
+		return -1;
+	}
+	return h * 60;
 }
+
+export function taskTimeToString(t:number):string {
+	if (isNaN(t) || t <= 0)
+		return '';
+	let h = Math.floor(t / 60);
+	let m = Math.floor(t % 60);
+	let ms = m.toString();
+	if (m < 10) {
+		ms = '0' + ms;
+	}
+	return h.toString() + ':' + ms;
+}
+
+

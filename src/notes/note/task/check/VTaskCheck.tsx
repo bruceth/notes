@@ -1,19 +1,16 @@
 import React from 'react';
 import { VTaskView } from '../VTaskView';
 import { Page, FA } from 'tonva';
-import { TaskCheckItem } from '../CNoteTask';
 import { VEditTextItemInput, EditTextItemProps } from '../VEditTextItem';
 import { CTaskCheck } from './CTaskCheck';
-import { TaskStateResult } from '../TaskState';
+import { TaskCheckItem } from '../model';
 
 export class VTaskCheck extends VTaskView<CTaskCheck> {
-	protected get allowCheck() { return false; }
-
 	protected renderState(): JSX.Element {
 		return this.renderStateSpan('待验收');
 	}
 
-	protected renderCheckItem(item: TaskCheckItem, allowCheck: boolean) {
+	protected renderCheckItem(item: TaskCheckItem) {
 		let { key, text, checked, checkInfo } = item;
 		let cn = 'form-control-plaintext ml-3 ';
 		let content: any;
@@ -34,7 +31,7 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 				<input className="form-check-input mr-3 mt-0" type="checkbox"
 					defaultChecked={checked}
 					data-key={key}
-					disabled={!allowCheck} />
+					disabled={!this.controller.allowCheck} />
 				<div className="flex-grow-1">
 					<div className={cn}>{content}</div>
 					{checkInfo && <div className="mt-1 ml-3 small">
@@ -71,11 +68,11 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 
 	private onDiscribeKeyDown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
 		if (evt.keyCode === 13) {
-			this.controller.CheckSaveInfo();
+			this.controller.checkSaveInfo();
 		}
 	}
 
-	protected renderBottomCommands() {
+	protected renderViewBottom() {
 		let left = <div>
 			<button onClick={()=>this.onCheck(true)} className="btn btn-success mx-3">
 				<FA name="check" /> 通过
@@ -94,7 +91,7 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 	}
 
 	protected onCheck = async (pass: boolean) => {
-		await this.controller.CheckTask(pass);
+		await this.controller.checkTask(pass);
 		this.closePage();
 		let content = pass ?
 			<span className="text-success"><FA name="check" /> 验收通过</span>
@@ -105,7 +102,7 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 	}
 
 	protected resultPage = ({ pass }: { pass: boolean }) => {
-		let { title } = this.controller;
+		let { caption: title } = this.controller;
 		let content = pass ?
 			<span className="text-success"><FA name="check" /> 验收通过</span>
 			:
@@ -120,5 +117,11 @@ export class VTaskCheck extends VTaskView<CTaskCheck> {
 				</div>
 			</div>
 		</Page>;
+	}
+}
+
+export class VTaskCheckDir extends VTaskCheck {
+	render() {
+		return this.renderDirView();
 	}
 }

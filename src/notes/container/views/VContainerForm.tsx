@@ -1,10 +1,18 @@
-import React from 'react';
-import { computed, observable } from 'mobx';
-import { observer } from 'mobx-react';
-import { ConfirmOptions } from 'tonva';
 import { CContainer } from '../CContainer';
-import { VNoteBaseView } from '../../noteBase';
+import { VNoteBaseEdit } from 'notes/noteBase';
 
+export abstract class VContainerForm<T extends CContainer> extends VNoteBaseEdit<T> {
+	header() {
+		return this.t('noteFolder');
+	}
+
+	protected renderContent():JSX.Element {
+		return this.controller.cContent.renderInput()
+	}
+
+}
+
+/*
 export abstract class VContainerForm<T extends CContainer> extends VNoteBaseView<T> {
 	@observable private changed: boolean = false;
 	private inputAdd: HTMLInputElement;
@@ -84,3 +92,4 @@ export abstract class VContainerForm<T extends CContainer> extends VNoteBaseView
 			onChange={this.onContentChange} />;
 	}
 }
+*/

@@ -3,19 +3,25 @@ import { NoteItem, NoteModel, EnumNoteType } from '../model';
 import { QueryPager } from "tonva";
 import { EnumSpecFolder } from "tapp";
 import { VFolder } from "./views/VFolder"
-import { VFolderNoteItem } from "./views/VFolderNoteItem";
+import { VFolderDir } from "./views/VFolderDir";
 import { VFolderView } from "./views/VFolderView";
+import { observable, computed } from "mobx";
+import { CContent, CFolder } from "notes/components";
 
 export abstract class CContainer extends CNoteBase {
+	@observable cContent: CContent;
 	folderId: number;
 	notesPager: QueryPager<CNoteBase>;
+	currentNoteItem: NoteItem;
 
 	init(param: NoteItem):void {
 		super.init(param);
+		this.cContent = new CFolder(this.res)
 		if (param) {
-			if (!this.title) this.title = param.caption;
+			this.caption = param.caption;
+			this.cContent.init(param.obj);
 		}
-		this.relativeKey = 'to';
+		//this.relativeKey = 'to';
 
 		let folderId = this.noteItem?.note;
 		if (!folderId) this.folderId = -EnumSpecFolder.notes;
@@ -24,6 +30,8 @@ export abstract class CContainer extends CNoteBase {
 		this.notesPager = new QueryPager<CNoteBase>(this.uqs.notes.GetNotes, undefined, undefined, true);
 		this.notesPager.setItemConverter(this.getItemConverter());
 	}
+
+	@computed get isContentChanged():boolean {return this.cContent.changed}
 
 	protected getItemConverter() {
 		return this.owner.noteItemConverter;
@@ -54,7 +62,7 @@ export abstract class CContainer extends CNoteBase {
 		}
 	}
 
-	async getNote(id: number): Promise<NoteModel> {
+	private async getNote(id: number): Promise<NoteModel> {
 		let folderId = this.owner.currentFold?.folderId;
 		let ret = await this.uqs.notes.GetNote.query({folder: folderId, note: id});
 		let noteModel:NoteModel = ret.ret[0];
@@ -63,19 +71,43 @@ export abstract class CContainer extends CNoteBase {
 		noteModel.spawn = ret.spawn;
 		noteModel.contain = ret.contain;
 		noteModel.comments = ret.comments;
+		for (var sItem of noteModel.spawn) {
+			this.owner.noteItemInitObj(sItem);
+		}
 		return noteModel;
 	}
 
-	showFolder() {
+	showNoteItem = async (item: CNoteBase) => {
+		let noteItem = this.currentNoteItem = item.noteItem;
+		let noteModel = await this.getNote(noteItem.note);
+		noteItem.unread = 0;
+		noteItem.commentUnread = 0;
+		item.noteModel = noteModel;
+		return item.showViewPage();
+	}
+
+	itemChanged(noteItem: NoteItem):NoteItem {
+		let {items} = this.notesPager;
+		let index = items.findIndex(v => v.noteItem === noteItem);
+		if (index > 0) {
+			let fItem = items.splice(index, 1);
+			items.unshift(...fItem);
+		}
+		//return index >= 0;
+		return this.noteItem;
+	}
+
+	abstract async showFolder(): Promise<void>;
+	/* {
 		this.load();
 		this.openVPage(VFolder);
-	}
+	}*/
 
 	renderListView() {
 		return (new VFolder(this)).renderListView();
 	}
 
-	showNoteView(): void {
+	showViewPage(): void {
 		this.owner.openFolder(this);
 	}
 
@@ -87,7 +119,11 @@ export abstract class CContainer extends CNoteBase {
 		noteItem.unread = 0;
 		noteItem.commentUnread = 0;
 		this.noteModel = noteModel;
-		this.openVPage(VFolderView);
+		this.showFolderViewPage();
+	}
+
+	showFolderViewPage() {
+		this.openVPage(VFolderView as any);
 	}
 
 	async addNote(folder:number, caption:string, content:string, obj:any, type:EnumNoteType) {
@@ -118,10 +154,10 @@ export abstract class CContainer extends CNoteBase {
 			$create: date,
 			$update: date,
 		}
-		if (type === Number(EnumNoteType.folder)) {
+		if (type === EnumNoteType.folder) {
 			noteItem.groupFolder = this.groupFolder;
 		}
-		let cNoteItem = this.owner.getCNoteBase(noteItem);
+		let cNoteItem = this.owner.createCNoteBase(noteItem);
 		cNoteItem.init(noteItem);
 		if (folder === this.folderId) {
 			this.notesPager.items.unshift(cNoteItem);
@@ -135,15 +171,22 @@ export abstract class CContainer extends CNoteBase {
 		await SetNote.submit({note, caption, content, type}, waiting);
 		// Note.resetCache(note); 现在不调用NoteTuid的cache，所以不需要了
 		// noteItem.unread = 1; 自己修改自己的小单，只是移到最前面，并不显示unread
-		let {items} = this.notesPager;
-		let index = items.findIndex(v => v.noteItem.note===note);
-		if (index >= 0) {
-			let theItems = items.splice(index, 1);
-			let theItem = theItems[0];
-			theItem.noteItem.caption = caption;
-			theItem.noteItem.content = content;
-			theItem.noteItem.obj = obj;
-			items.unshift(theItem);
+		if (note === this.noteItem?.note) {
+			this.noteItem.caption = caption;
+			this.noteItem.content = content;
+			this.noteItem.obj = obj;
+		}
+		else {
+			let {items} = this.notesPager;
+			let index = items.findIndex(v => v.noteItem.note===note);
+			if (index >= 0) {
+				let theItems = items.splice(index, 1);
+				let theItem = theItems[0];
+				theItem.noteItem.caption = caption;
+				theItem.noteItem.content = content;
+				theItem.noteItem.obj = obj;
+				items.unshift(theItem);
+			}
 		}
 	}
 
@@ -153,8 +196,8 @@ export abstract class CContainer extends CNoteBase {
 		if (index >= 0) this.notesPager.items.splice(index, 1);
 	}
 
-	renderListItem(index: number): JSX.Element {
-		let vNoteItem = new VFolderNoteItem(this);
+	renderDirItem(index: number): JSX.Element {
+		let vNoteItem = new VFolderDir(this);
 		return vNoteItem.render();
 	}
 
@@ -180,10 +223,21 @@ export abstract class CContainer extends CNoteBase {
 			$create: date,
 			$update: date,
 		}
-		let cNoteItem = this.owner.getCNoteBase(noteItem);
+		let cNoteItem = this.owner.createCNoteBase(noteItem);
 		cNoteItem.init(noteItem);
 		this.notesPager.items.unshift(cNoteItem);
 		return cNoteItem;
 	}
 
+	taskUpdateState(noteItem:NoteItem) {
+		let {items} = this.notesPager;
+		let {note} = noteItem;
+		let index = items.findIndex(v => v.noteItem.note===note);
+		if (index >= 0) {
+			items.splice(index, 1);
+			let c = this.getItemConverter();
+			let newItem = c(noteItem, undefined);
+			items.unshift(newItem);
+		}
+	}
 }

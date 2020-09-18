@@ -4,7 +4,7 @@ import {nav, Page, resOptions} from '../components';
 import { User, env } from '../tool';
 import { VPage } from './vpage';
 import { View } from './view';
-import { messageHub } from 'tonva';
+import { messageHub } from '../net';
 
 export interface ConfirmOptions {
     caption?: string;
@@ -35,7 +35,7 @@ export abstract class Controller {
 		this.t = (str:string):any => this.internalT(str) || str;
 	}
 
-	init(param?: any) {}
+	init(...param: any[]) {}
 
 	internalT(str:string):any {
 		return this._t[str];

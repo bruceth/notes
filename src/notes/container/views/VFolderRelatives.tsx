@@ -1,12 +1,7 @@
 //import React from 'react';
-import { CContainer } from "../CContainer";
-import { VRelatives } from '../../noteBase/VRelatives';
-import { RelativeKey } from "../../model";
+import { VRelativesBase, TabRelative } from "../../noteBase";
+import { CFolder } from "../CFolder";
 
-export class VFolderRelatives extends VRelatives<CContainer> {
-	protected arr:RelativeKey[] = ['to'];
-
-	render() {
-		return super.render();
-	}
+export class VFolderRelatives extends VRelativesBase<CFolder> {
+	protected get tabs():TabRelative[] { return [this.tabShare] };
 }

@@ -21,11 +21,21 @@ export interface Notes {
 	AddComment: Action;
 
 	AddGroup: Action;
+	SetGroup: Action;
 
 	$Poked: Query;
 	GetNotes: Query;
 	GetMyContacts: Query;
 	GetNote: Query;
+	GetShareContacts: Query;
+	GetSpawnContacts: Query;
+	GetAssignToContacts: Query;
+
+	AddGroupMember: Action;
+	RemoveGroupMember: Action;
+	GetGroupFolderMemberCount: Query;
+	GetGroupMembers: Query;
+	GetGroupContacts: Query;
 
 	GetBookProjects: Query;
 	GetProjectFlow: Query;

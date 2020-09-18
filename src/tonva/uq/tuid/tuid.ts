@@ -11,6 +11,11 @@ export interface TuidSaveResult {
     inId: number;
 }
 
+export interface TuidNOResult {
+	date: string;
+	no: number;
+}
+
 export abstract class Tuid extends Entity {
     protected noCache: boolean;
     readonly typeName:string = 'tuid';
@@ -61,7 +66,7 @@ export abstract class Tuid extends Entity {
     abstract async loadArr(arr:string, owner:number, id:number):Promise<any>;
     abstract async saveArr(arr:string, owner:number, id:number, props:any):Promise<void>;
 	abstract async posArr(arr:string, owner:number, id:number, order:number):Promise<void>;
-	abstract async no():Promise<{date:Date, no:string}>;
+	abstract async no():Promise<TuidNOResult>;
 }
 
 export class TuidInner extends Tuid {
@@ -253,7 +258,7 @@ export class TuidInner extends Tuid {
         //return await this.uqApi.tuidArrPos(this.name, arr, owner, id, order);
         return await new ArrPosCaller(this, {arr:arr, owner:owner, id:id, order:order}).request();
 	}
-	async no():Promise<{date:Date, no:string}> {
+	async no():Promise<TuidNOResult> {
 		return await new TuidNoCaller(this, undefined).request();
 	}
 }
@@ -446,7 +451,7 @@ export class TuidImport extends Tuid {
     async posArr(arr:string, owner:number, id:number, order:number):Promise<void> {
         await this.tuidLocal.posArr(arr, owner, id, order);
     }
-	async no():Promise<{date:Date, no:string}> {
+	async no():Promise<TuidNOResult> {
 		return await this.tuidLocal.no();
 	}
 }

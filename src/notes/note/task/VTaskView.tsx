@@ -2,7 +2,6 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { TaskCheckItemBase } from './model';
 import { VNoteBaseView } from '../../noteBase';
-import { EnumTaskState } from "./TaskState"
 import { CNoteTask } from "./CNoteTask";
 import { VTaskRelatives } from './VTaskRelatives';
 import { none } from 'tool';

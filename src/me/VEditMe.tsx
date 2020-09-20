@@ -31,8 +31,6 @@ export class VEditMe extends VPage<CMe>{
             nick: nick,
             icon: icon,
         };
-
-        //let { cApp } = this.controller;
     }
 
     private onItemChanged = async (itemSchema: ItemSchema, newValue: any, preValue: any) => {
@@ -43,13 +41,20 @@ export class VEditMe extends VPage<CMe>{
         nav.saveLocalUser();
     }
 
-
     private page = () => {
-        let { schema, uiSchema, data, onItemChanged } = this;
+		let { schema, uiSchema, data, onItemChanged } = this;
+		let vAdmin: any;
+		
+		let { role } = this.controller;
+		if ((role & 2) === 2) {
+			vAdmin = <div className="px-3 py-2 cursor-pointer bg-white border-bottom" onClick={this.controller.showAdmin}>管理员</div>;
+		}
+
         return <Page header="个人信息">
             <Edit schema={schema} uiSchema={uiSchema}
                 data={data}
                 onItemChanged={onItemChanged} />
+			{vAdmin}
         </Page>;
     }
 }

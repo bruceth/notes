@@ -8,6 +8,8 @@ import { CFolderShare } from './folderShare';
 export { CContainer } from './CContainer';
 export { CFolderRoot } from './folderRoot';
 
+export * from './unitNote';
+
 export function createCSpace(cNotes: CNotes): CSpace { 
 	return new CSpace(cNotes);
 }

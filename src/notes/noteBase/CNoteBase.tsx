@@ -46,19 +46,6 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 		return obj;
 	}
 
-	/*
-	// convertObj 可以在不同的继承中被重载
-	convertObj(item: NoteItem): NoteItem {
-		let {content} = item;
-		if (content) {
-			if (content[0] === '{') {
-				item.obj = JSON.parse(content);
-			}
-		}
-		return item;
-	}
-	*/
-
 	async showShareTo() {
 		await this.owner.showShareTo();
 	}

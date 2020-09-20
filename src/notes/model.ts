@@ -3,7 +3,7 @@ import { EnumTaskState } from "./note/task/TaskState";
 
 export enum EnumNoteType {
 	text=0, task=1, comment=2, folder=3, group=4, groupFolder=5, unit=6, assign=7,
-	textList=8, textCheckable=9,
+	textList=8, textCheckable=9, unitNote=10,
 }
 
 export interface NoteItem {

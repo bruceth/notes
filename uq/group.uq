@@ -5,11 +5,6 @@ MAP GroupX (
 	unit ID Note,				-- 定义群属于某个机构
 );
 
-MAP UnitX (
-	KEY unit ID Note,
-	tonvaUnit ID,				-- 跟tonva机构对应的值
-);
-
 -- 包含了所有的Group成员
 MAP GroupFolder (
 	KEY group ID Note,			-- NoteType=group

@@ -1,0 +1,43 @@
+MAP UnitX (
+	KEY parent ID Note,			-- root: 0
+	KEY unit ID Note,	
+);
+
+Map UnitTonva (
+	KEY unit ID Note,
+	tonvaUnit ID,				-- 跟tonva机构对应的值
+);
+
+-- 包含了所有的Group成员
+MAP UnitFolder (
+	KEY unit ID Note,			-- NoteType=unit
+	KEY member ID [$User],
+	folder ID Note,				-- NoteType=unitFolder
+	role TINYINT DEFAULT 0, 	-- 0: 普通, 1: owner, 2: admin
+	state TINYINT DEFAULT 1,	-- 1:正常，0:删除
+	INDEX folder (folder) UNIQUE,
+);
+
+ACTION CreateUnit ver 1.0 (
+	name CHAR(200),
+	content TEXT,
+	owner ID [$User]
+) 
+RETURNS ret (
+	id ID
+) {
+	IF NOT EXISTS(SELECT role FROM SystemRole WHERE user=$user AND (role & EnumSystemRole.admin)=EnumSystemRole.admin) {
+		INTO ret SELECT -1 as id;
+	}
+	ELSE {
+		VAR unitId ID, unitNoteId ID, folderId ID, seconds INT;
+		TUID Note INTO unitId SET type=EnumNoteType.unit, caption=name, content=content, owner=owner;
+		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+		SET folderId=a.folder FROM SpecFolder as a WHERE a.owner=owner AND a.spec=EnumSpecFolder.notes;
+
+		TUID Note INTO unitNoteId SET type=EnumNoteType.UnitNote, caption=name, content=content, owner=owner;
+		BOOK FolderNote AT (folderId, unitNoteId) SET seconds=seconds;
+		Proc NotifyNote(folderId, seconds, 0);
+		INTO ret SELECT unitNoteId as id;
+	}
+};

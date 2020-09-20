@@ -2,7 +2,6 @@ import React from 'react';
 import { CMe } from './CMe';
 import { Image, VPage, nav, IconText, PropGrid, LMR, FA, Prop } from 'tonva';
 import { observer } from 'mobx-react';
-import { VEditMe } from './VEditMe';
 import { appConfig } from 'tapp';
 
 export class VMe extends VPage<CMe> {
@@ -78,9 +77,7 @@ export class VMe extends VPage<CMe> {
         return <LMR className="py-2 cursor-pointer w-100"
             left={<Image className="w-3c h-3c mr-3" src={icon || '.user-o'} />}
             right={<FA className="align-self-end" name="angle-right" />}
-            onClick={() => {
-                this.openVPage(VEditMe);
-            }}>
+            onClick={this.controller.showEditMe}>
             <div>
                 <div>{userSpan(name, nick)}</div>
                 <div className="small"><span className="text-muted">ID:</span> {id > 10000 ? id : String(id + 10000).substr(1)}</div>

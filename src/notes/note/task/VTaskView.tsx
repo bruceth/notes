@@ -46,7 +46,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		return React.createElement(observer(() => {
 			return <div className="d-block bg-white">
 				<div className="bg-white">
-					{this.renderTaskTop('py-2', 'mt-1')}
+					{this.renderTaskDirTop()}
 					<div className="py-2">
 						{this.controller.cContent.renderDirContent()}
 					</div>
@@ -57,19 +57,26 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	}
 
 	protected renderTop():JSX.Element {
-		return this.renderTaskTop('py-3 border-top border-bottom bg-light', 'mt-2');
-	}
-
-	private renderTaskTop(cnPY:string, cnMtFrom:string):JSX.Element {
-		return <div className={'d-flex px-3 ' + cnPY}>
+		return <div className={'d-flex px-3 py-3 border-top border-bottom bg-light'}>
 			{this.renderIcon()}
 			<div>
 				{this.renderCaption()}
-				<div className={'d-flex align-items-center ' + cnMtFrom}>
-					{this.renderFrom()}
-					<span className="mx-4">{this.renderEditTime()}</span>
+				<div>
+					{this.renderFrom()} 
+					<span className="px-4">{this.renderEditTime()}</span>
 				</div>
+			</div>			
+		</div>;
+	}
+
+	private renderTaskDirTop():JSX.Element {
+		return <div className={'d-flex pr-3 pl-2 py-2'}>
+			{this.renderIcon()}
+			<div>
+				{this.renderCaption()}
+				{this.renderFrom()}
 			</div>
+			<span className="ml-auto">{this.renderEditTime()}</span>
 		</div>;
 	}
 

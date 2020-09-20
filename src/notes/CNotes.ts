@@ -2,7 +2,7 @@ import { CUqBase } from "tapp";
 import { VSelectContact, SelectContactOptions } from "./views";
 import { EnumNoteType, initNoteItemObj, NoteItem } from "./model";
 import { CNoteBase } from "./noteBase";
-import { CContainer, CFolderRoot, createCSpace, createCFolder } from "./container";
+import { CContainer, CFolderRoot, createCSpace, createCFolder, createCUnitNote } from "./container";
 import { Contact } from "../model";
 import { createCNoteTask } from "./note";
 import { VFolderDropdown, VHomeDropdown, VSpaceDropdown } from "./views/VNotesDropDown";
@@ -64,6 +64,7 @@ export class CNotes extends CUqBase {
 			case EnumNoteType.groupFolder: return createCSpace(this); 
 			case EnumNoteType.unit:  debugger; throw Error("type unit undefined");
 			case EnumNoteType.assign: return new CNoteAssign(this);
+			case EnumNoteType.unitNote: return createCUnitNote(this);
 		}
 	}
 

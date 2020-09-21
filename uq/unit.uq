@@ -45,7 +45,7 @@ RETURNS ret (
 	BOOK UnitRoot AT(unitNoteId) SET name=name;
 	BOOK FolderNote AT (folderId, unitNoteId) SET seconds=seconds;
 	BOOK UnitFolder AT (unitId, owner) SET folder=unitNoteId, role=EnumUnitRole.owner | EnumUnitRole.admin | EnumUnitRole.unitAdmin;
-	Proc NotifyNote(folderId, seconds, 0);
+	Proc NotifyUserNote(owner, folderId, seconds);
 	INTO ret SELECT unitNoteId as id;
 };
 

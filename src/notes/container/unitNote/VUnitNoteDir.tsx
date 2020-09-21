@@ -1,8 +1,8 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import { FA } from 'tonva';
 import { CContainer } from '../CContainer';
-import { observer } from 'mobx-react';
-import { VNoteBase } from '../../noteBase/VNoteBase';
+import { VNoteBase } from '../../noteBase';
 
 export class VUnitNoteDir extends VNoteBase<CContainer> {
 	render() {

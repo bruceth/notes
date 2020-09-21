@@ -1,24 +1,24 @@
-MAP UnitX (
-	KEY parent ID Note,			-- root: 0
-	KEY unit ID Note,	
+Map UnitRoot (
+	KEY unit ID Note,			-- root unit id
+	name CHAR(200),				-- 唯一
+	tonvaUnit ID,				-- 跟tonva机构对应的值
+	INDEX name (name) UNIQUE,
 );
 
-Map UnitTonva (
-	KEY unit ID Note,
-	tonvaUnit ID,				-- 跟tonva机构对应的值
-);
+ENUM EnumUnitRole (owner=1, admin=2, unitAdmin=4);
 
 -- 包含了所有的Group成员
 MAP UnitFolder (
 	KEY unit ID Note,			-- NoteType=unit
 	KEY member ID [$User],
 	folder ID Note,				-- NoteType=unitFolder
-	role TINYINT DEFAULT 0, 	-- 0: 普通, 1: owner, 2: admin
+	role TINYINT DEFAULT 0, 	-- 0: 普通, 1: owner, 2: admin, 4: unitAdmin, (owner 不需要展示节点)
 	state TINYINT DEFAULT 1,	-- 1:正常，0:删除
 	INDEX folder (folder) UNIQUE,
 );
 
-ACTION CreateUnit ver 1.0 (
+-- 只能由tonva的机构管理员创建
+ACTION CreateRootUnit ver 1.2 (
 	name CHAR(200),
 	content TEXT,
 	owner ID [$User]
@@ -26,18 +26,97 @@ ACTION CreateUnit ver 1.0 (
 RETURNS ret (
 	id ID
 ) {
-	IF NOT EXISTS(SELECT role FROM SystemRole WHERE user=$user AND (role & EnumSystemRole.admin)=EnumSystemRole.admin) {
+	IF NOT EXISTS(SELECT role FROM SystemRole WHERE user=$user AND (role & EnumSystemRole.unitAdmin)=EnumSystemRole.unitAdmin) {
 		INTO ret SELECT -1 as id;
+		RETURN;
+	}
+	
+	IF EXISTS(SELECT a.unit FROM UnitRoot as a WHERE a.name=name) {
+		INTO ret SELECT -2 as id;	-- 重名
+		RETURN;
+	}
+
+	VAR unitId ID, unitNoteId ID, folderId ID, seconds INT;
+	TUID Note INTO unitId SET type=EnumNoteType.unit, caption=name, content=content, owner=owner;
+	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+	SET folderId=a.folder FROM SpecFolder as a WHERE a.owner=owner AND a.spec=EnumSpecFolder.notes;
+
+	TUID Note INTO unitNoteId SET type=EnumNoteType.UnitNote, caption=name, content=content, owner=owner;
+	BOOK UnitRoot AT(unitNoteId) SET name=name;
+	BOOK FolderNote AT (folderId, unitNoteId) SET seconds=seconds;
+	BOOK UnitFolder AT (unitId, owner) SET folder=unitNoteId, role=EnumUnitRole.owner | EnumUnitRole.admin | EnumUnitRole.unitAdmin;
+	Proc NotifyUserNote(owner, folderId, seconds);
+	INTO ret SELECT unitNoteId as id;
+};
+
+ACTION CreateUnit ver 1.2 (
+	parent ID Note,			-- EnumNoteType=unit, 上级单位，不能为null
+	name CHAR(200),
+	content TEXT,
+)
+RETURNS ret (
+	id ID
+) {
+	VAR folderId ID;
+	SET folderId=a.folder 
+		FROM UnitFolder as a 
+		WHERE a.unit=parent 
+			AND a.member=$user 
+			AND (a.role&EnumUnitRole.unitAdmin)=EnumUnitRole.unitAdmin
+			AND a.state=1;
+	IF folderId IS NULL { 
+		INTO ret SELECT -1 as id;
+		RETURN;
+	}
+	
+	IF EXISTS(SELECT b.id 
+		FROM Note2Note as a JOIN Note as b ON a.note1=b.id
+		WHERE a.note0=parent AND a.type=EnumNoteMapType.Contain AND b.caption=name) 
+	{
+		INTO ret SELECT -2 as id;	-- 重名
+		RETURN;
+	}
+
+	VAR unitId ID;
+	TUID Note INTO unitId SET type=EnumNoteType.unit, caption=name, content=content, owner=$user;
+	BOOK Note2Note AT (parent, unitId);
+	INTO ret SELECT unitId as id;
+};
+
+QUERY GetUnit (
+	unitNote ID Note,		-- if < 0, then unitId
+)
+RETURNS ret (
+	id ID,
+	caption CHAR(200),
+	content TEXT,
+) 
+RETURNS parent (
+	id ID,
+	caption CHAR(200),
+	content TEXT,
+) 
+RETURNS units (
+	id ID,
+	caption CHAR(200),
+	content TEXT,
+)
+RETURNS members (
+	member ID [$User],
+	assigned CHAR(100),
+	role TINYINT,
+) {
+	VAR unit ID;
+	IF unitNote < 0 {
+		SET unit = -unitNote;
 	}
 	ELSE {
-		VAR unitId ID, unitNoteId ID, folderId ID, seconds INT;
-		TUID Note INTO unitId SET type=EnumNoteType.unit, caption=name, content=content, owner=owner;
-		SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
-		SET folderId=a.folder FROM SpecFolder as a WHERE a.owner=owner AND a.spec=EnumSpecFolder.notes;
-
-		TUID Note INTO unitNoteId SET type=EnumNoteType.UnitNote, caption=name, content=content, owner=owner;
-		BOOK FolderNote AT (folderId, unitNoteId) SET seconds=seconds;
-		Proc NotifyNote(folderId, seconds, 0);
-		INTO ret SELECT unitNoteId as id;
+		SET unit = a.unit FROM UnitFolder as a WHERE a.folder=unitNote;
 	}
+	INTO ret SELECT a.id, a.caption, a.content FROM Note as a WHERE a.id=unit;
+	INTO parent SELECT a.id, a.caption, a.content FROM Note2Note as b JOIN Note as a ON b.note0=a.id WHERE b.note1=unit;
+	INTO units SELECT a.id, a.caption, a.content FROM Note2Note as b JOIN Note as a ON b.note1=a.id WHERE b.note0=unit;
+	INTO members SELECT b.member, c.assigned, b.role 
+		FROM UnitFolder as b LEFT JOIN MyContact as c ON c.me=$user and b.member=c.contact
+		WHERE b.unit=unit AND b.state=1;
 };

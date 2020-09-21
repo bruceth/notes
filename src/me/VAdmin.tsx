@@ -93,7 +93,7 @@ class VUnit extends VPage<CMe> {
 				<div className="my-2">所有者: <Image className="w-2c h-2c" src={icon} /> {nick ?? name} </div>
 				<div>
 					<input type="text" className="form-control" maxLength={100}
-						placeholder="机构名称" onChange={this.onChange}/>
+						placeholder="机构名称" onChange={this.onChange} onKeyDown={this.onKeyDown}/>
 				</div>
 				<div className="my-2">
 					<button className="btn btn-primary" disabled={this.input?.trim().length===0}
@@ -107,21 +107,34 @@ class VUnit extends VPage<CMe> {
 		this.input = evt.currentTarget.value;
 	}
 
+	private onKeyDown = async (evt: React.KeyboardEvent<HTMLInputElement>) => {
+		if (evt.keyCode === 13) {
+			await this.onCreate();
+		}
+	}
+
 	private onCreate = async () => {
-		let unitId = await this.controller.createUnit({
+		let unitId = await this.controller.createRootUnit({
 			name: this.input.trim(),  
 			content: undefined,
 			owner: this.controller.user.id
 		});
-		if (unitId > 0) {
-			this.openPageElement(<Page header="成功" afterBack={()=>this.closePage(3)} back="close">
-				<div className="m-3 text-success">机构创建成功！</div>
-			</Page>)
+		let header:string = '错误', cn:string = 'text-danger', content:string;
+		switch (unitId) {
+			default:
+				header = '成功';
+				cn = 'text-success';
+				content = '机构创建成功！';
+				break;
+			case -1:
+				content = '无权创建机构';
+				break;
+			case -2:
+				content = '机构名称已经被使用了';
+				break;
 		}
-		else {
-			this.openPageElement(<Page header="错误" afterBack={()=>this.closePage(3)} back="close">
-				<div className="m-3 text-danger">机构创建时错误！</div>
-			</Page>)
-		}
+		this.openPageElement(<Page header={header} afterBack={()=>this.closePage(3)} back="close">
+			<div className={'m-3 ' +  cn}>{content}</div>
+		</Page>)
 	}
 }

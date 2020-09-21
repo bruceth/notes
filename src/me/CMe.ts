@@ -23,8 +23,8 @@ export class CMe extends CUqBase {
 		this.openVPage(VAdmin);
 	}
 
-	async createUnit(param: {name:string; content:string; owner:number}): Promise<number> {
-		let result = await this.uqs.notes.CreateUnit.submit(param);
+	async createRootUnit(param: {name:string; content:string; owner:number}): Promise<number> {
+		let result = await this.uqs.notes.CreateRootUnit.submit(param);
 		return result.id;
 	}
 }

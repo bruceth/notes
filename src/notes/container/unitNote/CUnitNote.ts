@@ -2,6 +2,7 @@ import { EnumNoteType } from "notes/model";
 import { renderIcon } from "notes/noteBase";
 import { CContainer } from "../CContainer";
 import { VUnitNoteDir } from "./VUnitNoteDir";
+import { VUnitNoteView } from "./VUnitNoteView";
 
 export class CUniteNote extends CContainer {
 	get type():EnumNoteType { return EnumNoteType.unitNote }
@@ -22,8 +23,7 @@ export class CUniteNote extends CContainer {
 	}
 
 	async showFolder() {
-		this.load();
-		//this.openVPage(VFolderMy);
+		let results = await this.uqs.notes.GetUnit.query({unitNote:this.noteItem.note});
+		this.openVPage(VUnitNoteView);
 	}
-
 }

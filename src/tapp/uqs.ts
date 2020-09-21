@@ -45,8 +45,11 @@ export interface Notes {
 	GetProjectDaySum: Query;
 
 	InitMySetting: Action;
-	CreateUnit: Action;
 	GetSystemRole: Query;
+
+	CreateRootUnit: Action;
+	CreateUnit: Action;
+	GetUnit: Query;
 };
 
 export interface UQs {

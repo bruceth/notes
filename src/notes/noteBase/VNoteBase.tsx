@@ -70,15 +70,15 @@ export abstract class VNoteBase<T extends CNoteBase> extends VBasePage<T> {
 		if (create && update) {
 			let time:Date, action:any;
 			if (update.getTime() - create.getTime() > 60*1000) {
-				action = <FA className="ml-1" name="pencil" />;
+				action = <FA className="mr-1 text-info" name="pencil" />;
 				time = update;
 			}
 			else {
 				time = create;
 			}
 			return <small className="text-muted">
-				<span><EasyTime date={time} /></span>
 				{action}
+				<span><EasyTime date={time} /></span>
 			</small>
 		}
 	}

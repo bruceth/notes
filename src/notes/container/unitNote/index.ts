@@ -1,6 +1,6 @@
 import { CNotes } from "notes/CNotes";
-import { CUniteNote } from "./CUnitNote";
+import { CUnitNote } from "./CUnitNote";
 
-export function createCUnitNote(cNotes: CNotes): CUniteNote { 
-	return new CUniteNote(cNotes);
+export function createCUnitNote(cNotes: CNotes): CUnitNote { 
+	return new CUnitNote(cNotes);
 }

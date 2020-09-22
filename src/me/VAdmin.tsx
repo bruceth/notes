@@ -1,8 +1,9 @@
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
-import { VPage, userApi, User, Image, Page } from "tonva";
-import { CMe } from "./CMe";
+import { VPage, userApi, User, Image, Page, List, UserView, 
+	Edit, ItemSchema, StringSchema, IntSchema, UiSchema, UiTextItem, UiRange } from "tonva";
+import { CMe, RootUnitItem } from "./CMe";
 
 export class VAdmin extends VPage<CMe> {
 	header() {return '管理员'}
@@ -17,7 +18,58 @@ export class VAdmin extends VPage<CMe> {
 					<button className="btn btn-primary" onClick={()=>this.openVPage(VUser)}>创建</button>
 				</div>
 			</div>
+			<List items={this.controller.rootUnits} item={{render: this.renderRootUnit, onClick: this.onClickRootUnit}} />
 		</div>;
+	}
+
+	private renderRootUnit = (item: RootUnitItem, index: number) => {
+		let {id, owner, name, content, tonvaUnit} = item;
+		let renderUser = (user:User) => {
+			let {name, nick, icon} = user;
+			return <>
+				<Image className="w-1-5c h-1-5c mr-2" src={icon || '.user-o'} />
+				{nick || name}
+			</>
+		}
+		return <div className="px-3 py-2 align-items-center">
+			<div className="mr-3"><b>{name}</b> <small className="text-muted">ID={id}</small></div>
+			<div className="small text-muted"><UserView user={owner as number} render={renderUser} /></div>
+			{tonvaUnit && <div className="ml-auto small text-muted">tonva={tonvaUnit}</div>}
+		</div>;
+	}
+
+	private onClickRootUnit = (item: RootUnitItem) => {
+		let {name} = item;
+		let schema: ItemSchema[] = [
+			{ name: 'name', type: 'string' } as StringSchema,
+			{ name: 'tonvaUnit', type: 'integer' } as IntSchema,
+		];
+		let uiSchema: UiSchema = {
+			items: {
+				name: { widget: 'text', label: '机构名称' } as UiTextItem,
+				tonvaUnit: { widget: 'range', label: 'Tonva Unit' } as UiRange,
+			}
+		}
+		this.openPageElement(<Page header={name}>
+            <Edit schema={schema} uiSchema={uiSchema}
+                data={item}
+                onItemChanged={async (itemSchema: ItemSchema, newValue: any, preValue: any) => {
+					await this.onItemChanged(item, itemSchema, newValue, preValue);
+				}} />
+		</Page>);
+	}
+
+	private onItemChanged = async (item: RootUnitItem, itemSchema: ItemSchema, newValue: any, preValue: any) => {
+		switch (itemSchema.name) {
+			case 'name':
+				let name = newValue.trim();
+				if (name === preValue.trim()) break;
+				await this.controller.changeRootUnitName(item, name);
+				break;
+			case 'tonvaUnit':
+				await this.controller.changeRootUnitTonva(item, newValue);
+				break;
+		}
 	}
 }
 
@@ -93,7 +145,7 @@ class VUnit extends VPage<CMe> {
 				<div className="my-2">所有者: <Image className="w-2c h-2c" src={icon} /> {nick ?? name} </div>
 				<div>
 					<input type="text" className="form-control" maxLength={100}
-						placeholder="机构名称" onChange={this.onChange}/>
+						placeholder="机构名称" onChange={this.onChange} onKeyDown={this.onKeyDown}/>
 				</div>
 				<div className="my-2">
 					<button className="btn btn-primary" disabled={this.input?.trim().length===0}
@@ -107,21 +159,34 @@ class VUnit extends VPage<CMe> {
 		this.input = evt.currentTarget.value;
 	}
 
+	private onKeyDown = async (evt: React.KeyboardEvent<HTMLInputElement>) => {
+		if (evt.keyCode === 13) {
+			await this.onCreate();
+		}
+	}
+
 	private onCreate = async () => {
-		let unitId = await this.controller.createUnit({
+		let unitId = await this.controller.createRootUnit({
 			name: this.input.trim(),  
 			content: undefined,
 			owner: this.controller.user.id
 		});
-		if (unitId > 0) {
-			this.openPageElement(<Page header="成功" afterBack={()=>this.closePage(3)} back="close">
-				<div className="m-3 text-success">机构创建成功！</div>
-			</Page>)
+		let header:string = '错误', cn:string = 'text-danger', content:string;
+		switch (unitId) {
+			default:
+				header = '成功';
+				cn = 'text-success';
+				content = '机构创建成功！';
+				break;
+			case -1:
+				content = '无权创建机构';
+				break;
+			case -2:
+				content = '机构名称已经被使用了';
+				break;
 		}
-		else {
-			this.openPageElement(<Page header="错误" afterBack={()=>this.closePage(3)} back="close">
-				<div className="m-3 text-danger">机构创建时错误！</div>
-			</Page>)
-		}
+		this.openPageElement(<Page header={header} afterBack={()=>this.closePage(3)} back="close">
+			<div className={'m-3 ' +  cn}>{content}</div>
+		</Page>)
 	}
 }

@@ -61,7 +61,5 @@ PROC NotifyUserNote(
 		}
 		SET noteId = NULL;
 	}
-	IF userId <> $user {
-		TUID [$User] ID (userId) SET poke=1;
-	}
+	TUID [$User] ID (userId) SET poke=1;
 };

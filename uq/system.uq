@@ -1,4 +1,4 @@
-ENUM EnumSystemRole (owner=1, admin=2);
+ENUM EnumSystemRole (owner=1, admin=2, unitAdmin=4);
 
 MAP SystemRole (
 	KEY user ID [$User],

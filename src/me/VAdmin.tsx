@@ -1,8 +1,9 @@
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
-import { VPage, userApi, User, Image, Page } from "tonva";
-import { CMe } from "./CMe";
+import { VPage, userApi, User, Image, Page, List, UserView, 
+	Edit, ItemSchema, StringSchema, IntSchema, UiSchema, UiTextItem, UiRange } from "tonva";
+import { CMe, RootUnitItem } from "./CMe";
 
 export class VAdmin extends VPage<CMe> {
 	header() {return '管理员'}
@@ -17,7 +18,58 @@ export class VAdmin extends VPage<CMe> {
 					<button className="btn btn-primary" onClick={()=>this.openVPage(VUser)}>创建</button>
 				</div>
 			</div>
+			<List items={this.controller.rootUnits} item={{render: this.renderRootUnit, onClick: this.onClickRootUnit}} />
 		</div>;
+	}
+
+	private renderRootUnit = (item: RootUnitItem, index: number) => {
+		let {id, owner, name, content, tonvaUnit} = item;
+		let renderUser = (user:User) => {
+			let {name, nick, icon} = user;
+			return <>
+				<Image className="w-1-5c h-1-5c mr-2" src={icon || '.user-o'} />
+				{nick || name}
+			</>
+		}
+		return <div className="px-3 py-2 align-items-center">
+			<div className="mr-3"><b>{name}</b> <small className="text-muted">ID={id}</small></div>
+			<div className="small text-muted"><UserView user={owner as number} render={renderUser} /></div>
+			{tonvaUnit && <div className="ml-auto small text-muted">tonva={tonvaUnit}</div>}
+		</div>;
+	}
+
+	private onClickRootUnit = (item: RootUnitItem) => {
+		let {name} = item;
+		let schema: ItemSchema[] = [
+			{ name: 'name', type: 'string' } as StringSchema,
+			{ name: 'tonvaUnit', type: 'integer' } as IntSchema,
+		];
+		let uiSchema: UiSchema = {
+			items: {
+				name: { widget: 'text', label: '机构名称' } as UiTextItem,
+				tonvaUnit: { widget: 'range', label: 'Tonva Unit' } as UiRange,
+			}
+		}
+		this.openPageElement(<Page header={name}>
+            <Edit schema={schema} uiSchema={uiSchema}
+                data={item}
+                onItemChanged={async (itemSchema: ItemSchema, newValue: any, preValue: any) => {
+					await this.onItemChanged(item, itemSchema, newValue, preValue);
+				}} />
+		</Page>);
+	}
+
+	private onItemChanged = async (item: RootUnitItem, itemSchema: ItemSchema, newValue: any, preValue: any) => {
+		switch (itemSchema.name) {
+			case 'name':
+				let name = newValue.trim();
+				if (name === preValue.trim()) break;
+				await this.controller.changeRootUnitName(item, name);
+				break;
+			case 'tonvaUnit':
+				await this.controller.changeRootUnitTonva(item, newValue);
+				break;
+		}
 	}
 }
 

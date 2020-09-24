@@ -17,6 +17,7 @@ export interface UnitItem {
 export interface MemberItem {
 	member: number;
 	assigned: string;
+	discription: string;
 	role: EnumUnitRole;
 }
 
@@ -25,6 +26,7 @@ export class CUnitNote extends CContainer {
 	@observable units:UnitItem[];
 	cUnitAdmins: CUnitAdmin[] = [];
 	curUnitAdmin: CUnitAdmin;
+	isChanged: boolean = false;
 
 	get type():EnumNoteType { return EnumNoteType.unitNote }
 	renderIcon(): JSX.Element {
@@ -43,7 +45,7 @@ export class CUnitNote extends CContainer {
 		//this.openVPage(VFolderMyEdit);
 	}
 
-	async showFolder() {
+	async loadUnits() {
 		let unitNote = this.noteItem.note;
 		let result = await this.uqs.notes.GetUnit.query({unitNote});
 		this.unit = result.ret[0];
@@ -52,21 +54,24 @@ export class CUnitNote extends CContainer {
 			throw new Error('not unit for note=' + unitNote);
 		}
 		this.units = result.units
+	}
+
+	async showFolder() {
+		await this.loadUnits();
 		this.openVPage(VUnitNoteView);
 	}
 
 	async showAdmin() {
 		this.curUnitAdmin = new CUnitAdmin(this.cApp);
-		this.curUnitAdmin.init(this.noteItem.note);
-		await this.curUnitAdmin.showViewPage();
-	}
-
-	async createUnit(unitName: string):Promise<number> {
-		let result = await this.uqs.notes.CreateUnit.submit({
-			parent: this.noteItem.note, 
-			name: unitName,
-			content: undefined,
+		this.curUnitAdmin.init(undefined, {
+			id: -this.noteItem.note,
+		} as any);
+		await this.curUnitAdmin.showViewPage(() => {
+			let {isChanged} = this.curUnitAdmin;
+			if (isChanged) {
+				this.units = undefined;
+				this.loadUnits();
+			}
 		});
-		return result.id;
 	}
 }

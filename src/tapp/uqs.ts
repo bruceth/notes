@@ -50,8 +50,10 @@ export interface Notes {
 	CreateRootUnit: Action;
 	CreateUnit: Action;
 	GetUnit: Query;
+	SetUnitName: Action;
 	AddUnitMember: Action;
 	SetUnitMemberRole: Action;
+	SetUnitMemberProp: Action;
 	GetRootUnits: Query;
 	ChangeRootUnitProp: Action;
 };

@@ -1,11 +1,11 @@
 import React from "react";
-import { VPage, SearchBox, userApi, Image, FA, Muted, Controller } from "tonva";
+import { VPage, SearchBox, userApi, Image, FA, Muted, Controller, Form, Schema, StringSchema } from "tonva";
 import { observable } from "mobx";
 import { observer } from "mobx-react";
 
 export abstract class VAddContact<T extends Controller> extends VPage<T> {
 	@observable private hasError = false;
-	@observable private user:{id:number, name:string, nick:string, icon:string};
+	@observable protected user:{id:number, name:string, nick:string, icon:string};
 
 	header() {
 		return <div className="w-100 mr-1 d-flex">
@@ -35,11 +35,12 @@ export abstract class VAddContact<T extends Controller> extends VPage<T> {
 
 	private onAddContact = async () => {
 		//await this.controller.AddContact(this.user.id);
-		await this.addContact(this.user.id, undefined);
+		await this.addContact();
 		this.closePage();
 	}
 
-	protected abstract addContact(userId: number, assigned: string):Promise<void>;
+	protected abstract addContact():Promise<void>;
+	protected renderFields():JSX.Element {return;}
 
 	content() {
 		let c = observer(() => {
@@ -67,6 +68,7 @@ export abstract class VAddContact<T extends Controller> extends VPage<T> {
 					<Image className="w-3c h-3c mr-3" src={icon || '.user-o'} />
 					{div}
 				</div>
+				{this.renderFields()}
 				<div className="py-3 px-4">
 					<button className="btn btn-primary" onClick={this.onAddContact}>增加</button>
 				</div>

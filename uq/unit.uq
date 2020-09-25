@@ -13,7 +13,8 @@ MAP UnitFolder (
 	KEY member ID [$User],
 	folder ID Note,				-- NoteType=unitFolder
 	role TINYINT DEFAULT 0, 	-- 0: 普通, 1: owner, 2: admin, 4: unitAdmin, (owner 不需要展示节点)
-	assigned CHAR(100),
+	assigned CHAR(100),			-- 赋予名字
+	discription CHAR(100),		-- 描述
 	state TINYINT DEFAULT 1,	-- 1:正常，0:删除
 	INDEX folder (folder) UNIQUE,
 );
@@ -89,10 +90,21 @@ RETURNS ret (
 	INTO ret SELECT unitId as id;
 };
 
+ACTION SetUnitName(
+	unit ID,
+	name CHAR(200),
+) {
+	TUID Note ID(unit) SET caption=name;
+	FOREACH (VAR folder ID OF SELECT a.folder FROM UnitFolder as a WHERE a.unit=unit) {
+		TUID Note ID(folder) SET caption=name;
+	}
+};
+
 ACTION AddUnitMember(
 	unit ID,
 	member ID,
 	assigned CHAR(100),
+	discription CHAR(100),
 ) {
 	IF member=$user {RETURN;}
 	VAR unitNoteId ID, seconds INT, folderId ID, caption CHAR(200), content TEXT;
@@ -102,8 +114,22 @@ ACTION AddUnitMember(
 	SET caption=a.caption, content=a.content FROM Note as a WHERE a.id=unit;
 	TUID Note INTO unitNoteId SET type=EnumNoteType.UnitNote, caption=caption, content=content, owner=member;
 	BOOK FolderNote AT (folderId, unitNoteId) SET seconds=seconds;
-	BOOK UnitFolder AT(unit, member) SET assigned=assigned, folder=unitNoteId;
+	BOOK UnitFolder AT(unit, member) SET assigned=assigned, discription=discription, folder=unitNoteId;
 	Proc NotifyUserNote(member, folderId, seconds);
+};
+
+ACTION SetUnitMemberProp(
+	unit ID,
+	member ID,
+	prop CHAR(100),
+	value CHAR(100),
+) {
+	IF prop='assigned' {
+		BOOK UnitFolder AT(unit, member) SET assigned=value;
+	}
+	ELSEIF prop='description' {
+		BOOK UnitFolder AT(unit, member) SET discription=value;
+	}
 };
 
 ACTION SetUnitMemberRole(
@@ -159,6 +185,7 @@ RETURNS units (
 RETURNS members (
 	member ID [$User],
 	assigned CHAR(100),
+	discription CHAR(100),
 	role TINYINT,
 ) {
 	VAR unit ID;
@@ -182,8 +209,8 @@ RETURNS members (
 		FROM Note2Note as b JOIN Note as a ON b.note1=a.id 
 		WHERE b.note0=unit;
 
-	INTO members SELECT b.member, c.assigned, b.role 
-		FROM UnitFolder as b LEFT JOIN MyContact as c ON c.me=$user and b.member=c.contact
+	INTO members SELECT b.member, b.assigned, b.discription, b.role 
+		FROM UnitFolder as b -- LEFT JOIN MyContact as c ON c.me=$user and b.member=c.contact
 		WHERE b.unit=unit AND b.state=1;
 };
 

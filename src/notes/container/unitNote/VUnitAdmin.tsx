@@ -1,17 +1,17 @@
 import React, { ChangeEvent } from 'react';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { FA, List, VPage } from 'tonva';
+import { Edit, FA, Form, List, Schema, StringSchema, BoolSchema, UiSchema, UiTextItem, UiCheckItem, VPage, ItemSchema, Page } from 'tonva';
 import { EnumUnitRole, MemberItem, UnitItem } from "./CUnitNote";
 import { CUnitAdmin } from './CUnitAdmin';
 import { VBasePage } from 'notes/views/VBasePage';
 import { VAddContact } from 'tool';
 
 export class VUnitAdmin extends VBasePage<CUnitAdmin> {
-	header() {return '管理 ' + this.controller.unit.caption};
+	header() {return React.createElement(observer(()=><>管理 {this.controller.unit.caption}</>))};
 	content() {
 		let {unit, parent, units, members} = this.controller;
-		let {id, caption, content} = unit;
+		let {id, content} = unit;
 		let vParent:any;
 		if (parent) {
 			vParent = <div className="m-3 small">
@@ -22,7 +22,11 @@ export class VUnitAdmin extends VBasePage<CUnitAdmin> {
 		return <div>
 			{vParent}
 			<div className="m-3">
-				<div><b className="mr-5">{caption}</b> <small className="text-muted">ID={id}</small></div>
+				<div className="cursor-pointer" onClick={this.onEditUnitName}>
+					{React.createElement(observer(()=><b className="mr-3">{unit.caption}</b>))}
+					<FA name="pencil-o" />
+					<small className="text-muted mr-3">ID={id}</small>
+				</div>
 				{content && <div>content</div>}
 			</div>
 
@@ -32,7 +36,7 @@ export class VUnitAdmin extends VBasePage<CUnitAdmin> {
 					<FA name="plus" /> 成员
 				</button>
 			</div>
-			<List items={members} item={{render: this.renderMemberRow}} />
+			<List items={members} item={{render:this.renderMemberRow, onClick:this.onClickMember}} />
 			<div className="mt-5" />
 			<div className="d-flex align-items-end px-3 my-2">
 				<div className="small text-muted">下级单位</div>
@@ -44,20 +48,48 @@ export class VUnitAdmin extends VBasePage<CUnitAdmin> {
 		</div>
 	}
 
+	private onEditUnitName = () => {
+		let right = <button className="btn btn-sm btn-success mr-1" onClick={this.onUnitNameSubmit}>提交</button>;
+		this.openPageElement(<Page header="名称" right={right}>
+			<div className="m-3">
+				<input type="text" className="form-control" 
+					defaultValue={this.controller.unit.caption}
+					onChange={this.onUnitNameChange} maxLength={100}
+					onKeyDown={this.onUnitNameKeyDown} />
+			</div>
+		</Page>)
+	}
+
+	private unitName:string;
+	private onUnitNameChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
+		this.unitName = evt.target.value;
+	}
+	private onUnitNameKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {
+		if (evt.keyCode === 13) this.onUnitNameSubmit();
+	}
+
+	private onUnitNameSubmit = async () => {
+		await this.controller.setUnitName(this.unitName);
+		this.controller.unit.caption = this.unitName;
+		this.closePage();
+	}
+
 	private onNewUnit = () => {
 		this.openVPage(VNewUnit);
 	}
 
 	private renderUnitRow = (unitItem: UnitItem, index: number) => {
-		let {caption, memberCount} = unitItem;
-		return <div className="px-3 py-2 align-items-center d-flex">
-			<div>
-				<FA className="text-warning mr-3" name="sitemap" />
-				<span>{caption}</span>
-			</div>
+		return React.createElement(observer(() => {
+			let {caption, memberCount} = unitItem;
+			return <div className="px-3 py-2 align-items-center d-flex">
+				<div>
+					<FA className="text-warning mr-3" name="sitemap" />
+					<span>{caption}</span>
+				</div>
 
-			{<span className="ml-auto small"><FA name="user-o" className="small text-info mr-2" /> {memberCount}</span>}
-		</div>;
+				{<span className="ml-auto small"><FA name="user-o" className="small text-info mr-2" /> {memberCount}</span>}
+			</div>;
+		}));
 	}
 
 	private onUnitRow = (unitItem: UnitItem) => {
@@ -69,31 +101,25 @@ export class VUnitAdmin extends VBasePage<CUnitAdmin> {
 	}
 
 	private renderMemberRow = (item: MemberItem, index: number) => {
-		let {member, assigned, role} = item;
-		let right = (role & EnumUnitRole.owner) === EnumUnitRole.owner?
-			<FA className="text-danger" name="flag" />
-			:
-			<label className="mb-0">
-				<input className="mr-1" type="checkbox" 
-					defaultChecked={(role&EnumUnitRole.admin) === EnumUnitRole.admin}
-					onChange={evt => this.onCheckChange(item, evt)} />
-				管理员
-			</label>;
-		return <div className="px-3 py-2">
-			<div>{this.renderContact(member, assigned)}</div>
-			<span className="ml-auto">
+		let {member, assigned, role, discription} = item;
+		let right: any[] = [];
+		if ((role & EnumUnitRole.owner) === EnumUnitRole.owner) {
+			right.push(<FA key="owner" className="text-danger ml-2" name="flag" />);
+		}
+		if ((role&EnumUnitRole.admin) === EnumUnitRole.admin) {
+			right.push(<span key="admin" className="ml-2">管理员</span>)
+		}
+		return <div className="px-3 py-2 cursor-pointer align-items-center">
+			<div className="mr-3">{this.renderContact(member, assigned)}</div>
+			<div className="small text-muted">{discription}</div>
+			<span className="ml-auto small">
 				{right}
 			</span>
 		</div>;
 	}
 
-	private onCheckChange = async (item:MemberItem, evt: React.ChangeEvent<HTMLInputElement>) => {
-		await this.controller.setUnitMemberAdmin(item, evt.currentTarget.checked);
-	}
-
-	private onMemberRow = (item: MemberItem) => {
-		//this.controller.showUnitAdmin(unitItem);
-		alert ('成员: ' +  item.member + ' ' + item.assigned)
+	private onClickMember = (item: MemberItem) => {
+		this.openVPage(VEditMember, item);
 	}	
 }
 
@@ -145,8 +171,72 @@ class VNewUnit extends VPage<CUnitAdmin> {
 	}
 }
 
+const adminSchema = {name: 'isAdmin', type: 'boolean', required: false} as BoolSchema;
+const isAdminUI = {widget: 'checkbox',label: '管理员'} as UiCheckItem;
+
+const schema: Schema = [
+	{name: 'assigned', type: 'string', required: false, maxLength: 100} as StringSchema,
+	{name: 'discription', type: 'string', required: false, maxLength: 100} as StringSchema,
+];
+const uiSchema: UiSchema = {
+	items: {
+		assigned: {
+			widget: 'text',
+			label: '赋予名字',
+			placeholder: '成员的真实姓名'
+		} as UiTextItem,
+		discription: {
+			widget: 'text',
+			label: '说明',
+			placeholder: '职称，职务或者岗位信息'
+		} as UiTextItem,
+		isAdmin: isAdminUI,
+	}
+};
 class VNewMember extends VAddContact<CUnitAdmin> {
-	protected async addContact(userId:number, assigned:string):Promise<void> {
-		await this.controller.addMember(userId, assigned);
+	private form: Form;
+
+	protected renderFields() {
+		return <Form ref={f => this.form=f} className="m-3" schema={schema} uiSchema={uiSchema} fieldLabelSize={2} />	
+	}
+	
+	protected async addContact():Promise<void> {
+		let {assigned, discription} = this.form.data;
+		await this.controller.addMember(this.user.id, assigned, discription);
+	}
+}
+
+class VEditMember extends VBasePage<CUnitAdmin> {
+	@observable private item: MemberItem;
+	init(item: MemberItem) {
+		this.item = item;
+		isAdminUI.readOnly = (this.item.role & EnumUnitRole.owner) === EnumUnitRole.owner;
+	}
+	header() {return '详情'}
+	content () {
+		return React.createElement(observer(() => {
+			let {assigned, discription} = this.item;
+			let data = {
+				isAdmin: (this.item.role & (EnumUnitRole.admin | EnumUnitRole.unitAdmin)) !== 0,
+				assigned, discription,
+			};
+			return <div>
+				<Edit className="m-3" 
+					data={data}
+					schema={[adminSchema, ...schema]} 
+					uiSchema={uiSchema}
+					onItemChanged={this.onItemChanged} />
+			</div>;
+		}));
+	}
+
+	private onItemChanged = async (itemSchema: ItemSchema, newValue:any, preValue:any) => {
+		let {name} = itemSchema;
+		if (name === 'isAdmin') {
+			await this.controller.setUnitMemberAdmin(this.item, newValue);
+		}
+		else {
+			await this.controller.setUnitMemberProp(this.item, name, newValue);
+		}
 	}
 }

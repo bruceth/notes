@@ -6,14 +6,17 @@ import { EnumUnitRole, MemberItem, UnitItem } from "./CUnitNote";
 import { VUnitAdmin } from "./VUnitAdmin";
 
 export class CUnitAdmin  extends CUqBase {
-	unitNoteId: number;
-	unit: UnitItem;
-	parent: UnitItem;	
+	isChanged: boolean = false;
+	parent: UnitItem;
+	@observable unit: UnitItem;
 	@observable units:UnitItem[];
 	@observable members:MemberItem[];
 
 	protected async internalStart() {}
-	init(unitNoteId: number) {this.unitNoteId = unitNoteId;}
+	init(parent:UnitItem, unit:UnitItem) {
+		this.parent = parent;
+		this.unit = unit;
+	}
 
 	get type():EnumNoteType { return EnumNoteType.unitNote }
 	renderIcon(): JSX.Element {return renderIcon('sitemap', 'text-primary');}
@@ -21,8 +24,8 @@ export class CUnitAdmin  extends CUqBase {
 	showAddPage() {}
 	showEditPage() {}
 
-	async showViewPage() {
-		let unitNote = this.unitNoteId;
+	async showViewPage(afterBack: (isChanged:boolean) => void) {
+		let unitNote = -this.unit.id;
 		let result = await this.uqs.notes.GetUnit.query({unitNote});
 		this.unit = result.ret[0];
 		if (this.unit === undefined) {
@@ -30,36 +33,43 @@ export class CUnitAdmin  extends CUqBase {
 			throw new Error('not unit for note=' + unitNote);
 		}
 		this.units = result.units;
-		this.parent = result.parent[0];
 		this.members = this.moveOwnerMemberToTop(result.members);
-		this.openVPage(VUnitAdmin);
+		this.openVPage(VUnitAdmin, undefined, afterBack);
 	}
 
 	private moveOwnerMemberToTop(members: MemberItem[]):MemberItem[] {
 		let ret:MemberItem[] = [];
-		let pOwner = 0;
+		let pOwner = 0, pAdmin = 0;
 		for (let member of members) {
 			let {role} = member;
 			if ((role & EnumUnitRole.owner) === EnumUnitRole.owner) {
 				ret.splice(pOwner, 0, member);
 				pOwner++;
+				pAdmin++;
+				continue;
 			}
-			else {
-				ret.push(member);
+			if ((role & EnumUnitRole.admin) === EnumUnitRole.admin) {
+				ret.splice(pAdmin, 0, member);
+				pAdmin++;
+				continue;
 			}
+			ret.push(member);
 		}
 		return ret;
 	}
 
 	async showUnitAdmin(unitItem: UnitItem) {
 		let cUnitAdmin = new CUnitAdmin(this.cApp);
-		cUnitAdmin.init(-unitItem.id);
-		await cUnitAdmin.showViewPage();
+		cUnitAdmin.init(this.unit, unitItem);
+		await cUnitAdmin.showViewPage(() => {
+			let {isChanged} = cUnitAdmin;
+			if (isChanged) this.isChanged = isChanged;
+		});
 	}
 
 	async createUnit(unitName: string):Promise<number> {
 		let result = await this.uqs.notes.CreateUnit.submit({
-			parent: this.unitNoteId, 
+			parent: this.parent.id, //.unitNoteId, 
 			name: unitName,
 			content: undefined,
 		});
@@ -73,20 +83,30 @@ export class CUnitAdmin  extends CUqBase {
 				memberCount: 0,
 			})
 		}
+		this.isChanged = true;
 		return id;
 	}
 
-	async addMember(userId:number, assigned:string) {
+	async setUnitName(unitName:string) {
+		await this.uqs.notes.SetUnitName.submit({unit: this.unit.id, name: unitName});
+		this.parent.caption = unitName;
+		this.isChanged = true;
+	}
+
+	async addMember(userId:number, assigned:string, discription:string) {
 		await this.uqs.notes.AddUnitMember.submit({
 			unit: this.unit.id,
 			member: userId,
-			assigned
+			assigned,
+			discription
 		});
 		this.members.push({
 			member: userId,
 			assigned,
+			discription,
 			role: 0,
 		});
+		this.isChanged = true;
 	}
 
 	async setUnitMemberAdmin(member:MemberItem, isAdmin: boolean) {
@@ -97,5 +117,14 @@ export class CUnitAdmin  extends CUqBase {
 		});
 		member.role &= ~roleMask;
 		member.role |= role;
+		this.isChanged = true;
+	}
+
+	async setUnitMemberProp(member:MemberItem, prop:string, value:string) {
+		await this.uqs.notes.SetUnitMemberProp.submit({
+			unit:this.unit.id, member:member.member, prop, value
+		});
+		(member as any)[prop] = value;
+		this.isChanged = true;
 	}
 }

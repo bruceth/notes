@@ -1,77 +1,78 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { Edit, FA, Form, List, Schema, StringSchema, BoolSchema, UiSchema, UiTextItem, UiCheckItem, VPage, ItemSchema, Page } from 'tonva';
-import { EnumUnitRole, MemberItem, UnitItem } from "./CUnitNote";
-import { CUnitAdmin } from './CUnitAdmin';
+import { EnumUnitRole, MemberItem, UnitItem } from "../CUnitNote";
+import { CAdminBase, CUnitAdmin, CRootAdmin } from './CUnitAdmin';
 import { VBasePage } from 'notes/views/VBasePage';
 import { VAddContact } from 'tool';
 
-export class VUnitAdmin extends VBasePage<CUnitAdmin> {
-	header() {return React.createElement(observer(()=><>管理 {this.controller.unit.caption}</>))};
+export abstract class VAdminBase<C extends CAdminBase> extends VBasePage<C> {
 	content() {
-		let {unit, parent, units, members} = this.controller;
+		let {unit, units} = this.controller;
 		let {id, content} = unit;
-		let vParent:any;
-		if (parent) {
-			vParent = <div className="m-3 small">
-				<span className="text-muted">上级：</span>
-				<b className="text-primary">{parent.caption}</b>
-			</div>
-		}
 		return <div>
-			{vParent}
+			{this.renderParent()}
 			<div className="m-3">
-				<div className="cursor-pointer" onClick={this.onEditUnitName}>
-					{React.createElement(observer(()=><b className="mr-3">{unit.caption}</b>))}
-					<FA name="pencil-o" />
-					<small className="text-muted mr-3">ID={id}</small>
+				<div>
+					{React.createElement(observer(()=><b>{unit.caption}</b>))}
+					{this.renderEditUnitName()}
+					{this.renderUnitID()}
 				</div>
 				{content && <div>content</div>}
 			</div>
 
-			<div className="d-flex align-items-end px-3 my-2">
+			<div className="my-5">
+				{this.renderProjects()}
+				{this.renderReports()}
+			</div>
+
+			{this.renderMembersAndUnits()}
+		</div>
+	}
+
+	protected renderParent():JSX.Element {return;}
+	protected renderEditUnitName():JSX.Element {return}
+	protected renderUnitID():JSX.Element {return}
+	protected renderProjects():JSX.Element {return;}
+
+	protected renderReports():JSX.Element {
+		return <div className="px-3 py-2 d-flex bg-white cursor-pointer" onClick={this.controller.showAdminReports}>
+			<span>报表设计</span>
+			<FA className="ml-auto" name="angle-right" />
+		</div>;
+	}
+
+	protected renderMembersAndUnits() {
+		return <>
+			{this.renderMembers()}
+			<div className="mt-5" />
+			{this.renderUnits()}
+		</>
+	}
+
+	protected renderMembers() {
+		return <>
+				<div className="d-flex align-items-end px-3 my-2">
 				<div className="small text-muted">成员</div>
 				<button className="ml-auto btn btn-sm btn-primary" onClick={this.onNewMember}>
 					<FA name="plus" /> 成员
 				</button>
 			</div>
-			<List items={members} item={{render:this.renderMemberRow, onClick:this.onClickMember}} />
-			<div className="mt-5" />
-			<div className="d-flex align-items-end px-3 my-2">
+			<List items={this.controller.members} item={{render:this.renderMemberRow, onClick:this.onClickMember}} />
+		</>;
+	}
+
+	protected renderUnits() {
+		return <>
+				<div className="d-flex align-items-end px-3 my-2">
 				<div className="small text-muted">下级单位</div>
 				<button className="ml-auto btn btn-sm btn-primary" onClick={this.onNewUnit}>
 					<FA name="plus" /> 单位
 				</button>
 			</div>
-			<List items={units} item={{render: this.renderUnitRow, onClick: this.onUnitRow}} />
-		</div>
-	}
-
-	private onEditUnitName = () => {
-		let right = <button className="btn btn-sm btn-success mr-1" onClick={this.onUnitNameSubmit}>提交</button>;
-		this.openPageElement(<Page header="名称" right={right}>
-			<div className="m-3">
-				<input type="text" className="form-control" 
-					defaultValue={this.controller.unit.caption}
-					onChange={this.onUnitNameChange} maxLength={100}
-					onKeyDown={this.onUnitNameKeyDown} />
-			</div>
-		</Page>)
-	}
-
-	private unitName:string;
-	private onUnitNameChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
-		this.unitName = evt.target.value;
-	}
-	private onUnitNameKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {
-		if (evt.keyCode === 13) this.onUnitNameSubmit();
-	}
-
-	private onUnitNameSubmit = async () => {
-		await this.controller.setUnitName(this.unitName);
-		this.controller.unit.caption = this.unitName;
-		this.closePage();
+			<List items={this.controller.units} item={{render: this.renderUnitRow, onClick: this.onUnitRow}} />
+		</>
 	}
 
 	private onNewUnit = () => {
@@ -123,7 +124,76 @@ export class VUnitAdmin extends VBasePage<CUnitAdmin> {
 	}	
 }
 
-class VNewUnit extends VPage<CUnitAdmin> {
+export class VRootAdmin extends VAdminBase<CRootAdmin> {
+	header() {return React.createElement(observer(()=><>机构 {this.controller.unit.caption}</>))};
+	protected renderUnitID() {
+		return <small className="text-muted ml-3">ID={this.controller.unit.id}</small>
+	}
+	protected renderProjects():JSX.Element {
+		return <div className="px-3 py-2 d-flex bg-white cursor-pointer border-bottom"
+			onClick={this.controller.showAdminProjects}>
+			<span>科目体系</span>
+			<FA className="ml-auto" name="angle-right" />
+		</div>;
+	}
+
+	protected renderMembersAndUnits() {
+		return <>
+			{this.renderUnits()}
+			<div className="mt-5" />
+			{this.renderMembers()}
+		</>;
+	}
+}
+
+export class VUnitAdmin extends VAdminBase<CUnitAdmin> {
+	header() {return React.createElement(observer(()=><>{this.controller.unit.caption}</>))};
+
+	protected renderParent() {
+		let {parent} = this.controller;
+		return <div className="m-3 small">
+			<span className="text-muted">上级：</span>
+			<b className="text-primary">{parent.caption}</b>
+		</div>;
+	}
+
+	protected renderUnitID() {
+		return <small className="text-muted">ID={this.controller.unit.id}</small>
+	}
+
+	protected renderEditUnitName() {
+		return <span className="cursor-pointer align-self-stretch" onClick={this.onEditUnitName}>
+			<FA className="text-info mx-3" name="pencil-square-o" />
+		</span>;
+	}
+	private onEditUnitName = () => {
+		let right = <button className="btn btn-sm btn-success mr-1" onClick={this.onUnitNameSubmit}>提交</button>;
+		this.openPageElement(<Page header="名称" right={right}>
+			<div className="m-3">
+				<input type="text" className="form-control" 
+					defaultValue={this.controller.unit.caption}
+					onChange={this.onUnitNameChange} maxLength={100}
+					onKeyDown={this.onUnitNameKeyDown} />
+			</div>
+		</Page>)
+	}
+
+	private unitName:string;
+	private onUnitNameChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
+		this.unitName = evt.target.value;
+	}
+	private onUnitNameKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {
+		if (evt.keyCode === 13) this.onUnitNameSubmit();
+	}
+
+	private onUnitNameSubmit = async () => {
+		await this.controller.setUnitName(this.unitName);
+		this.controller.unit.caption = this.unitName;
+		this.closePage();
+	}
+}
+
+class VNewUnit<C extends CAdminBase> extends VPage<C> {
 	@observable private input: string;
 	@observable private error: string;
 
@@ -193,7 +263,7 @@ const uiSchema: UiSchema = {
 		isAdmin: isAdminUI,
 	}
 };
-class VNewMember extends VAddContact<CUnitAdmin> {
+class VNewMember<C extends CAdminBase> extends VAddContact<C> {
 	private form: Form;
 
 	protected renderFields() {
@@ -206,7 +276,7 @@ class VNewMember extends VAddContact<CUnitAdmin> {
 	}
 }
 
-class VEditMember extends VBasePage<CUnitAdmin> {
+class VEditMember<C extends CAdminBase> extends VBasePage<C> {
 	@observable private item: MemberItem;
 	init(item: MemberItem) {
 		this.item = item;

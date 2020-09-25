@@ -38,7 +38,7 @@ export class Edit extends React.Component<EditProps> {
 
     constructor(props: EditProps) {
         super(props);
-        let {topBorderClassName, bottomBorderClassName, sepClassName, rowContainerClassName, uiSchema, stopEdit} = props;
+        let {topBorderClassName, bottomBorderClassName, sepClassName, rowContainerClassName, uiSchema} = props;
         this.topBorder = <div className={topBorderClassName || this.defaultSepClassName} />;
         this.bottomBorder = <div className={bottomBorderClassName || this.defaultSepClassName} />;
         this.rowContainerClassName = rowContainerClassName || this.defaultRowContainerClassName;

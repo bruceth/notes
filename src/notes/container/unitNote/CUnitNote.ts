@@ -2,7 +2,7 @@ import { observable } from "mobx";
 import { EnumNoteType } from "notes/model";
 import { renderIcon } from "notes/noteBase";
 import { CContainer } from "../CContainer";
-import { CUnitAdmin } from "./CUnitAdmin";
+import { CRootAdmin, CUnitAdmin } from "./admin";
 import { VUnitNoteDir } from "./VUnitNoteDir";
 import { VUnitNoteView } from "./VUnitNoteView";
 
@@ -61,8 +61,8 @@ export class CUnitNote extends CContainer {
 		this.openVPage(VUnitNoteView);
 	}
 
-	async showAdmin() {
-		this.curUnitAdmin = new CUnitAdmin(this.cApp);
+	async showRootAdmin() {
+		this.curUnitAdmin = new CRootAdmin(this.cApp);
 		this.curUnitAdmin.init(undefined, {
 			id: -this.noteItem.note,
 		} as any);

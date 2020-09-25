@@ -23,7 +23,7 @@ export class VAdmin extends VPage<CMe> {
 	}
 
 	private renderRootUnit = (item: RootUnitItem, index: number) => {
-		let {id, owner, name, content, tonvaUnit} = item;
+		let {id, owner, name, tonvaUnit} = item;
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;
 			return <>

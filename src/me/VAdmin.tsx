@@ -2,7 +2,7 @@ import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { VPage, userApi, User, Image, Page, List, UserView, 
-	Edit, ItemSchema, StringSchema, IntSchema, UiSchema, UiTextItem, UiRange } from "tonva";
+	Edit, ItemSchema, StringSchema, IntSchema, UiSchema, UiTextItem, UiRange, UiNumberItem } from "tonva";
 import { CMe, RootUnitItem } from "./CMe";
 
 export class VAdmin extends VPage<CMe> {
@@ -47,7 +47,7 @@ export class VAdmin extends VPage<CMe> {
 		let uiSchema: UiSchema = {
 			items: {
 				name: { widget: 'text', label: '机构名称' } as UiTextItem,
-				tonvaUnit: { widget: 'range', label: 'Tonva Unit' } as UiRange,
+				tonvaUnit: { widget: 'number', label: 'Tonva Unit' } as UiNumberItem,
 			}
 		}
 		this.openPageElement(<Page header={name}>

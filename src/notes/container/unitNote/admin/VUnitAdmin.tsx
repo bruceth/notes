@@ -9,8 +9,8 @@ import { VAddContact } from 'tool';
 
 export abstract class VAdminBase<C extends CAdminBase> extends VBasePage<C> {
 	content() {
-		let {unit, units} = this.controller;
-		let {id, content} = unit;
+		let {unit} = this.controller;
+		let {content} = unit;
 		return <div>
 			{this.renderParent()}
 			<div className="m-3">

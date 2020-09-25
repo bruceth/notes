@@ -11,6 +11,8 @@ import { IdItemEdit } from './idItemEdit';
 import { TagSingleItemEdit, TagMultiItemEdit } from './tagItemEdit';
 import { TextAreaItemEdit } from './textAreaItemEdit';
 import { CheckBoxItemEdit } from './checkBoxItemEdit';
+import { RangeItemEdit } from './rangeItemEdit';
+import { NumberItemEdit } from './numberItemEdit';
 
 export interface EditProps {
     className?: string;
@@ -171,7 +173,9 @@ function createItemEdit(edit: Edit, itemSchema: ItemSchema, uiItem:UiItem, label
 			case 'textarea': itemEdit = TextAreaItemEdit; break;
             case 'image': itemEdit = ImageItemEdit; break;
 			case 'select': itemEdit = SelectItemEdit; break;
-			case 'range': itemEdit = StringItemEdit; break;
+			case 'range': itemEdit = RangeItemEdit; break;
+			case 'number':
+			case 'updown': itemEdit = NumberItemEdit; break;
 			case 'checkbox': itemEdit = CheckBoxItemEdit; break;
             case 'radio': 
 				ie = new RadioItemEdit(edit, itemSchema, uiItem as UiRadio, label, value);
@@ -190,6 +194,8 @@ function createItemEdit(edit: Edit, itemSchema: ItemSchema, uiItem:UiItem, label
 				case 'string': itemEdit = StringItemEdit; break;
 				case 'image': itemEdit = ImageItemEdit; break;
 				case 'boolean': itemEdit = CheckBoxItemEdit; break;
+				case 'number':
+				case 'integer': itemEdit = RangeItemEdit; break;
 			}
 		}
 		if (itemEdit === undefined) return;

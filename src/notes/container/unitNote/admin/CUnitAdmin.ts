@@ -147,12 +147,28 @@ export interface BookProject {
 	memo: string;
 	ratioX: number;					// ratioX / ratioY 是显示内容值
 	ratioY: number;
+	readUnit: string;
 	$create: Date;
 	$update: Date;
+}
+export interface ReportProject {
+	owner: number;
+	id: number;
+	project: number;
+	header: string;
+	readUnit: string;
+}
+export interface BookReport {
+	id: number;
+	rootUnit: number;
+	caption: string;
+	projects: ReportProject[];
 }
 export class CRootAdmin extends CAdminBase {
 	project: BookProject;
 	@observable bookProjects: BookProject[];
+	report: BookReport;
+	@observable bookReports: BookReport[];
 
 	protected getVUnitAdmin(): new (controller: any) => VAdminBase<any> { return VRootAdmin; }
 
@@ -164,7 +180,6 @@ export class CRootAdmin extends CAdminBase {
 		await this.loadBookProjects();
 		this.openVPage(VProjectsAdmin);
 	}
-
 	async saveBookProject(data: any) {
 		let id = this.project?.id;
 		data.rootUnit = this.unit.id;
@@ -178,7 +193,24 @@ export class CRootAdmin extends CAdminBase {
 		}
 	}
 
-	showDesignReports = () => {
-		this.openVPage<CAdminBase>(VReportsAdmin);
+	private async loadBookReports() {
+		let results = await this.uqs.notes.GetRootUnitReports.query({rootUnit: this.unit.id});
+		this.bookReports = results.ret;
+	}
+	showDesignReports = async () => {
+		await this.loadBookReports();
+		this.openVPage(VReportsAdmin);
+	}
+	async saveBookReport(data: any) {
+		let id = this.report?.id;
+		data.rootUnit = this.unit.id;
+		let ret = await this.uqs.notes.BookReport.save(id, data);
+		data.id = ret.id;
+		if (this.report) {
+			_.merge(this.report, data);
+		}
+		else {
+			this.bookReports.push(data);
+		}
 	}
 }

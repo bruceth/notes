@@ -2,7 +2,7 @@ import { observable } from 'mobx';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { VPage, userApi, User, Image, Page, List, UserView, 
-	Edit, ItemSchema, StringSchema, IntSchema, UiSchema, UiTextItem, UiRange, UiNumberItem } from "tonva";
+	Edit, ItemSchema, StringSchema, IntSchema, UiSchema, UiTextItem, UiNumberItem, BoolSchema, UiCheckItem } from "tonva";
 import { CMe, RootUnitItem } from "./CMe";
 
 export class VAdmin extends VPage<CMe> {
@@ -23,7 +23,7 @@ export class VAdmin extends VPage<CMe> {
 	}
 
 	private renderRootUnit = (item: RootUnitItem, index: number) => {
-		let {id, owner, name, tonvaUnit} = item;
+		let {id, owner, name, tonvaUnit, x} = item;
 		let renderUser = (user:User) => {
 			let {name, nick, icon} = user;
 			return <>
@@ -31,9 +31,14 @@ export class VAdmin extends VPage<CMe> {
 				{nick || name}
 			</>
 		}
-		return <div className="px-3 py-2 align-items-center">
-			<div className="mr-3"><b>{name}</b> <small className="text-muted">ID={id}</small></div>
-			<div className="small text-muted"><UserView user={owner as number} render={renderUser} /></div>
+		let vId = <small className="text-muted">ID={id}</small>;
+		let vName = (x !== 0)? 
+			<del>{name} {vId}</del>
+			:
+			<><b>{name}</b> {vId}</>;
+		return <div className={'px-3 py-2 align-items-center '}>
+			<div className="mr-3">{vName}</div>
+			<div className="small text-muted d-flex align-items-center"><UserView user={owner as number} render={renderUser} /></div>
 			{tonvaUnit && <div className="ml-auto small text-muted">tonva={tonvaUnit}</div>}
 		</div>;
 	}
@@ -43,11 +48,13 @@ export class VAdmin extends VPage<CMe> {
 		let schema: ItemSchema[] = [
 			{ name: 'name', type: 'string' } as StringSchema,
 			{ name: 'tonvaUnit', type: 'integer' } as IntSchema,
+			{ name: 'x', type: 'boolean' } as BoolSchema,
 		];
 		let uiSchema: UiSchema = {
 			items: {
 				name: { widget: 'text', label: '机构名称' } as UiTextItem,
 				tonvaUnit: { widget: 'number', label: 'Tonva Unit' } as UiNumberItem,
+				x: {widget: 'checkbox', label: '停用', trueValue: 1, falseValue: 0} as UiCheckItem,
 			}
 		}
 		this.openPageElement(<Page header={name}>
@@ -68,6 +75,9 @@ export class VAdmin extends VPage<CMe> {
 				break;
 			case 'tonvaUnit':
 				await this.controller.changeRootUnitTonva(item, newValue);
+				break;
+			case 'x':
+				await this.controller.changeRootUnitX(item, newValue);
 				break;
 		}
 	}

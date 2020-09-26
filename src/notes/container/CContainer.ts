@@ -38,26 +38,28 @@ export abstract class CContainer extends CNoteBase {
 	}
 
 	async load() {
-		await this.notesPager.first({folderId: this.folderId});
+		await this.notesPager.first({folderId: this.folderId, withX: 0});
 	}
 
 	async refresh() {
 		//每次刷新取5个。
 		let newnotes = new QueryPager<NoteItem>(this.uqs.notes.GetNotes, 5, 5, false);
-		await newnotes.first({folderId: this.folderId});
+		await newnotes.first({folderId: this.folderId, withX: 1});
 		let newitems = newnotes.items;
 		if (newitems) {
 			let len = newitems.length;
 			let items = this.notesPager.items;
 			for (let i = len - 1; i >= 0; --i) {
 				let item = newitems[i];
-				let note = item.note;
+				let {note, x} = item;
 				let index = items.findIndex(v => v.noteItem.note===note);
 				if (index >= 0) {
 					items.splice(index, 1);
 				}
-				let cNoteItem = this.owner.noteItemConverter(item, undefined);
-				items.unshift(cNoteItem);
+				if (x === 0) {
+					let cNoteItem = this.owner.noteItemConverter(item, undefined);
+					items.unshift(cNoteItem);
+				}
 			}
 		}
 	}
@@ -145,6 +147,7 @@ export abstract class CContainer extends CNoteBase {
 			type,
 			caption,
 			content,
+			x: 0,
 			assigned: undefined,
 			from: undefined,
 			fromAssigned: undefined,
@@ -213,6 +216,7 @@ export abstract class CContainer extends CNoteBase {
 			type,
 			caption,
 			content,
+			x: 0,
 			assigned: undefined,
 			from: undefined,
 			fromAssigned: undefined,

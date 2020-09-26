@@ -2,10 +2,12 @@ import { observable } from "mobx";
 import { EnumNoteType } from "notes/model";
 import { renderIcon } from "notes/noteBase";
 import { CUqBase } from "tapp";
-import { EnumUnitRole, MemberItem, UnitItem } from "./CUnitNote";
-import { VUnitAdmin } from "./VUnitAdmin";
+import { EnumUnitRole, MemberItem, UnitItem } from "../CUnitNote";
+import { VProjectsAdmin } from "./VProjectsAdmin";
+import { VReportsAdmin } from "./VReportsAdmin";
+import { VAdminBase, VUnitAdmin, VRootAdmin } from "./VUnitAdmin";
 
-export class CUnitAdmin  extends CUqBase {
+export class CAdminBase  extends CUqBase {
 	isChanged: boolean = false;
 	parent: UnitItem;
 	@observable unit: UnitItem;
@@ -24,6 +26,8 @@ export class CUnitAdmin  extends CUqBase {
 	showAddPage() {}
 	showEditPage() {}
 
+	protected getVUnitAdmin(): new (controller: any) => VAdminBase<any> { return VUnitAdmin; }
+
 	async showViewPage(afterBack: (isChanged:boolean) => void) {
 		let unitNote = -this.unit.id;
 		let result = await this.uqs.notes.GetUnit.query({unitNote});
@@ -34,7 +38,7 @@ export class CUnitAdmin  extends CUqBase {
 		}
 		this.units = result.units;
 		this.members = this.moveOwnerMemberToTop(result.members);
-		this.openVPage(VUnitAdmin, undefined, afterBack);
+		this.openVPage(this.getVUnitAdmin(), undefined, afterBack);
 	}
 
 	private moveOwnerMemberToTop(members: MemberItem[]):MemberItem[] {
@@ -127,4 +131,19 @@ export class CUnitAdmin  extends CUqBase {
 		(member as any)[prop] = value;
 		this.isChanged = true;
 	}
+
+	showAdminReports = () => {
+		this.openVPage<CAdminBase>(VReportsAdmin);
+	}
+}
+
+export class CUnitAdmin extends CAdminBase {
+}
+
+export class CRootAdmin extends CAdminBase {
+	protected getVUnitAdmin(): new (controller: any) => VAdminBase<any> { return VRootAdmin; }
+
+	showAdminProjects = () => {
+		this.openVPage(VProjectsAdmin);
+	}	
 }

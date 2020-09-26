@@ -19,7 +19,9 @@ export class CheckBoxItemEdit extends ItemEdit {
 		let disabled = readOnly === true;
 		let onChange:any;
 		if (readOnly === false) onChange = this.onChange;
-		return <input ref={r => this.input=r} type="checkbox" defaultChecked={this.value} disabled={disabled} onChange={this.onChange} />
+		return <input ref={r => this.input=r} type="checkbox" 
+			defaultChecked={this.value} disabled={disabled}
+			onChange={onChange} />
 	}
 
 	private getValue(checked: boolean) {

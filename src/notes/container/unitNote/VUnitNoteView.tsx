@@ -3,8 +3,6 @@ import { observer } from 'mobx-react';
 import { FA, List } from 'tonva';
 import { VNoteBase } from '../../noteBase';
 import { CUnitNote, EnumUnitRole, UnitItem } from './CUnitNote';
-import { observable } from 'mobx';
-import { VUnitAdmin } from './VUnitAdmin';
 
 export class VUnitNoteView extends VNoteBase<CUnitNote> {
 	header() {return this.controller.noteItem.caption};
@@ -15,7 +13,7 @@ export class VUnitNoteView extends VNoteBase<CUnitNote> {
 		}
 	}
 	private onAdmin = () => {
-		this.controller.showAdmin();
+		this.controller.showRootAdmin();
 	}
 
 	content() {

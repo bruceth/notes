@@ -41,6 +41,7 @@ RETURNS ret (
 	VAR unitId ID, unitNoteId ID, folderId ID, seconds INT;
 	TUID Note INTO unitId SET type=EnumNoteType.unit, caption=name, content=content, owner=owner;
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+	PROC CheckUserRootFolder(owner);
 	SET folderId=a.folder FROM SpecFolder as a WHERE a.owner=owner AND a.spec=EnumSpecFolder.notes;
 
 	TUID Note INTO unitNoteId SET type=EnumNoteType.UnitNote, caption=name, content=content, owner=owner;
@@ -49,6 +50,19 @@ RETURNS ret (
 	BOOK UnitFolder AT (unitId, owner) SET folder=unitNoteId, role=EnumUnitRole.owner | EnumUnitRole.admin | EnumUnitRole.unitAdmin;
 	Proc NotifyUserNote(owner, folderId, seconds);
 	INTO ret SELECT unitId as id;
+};
+
+PROC CheckUserRootFolder(
+	userId ID [$User],
+) {
+	VAR rootFolderId ID;
+	IF userId<>$user {
+		SET rootFolderId = folder FROM SpecFolder WHERE owner=userId AND spec=EnumSpecFolder.notes;
+		IF rootFolderId IS NULL {
+			TUID Note INTO rootFolderId SET owner=contact, type=EnumNoteType.Folder;
+			BOOK SpecFolder AT(userId, EnumSpecFolder.notes) SET folder=rootFolderId;
+		}
+	}
 };
 
 ACTION CreateUnit ver 1.2 (
@@ -110,6 +124,7 @@ ACTION AddUnitMember(
 	VAR unitNoteId ID, seconds INT, folderId ID, caption CHAR(200), content TEXT;
 
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+	PROC CheckUserRootFolder(member);
 	SET folderId=a.folder FROM SpecFolder as a WHERE a.owner=member AND a.spec=EnumSpecFolder.notes;
 	SET caption=a.caption, content=a.content FROM Note as a WHERE a.id=unit;
 	TUID Note INTO unitNoteId SET type=EnumNoteType.UnitNote, caption=caption, content=content, owner=member;

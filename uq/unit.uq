@@ -59,7 +59,7 @@ PROC CheckUserRootFolder(
 	IF userId<>$user {
 		SET rootFolderId = folder FROM SpecFolder WHERE owner=userId AND spec=EnumSpecFolder.notes;
 		IF rootFolderId IS NULL {
-			TUID Note INTO rootFolderId SET owner=contact, type=EnumNoteType.Folder;
+			TUID Note INTO rootFolderId SET owner=userId, type=EnumNoteType.Folder;
 			BOOK SpecFolder AT(userId, EnumSpecFolder.notes) SET folder=rootFolderId;
 		}
 	}

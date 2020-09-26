@@ -1,4 +1,3 @@
-import { observer } from "mobx-react";
 import { VBasePage } from "notes/views/VBasePage";
 import React from "react";
 import { User, Image, UserView, Page, EasyTime, FA } from "tonva";
@@ -96,25 +95,21 @@ export abstract class VNoteBase<T extends CNoteBase> extends VBasePage<T> {
 	protected renderContent():JSX.Element {return;}
 
 	protected renderToCount() {
-		return React.createElement(observer(() => {
-			let {toCount} = this.controller.noteItem;
-			if (toCount === undefined || toCount <= 0)
-				return;
-			return <span className="mr-5 text-muted">
-				<FA className="mr-2" name="share"/><small className="">{toCount}</small> 
-			</span>;
-		}));
+		let {toCount} = this.controller.noteItem;
+		if (toCount === undefined || toCount <= 0)
+			return;
+		return <span className="mr-5 text-muted">
+			<FA className="mr-2" name="share"/><small className="">{toCount}</small> 
+		</span>;
 	}
 
 	protected renderSpawnCount() {
-		return React.createElement(observer(() => {
-			let {spawnCount} = this.controller.noteItem;
-			if (spawnCount === undefined || spawnCount <= 0)
-				return;
-			return  <span className="mr-5 text-muted">
-				<FA className="mr-2" name="hand-pointer-o"/><small className="">{spawnCount}</small>
-			</span>;
-		}));
+		let {spawnCount} = this.controller.noteItem;
+		if (spawnCount === undefined || spawnCount <= 0)
+			return;
+		return  <span className="mr-5 text-muted">
+			<FA className="mr-2" name="hand-pointer-o"/><small className="">{spawnCount}</small>
+		</span>;
 	}
 
 	protected renderCommentFlag = () => {

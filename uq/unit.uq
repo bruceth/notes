@@ -2,6 +2,7 @@ Map UnitRoot (
 	KEY unit ID Note,			-- root unit id
 	name CHAR(200),				-- 唯一
 	tonvaUnit ID,				-- 跟tonva机构对应的值
+	x TINYINT DEFAULT 0,		-- 删除标志
 	INDEX name (name) UNIQUE,
 );
 
@@ -167,12 +168,22 @@ ACTION ChangeRootUnitProp(
 		IF prop='name' {
 			BOOK UnitRoot AT(unit) SET name=value;
 			TUID Note ID(unit) SET caption=value;
-			FOREACH (VAR folder ID OF SELECT a.folder FROM UnitFolder as a WHERE a.unit=unit) {
+			FOREACH (VAR folder ID, member ID OF 
+				SELECT a.folder, a.member FROM UnitFolder as a WHERE a.unit=unit) {
 				TUID Note ID(folder) SET caption=value;
+				TUID [$User] ID (member) SET poke=1;
 			}
 		}
 		ELSEIF prop='tonvaUnit' {
 			BOOK UnitRoot AT(unit) SET tonvaUnit=value;
+		}
+		ELSEIF prop='x' {
+			BOOK UnitRoot AT(unit) SET x=value;
+			FOREACH (VAR folder ID, member ID OF 
+				SELECT a.folder, a.member FROM UnitFolder as a WHERE a.unit=unit) {
+				TUID Note ID(folder) SET x=value;
+				TUID [$User] ID (member) SET poke=1;
+			}
 		}
 	}
 };
@@ -236,13 +247,15 @@ PAGE (
 	name CHAR(200),				-- 唯一
 	content TEXT,
 	tonvaUnit ID,				-- 跟tonva机构对应的值
+	x TINYINT,					-- 停用标志
 ) {
 	PAGE SELECT
 		a.unit as id,			-- root unit id
 		b.owner,
 		a.name,					-- 唯一
 		b.content,
-		a.tonvaUnit				-- 跟tonva机构对应的值
+		a.tonvaUnit,			-- 跟tonva机构对应的值
+		a.x
 		FROM UnitRoot as a LEFT JOIN Note as b ON a.unit=b.id
 		WHERE EXISTS(SELECT role FROM SystemRole WHERE user=$user AND (role & EnumSystemRole.unitAdmin)=EnumSystemRole.unitAdmin)
 		ORDER BY a.unit ASC;

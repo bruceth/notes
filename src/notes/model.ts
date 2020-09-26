@@ -13,6 +13,7 @@ export interface NoteItem {
 	type: EnumNoteType;
 	caption: string;
 	content: string;
+	x: number;
 	assigned: string;
 	from: number | BoxId;
 	fromAssigned: string;

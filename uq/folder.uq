@@ -20,7 +20,8 @@ MAP SpecFolder (
 };*/
 
 QUERY GetNotes ver 1.02 (
-	folderId ID Note,					-- folderId < 0, 则是特定folder，如果没有，需要创建
+	folderId ID Note,				-- folderId < 0, 则是特定folder，如果没有，需要创建
+	withX TINYINT,					-- withX = 1, then x=1 的note也出来	
 )
 PAGE (
 	seconds INT DESC, 
@@ -29,6 +30,7 @@ PAGE (
 	type SMALLINT,
 	caption CHAR(200),
 	content TEXT,
+	x TINYINT,
 	assigned CHAR(100),
 	from ID,
 	fromAssigned CHAR(100),
@@ -54,7 +56,7 @@ PAGE (
 		SET folderId = specFolderId;
 	}
 	PAGE SELECT a.seconds, b.owner, a.note, b.type
-		, b.caption, b.content, c.assigned
+		, b.caption, b.content, b.x, c.assigned
 		, b.[from], e.assigned as fromAssigned
 		, d.state, d.flowContent, f.groupFolder, a.unread
 		, b.[$create], b.[$update]
@@ -68,7 +70,7 @@ PAGE (
 			LEFT JOIN NoteX as d ON a.note=d.note
 			LEFT JOIN MyContact as e ON e.me=$user and b.from=c.contact
 			LEFT JOIN NoteXGroup as f ON a.note=f.folder
-		WHERE a.folder=folderId and a.seconds<$pageStart and b.x=0
+		WHERE a.folder=folderId and a.seconds<$pageStart and (b.x=0 OR withX>0)
 		ORDER BY a.seconds desc
 		LIMIT $pageSize;
 };

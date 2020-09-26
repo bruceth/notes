@@ -10,6 +10,7 @@ export interface RootUnitItem {
 	name: string;				// 唯一
 	content: string;
 	tonvaUnit: number;			// 跟tonva机构对应的值
+	x: number;
 }
 
 export class CMe extends CUqBase {
@@ -47,5 +48,10 @@ export class CMe extends CUqBase {
 	async changeRootUnitTonva(item:RootUnitItem, tonvaUnit:any) {
 		await this.uqs.notes.ChangeRootUnitProp.submit({unit:item.id, prop:'tonvaUnit', value: tonvaUnit})
 		item.tonvaUnit = tonvaUnit;
+	}
+
+	async changeRootUnitX(item:RootUnitItem, x:number) {
+		await this.uqs.notes.ChangeRootUnitProp.submit({unit:item.id, prop:'x', value: x})
+		item.x = x;
 	}
 }

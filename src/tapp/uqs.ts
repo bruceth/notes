@@ -56,6 +56,10 @@ export interface Notes {
 	SetUnitMemberProp: Action;
 	GetRootUnits: Query;
 	ChangeRootUnitProp: Action;
+
+	BookProject: Tuid;
+	GetRootUnitProjects: Query;
+	GetRootUnitReports: Query;
 };
 
 export interface UQs {

@@ -1,9 +1,11 @@
 import { observable } from "mobx";
+import _ from 'lodash';
 import { EnumNoteType } from "notes/model";
 import { renderIcon } from "notes/noteBase";
 import { CUqBase } from "tapp";
 import { EnumUnitRole, MemberItem, UnitItem } from "../CUnitNote";
 import { VProjectsAdmin } from "./VProjectsAdmin";
+import { VReportRoles } from "./VReportRoles";
 import { VReportsAdmin } from "./VReportsAdmin";
 import { VAdminBase, VUnitAdmin, VRootAdmin } from "./VUnitAdmin";
 
@@ -131,19 +133,52 @@ export class CAdminBase  extends CUqBase {
 		(member as any)[prop] = value;
 		this.isChanged = true;
 	}
-
-	showAdminReports = () => {
-		this.openVPage<CAdminBase>(VReportsAdmin);
+	showReportRoles = () => {
+		this.openVPage<CAdminBase>(VReportRoles);
 	}
 }
 
 export class CUnitAdmin extends CAdminBase {
 }
 
+export interface BookProject {
+	id: number;
+	name: string;
+	memo: string;
+	ratioX: number;					// ratioX / ratioY 是显示内容值
+	ratioY: number;
+	$create: Date;
+	$update: Date;
+}
 export class CRootAdmin extends CAdminBase {
+	project: BookProject;
+	@observable bookProjects: BookProject[];
+
 	protected getVUnitAdmin(): new (controller: any) => VAdminBase<any> { return VRootAdmin; }
 
-	showAdminProjects = () => {
+	private async loadBookProjects() {
+		let results = await this.uqs.notes.GetRootUnitProjects.query({rootUnit: this.unit.id});
+		this.bookProjects = results.ret;
+	}
+	showAdminProjects = async () => {
+		await this.loadBookProjects();
 		this.openVPage(VProjectsAdmin);
-	}	
+	}
+
+	async saveBookProject(data: any) {
+		let id = this.project?.id;
+		data.rootUnit = this.unit.id;
+		let ret = await this.uqs.notes.BookProject.save(id, data);
+		data.id = ret.id;
+		if (this.project) {
+			_.merge(this.project, data);
+		}
+		else {
+			this.bookProjects.push(data);
+		}
+	}
+
+	showDesignReports = () => {
+		this.openVPage<CAdminBase>(VReportsAdmin);
+	}
 }

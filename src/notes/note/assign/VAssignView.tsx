@@ -27,7 +27,7 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 	}
 
 	protected renderContent() {
-		return this.controller.cContent.renderViewContent();
+		return this.controller.cContent.renderDirContent();
 	}
 
 	protected renderViewBottom():JSX.Element {

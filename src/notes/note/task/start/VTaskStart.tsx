@@ -33,7 +33,7 @@ export class VTaskStart extends VTaskView<CTaskStart> {
 
 	protected renderHours() {
 		return <div className="flex-fill mr-3 "><input className="flex-fill form-control border-0"
-			type="text" defaultValue={taskTimeToString(this.controller.assignhours)}
+			type="text" defaultValue={taskTimeToString(this.controller.hours)}
 			placeholder="2.5或者2：30表示两个半小时"
 			onBlur={this.onHoursBlur}
 			onChange={e=>this.onHoursChange(e)}/>

@@ -98,5 +98,7 @@ export class CNoteAssign extends CNote {
 			point: this.point,
 		}
 		await this.uqs.notes.AssignTask.submit(data);
+		await this.lodeModel();
+		this.noteItem.spawnCount = this.noteModel.spawn.length;
 	}
 }

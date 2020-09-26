@@ -76,7 +76,7 @@ RETURNS ret (
 		BOOK NoteX AT(note) SET state=EnumTaskState.Done, flowContent=content;
 		SET flowId=(SELECT ifnull(max(a.flow), 0)+1 FROM Flow as a WHERE a.note=note);
 		BOOK Flow AT(note, flowId) SET content=content, operator=$user, action=EnumTaskAction.Done;
-		PROC WriteBook($user, '任务完成', NULL, hours, 0, caption, note);
+		PROC WriteBook(0, $user, '任务完成', NULL, hours, 0, caption, note);
 		IF NOT checker IS NULL {
 			SET nextUser= checker;
 		}

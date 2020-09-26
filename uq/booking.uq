@@ -296,6 +296,15 @@ QUERY GetRootUnitReports (
 RETURNS ret (
 	id ID,
 	caption CHAR(200)
+) {
+	INTO ret SELECT a.id, a.caption
+		FROM BookReport as a
+		WHERE a.rootUnit=rootUnit
+		ORDER BY a.id;
+};
+
+QUERY GetReportProjects (
+	id ID,
 )
 RETURNS projects (
 	owner ID,
@@ -310,10 +319,6 @@ RETURNS projectTuids (
 	ratioX INT,					-- ratioX / ratioY 是显示内容值
 	ratioY INT,
 ) {
-	INTO ret SELECT a.id, a.caption
-		FROM BookReport as a
-		WHERE a.rootUnit=rootUnit
-		ORDER BY a.id;
 	INTO projects SELECT a.owner, a.id, a.project, a.header, a.readUnit
 		FROM BookReport.Projects as a;
 	INTO projectTuids SELECT a.id, a.name, a.ratioX, a.ratioY

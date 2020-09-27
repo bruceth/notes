@@ -4,20 +4,22 @@ import { EnumNoteType } from "notes/model";
 import { renderIcon } from "notes/noteBase";
 import { CUqBase } from "tapp";
 import { EnumUnitRole, MemberItem, UnitItem } from "../CUnitNote";
-import { VProjectsAdmin } from "./VProjectsAdmin";
-import { VReportRoles } from "./VReportRoles";
+import { VRootProjects } from "./VRootProjects";
+import { VUnitProjects } from "./VUnitProjects";
 import { VReportsAdmin } from "./VReportsAdmin";
 import { VAdminBase, VUnitAdmin, VRootAdmin } from "./VUnitAdmin";
 
 export class CAdminBase  extends CUqBase {
 	isChanged: boolean = false;
+	root: UnitItem;
 	parent: UnitItem;
 	@observable unit: UnitItem;
 	@observable units:UnitItem[];
 	@observable members:MemberItem[];
 
 	protected async internalStart() {}
-	init(parent:UnitItem, unit:UnitItem) {
+	init(root:UnitItem, parent:UnitItem, unit:UnitItem) {
+		this.root = root;
 		this.parent = parent;
 		this.unit = unit;
 	}
@@ -66,7 +68,7 @@ export class CAdminBase  extends CUqBase {
 
 	async showUnitAdmin(unitItem: UnitItem) {
 		let cUnitAdmin = new CUnitAdmin(this.cApp);
-		cUnitAdmin.init(this.unit, unitItem);
+		cUnitAdmin.init(this.root, this.unit, unitItem);
 		await cUnitAdmin.showViewPage(() => {
 			let {isChanged} = cUnitAdmin;
 			if (isChanged) this.isChanged = isChanged;
@@ -133,8 +135,77 @@ export class CAdminBase  extends CUqBase {
 		(member as any)[prop] = value;
 		this.isChanged = true;
 	}
-	showReportRoles = () => {
-		this.openVPage<CAdminBase>(VReportRoles);
+
+	rootProjects: BookProject[];
+	@observable unitedProjects: BookProject[];
+	@observable unitableProjects: BookProject[];
+	private async loadUnitProjects() {
+		let results = await this.uqs.notes.GetUnitProjects.query({
+			rootUnit: this.root.id, 
+			unit:this.unit.id
+		});
+		let projects:BookProject[] = results.ret;
+		this.rootProjects = projects;
+		let unitedProjects:BookProject[] = [];
+		let unitableProjects:BookProject[] = [];
+		for (let project of projects) {
+			let {orderNo} = project;
+			if (orderNo > 0) {
+				unitedProjects.push(project);
+			}
+			else {
+				unitableProjects.push(project);
+			}
+		}
+		if (unitedProjects.length === 0) {
+			for (let i=0; i<projects.length; i++) {unitableProjects[i].orderNo = i+1};
+			unitedProjects = unitableProjects;
+			unitableProjects = [];
+		}
+		this.unitedProjects = unitedProjects;
+		this.unitableProjects = unitableProjects;
+	}
+	showUnitProjects = async () => {
+		await this.loadUnitProjects();
+		this.openVPage<CAdminBase>(VUnitProjects);
+	}
+
+	setProjectDisplay = async (project: BookProject, display: boolean) => {
+		let from: BookProject[], to: BookProject[];
+		if (display === true) {
+			from = this.unitableProjects;
+			to = this.unitedProjects;
+			project.orderNo = this.unitedProjects.length + 1;
+		}
+		else {
+			from = this.unitedProjects;
+			to = this.unitableProjects;
+			project.orderNo = undefined;
+		}
+		let index = from.findIndex(v => v === project);
+		if (index >= 0) {
+			from.splice(index, 1);
+			to.push(project);
+		}
+		await this.setUnitProjects();
+	}
+	setProjectDown = async (index: number) => {
+		let arr = this.unitedProjects.splice(index, 1);
+		this.unitedProjects.splice(index+1, 0, ...arr);
+		await this.setUnitProjects();
+	}
+	setProjectUp = async (index: number) => {
+		let arr = this.unitedProjects.splice(index, 1);
+		this.unitedProjects.splice(index-1, 0, ...arr);
+		await this.setUnitProjects();
+	}
+
+	private async setUnitProjects() {
+		let param = {
+			unit: this.unit.id, 
+			projects: this.unitedProjects.map(v => ({project: v.id, orderNo: v.orderNo}))
+		}
+		await this.uqs.notes.SetUnitProjects.submit(param);
 	}
 }
 
@@ -144,12 +215,14 @@ export class CUnitAdmin extends CAdminBase {
 export interface BookProject {
 	id: number;
 	name: string;
+	caption: string;
 	memo: string;
 	ratioX: number;					// ratioX / ratioY 是显示内容值
 	ratioY: number;
 	readUnit: string;
 	$create: Date;
 	$update: Date;
+	orderNo: number;
 }
 export interface ReportProject {
 	owner: number;
@@ -176,9 +249,9 @@ export class CRootAdmin extends CAdminBase {
 		let results = await this.uqs.notes.GetRootUnitProjects.query({rootUnit: this.unit.id});
 		this.bookProjects = results.ret;
 	}
-	showAdminProjects = async () => {
+	showRootProjects = async () => {
 		await this.loadBookProjects();
-		this.openVPage(VProjectsAdmin);
+		this.openVPage(VRootProjects);
 	}
 	async saveBookProject(data: any) {
 		let id = this.project?.id;
@@ -212,5 +285,9 @@ export class CRootAdmin extends CAdminBase {
 		else {
 			this.bookReports.push(data);
 		}
+	}
+
+	changeReportName = async (caption: string) => {
+		this.report.caption = caption;
 	}
 }

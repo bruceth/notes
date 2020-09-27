@@ -5,9 +5,10 @@ import { FA, Form, ItemSchema, List, Page,
 	ButtonSchema, UiButton, 
 	StringSchema, IntSchema, UiTextItem, UiNumberItem, UiSchema, Context } from 'tonva';
 
-export class VProjectsAdmin extends VBasePage<CRootAdmin> {
+export class VRootProjects extends VBasePage<CRootAdmin> {
 	private projectFileds: ItemSchema[] = [
 		{name: 'name', type: 'string', maxLength: 100, required: true} as StringSchema,
+		{name: 'caption', type: 'string', maxLength: 100} as StringSchema,
 		{name: 'memo', type: 'string', maxLength: 100} as StringSchema,
 		{name: 'ratioX', type: 'integer', min: 1} as IntSchema,
 		{name: 'ratioY', type: 'integer', min: 1} as IntSchema,
@@ -18,6 +19,9 @@ export class VProjectsAdmin extends VBasePage<CRootAdmin> {
 		items: {
 			name: {
 				label: '名称', placeholder: '科目名称'
+			} as UiTextItem,
+			caption: {
+				label: '标题', placeholder: '科目显示标题'
 			} as UiTextItem,
 			memo: {
 				label: '说明', placeholder: '科目说明'
@@ -38,7 +42,7 @@ export class VProjectsAdmin extends VBasePage<CRootAdmin> {
 			} as UiButton
 		}
 	};
-	header() {return '科目体系'}
+	header() {return '机构科目'}
 	right() {
 		return <button className="btn btn-sm btn-success mr-2" onClick={this.onClickAdd}>
 			<FA name="plus" />
@@ -68,10 +72,10 @@ export class VProjectsAdmin extends VBasePage<CRootAdmin> {
 	}
 
 	private renderProject = (project: BookProject, index: number) => {
-		let {name, memo, ratioX, ratioY, readUnit} = project;
+		let {name, caption, memo, ratioX, ratioY, readUnit} = project;
 		return <div className="px-3 py-2 align-items-center">
-			<b>{name}</b> <small className="ml-3 text-muted">{memo}</small>
-			<span className="ml-auto">{ratioX} / {ratioY} {readUnit}</span>
+			<b>{caption ?? name}</b> <small className="ml-3 text-muted">{memo}</small>
+			<span className="ml-auto">{name} = {ratioX} / {ratioY} {readUnit}</span>
 		</div>;
 	}
 

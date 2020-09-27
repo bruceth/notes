@@ -5,6 +5,7 @@ TUID BookProject (
 	memo CHAR(100),
 	ratioX INT DEFAULT 1,		-- ratioX / ratioY 是显示内容值
 	ratioY INT DEFAULT 1,
+	readUnit CHAR(20),			-- 显示单位
 	stamp (create, update),
 	index rootUnit_name (rootUnit, name) UNIQUE,
 	index rootUnit_id (rootUnit, id) UNIQUE,
@@ -275,15 +276,16 @@ RETURNS ret (
 	id ID,
 	name CHAR(100),
 	memo CHAR(100),
-	ratioX INT,					-- ratioX / ratioY 是显示内容值
+	ratioX INT, 						-- ratioX / ratioY 是显示内容值
 	ratioY INT,
+	readUnit CHAR(20),
 	[$create] TIMESTAMP, 
 	[$update] TIMESTAMP,
 ) {
 	INTO ret SELECT a.id,
 		a.name, a.memo,
-		a.ratioX,				-- ratioX / ratioY 是显示内容值
-		a.ratioY,
+		a.ratioX, a.ratioY,				-- ratioX / ratioY 是显示内容值
+		a.readUnit,
 		a.[$create], a.[$update]
 		FROM BookProject as a 
 		WHERE a.rootUnit=rootUnit

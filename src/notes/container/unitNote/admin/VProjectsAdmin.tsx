@@ -11,6 +11,7 @@ export class VProjectsAdmin extends VBasePage<CRootAdmin> {
 		{name: 'memo', type: 'string', maxLength: 100} as StringSchema,
 		{name: 'ratioX', type: 'integer', min: 1} as IntSchema,
 		{name: 'ratioY', type: 'integer', min: 1} as IntSchema,
+		{name: 'readUnit', type: 'string', maxLength: 20} as StringSchema,
 		{name: 'submit', type: 'submit'} as ButtonSchema,
 	];
 	private projectUISchema: UiSchema= {
@@ -27,6 +28,9 @@ export class VProjectsAdmin extends VBasePage<CRootAdmin> {
 			ratioY: {
 				label: '分母', defaultValue: 1, discription: '基本单位换算分母，默认1'
 			} as UiNumberItem,
+			readUnit: {
+				label: '计量单位', placeholder: '显示出来的计量单位'
+			} as UiTextItem,
 			submit: {
 				widget: 'button',
 				label: '提交',
@@ -64,10 +68,10 @@ export class VProjectsAdmin extends VBasePage<CRootAdmin> {
 	}
 
 	private renderProject = (project: BookProject, index: number) => {
-		let {name, memo, ratioX, ratioY} = project;
+		let {name, memo, ratioX, ratioY, readUnit} = project;
 		return <div className="px-3 py-2 align-items-center">
 			<b>{name}</b> <small className="ml-3 text-muted">{memo}</small>
-			<span className="ml-auto">{ratioX} / {ratioY}</span>
+			<span className="ml-auto">{ratioX} / {ratioY} {readUnit}</span>
 		</div>;
 	}
 

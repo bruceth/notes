@@ -58,6 +58,7 @@ export interface Notes {
 	ChangeRootUnitProp: Action;
 
 	BookProject: Tuid;
+	BookReport: Tuid;
 	GetRootUnitProjects: Query;
 	GetRootUnitReports: Query;
 };

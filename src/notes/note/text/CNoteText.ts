@@ -12,7 +12,7 @@ export class CNoteText extends CNote {
 	@observable header: string;
 	@observable cType: EnumNoteType;
 	@observable dropdowns: string[];
-	cContent: CContent;
+	@observable cContent: CContent;
 
 	createTextContent(): void {
 		this.header = this.t('noteText');
@@ -46,7 +46,7 @@ export class CNoteText extends CNote {
 		}
 	}
 
-	@computed get isContentChanged():boolean {return this.cContent.changed}
+	@computed get isContentChanged():boolean { return this.cContent.changed }
 	get type():EnumNoteType { return this.cType; }
 
 	renderIcon(): JSX.Element {

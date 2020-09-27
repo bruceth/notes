@@ -19,6 +19,7 @@ export class CNoteAssign extends CNote {
 
 	point:number = 100;
 	assignhours:number = 0;
+	@observable changed:boolean = false;
 
 	init(param: NoteItem): void {
 		super.init(param);
@@ -27,11 +28,12 @@ export class CNoteAssign extends CNote {
 		if (param) {
 			this.caption = param.caption;
 			obj = param.obj;
+			this.assignhours = obj.assignhours;
 		}
 		this.cContent.init(obj);
 	}
 
-	@computed get isContentChanged():boolean {return this.cContent.changed}
+	@computed get isContentChanged():boolean {return this.changed || this.cContent.changed}
 	get type():EnumNoteType { return EnumNoteType.assign }
 
 	renderIcon(): JSX.Element {
@@ -41,6 +43,7 @@ export class CNoteAssign extends CNote {
 	protected endContentInput():any {
 		let obj = this.noteItem ? { ...this.noteItem.obj } : {};
 		this.cContent.endInput(obj);
+		obj.assignhours = this.assignhours;
 		return obj;
 	}
 
@@ -98,5 +101,7 @@ export class CNoteAssign extends CNote {
 			point: this.point,
 		}
 		await this.uqs.notes.AssignTask.submit(data);
+		await this.lodeModel();
+		this.noteItem.spawnCount = this.noteModel.spawn.length;
 	}
 }

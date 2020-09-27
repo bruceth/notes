@@ -28,7 +28,7 @@ export class VNoteBaseView<T extends CNoteBase> extends VNoteBase<T> {
 				{this.renderCaption()}
 				<div className="d-flex align-items-center mt-1">
 					{this.renderFrom()}
-					<span className="mx-4">{this.renderEditTime()}</span>
+					<span className="mr-3">{this.renderEditTime()}</span>
 					{vEditButton}
 				</div>
 			</div>

@@ -36,7 +36,7 @@ export abstract class VNoteBase<T extends CNoteBase> extends VBasePage<T> {
 	protected renderTop():JSX.Element {
 		return <div className="d-flex px-3 py-2 align-items-center border-top border-bottom bg-light">
 			{this.renderIcon()}
-			<span className="mr-4">{this.renderEditTime()}</span>
+			{this.renderEditTime()}
 			{this.renderFrom()}
 		</div>;
 	}
@@ -59,7 +59,7 @@ export abstract class VNoteBase<T extends CNoteBase> extends VBasePage<T> {
 					{vImage} <span className={cnName}>{assigned || nick || name}</span>
 				</>
 			}
-			return <UserView user={contact} render={renderUser} />;
+			return <span className="mr-3"><UserView user={contact} render={renderUser} /></span>;
 		}
 	}
 

@@ -63,7 +63,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 				{this.renderCaption()}
 				<div>
 					{this.renderFrom()} 
-					<span className="px-4">{this.renderEditTime()}</span>
+					<span className="mr-3">{this.renderEditTime()}</span>
 				</div>
 			</div>			
 		</div>;

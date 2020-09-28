@@ -5,6 +5,7 @@ import { User, env } from '../tool';
 import { VPage } from './vpage';
 import { View } from './view';
 import { messageHub } from '../net';
+import { threadId } from 'worker_threads';
 
 export interface ConfirmOptions {
     caption?: string;
@@ -216,7 +217,13 @@ export abstract class Controller {
 	private topPageKey:any;
 	protected startAction() {
 		this.topPageKey = nav.topKey();
-	}
+    }
+    get TopKey() {
+        return this.topPageKey;
+    }
+    SetTopKey(key:any) {
+        this.topPageKey = key;
+    }
 	public popToTopPage() {
 		nav.popTo(this.topPageKey);
 	}

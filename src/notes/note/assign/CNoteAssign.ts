@@ -56,13 +56,21 @@ export class CNoteAssign extends CNote {
 	}
 
 	showEditPage() {
-		this.cContent.startInput();
-		this.openVPage(VAssignEdit);
+		//this.cContent.startInput();
+		//this.openVPage(VAssignEdit);
 	}
 
 	showAddPage() {
 		this.cContent.startInput();
+		this.startAction();
 		this.openVPage(VAssignAdd);
+	}
+
+	saveAndAssingTo = async () => {
+		let ret = await this.AddNote() as CNoteAssign;
+		let cAssignTo = new CAssignTo(this.cApp, ret, true);
+		cAssignTo.SetTopKey(this.TopKey);
+		await cAssignTo.start();
 	}
 
 	showAssignTo = async () => {

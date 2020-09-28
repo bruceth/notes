@@ -1,7 +1,7 @@
 import React from 'react';
 import { VBasePage } from "notes/views/VBasePage";
-import { BookReport, CAdminBase } from "./CUnitAdmin";
-import { BookProject, CRootAdmin } from "./CUnitAdmin";
+import { BookReport } from "./CUnitAdmin";
+import { CRootAdmin } from "./CUnitAdmin";
 import { FA, Form, ItemSchema, List, Page, 
 	ButtonSchema, UiButton, 
 	StringSchema, CStringEdit, UiTextItem, UiSchema, Context } from 'tonva';

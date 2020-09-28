@@ -59,7 +59,7 @@ export class VUnitProjects <C extends CAdminBase> extends VBasePage<C> {
 	}
 
 	private renderUnitableProject = (project: BookProject, index: number) => {
-		let {name, caption, memo, ratioX, ratioY, readUnit, orderNo} = project;
+		let {name, caption, memo, ratioX, ratioY, readUnit} = project;
 		return <div className="px-3 py-2 align-items-center">
 			<b>{caption ?? name}</b> <small className="ml-3 text-muted">{memo}</small>
 			<span className="ml-auto">{name} = {ratioX} / {ratioY} {readUnit}</span>

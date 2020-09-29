@@ -8,7 +8,7 @@ import { CContent, CCheckable } from '../../components';
 import { CNote } from '../CNote';
 import { VAssignView } from './VAssignView';
 import { VAssignAdd } from './VAssignAdd';
-import { VAssignEdit } from './VAssignEdit'
+//import { VAssignEdit } from './VAssignEdit'
 import { VAssignDir } from './VAssignDir';
 import { CAssignTo } from './CAssignTo';
 

@@ -9,14 +9,6 @@ export class VAssignAdd extends VAssignEdit {
 
 	protected renderExButtons():JSX.Element {
 		return;
-		// 	return this.renderShareButton();
-	}
-
-	protected renderShareButton() {
-		return <button onClick={this.onSaveAndSendNote}
-			className="btn btn-outline-primary mr-3">
-			发给
-		</button>;
 	}
 
 	protected renderEditBottom():JSX.Element {
@@ -32,10 +24,4 @@ export class VAssignAdd extends VAssignEdit {
 		</div>;
 	}
 	
-	protected onSaveAndSendNote = async () => {
-		let cnewNote = await this.controller.AddNote();
-		this.closePage();
-		await cnewNote.cApp.loadRelation();
-		cnewNote.showShareTo();
-	}
 }

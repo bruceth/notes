@@ -5,7 +5,6 @@ import { User, env } from '../tool';
 import { VPage } from './vpage';
 import { View } from './view';
 import { messageHub } from '../net';
-import { threadId } from 'worker_threads';
 
 export interface ConfirmOptions {
     caption?: string;
@@ -87,6 +86,10 @@ export abstract class Controller {
 
     protected async openVPage<C extends Controller>(vp: new (controller: C)=>VPage<C>, param?:any, afterBack?:(ret:any)=>void):Promise<void> {
         await (new vp((this as any) as C)).open(param, afterBack);
+    }
+
+    protected async replaceVPage<C extends Controller>(vp: new (controller: C)=>VPage<C>, param?:any, afterBack?:(ret:any)=>void):Promise<void> {
+        await (new vp((this as any) as C)).replaceOpen(param, afterBack);
     }
 
     protected renderView<C extends Controller>(view: new (controller: C)=>View<C>, param?:any) {

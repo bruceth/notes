@@ -1,5 +1,5 @@
 import { CNoteBase } from "../noteBase";
-import { NoteItem, NoteModel, EnumNoteType, initNoteItemObj } from '../model';
+import { NoteItem, EnumNoteType } from '../model';
 import { QueryPager } from "tonva";
 import { EnumSpecFolder } from "tapp";
 import { VFolder } from "./views/VFolder"

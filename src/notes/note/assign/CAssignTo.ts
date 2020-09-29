@@ -2,7 +2,7 @@ import { CTo } from "notes/components";
 import { VTo } from "notes/components/to/VTo"
 import { VAssignParams } from "./VAssignParams";
 import { CNoteAssign } from "./CNoteAssign";
-import { Query, View, VPage } from "tonva";
+import { Query } from "tonva";
 import { Contact } from "model";
 
 export class CAssignTo extends CTo {
@@ -29,7 +29,7 @@ export class CAssignTo extends CTo {
 		this.groupContacts = ret.$page;
 		this.groupContacts.unshift({contact:this.user.id, assigned:'[自己]', already:0});
 		if (this.replaceTop) {
-			this.replacePage((new VTo(this)).render());
+			this.replaceVPage(VTo);//replacePage((new VTo(this)).render());
 		}
 		else {
 			this.startAction();

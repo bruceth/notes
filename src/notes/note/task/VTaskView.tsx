@@ -43,7 +43,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	}
 
 	renderDirView() {
-		//return React.createElement(observer(() => {
+		return React.createElement(observer(() => {
 			return <div className="d-block bg-white">
 				<div className="bg-white">
 					{this.renderTaskDirTop()}
@@ -53,7 +53,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 				</div>
 				{this.renderDirBottom()}
 			</div>;
-		//}));
+		}));
 	}
 
 	protected renderTop():JSX.Element {
@@ -93,17 +93,19 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	}*/
 
 	protected renderDirBottom():JSX.Element {
-		let divToCount = this.renderToCount();
-		let divSpawnCount = this.renderSpawnCount();
-		let divComment = this.renderCommentFlag();
-		if (divToCount || divSpawnCount || divComment) {
-			return <div className="d-flex align-items-center px-3 mb-1">
-				{divToCount}
-				{divSpawnCount}
-				{divComment}
-				<div className="mr-auto" />
-			</div>;
-		}
+		//return React.createElement(observer(() => {
+			let divToCount = this.renderToCount();
+			let divSpawnCount = this.renderSpawnCount();
+			let divComment = this.renderCommentFlag();
+			if (divToCount || divSpawnCount || divComment) {
+				return <div className="d-flex align-items-center px-3 mb-1">
+					{divToCount}
+					{divSpawnCount}
+					{divComment}
+					<div className="mr-auto" />
+				</div>;
+			}
+		//}));
 	}
 
 	protected renderCaption() {

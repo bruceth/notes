@@ -18,16 +18,11 @@ export class VView extends VBase {
 			<input className="form-check-input mr-3 mt-0" type="checkbox"
 				defaultChecked={checked}
 				disabled={!this.controller.allowCheck}
-				onChange={e => this.onCheckChange(key, e.currentTarget.checked)}
+				onChange={e => this.controller.onCheckChange(key, e.currentTarget.checked)}
 				data-key={key} />
 			<div className={'form-control-plaintext ' + cn}>{content}</div>
 		</div>;
 	}
-
-	private onCheckChange = (key:number, checked:boolean) => {
-		this.controller.onCheckChange(key, checked);
-	}
-
 
 	protected renderCheckedItems(checkedItems:TaskCheckItem[]):JSX.Element {
 		let checkedCount = checkedItems.length;

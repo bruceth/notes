@@ -27,7 +27,7 @@ export class CAssignTo extends CTo {
 				note: undefined,
 			}, 0, 50, true);
 		this.groupContacts = ret.$page;
-		this.groupContacts.unshift({contact:this.user.id, assigned:'[自己]', already:0});
+		this.groupContacts.push({contact:this.user.id, assigned:'[自己]', already:0});
 		if (this.replaceTop) {
 			this.replaceVPage(VTo);//replacePage((new VTo(this)).render());
 		}
@@ -39,15 +39,6 @@ export class CAssignTo extends CTo {
 
 	GetAssignToContacts() : Contact[] {
 		return this.groupContacts;
-		// let ret = this.groupContacts.filter((v,index) => {
-		// 	let vid = numberFromId(v.contact);
-		// 	if (this.contacts.findIndex(cv=> numberFromId(cv.contact) === vid) >= 0) {
-		// 		return false;
-		// 	}
-		// 	return true;
-		// });
-		// ret.unshift({contact:this.user.id, assigned:'[自己]', already:0});
-		// return ret;
 	}
 
 	protected async sendOut(toList:number[]): Promise<void> {

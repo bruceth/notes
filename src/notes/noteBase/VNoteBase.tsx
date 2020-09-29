@@ -155,7 +155,7 @@ export abstract class VNoteBase<T extends CNoteBase> extends VBasePage<T> {
 		this.controller.showShareTo();
 	}
 
-	protected renderEditButton() {
+	protected renderEditButton() : JSX.Element {
 		return <span onClick={()=>this.onEdit()} className="cursor-pointer text-primary">
 			<FA name="pencil-square-o" />
 		</span>;

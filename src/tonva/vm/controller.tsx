@@ -124,6 +124,10 @@ export abstract class Controller {
         await (new vp((this as any) as C)).open(param, afterBack);
     }
 
+    protected async replaceVPage<C extends Controller>(vp: new (controller: C)=>VPage<C>, param?:any, afterBack?:(ret:any)=>void):Promise<void> {
+        await (new vp((this as any) as C)).replaceOpen(param, afterBack);
+    }
+
     protected renderView<C extends Controller>(view: new (controller: C)=>View<C>, param?:any) {
         return (new view((this as any) as C)).render(param);
     }
@@ -252,7 +256,13 @@ export abstract class Controller {
 	private topPageKey:any;
 	protected startAction() {
 		this.topPageKey = nav.topKey();
-	}
+    }
+    get TopKey() {
+        return this.topPageKey;
+    }
+    SetTopKey(key:any) {
+        this.topPageKey = key;
+    }
 	public popToTopPage() {
 		nav.popTo(this.topPageKey);
 	}

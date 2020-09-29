@@ -5,11 +5,11 @@ import './index.css';
 //import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import { NavView, start, nav } from 'tonva';
+import { NavView, start, nav, CAppBase, startRoute, Page } from 'tonva';
 //import logo from './logo.svg';
 import './App.css';
 import { CApp, appConfig } from './tapp';
-//import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
+import { CAppAB, CAppCD, CAppBBBBCCCC } from 'tapp/CAppAB';
 
 /*
 (async function() {
@@ -33,7 +33,23 @@ import { CApp, appConfig } from './tapp';
 	}
 	nav.on({
 		'/a/b': () => {
-			renderDom(<div>/a/b <button onClick={()=>nav.navigate('/c/d')}>test</button></div>)
+			const App: React.FC = () => {
+				const onLogined = async () => {
+					let el:HTMLBodyElement = document.getElementsByTagName('body')[0] as HTMLBodyElement;
+					if (el) {
+						el.style.setProperty('background-color', 'lightblue');
+					}
+					nav.push(<Page webNav={{
+						navRawHeader:<div className="py-3 font-weight-bold text-success">web nav header</div>, 
+						navRawFooter:<div className="py-3 font-weight-bold text-danger">web nav footer</div>}}>
+						<div className="py-3 bg-white">
+							/a/b <button onClick={()=>nav.navigate('/c/d')}>test</button>
+						</div>
+					</Page>);
+				}
+				return <NavView onLogined={onLogined} notLogined={onLogined} />;
+			}
+			renderDom(<App/>);
 		},
 		'/c/d': () => {
 			renderDom(<div>

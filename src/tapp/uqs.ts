@@ -50,10 +50,17 @@ export interface Notes {
 	CreateRootUnit: Action;
 	CreateUnit: Action;
 	GetUnit: Query;
+	SetUnitName: Action;
 	AddUnitMember: Action;
 	SetUnitMemberRole: Action;
+	SetUnitMemberProp: Action;
 	GetRootUnits: Query;
 	ChangeRootUnitProp: Action;
+
+	BookProject: Tuid;
+	BookReport: Tuid;
+	GetRootUnitProjects: Query;
+	GetRootUnitReports: Query;
 };
 
 export interface UQs {

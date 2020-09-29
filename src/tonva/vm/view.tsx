@@ -90,8 +90,8 @@ export abstract class View<C extends Controller> {
         this.controller.openPage(page, onClosePage);
     }
 
-    protected replacePageElement(page: JSX.Element) {
-        this.controller.replacePage(page);
+    protected replacePageElement(page: JSX.Element, onClosePage?: ()=>void) {
+        this.controller.replacePage(page, onClosePage);
     }
 
     protected backPage() {

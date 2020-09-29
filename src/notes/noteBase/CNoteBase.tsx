@@ -1,6 +1,6 @@
 import { observable, computed } from "mobx";
 import { CUqSub } from '../../tapp';
-import { NoteItem, NoteModel, EnumNoteType } from '../model';
+import { NoteItem, NoteModel, EnumNoteType, initNoteItemObj } from '../model';
 import { CNotes } from '../CNotes';
 
 export abstract class CNoteBase extends CUqSub<CNotes> {
@@ -23,6 +23,21 @@ export abstract class CNoteBase extends CUqSub<CNotes> {
 
 	init(param: NoteItem): void {
 		this.noteItem = param;
+	}
+
+	async lodeModel() {
+		let folderId = this.owner.currentFold?.folderId;
+		let ret = await this.uqs.notes.GetNote.query({folder: folderId, note: this.noteItem.note});
+		let noteModel:NoteModel = ret.ret[0];
+		noteModel.to = ret.to;
+		noteModel.flow = ret.flow;
+		noteModel.spawn = ret.spawn;
+		noteModel.contain = ret.contain;
+		noteModel.comments = ret.comments;
+		for (var sItem of noteModel.spawn) {
+			initNoteItemObj(sItem);
+		}
+		this.noteModel = noteModel;
 	}
 
 	abstract get type():EnumNoteType;

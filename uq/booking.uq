@@ -1,15 +1,25 @@
 TUID BookProject (
 	id,
-	owner ID [$User],
+	rootUnit ID,				-- 机构 0: 则是通用的
 	name CHAR(100),
+	memo CHAR(100),
+	ratioX INT DEFAULT 1,		-- ratioX / ratioY 是显示内容值
+	ratioY INT DEFAULT 1,
+	readUnit CHAR(20),			-- 显示单位
 	stamp (create, update),
-	index owner_name (owner, name) UNIQUE,
-	index owner_id (owner, id) UNIQUE,
+	index rootUnit_name (rootUnit, name) UNIQUE,
+	index rootUnit_id (rootUnit, id) UNIQUE,
 );
 
-MAP BookProjectSetting (
+TUID BookUserProject (
+	id,
+	owner ID [$User],
+	project ID BookProject,
+);
+
+MAP BookUserProjectSetting (
 	KEY user ID [$User],
-	KEY project ID BookProject,
+	KEY project ID BookUserProject,
 	unread TINYINT DEFAULT 0,
 );
 
@@ -21,6 +31,26 @@ BOOK MySetting (
 	startMonthOfYear TINYINT DEFAULT 0,		-- 年初月
 );
 
+TUID BookReport (
+	id,
+	rootUnit ID,					-- 机构 0: 则是通用的
+	caption CHAR(200),
+	ARR projects (
+		owner,
+		id,
+		project ID BookProject,
+		header CHAR(100),
+		readUnit CHAR(100),			-- 可读单位的字符串
+	),
+	index rootUnit_id (rootUnit, id) UNIQUE,
+);
+
+MAP BookUnitReport (
+	KEY unit ID,
+	KEY report ID BookReport,
+	role TINYINT DEFAULT 127,	-- 单位role权限 EnumUnitRole
+);
+
 ACTION InitMySetting (
 	timezone INT,
 ) {
@@ -30,7 +60,7 @@ ACTION InitMySetting (
 };
 
 BOOK BookFlow (
-	KEY project ID BookProject,
+	KEY project ID BookUserProject,
 	KEY stamp TIMESTAMP,
 	debit DEC(16,4),
 	credit DEC(16,4),
@@ -39,34 +69,35 @@ BOOK BookFlow (
 );
 
 BOOK BookYearSum (
-	KEY project ID BookProject,
+	KEY project ID BookUserProject,
 	KEY year SMALLINT,						-- 自然年
 	debit DEC(16,4),
 	credit DEC(16,4),
 );
 
 BOOK BookMonthSum (
-	KEY project ID BookProject,
+	KEY project ID BookUserProject,
 	KEY date DATE,							-- 月份
 	debit DEC(16,4),
 	credit DEC(16,4),
 );
 
 BOOK BookWeekSum (
-	KEY project ID BookProject,
+	KEY project ID BookUserProject,
 	KEY date DATE,							-- 周
 	debit DEC(16,4),
 	credit DEC(16,4),
 );
 
 BOOK BookDaySum (
-	KEY project ID BookProject,
+	KEY project ID BookUserProject,
 	KEY date DATE,							-- 日
 	debit DEC(16,4),
 	credit DEC(16,4),
 );
 
 PROC WriteBook (
+	rootUnit ID,
 	owner ID [$User],
 	project CHAR(100),
 	cur TIMESTAMP,						-- UTC time
@@ -75,7 +106,7 @@ PROC WriteBook (
 	memo CHAR(100),
 	note ID Note,						-- 关联的Note
 ) {
-	VAR projectId ID;
+	VAR userProjectId ID, projectId ID;
 	VAR timezone TINYINT, startDayOfMonth TINYINT, startMonthOfYear TINYINT, localTime DATETIME;
 	IF cur IS NULL {
 		SET cur=$date;
@@ -83,13 +114,14 @@ PROC WriteBook (
 	SET timezone=a.timezone, startDayOfMonth=a.startDayOfMonth, startMonthOfYear=a.startMonthOfYear
 		, localTime=DateAdd(HOUR, a.timezone, cur)
 		FROM MySetting as a WHERE a.user=owner;
-	SET projectId=a.id FROM BookProject as a WHERE a.owner=owner AND a.name=project;
-	IF projectId IS NULL {
-		TUID BookProject INTO projectId SET owner=owner, name=project;
+	SET projectId=a.id FROM BookProject as a WHERE a.rootUnit=rootUnit AND a.name=project;
+	SET userProjectId=a.id FROM BookUserProject as a WHERE a.owner=owner AND a.project=projectId;
+	IF userProjectId IS NULL {
+		TUID BookUserProject INTO userProjectId SET owner=owner, project=projectId;
 	}
 
-	BOOK BookProjectSetting AT(owner, projectId) SET unread=1;
-	BOOK BookFlow AT(projectId, cur) SET debit=debit, credit=credit, memo=memo, note=note;
+	BOOK BookUserProjectSetting AT(owner, userProjectId) SET unread=1;
+	BOOK BookFlow AT(userProjectId, cur) SET debit=debit, credit=credit, memo=memo, note=note;
 
 	VAR yearNum SMALLINT, monthNum SMALLINT, dayNum SMALLINT, yearDate DATE, monthDate DATE, weekDate DATE, dayDate DATE;
 	SET yearNum=Year(localTime);
@@ -99,29 +131,31 @@ PROC WriteBook (
 	IF cur<yearDate {
 		SET yearNum = yearNum-1;
 	}
-	BOOK BookYearSum AT(projectId, yearNum) SET debit+=debit, credit+=credit;
+	BOOK BookYearSum AT(userProjectId, yearNum) SET debit+=debit, credit+=credit;
 
 	SET monthDate=CONCAT(yearNum, '-', monthNum, '-', startDayOfMonth+1);
 	IF cur<monthDate {
 		SET monthDate = DateAdd(Month, -1, monthDate);
 	}
-	BOOK BookMonthSum AT(projectId, DATE(monthDate)) SET debit+=debit, credit+=credit;
+	BOOK BookMonthSum AT(userProjectId, DATE(monthDate)) SET debit+=debit, credit+=credit;
 
 	SET weekDate=CONCAT(yearNum, '-', monthNum, '-', dayNum);
 	SET weekDate = DateAdd(Day, -WEEKDAY(weekDate), weekDate);
-	BOOK BookWeekSum AT(projectId, DATE(weekDate)) SET debit+=debit, credit+=credit;
+	BOOK BookWeekSum AT(userProjectId, DATE(weekDate)) SET debit+=debit, credit+=credit;
 
 	SET dayDate=CONCAT(yearNum, '-', monthNum, '-', dayNum);
-	BOOK BookDaySum AT(projectId, DATE(dayDate)) SET debit+=debit, credit+=credit;
+	BOOK BookDaySum AT(userProjectId, DATE(dayDate)) SET debit+=debit, credit+=credit;
 };
 
-QUERY GetBookProjects (
+QUERY GetBookUserProjects (
 	user ID [$User],
 	at TIMESTAMP,
 ) 
 RETURNS ret (
 	id ID,
 	name CHAR(100),
+	ratioX INT,					-- ratioX / ratioY 是显示内容值
+	ratioY INT,
 	debitYear DEC(16,4),
 	creditYear DEC(16,4),
 	debitMonth DEC(16,4),
@@ -132,7 +166,7 @@ RETURNS ret (
 	creditDay DEC(16,4),
 	h8 int,
 ) {
-	BOOK BookProjectSetting AT(user, *) SET unread=0;
+	BOOK BookUserProjectSetting AT(user, *) SET unread=0;
 	IF [at] is null {
 		SET [at] = now();
 	}
@@ -157,13 +191,14 @@ RETURNS ret (
 	SET weekDate = DateAdd(Day, -WEEKDAY(weekDate), weekDate);
 	SET dayDate=CONCAT(yearNum, '-', monthNum, '-', dayNum);
 
-	INTO ret SELECT a.id, a.name
+	INTO ret SELECT a.id, n.name, n.ratioX, n.ratioY
 		, b.debit as debitYear, b.credit as creditYear
 		, c.debit as debitMonth, c.credit as creditMonth
 		, w.debit as debitWeek, w.credit as creditWeek
 		, d.debit as debitDay, d.credit as creditDay
 		, 5 as h8
-		FROM BookProject as a
+		FROM BookUserProject as a
+			JOIN BookProject as n ON n.id=a.project
 			LEFT JOIN (SELECT bky.project, bky.debit, bky.credit FROM BookYearSum as bky WHERE bky.year=yearNum) as b
 				ON a.id = b.project
 			LEFT JOIN (SELECT bkm.project, bkm.debit, bkm.credit FROM BookMonthSum as bkm WHERE bkm.date=monthDate) as c
@@ -177,7 +212,7 @@ RETURNS ret (
 };
 
 QUERY GetProjectFlow (
-	project ID BookProject,
+	project ID BookUserProject,
 )
 PAGE (
 	stamp TIMESTAMP DESC,
@@ -193,7 +228,7 @@ PAGE (
 };
 
 QUERY GetProjectYearSum (
-	project ID BookProject,
+	project ID BookUserProject,
 )
 PAGE (
 	year SMALLINT DESC,
@@ -207,7 +242,7 @@ PAGE (
 };
 
 QUERY GetProjectMonthSum (
-	project ID BookProject,
+	project ID BookUserProject,
 )
 PAGE (
 	date DATE DESC,
@@ -221,7 +256,7 @@ PAGE (
 };
 
 QUERY GetProjectDaySum (
-	project ID BookProject,
+	project ID BookUserProject,
 )
 PAGE (
 	date DATE DESC,
@@ -232,4 +267,63 @@ PAGE (
 		FROM BookDaySum as a
 		WHERE a.project=project and a.date>$pageStart
 		ORDER BY a.date DESC;
+};
+
+QUERY GetRootUnitProjects (
+	rootUnit ID,
+)
+RETURNS ret (
+	id ID,
+	name CHAR(100),
+	memo CHAR(100),
+	ratioX INT, 						-- ratioX / ratioY 是显示内容值
+	ratioY INT,
+	readUnit CHAR(20),
+	[$create] TIMESTAMP, 
+	[$update] TIMESTAMP,
+) {
+	INTO ret SELECT a.id,
+		a.name, a.memo,
+		a.ratioX, a.ratioY,				-- ratioX / ratioY 是显示内容值
+		a.readUnit,
+		a.[$create], a.[$update]
+		FROM BookProject as a 
+		WHERE a.rootUnit=rootUnit
+		ORDER BY a.id ASC;
+};
+
+QUERY GetRootUnitReports (
+	rootUnit ID,
+)
+RETURNS ret (
+	id ID,
+	caption CHAR(200)
+) {
+	INTO ret SELECT a.id, a.caption
+		FROM BookReport as a
+		WHERE a.rootUnit=rootUnit
+		ORDER BY a.id;
+};
+
+QUERY GetReportProjects (
+	id ID,
+)
+RETURNS projects (
+	owner ID,
+	id ID,
+	project ID,
+	header CHAR(100),
+	readUnit CHAR(100),			-- 可读单位的字符串
+)
+RETURNS projectTuids (
+	id ID,
+	name CHAR(100),
+	ratioX INT,					-- ratioX / ratioY 是显示内容值
+	ratioY INT,
+) {
+	INTO projects SELECT a.owner, a.id, a.project, a.header, a.readUnit
+		FROM BookReport.Projects as a;
+	INTO projectTuids SELECT a.id, a.name, a.ratioX, a.ratioY
+		FROM BookProject as a
+		WHERE a.id IN (SELECT DISTINCT b.project FROM projects as b);
 };

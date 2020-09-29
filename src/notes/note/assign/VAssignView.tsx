@@ -27,7 +27,7 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 	}
 
 	protected renderContent() {
-		return this.controller.cContent.renderViewContent();
+		return this.controller.cContent.renderDirContent();
 	}
 
 	protected renderViewBottom():JSX.Element {
@@ -45,7 +45,6 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 			div = <div className="my-3">
 				<div className="d-flex px-3 py-2 align-items-end">
 					<div className="small text-muted pt-2 pb-1">已分派</div>
-					<button className="ml-auto btn btn-primary btn-sm" onClick={this.controller.showAssignTo}>追加分派</button>
 				</div>
 				<List items={spawn} item={{render: this.renderSpawn, className:'notes'}} />
 			</div>;
@@ -63,4 +62,9 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 			{this.renderStateSpan(content, isEnd)}
 		</div>
 	}
+
+	protected renderEditButton() : JSX.Element {
+		return;
+	}
+
 }

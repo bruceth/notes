@@ -43,7 +43,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	}
 
 	renderDirView() {
-		return React.createElement(observer(() => {
+		//return React.createElement(observer(() => {
 			return <div className="d-block bg-white">
 				<div className="bg-white">
 					{this.renderTaskDirTop()}
@@ -53,7 +53,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 				</div>
 				{this.renderDirBottom()}
 			</div>;
-		}));
+		//}));
 	}
 
 	protected renderTop():JSX.Element {

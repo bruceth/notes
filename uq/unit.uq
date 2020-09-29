@@ -2,6 +2,7 @@ Map UnitRoot (
 	KEY unit ID Note,			-- root unit id
 	name CHAR(200),				-- 唯一
 	tonvaUnit ID,				-- 跟tonva机构对应的值
+	x TINYINT DEFAULT 0,		-- 删除标志
 	INDEX name (name) UNIQUE,
 );
 
@@ -13,7 +14,8 @@ MAP UnitFolder (
 	KEY member ID [$User],
 	folder ID Note,				-- NoteType=unitFolder
 	role TINYINT DEFAULT 0, 	-- 0: 普通, 1: owner, 2: admin, 4: unitAdmin, (owner 不需要展示节点)
-	assigned CHAR(100),
+	assigned CHAR(100),			-- 赋予名字
+	discription CHAR(100),		-- 描述
 	state TINYINT DEFAULT 1,	-- 1:正常，0:删除
 	INDEX folder (folder) UNIQUE,
 );
@@ -40,6 +42,7 @@ RETURNS ret (
 	VAR unitId ID, unitNoteId ID, folderId ID, seconds INT;
 	TUID Note INTO unitId SET type=EnumNoteType.unit, caption=name, content=content, owner=owner;
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+	PROC CheckUserRootFolder(owner);
 	SET folderId=a.folder FROM SpecFolder as a WHERE a.owner=owner AND a.spec=EnumSpecFolder.notes;
 
 	TUID Note INTO unitNoteId SET type=EnumNoteType.UnitNote, caption=name, content=content, owner=owner;
@@ -48,6 +51,19 @@ RETURNS ret (
 	BOOK UnitFolder AT (unitId, owner) SET folder=unitNoteId, role=EnumUnitRole.owner | EnumUnitRole.admin | EnumUnitRole.unitAdmin;
 	Proc NotifyUserNote(owner, folderId, seconds);
 	INTO ret SELECT unitId as id;
+};
+
+PROC CheckUserRootFolder(
+	userId ID [$User],
+) {
+	VAR rootFolderId ID;
+	IF userId<>$user {
+		SET rootFolderId = folder FROM SpecFolder WHERE owner=userId AND spec=EnumSpecFolder.notes;
+		IF rootFolderId IS NULL {
+			TUID Note INTO rootFolderId SET owner=userId, type=EnumNoteType.Folder;
+			BOOK SpecFolder AT(userId, EnumSpecFolder.notes) SET folder=rootFolderId;
+		}
+	}
 };
 
 ACTION CreateUnit ver 1.2 (
@@ -89,21 +105,47 @@ RETURNS ret (
 	INTO ret SELECT unitId as id;
 };
 
+ACTION SetUnitName(
+	unit ID,
+	name CHAR(200),
+) {
+	TUID Note ID(unit) SET caption=name;
+	FOREACH (VAR folder ID OF SELECT a.folder FROM UnitFolder as a WHERE a.unit=unit) {
+		TUID Note ID(folder) SET caption=name;
+	}
+};
+
 ACTION AddUnitMember(
 	unit ID,
 	member ID,
 	assigned CHAR(100),
+	discription CHAR(100),
 ) {
 	IF member=$user {RETURN;}
 	VAR unitNoteId ID, seconds INT, folderId ID, caption CHAR(200), content TEXT;
 
 	SET seconds=TIMESTAMPDIFF(second, '2020-1-1', $date);
+	PROC CheckUserRootFolder(member);
 	SET folderId=a.folder FROM SpecFolder as a WHERE a.owner=member AND a.spec=EnumSpecFolder.notes;
 	SET caption=a.caption, content=a.content FROM Note as a WHERE a.id=unit;
 	TUID Note INTO unitNoteId SET type=EnumNoteType.UnitNote, caption=caption, content=content, owner=member;
 	BOOK FolderNote AT (folderId, unitNoteId) SET seconds=seconds;
-	BOOK UnitFolder AT(unit, member) SET assigned=assigned, folder=unitNoteId;
+	BOOK UnitFolder AT(unit, member) SET assigned=assigned, discription=discription, folder=unitNoteId;
 	Proc NotifyUserNote(member, folderId, seconds);
+};
+
+ACTION SetUnitMemberProp(
+	unit ID,
+	member ID,
+	prop CHAR(100),
+	value CHAR(100),
+) {
+	IF prop='assigned' {
+		BOOK UnitFolder AT(unit, member) SET assigned=value;
+	}
+	ELSEIF prop='description' {
+		BOOK UnitFolder AT(unit, member) SET discription=value;
+	}
 };
 
 ACTION SetUnitMemberRole(
@@ -126,12 +168,22 @@ ACTION ChangeRootUnitProp(
 		IF prop='name' {
 			BOOK UnitRoot AT(unit) SET name=value;
 			TUID Note ID(unit) SET caption=value;
-			FOREACH (VAR folder ID OF SELECT a.folder FROM UnitFolder as a WHERE a.unit=unit) {
+			FOREACH (VAR folder ID, member ID OF 
+				SELECT a.folder, a.member FROM UnitFolder as a WHERE a.unit=unit) {
 				TUID Note ID(folder) SET caption=value;
+				TUID [$User] ID (member) SET poke=1;
 			}
 		}
 		ELSEIF prop='tonvaUnit' {
 			BOOK UnitRoot AT(unit) SET tonvaUnit=value;
+		}
+		ELSEIF prop='x' {
+			BOOK UnitRoot AT(unit) SET x=value;
+			FOREACH (VAR folder ID, member ID OF 
+				SELECT a.folder, a.member FROM UnitFolder as a WHERE a.unit=unit) {
+				TUID Note ID(folder) SET x=value;
+				TUID [$User] ID (member) SET poke=1;
+			}
 		}
 	}
 };
@@ -159,6 +211,7 @@ RETURNS units (
 RETURNS members (
 	member ID [$User],
 	assigned CHAR(100),
+	discription CHAR(100),
 	role TINYINT,
 ) {
 	VAR unit ID;
@@ -182,8 +235,8 @@ RETURNS members (
 		FROM Note2Note as b JOIN Note as a ON b.note1=a.id 
 		WHERE b.note0=unit;
 
-	INTO members SELECT b.member, c.assigned, b.role 
-		FROM UnitFolder as b LEFT JOIN MyContact as c ON c.me=$user and b.member=c.contact
+	INTO members SELECT b.member, b.assigned, b.discription, b.role 
+		FROM UnitFolder as b -- LEFT JOIN MyContact as c ON c.me=$user and b.member=c.contact
 		WHERE b.unit=unit AND b.state=1;
 };
 
@@ -194,13 +247,15 @@ PAGE (
 	name CHAR(200),				-- 唯一
 	content TEXT,
 	tonvaUnit ID,				-- 跟tonva机构对应的值
+	x TINYINT,					-- 停用标志
 ) {
 	PAGE SELECT
 		a.unit as id,			-- root unit id
 		b.owner,
 		a.name,					-- 唯一
 		b.content,
-		a.tonvaUnit				-- 跟tonva机构对应的值
+		a.tonvaUnit,			-- 跟tonva机构对应的值
+		a.x
 		FROM UnitRoot as a LEFT JOIN Note as b ON a.unit=b.id
 		WHERE EXISTS(SELECT role FROM SystemRole WHERE user=$user AND (role & EnumSystemRole.unitAdmin)=EnumSystemRole.unitAdmin)
 		ORDER BY a.unit ASC;

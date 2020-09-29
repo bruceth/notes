@@ -8,7 +8,7 @@ import { CNoteAssign } from "./CNoteAssign";
 import { CAssignTo } from './CAssignTo';
 import { CNotes } from 'notes/CNotes';
 import { CSelectContact } from 'notes/components/selectContact';
-import { checkHourMinutes } from 'notes/model';
+import { checkHourMinutes, taskTimeToString } from 'notes/model';
 
 export interface Row {
 	label: string;
@@ -79,9 +79,11 @@ export class VAssignParams extends VPage<CAssignTo> {
 	}
 
 	private renderHours() {
+		let time = taskTimeToString(this.cNoteAssign.assignhours);
 		return <input className="flex-fill form-control border-0"
 				type="text"
 				placeholder="2.5或者2：30表示两个半小时"
+				defaultValue={time}
 				onChange={this.onHoursChange}
 				onBlur={this.onHoursBlur}
 				onKeyDown={this.onHoursKeyDown}/>;

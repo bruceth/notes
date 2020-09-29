@@ -93,19 +93,17 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	}*/
 
 	protected renderDirBottom():JSX.Element {
-		//return React.createElement(observer(() => {
-			let divToCount = this.renderToCount();
-			let divSpawnCount = this.renderSpawnCount();
-			let divComment = this.renderCommentFlag();
-			if (divToCount || divSpawnCount || divComment) {
-				return <div className="d-flex align-items-center px-3 mb-1">
-					{divToCount}
-					{divSpawnCount}
-					{divComment}
-					<div className="mr-auto" />
-				</div>;
-			}
-		//}));
+		let divToCount = this.renderToCount();
+		let divSpawnCount = this.renderSpawnCount();
+		let divComment = this.renderCommentFlag();
+		if (divToCount || divSpawnCount || divComment) {
+			return <div className="d-flex align-items-center px-3 mb-1">
+				{divToCount}
+				{divSpawnCount}
+				{divComment}
+				<div className="mr-auto" />
+			</div>;
+		}
 	}
 
 	protected renderCaption() {

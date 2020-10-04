@@ -1,10 +1,10 @@
 import React from 'react';
 import { VBasePage } from "notes/views/VBasePage";
-import { BookReport, CAdminBase } from "./CUnitAdmin";
-import { BookProject, CRootAdmin } from "./CUnitAdmin";
+import { BookReport } from "./CUnitAdmin";
+import { CRootAdmin } from "./CUnitAdmin";
 import { FA, Form, ItemSchema, List, Page, 
 	ButtonSchema, UiButton, 
-	StringSchema, IntSchema, UiTextItem, UiNumberItem, UiSchema, Context } from 'tonva';
+	StringSchema, CStringEdit, UiTextItem, UiSchema, Context } from 'tonva';
 
 export class VReportsAdmin extends VBasePage<CRootAdmin> {
 	private projectFileds: ItemSchema[] = [
@@ -61,12 +61,23 @@ export class VReportsAdmin extends VBasePage<CRootAdmin> {
 
 	private onClickReport = (report: BookReport) => {
 		this.controller.report = report;
+		let cNameEdit: CStringEdit = new CStringEdit(this.res);
+		let props = {
+			label: '报表名称', 
+			onValueChange: this.controller.changeReportName,
+		};
 		this.openPageElement(<Page header="编辑报表">
-			<Form className="m-3"
-				formData={this.controller.report}
-				schema={this.projectFileds} 
-				uiSchema={this.projectUISchema} 
-				fieldLabelSize={2} onButtonClick={this.onSubmitNewReport} />
+			<div className="px-3 py-2 align-items-center">
+				<small className="text-muted">报表名称:</small> &nbsp;
+				{cNameEdit.render(report.caption, props)}
+			</div>
 		</Page>);
 	}
+/*
+	<Form className="m-3"
+	formData={this.controller.report}
+	schema={this.projectFileds} 
+	uiSchema={this.projectUISchema} 
+	fieldLabelSize={2} onButtonClick={this.onSubmitNewReport} />
+*/
 }

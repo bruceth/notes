@@ -24,8 +24,8 @@ export abstract class VAdminBase<C extends CAdminBase> extends VBasePage<C> {
 
 			<div className="my-5">
 				{this.renderProjects()}
-				{this.renderReportDesign()}
-				{this.renderReportRoles()}
+				{/*this.renderReportDesign()*/}
+				{this.renderUnitProjects()}
 			</div>
 
 			{this.renderMembersAndUnits()}
@@ -38,10 +38,10 @@ export abstract class VAdminBase<C extends CAdminBase> extends VBasePage<C> {
 	protected renderProjects():JSX.Element {return;}
 	protected renderReportDesign():JSX.Element {return;}
 
-	protected renderReportRoles():JSX.Element {
-		return <div className="px-3 py-2 d-flex bg-white cursor-pointer"
-			onClick={this.controller.showReportRoles}>
-			<span>报表权限</span>
+	protected renderUnitProjects():JSX.Element {
+		return <div className="mt-3 px-3 py-2 d-flex bg-white cursor-pointer align-items-center"
+			onClick={this.controller.showUnitProjects}>
+			<span>科目显示</span>
 			<FA className="ml-auto" name="angle-right" />
 		</div>;
 	}
@@ -134,7 +134,7 @@ export class VRootAdmin extends VAdminBase<CRootAdmin> {
 	}
 
 	protected renderReportDesign():JSX.Element {
-		return <div className="px-3 py-2 d-flex bg-white cursor-pointer mb-3"
+		return <div className="px-3 py-2 d-flex bg-white cursor-pointer"
 			onClick={this.controller.showDesignReports}>
 			<span>报表设计</span>
 			<FA className="ml-auto" name="angle-right" />
@@ -143,8 +143,8 @@ export class VRootAdmin extends VAdminBase<CRootAdmin> {
 
 	protected renderProjects():JSX.Element {
 		return <div className="px-3 py-2 d-flex bg-white cursor-pointer border-bottom"
-			onClick={this.controller.showAdminProjects}>
-			<span>科目体系</span>
+			onClick={this.controller.showRootProjects}>
+			<span>机构科目</span>
 			<FA className="ml-auto" name="angle-right" />
 		</div>;
 	}

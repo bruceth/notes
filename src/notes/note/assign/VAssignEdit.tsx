@@ -50,7 +50,7 @@ export class VAssignEdit extends VNoteBaseEdit<CNoteAssign> { // VNoteForm<CNote
 	protected renderAssignHours() {
 		return <div className="flex-fill mr-3 "><input className="flex-fill form-control border-0"
 			type="text" defaultValue={taskTimeToString(this.controller.assignhours)}
-			placeholder="2.5或者2：30表示两个半小时"
+			placeholder="2.5或者2:30表示两个半小时"
 			onBlur={e=>this.onHoursBlur(e)}
 			onChange={e=>this.onHoursChange(e)}/>
 		</div>;

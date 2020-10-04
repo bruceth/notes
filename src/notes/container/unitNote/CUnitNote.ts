@@ -63,7 +63,7 @@ export class CUnitNote extends CContainer {
 
 	async showRootAdmin() {
 		this.curUnitAdmin = new CRootAdmin(this.cApp);
-		this.curUnitAdmin.init(undefined, {
+		this.curUnitAdmin.init(this.unit, undefined, {
 			id: -this.noteItem.note,
 		} as any);
 		await this.curUnitAdmin.showViewPage(() => {

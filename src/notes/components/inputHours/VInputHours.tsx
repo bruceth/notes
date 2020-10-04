@@ -14,7 +14,7 @@ export class VInputHours extends VBasePage<CInputHours> {
 			return <div>
 				<div className="flex-fill mr-3 "><input className="flex-fill form-control border-0"
 					type="text" defaultValue={taskTimeToString(this.controller.hourminutes)}
-					placeholder="2.5或者2：30表示两个半小时"
+					placeholder="2.5或者2:30表示两个半小时"
 					onBlur={e=>this.onHoursBlur(e)}
 					onChange={e=>this.onHoursChange(e)}/>
 				</div>

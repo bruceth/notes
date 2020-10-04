@@ -18,7 +18,7 @@ export class CNoteAssign extends CNote {
 	@observable rater: Contact;
 
 	point:number = 100;
-	assignhours:number = 0;
+	@observable assignhours:number = 0;
 	@observable changed:boolean = false;
 
 	init(param: NoteItem): void {

@@ -84,7 +84,7 @@ export class VAssignParams extends VPage<CAssignTo> {
 		return <div className="flex-fill form-control border-0">{time}</div>
 		// return <input className="flex-fill form-control border-0"
 		// 		type="text"
-		// 		placeholder="2.5或者2：30表示两个半小时"
+		// 		placeholder="2.5或者2:30表示两个半小时"
 		// 		defaultValue={time}
 		// 		onChange={this.onHoursChange}
 		// 		onBlur={this.onHoursBlur}
@@ -108,23 +108,23 @@ export class VAssignParams extends VPage<CAssignTo> {
 	private onItemKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {
 	}
 
-	private onHoursChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
-		let m = checkHourMinutes(evt.target.value);
-		if (m < 0) {
-			m = 0;
-		}
-		this.cNoteAssign.assignhours = m;
-	}
+	// private onHoursChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
+	// 	let m = checkHourMinutes(evt.target.value);
+	// 	if (m < 0) {
+	// 		m = 0;
+	// 	}
+	// 	this.cNoteAssign.assignhours = m;
+	// }
 
-	private onHoursKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {
-	}
+	// private onHoursKeyDown = (evt:React.KeyboardEvent<HTMLInputElement>) => {
+	// }
 
-	protected onHoursBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
-		if (checkHourMinutes(evt.target.value) < 0) {
-			evt.target.value = '';
-			this.cNoteAssign.assignhours = 0;
-		}
-	}
+	// protected onHoursBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
+	// 	if (checkHourMinutes(evt.target.value) < 0) {
+	// 		evt.target.value = '';
+	// 		this.cNoteAssign.assignhours = 0;
+	// 	}
+	// }
 
 	private renderChecker() {
 		return React.createElement(observer(() => this.renderContact(this.cNoteAssign.checker)));

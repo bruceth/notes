@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import { FA } from "tonva";
 import { TaskCheckItemBase } from './model';
 import { VNoteBaseView } from '../../noteBase';
 import { CNoteTask } from "./CNoteTask";
@@ -119,6 +120,12 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		return <div key={label} className="px-3 py-2 bg-white d-flex align-items-center border-bottom" onClick={onClick}>
 			<div className="text-muted mr-3 w-5c">{label}</div>
 			<div className="flex-fill mr-3 ">{values || none}</div>
+			{
+				onClick ?
+				<FA className="ml-auto" name="angle-right" />
+				:
+				undefined
+			}
 		</div>
 	}
 

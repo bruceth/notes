@@ -69,22 +69,22 @@ export class VAssignEdit extends VNoteBaseEdit<CNoteAssign> { // VNoteForm<CNote
 		}
 	}
 
-	protected onHoursChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
-		let m = checkHourMinutes(evt.target.value);
-		if (m < 0) {
-			m = 0;
-		}
-		this.controller.assignhours = m;
-		this.controller.changed = true;
-	}
+	// protected onHoursChange = (evt:React.ChangeEvent<HTMLInputElement>) => {
+	// 	let m = checkHourMinutes(evt.target.value);
+	// 	if (m < 0) {
+	// 		m = 0;
+	// 	}
+	// 	this.controller.assignhours = m;
+	// 	this.controller.changed = true;
+	// }
 
-	protected onHoursBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
-		if (checkHourMinutes(evt.target.value) < 0) {
-			evt.target.value = '';
-			this.controller.assignhours = 0;
-			this.controller.changed = true;
-		}
-	}
+	// protected onHoursBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
+	// 	if (checkHourMinutes(evt.target.value) < 0) {
+	// 		evt.target.value = '';
+	// 		this.controller.assignhours = 0;
+	// 		this.controller.changed = true;
+	// 	}
+	// }
 
 	protected renderExButtons():JSX.Element {
 		return <>{this.renderDeleteButton()}</>;

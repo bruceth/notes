@@ -21,7 +21,7 @@ export abstract class CNoteTask extends CNote {
 	protected rateValue: number;
 	protected rateValueInput: number;
 	assignhours: number;
-	hours: number;
+	@observable hours: number;
 	point: number;
 
 	init(param: NoteItem):void {

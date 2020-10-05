@@ -1,5 +1,5 @@
 import { CInputHours } from 'notes/components';
-import { checkHourMinutes, taskTimeToString } from 'notes/model';
+import { taskTimeToString } from 'notes/model';
 import React from 'react';
 import { FA, Image, User, UserView } from 'tonva';
 import { none } from 'tool';
@@ -28,15 +28,12 @@ export class VTaskStart extends VTaskView<CTaskStart> {
 		</div>;
 	}
 
-	protected renderTaskAdditions() {
-		let additionRows: TaskParam[] = [
+	protected get additionRows(): TaskParam[]  {
+		return 	[
 			//{label: '分值', values: this.renderPoint()}, 
 			{label: '分派工时', values: this.renderAssignHours()}, 
 			{label: '实际工时', values: this.renderHours(), onClick: this.onClickHours}, 
 		];
-			return <div>
-			{additionRows.map(v => this.renderParam(v))}
-		</div>;
 	}
 
 	protected renderHours() {

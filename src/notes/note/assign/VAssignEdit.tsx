@@ -3,7 +3,7 @@ import { FA } from "tonva";
 import { CNoteAssign } from "./CNoteAssign";
 import { VNoteBaseEdit } from 'notes/noteBase';
 import { none } from 'tool';
-import { checkHourMinutes, taskTimeToString } from 'notes/model';
+import { taskTimeToString } from 'notes/model';
 import { CInputHours } from 'notes/components';
 
 interface TaskParam {

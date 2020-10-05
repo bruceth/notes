@@ -129,12 +129,13 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		</div>
 	}
 
-	protected additionRows: TaskParam[] = [
-		//{label: '分值', values: this.renderPoint()}, 
-		{label: '分派工时', values: this.renderAssignHours()}, 
-		{label: '实际工时', values: this.renderHours()}, 
-	];
-
+	protected get additionRows(): TaskParam[]  {
+		return 	[
+			//{label: '分值', values: this.renderPoint()}, 
+			{label: '分派工时', values: this.renderAssignHours()}, 
+			{label: '实际工时', values: this.renderHours()}, 
+		];
+	}
 
 	protected renderTaskAdditions() {
 		return <div>

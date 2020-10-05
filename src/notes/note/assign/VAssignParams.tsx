@@ -8,7 +8,7 @@ import { CNoteAssign } from "./CNoteAssign";
 import { CAssignTo } from './CAssignTo';
 import { CNotes } from 'notes/CNotes';
 import { CSelectContact } from 'notes/components/selectContact';
-import { checkHourMinutes, taskTimeToString } from 'notes/model';
+import { taskTimeToString } from 'notes/model';
 import { CInputHours } from 'notes/components';
 
 export interface Row {

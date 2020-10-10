@@ -171,6 +171,12 @@ export class CNotes extends CUqBase {
 		cNoteAssign.init(undefined);
 		cNoteAssign.showAddPage();
 	}
+
+	duplicateAssign = (param: NoteItem) => {
+		let cNoteAssign = new CNoteAssign(this);
+		cNoteAssign.init(param);
+		cNoteAssign.showAddPage();
+	}
 	
 	async showShareTo() {
 		//this.noteItem = noteItem;

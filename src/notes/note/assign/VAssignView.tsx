@@ -1,6 +1,6 @@
 import { NoteItem } from 'notes/model';
 import React from 'react';
-import { List } from 'tonva';
+import { DropdownAction, DropdownActions, List } from 'tonva';
 import { VNoteBaseView } from '../../noteBase';
 import { getTaskItemState } from '../task/TaskState';
 import { CNoteAssign } from './CNoteAssign';
@@ -13,6 +13,21 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 
 	protected renderRelatives() {
 		return this.renderVm(VAssignRelatives);
+	}
+
+	right() {
+		let dropdownActions: DropdownAction[] = [
+			{
+				icon:'hand-pointer-o', 
+				caption:'复制任务', 
+				action: this.controller.duplicateAssign,
+				iconClass: 'text-primary'
+			}
+		];
+		return <DropdownActions actions={dropdownActions}
+			icon="plus"
+			itemIconClass="text-info"
+			className="cursor-pointer btn btn-lg text-white p-1 mr-1"/>
 	}
 
 	footer() {

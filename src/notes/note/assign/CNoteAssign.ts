@@ -35,6 +35,9 @@ export class CNoteAssign extends CNote {
 
 	@computed get isContentChanged():boolean {return this.changed || this.cContent.changed}
 	get type():EnumNoteType { return EnumNoteType.assign }
+	@computed get isNoteEmpty(): boolean {
+		return (this.caption === undefined || this.caption.trim().length === 0) || this.cContent.isEmpty;
+	}
 
 	renderIcon(): JSX.Element {
 		return renderIcon('list', 'text-primary');
@@ -58,6 +61,17 @@ export class CNoteAssign extends CNote {
 	showEditPage() {
 		//this.cContent.startInput();
 		//this.openVPage(VAssignEdit);
+	}
+
+	duplicateAssign = () => {
+		//this.owner
+		let noteItem = {...this.noteItem};
+		noteItem.obj = JSON.parse(noteItem.content);
+		noteItem.commentCount = 0;
+		noteItem.commentUnread = 0;
+		noteItem.note = undefined;
+		this.closePage();
+		this.owner.duplicateAssign(noteItem);
 	}
 
 	showAddPage() {

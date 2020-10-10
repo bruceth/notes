@@ -4,6 +4,7 @@ import { observable } from "mobx";
 export abstract class CContent extends Controller {
 	@observable changed: boolean = false;
 	protected async internalStart() {}
+	get isEmpty():boolean { return true; }
 
 	//onContentChanged: () => Promise<void>;
 	toString(): string {return};

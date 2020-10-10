@@ -61,6 +61,8 @@ export interface Notes {
 	BookReport: Tuid;
 	GetRootUnitProjects: Query;
 	GetRootUnitReports: Query;
+	GetUnitProjects: Query;
+	SetUnitProjects: Action;
 };
 
 export interface UQs {

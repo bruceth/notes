@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import { FA } from "tonva";
 import { TaskCheckItemBase } from './model';
 import { VNoteBaseView } from '../../noteBase';
 import { CNoteTask } from "./CNoteTask";
@@ -63,7 +64,7 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 				{this.renderCaption()}
 				<div>
 					{this.renderFrom()} 
-					<span className="px-4">{this.renderEditTime()}</span>
+					<span className="mr-3">{this.renderEditTime()}</span>
 				</div>
 			</div>			
 		</div>;
@@ -93,19 +94,17 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 	}*/
 
 	protected renderDirBottom():JSX.Element {
-		//return React.createElement(observer(() => {
-			let divToCount = this.renderToCount();
-			let divSpawnCount = this.renderSpawnCount();
-			let divComment = this.renderCommentFlag();
-			if (divToCount || divSpawnCount || divComment) {
-				return <div className="d-flex align-items-center px-3 mb-1">
-					{divToCount}
-					{divSpawnCount}
-					{divComment}
-					<div className="mr-auto" />
-				</div>;
-			}
-		//}));
+		let divToCount = this.renderToCount();
+		let divSpawnCount = this.renderSpawnCount();
+		let divComment = this.renderCommentFlag();
+		if (divToCount || divSpawnCount || divComment) {
+			return <div className="d-flex align-items-center px-3 mb-1">
+				{divToCount}
+				{divSpawnCount}
+				{divComment}
+				<div className="mr-auto" />
+			</div>;
+		}
 	}
 
 	protected renderCaption() {
@@ -121,15 +120,22 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 		return <div key={label} className="px-3 py-2 bg-white d-flex align-items-center border-bottom" onClick={onClick}>
 			<div className="text-muted mr-3 w-5c">{label}</div>
 			<div className="flex-fill mr-3 ">{values || none}</div>
+			{
+				onClick ?
+				<FA className="ml-auto" name="angle-right" />
+				:
+				undefined
+			}
 		</div>
 	}
 
-	protected additionRows: TaskParam[] = [
-		//{label: '分值', values: this.renderPoint()}, 
-		{label: '分派工时', values: this.renderAssignHours()}, 
-		{label: '实际工时', values: this.renderHours()}, 
-	];
-
+	protected get additionRows(): TaskParam[]  {
+		return 	[
+			//{label: '分值', values: this.renderPoint()}, 
+			{label: '分派工时', values: this.renderAssignHours()}, 
+			{label: '实际工时', values: this.renderHours()}, 
+		];
+	}
 
 	protected renderTaskAdditions() {
 		return <div>

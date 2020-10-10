@@ -2,6 +2,7 @@ TUID BookProject (
 	id,
 	rootUnit ID,				-- 机构 0: 则是通用的
 	name CHAR(100),
+	caption CHAR(100),
 	memo CHAR(100),
 	ratioX INT DEFAULT 1,		-- ratioX / ratioY 是显示内容值
 	ratioY INT DEFAULT 1,
@@ -35,20 +36,27 @@ TUID BookReport (
 	id,
 	rootUnit ID,					-- 机构 0: 则是通用的
 	caption CHAR(200),
-	ARR projects (
-		owner,
-		id,
-		project ID BookProject,
-		header CHAR(100),
-		readUnit CHAR(100),			-- 可读单位的字符串
-	),
 	index rootUnit_id (rootUnit, id) UNIQUE,
+);
+
+MAP BookReportProject (
+	KEY report ID BookReport,
+	KEY project ID BookProject,
+	header CHAR(100),
+	readUnit CHAR(100),			-- 可读单位的字符串
+	orderNo TINYINT,			-- 最多127个
 );
 
 MAP BookUnitReport (
 	KEY unit ID,
 	KEY report ID BookReport,
 	role TINYINT DEFAULT 127,	-- 单位role权限 EnumUnitRole
+);
+
+MAP BookUnitProject (
+	KEY unit ID,
+	KEY project ID BookProject,
+	orderNo SMALLINT,			-- 最多35535个
 );
 
 ACTION InitMySetting (
@@ -275,6 +283,7 @@ QUERY GetRootUnitProjects (
 RETURNS ret (
 	id ID,
 	name CHAR(100),
+	caption CHAR(100),
 	memo CHAR(100),
 	ratioX INT, 						-- ratioX / ratioY 是显示内容值
 	ratioY INT,
@@ -283,7 +292,7 @@ RETURNS ret (
 	[$update] TIMESTAMP,
 ) {
 	INTO ret SELECT a.id,
-		a.name, a.memo,
+		a.name, a.caption, a.memo,
 		a.ratioX, a.ratioY,				-- ratioX / ratioY 是显示内容值
 		a.readUnit,
 		a.[$create], a.[$update]
@@ -305,25 +314,42 @@ RETURNS ret (
 		ORDER BY a.id;
 };
 
-QUERY GetReportProjects (
-	id ID,
+QUERY GetUnitProjects (
+	rootUnit ID,
+	unit ID,
 )
-RETURNS projects (
-	owner ID,
-	id ID,
-	project ID,
-	header CHAR(100),
-	readUnit CHAR(100),			-- 可读单位的字符串
-)
-RETURNS projectTuids (
+RETURNS ret (
 	id ID,
 	name CHAR(100),
-	ratioX INT,					-- ratioX / ratioY 是显示内容值
+	caption CHAR(100),
+	memo CHAR(100),
+	ratioX INT, 						-- ratioX / ratioY 是显示内容值
 	ratioY INT,
+	readUnit CHAR(20),
+	[$create] TIMESTAMP, 
+	[$update] TIMESTAMP,
+	orderNo SMALLINT,
 ) {
-	INTO projects SELECT a.owner, a.id, a.project, a.header, a.readUnit
-		FROM BookReport.Projects as a;
-	INTO projectTuids SELECT a.id, a.name, a.ratioX, a.ratioY
-		FROM BookProject as a
-		WHERE a.id IN (SELECT DISTINCT b.project FROM projects as b);
+	INTO ret SELECT a.id,
+		a.name, a.caption, a.memo,
+		a.ratioX, a.ratioY,				-- ratioX / ratioY 是显示内容值
+		a.readUnit,
+		a.[$create], a.[$update],
+		b.orderNo
+		FROM BookProject as a LEFT JOIN BookUnitProject as b ON a.id=b.project AND b.unit=unit
+		WHERE a.rootUnit=rootUnit
+		ORDER BY a.id ASC;
+};
+
+ACTION SetUnitProjects(
+	unit ID,
+	Arr projects (
+		project ID,
+		orderNo SMALLINT,
+	)
+) {
+	DELETE a FROM BookUnitProject as a WHERE a.unit=unit;
+	FOREACH projects {
+		BOOK BookUnitProject AT(unit, project) SET orderNo=orderNo;
+	}
 };

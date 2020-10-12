@@ -131,6 +131,8 @@ export class CNoteAssign extends CNote {
 	showSpawn = async (noteItem: NoteItem) => {
 		let s = new CTaskObserver(this.owner);
 		s.init(noteItem);
+		await s.lodeModel();
+		s.initModelData();
 		s.showViewPage();
 	}
 }

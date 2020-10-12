@@ -11,6 +11,7 @@ import { VAssignAdd } from './VAssignAdd';
 //import { VAssignEdit } from './VAssignEdit'
 import { VAssignDir } from './VAssignDir';
 import { CAssignTo } from './CAssignTo';
+import { CTaskObserver } from '../task/CTaskObserver';
 
 export class CNoteAssign extends CNote {
 	cContent: CContent;
@@ -125,5 +126,11 @@ export class CNoteAssign extends CNote {
 		await this.uqs.notes.AssignTask.submit(data);
 		await this.lodeModel();
 		this.noteItem.spawnCount = this.noteModel.spawn.length;
+	}
+
+	showSpawn = async (noteItem: NoteItem) => {
+		let s = new CTaskObserver(this.owner);
+		s.init(noteItem);
+		s.showViewPage();
 	}
 }

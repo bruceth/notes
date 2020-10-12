@@ -71,7 +71,7 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 		let {owner, assigned} = noteItem;
 		let state = getTaskItemState(noteItem);
 		let {content, isEnd} = state;
-		return <div className="px-3 py-2 bg-light border-top">
+		return <div className="px-3 py-2 bg-light border-top" onClick={e=>this.controller.showSpawn(noteItem)}>
 			{this.renderContact(owner as number, assigned)}
 			<div className="ml-2"></div>
 			{this.renderStateSpan(content, isEnd)}

@@ -36,7 +36,6 @@ export class VAssignView extends VNoteBaseView<CNoteAssign> {
 
 	protected renderFooter() {
 		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-center">
-			{this.renderShareButton()}
 			{this.controller.cComments.renderWriteComment()}
 		</div>;
 	}

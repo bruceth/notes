@@ -14,6 +14,9 @@ export abstract class CBase extends Controller {
 
     protected get uqs(): any {return this._uqs}
 	get cApp(): any {return this._cApp}
+	hasRole(role:string|number):boolean {
+		return this._cApp?.hasRole(role);
+	}
 
 	internalT(str:string):any {
 		let r = super.internalT(str);

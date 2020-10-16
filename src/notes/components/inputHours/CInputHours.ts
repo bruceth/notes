@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+//import { observable } from "mobx";
 import { CUqBase } from "tapp";
 
 export abstract class CInputHours extends CUqBase {

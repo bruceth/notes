@@ -63,6 +63,10 @@ export interface Notes {
 	GetRootUnitReports: Query;
 	GetUnitProjects: Query;
 	SetUnitProjects: Action;
+	GetUnitSum: Query;
+	GetMySum: Query;
+
+	TestBusBootProject: Action;
 };
 
 export interface UQs {

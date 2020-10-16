@@ -51,7 +51,7 @@ export abstract class Controller {
 		return this._t[str];
 	}
 
-	get webNav(): WebNav<any> {return;}
+	get webNav(): WebNav<any> {return undefined;}
 
 	getWebNav(): WebNav<any> {return this.webNav;}
 

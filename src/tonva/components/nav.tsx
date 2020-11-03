@@ -975,7 +975,7 @@ export class Nav {
     }
 
     async checkVersion():Promise<string> {
-        let {href} = document.location;
+        let {href} = window.location;
         href += (href.indexOf('?')>=0? '&':'?') + '_t_t_=' + new Date().getTime();
         let ret = await fetch(href);
         let r = await ret.text();

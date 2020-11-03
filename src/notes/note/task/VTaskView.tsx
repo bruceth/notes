@@ -1,12 +1,12 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { FA } from "tonva";
+import { FA } from "../../../tonva";
 import { TaskCheckItemBase } from './model';
 import { VNoteBaseView } from '../../noteBase';
 import { CNoteTask } from "./CNoteTask";
 import { VTaskRelatives } from './VTaskRelatives';
-import { none } from 'tool';
-import { taskTimeToString } from 'notes/model';
+import { none } from '../../../tool';
+import { taskTimeToString } from '../../../notes/model';
 
 export interface TaskParam {
 	label: string;
@@ -38,7 +38,6 @@ export abstract class VTaskView<T extends CNoteTask> extends VNoteBaseView<T> {
 
 	protected renderFooter() {
 		return <div className="py-2 pl-3 bg-light border-top d-flex align-items-center">
-			{this.renderShareButton()}
 			{this.controller.cComments?.renderWriteComment()}
 		</div>;
 	}

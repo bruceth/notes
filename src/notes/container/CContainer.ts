@@ -1,12 +1,12 @@
 import { CNoteBase } from "../noteBase";
 import { NoteItem, EnumNoteType } from '../model';
-import { QueryPager } from "tonva";
-import { EnumSpecFolder } from "tapp";
+import { QueryPager } from "../../tonva";
+import { EnumSpecFolder } from "../../tapp";
 import { VFolder } from "./views/VFolder"
 import { VFolderDir } from "./views/VFolderDir";
 import { VFolderView } from "./views/VFolderView";
 import { observable, computed } from "mobx";
-import { CContent, CFolder } from "notes/components";
+import { CContent, CFolder } from "../../notes/components";
 
 export abstract class CContainer extends CNoteBase {
 	@observable cContent: CContent;
@@ -21,7 +21,6 @@ export abstract class CContainer extends CNoteBase {
 			this.caption = param.caption;
 			this.cContent.init(param.obj);
 		}
-		//this.relativeKey = 'to';
 
 		let folderId = this.noteItem?.note;
 		if (!folderId) this.folderId = -EnumSpecFolder.notes;

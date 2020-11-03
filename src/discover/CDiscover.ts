@@ -1,6 +1,6 @@
-import { CUqBase } from "tapp";
+import { CUqBase } from "../tapp";
 import { VDiscover } from "./VDiscover";
-import { CBook } from "book";
+import { CBook } from "../book";
 
 export class CDiscover extends CUqBase {
 	cBook: CBook;
@@ -19,4 +19,8 @@ export class CDiscover extends CUqBase {
 
 	tab = () => this.renderView(VDiscover);
 
+	async testBus() {
+		await this.uqs.notes.TestBusBootProject.submit({});
+		alert('test bus');
+	}
 }

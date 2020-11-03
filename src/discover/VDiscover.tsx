@@ -1,6 +1,6 @@
 import React from 'react';
 import { CDiscover } from './CDiscover';
-import { VPage, LMR, FA } from 'tonva';
+import { VPage, LMR, FA } from '../tonva';
 
 interface Item {
 	icon: string;
@@ -30,6 +30,10 @@ export class VDiscover extends VPage<CDiscover> {
 		let cn = 'px-3 py-2 cursor-pointer bg-white mb-1';
 		let right = <FA name="angle-right" />;
 		return <div className="py-3">
+			<div>
+				<button className="btn btn-primary" onClick={this.testBus}>测试Bus</button>
+			</div>
+
 			{this.controller.cBook.renderBook()}
 
 			{this.items.map((v, index) => {
@@ -43,5 +47,9 @@ export class VDiscover extends VPage<CDiscover> {
 				</LMR>
 			})}
 		</div>;
+	}
+
+	private testBus = async () => {
+		await this.controller.testBus();
 	}
 }

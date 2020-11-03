@@ -1,11 +1,14 @@
 import { LocalMap } from './localDb';
+import _ from 'lodash';
 
 const testingTags:string[] = ['/test', '/test/', '-test', '-test/'];
 function isTesting():boolean {
-    let {pathname} = document.location;
+    if ("undefined" != typeof wx)
+        return false;
+    let {pathname} = window.location;
     let pn = pathname.toLowerCase();
     for (let item of testingTags) {
-        if (pn.endsWith(item) === true) return true;
+        if (_.endsWith(pn, item) === true) return true;
     }
     return false;
 }

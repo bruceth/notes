@@ -1,7 +1,7 @@
-import { CUqBase } from "tapp";
-import { initNoteItemObj, NoteItem } from "notes/model";
+import { CUqBase } from "../tapp";
+import { initNoteItemObj, NoteItem } from "../notes/model";
 import { VBook } from "./VBook";
-import { QueryPager } from "tonva";
+import { QueryPager } from "../tonva";
 import { VFlow } from "./VFlow";
 
 export interface ProjectSum {
@@ -35,8 +35,8 @@ export class CBook extends CUqBase {
 	}
 
 	async loadBookProjects() {
-		let ret = await this.uqs.notes.GetBookProjects.query({user: this.user.id, at: undefined}, true);
-		this.projectSums = ret.ret;
+		//let ret = await this.uqs.notes.GetBookProjects.query({user: this.user.id, at: undefined}, true);
+		this.projectSums = []; //ret.ret;
 	}
 
 	renderBook() {

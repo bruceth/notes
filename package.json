@@ -107,7 +107,7 @@
     "wxapp-fetch": "^0.1.1"
   },
   "scripts": {
-    "start": "set PORT=5022 && node scripts/start.js",
+    "start": "set PORT=5012 && node scripts/start.js",
     "build": "node scripts/build.js",
     "build:mp": "rimraf build/mp/common && cross-env NODE_ENV=production webpack --config config/webpack.mp.config.js --progress",
     "test": "node scripts/test.js"
@@ -190,6 +190,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.12.1"
+    "@babel/preset-env": "^7.12.1",
+    "js-conditional-compile-loader": "^1.0.14"
   }
 }

@@ -5,6 +5,15 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const MpPlugin = require('mp-webpack-plugin')
 const isOptimize = false // 是否压缩业务代码，开发者工具可能无法完美支持业务代码使用到的 es 特性，建议自己做代码压缩
+const conditionalCompiler = {
+  loader: 'js-conditional-compile-loader',
+  options: {
+    isDebug: process.env.NODE_ENV === 'development', // optional, this expression is default
+    envTest: process.env.ENV_CONFIG === 'test', // any prop name you want, used for /* IFTRUE_evnTest ...js code... FITRUE_evnTest */
+    isMP: true,
+    isNotMP: false,
+  }
+}
 
 module.exports = {
   mode: 'production',
@@ -92,32 +101,37 @@ module.exports = {
       },
       {
         test: /\.(js|mjs|jsx|ts|tsx)$/,
-        loader: 'babel-loader',
         exclude: /node_modules/,
-        options: {
-          sourceType: 'unambiguous',
-          presets: [
-            '@babel/react', // 支持react
-            '@babel/typescript', // 支持typescript
-            ['@babel/env', {
-                 modules: false,
-                //useBuiltIns: 'usage',
-                //corejs:3
-                targets: {
-                  browsers: ["> 1%", "last 2 versions", "not ie <= 8"]
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              sourceType: 'unambiguous',
+              presets: [
+                '@babel/react', // 支持react
+                '@babel/typescript', // 支持typescript
+                ['@babel/env', {
+                  modules: false,
+                  //useBuiltIns: 'usage',
+                  //corejs:3
+                  targets: {
+                    browsers: ["> 1%", "last 2 versions", "not ie <= 8"]
+                  }
                 }
-              }
-            ],
-          ],
-          plugins: [
-            ['transform-react-jsx'], 
-            ['class'],
-            ['@babel/plugin-transform-runtime'],
-            ["@babel/plugin-proposal-decorators", { "legacy": true }],
-            ["@babel/plugin-proposal-class-properties", { "loose": true }],
-            ["@babel/plugin-proposal-object-rest-spread"],
-          ],
-        },
+                ],
+              ],
+              plugins: [
+                ['transform-react-jsx'],
+                ['class'],
+                ['@babel/plugin-transform-runtime'],
+                ["@babel/plugin-proposal-decorators", { "legacy": true }],
+                ["@babel/plugin-proposal-class-properties", { "loose": true }],
+                ["@babel/plugin-proposal-object-rest-spread"],
+              ],
+            },
+          },
+          conditionalCompiler
+        ]
       },
       {
         test: /\.(png|jpg|gif|env)$/,

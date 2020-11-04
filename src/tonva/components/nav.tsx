@@ -16,9 +16,9 @@ import { Navigo, RouteFunc, Hooks, NamedRoute } from './navigo';
 import _ from 'lodash';
 import 'font-awesome/css/font-awesome.min.css';
 import '../css/va-form.css';
-/* IFTRUE_isMP */
+/* IFTRUE_isMP
 import '../css/vamp.css';
-/* FITRUE_isMP */
+FITRUE_isMP */
 /* IFTRUE_isNotMP */
 import '../css/va.css';
 /* FITRUE_isNotMP */

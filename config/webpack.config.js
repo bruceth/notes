@@ -144,6 +144,7 @@ module.exports = function (webpackEnv) {
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
       },
+      conditionalCompiler
     ].filter(Boolean);
     if (preProcessor) {
       loaders.push(

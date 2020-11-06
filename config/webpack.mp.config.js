@@ -98,6 +98,7 @@ module.exports = {
           {
             loader: 'less-loader',
           },
+          conditionalCompiler
         ],
       },
       {

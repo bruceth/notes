@@ -3,7 +3,7 @@
  */
 
 module.exports = {
-  origin: 'http://node.jjol.cn',
+  origin: 'https://nodes.jjol.cn',
   entry: '/test/aaa',
   router: {
     index: ['/test/aaa', '/test/bbb'],
@@ -16,7 +16,7 @@ module.exports = {
     autoBuildNpm: 'npm',
   },
   app: {
-    navigationBarTitleText: '小单',
+    navigationBarTitleText: '小单测试',
   },
   appExtraConfig: {
     sitemapLocation: 'sitemap.json',
@@ -37,6 +37,6 @@ module.exports = {
   },
   projectConfig: {
     projectname: '小单',
-    appid: 'wx4d9fa3c8409812be',
+    appid: 'wxc02b28538330706a',
   },
 }

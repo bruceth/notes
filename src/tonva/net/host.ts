@@ -1,9 +1,15 @@
 import { env } from '../tool';
 import _ from 'lodash';
 
-const centerHost = process.env.isMiniprogram ? 'https://tv.jkchemical.com' : process.env['REACT_APP_CENTER_HOST'];
+/* IFTRUE_isMP
+const centerHost = 'https://tv.jkchemical.com';
+const resHost = 'https://tv.jkchemical.com';
+FITRUE_isMP */
+/* IFTRUE_isNotMP */
+const centerHost = process.env['REACT_APP_CENTER_HOST'];
+const resHost = process.env['REACT_APP_RES_HOST'] || centerHost;
+/* FITRUE_isNotMP */
 const centerDebugHost = 'localhost:3000'; //'192.168.86.64';
-const resHost = process.env.isMiniprogram ? 'https://tv.jkchemical.com' :process.env['REACT_APP_RES_HOST'] || centerHost;
 const resDebugHost = 'localhost:3015'; //'192.168.86.63';
 const uqDebugHost = 'localhost:3015'; //'192.168.86.63';
 const uqDebugBuilderHost = 'localhost:3009';

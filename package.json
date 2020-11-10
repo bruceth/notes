@@ -110,6 +110,7 @@
     "start": "set PORT=5012 && node scripts/start.js",
     "build": "node scripts/build.js",
     "build:mp": "rimraf build/mp/common && cross-env NODE_ENV=production webpack --config config/webpack.mp.config.js --progress",
+    "build:mpcp": "rimraf build/mpcp/common && cross-env NODE_ENV=production webpack --config config/webpack.mpcompress.config.js --progress",
     "test": "node scripts/test.js"
   },
   "eslintConfig": {

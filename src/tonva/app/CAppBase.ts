@@ -54,16 +54,6 @@ export abstract class CAppBase extends Controller {
 	protected setRes(res:any) {
 		setGlobalRes(res);
 	}
-	
-	protected hookElements(elements: Elements) {
-		if (elements === undefined) return;
-		for (let i in elements) {
-			let el = document.getElementById(i);
-			if (el) {
-				elements[i](el);
-			}
-		}
-	};
 
 	private appUnit:any;
 	private roleDefines: string[];
@@ -94,12 +84,13 @@ export abstract class CAppBase extends Controller {
 	
     protected async beforeStart():Promise<boolean> {
         try {
-			this.onRoute();
-			if (nav.isRouting === false) {
+			nav.onSysNavRoutes();
+			this.onNavRoutes();
+			//if (nav.isRouting === false) {
 				//await nav.init();
 				let {appName, version, tvs} = this.appConfig;
 				await UQsMan.load(appName, version, tvs);
-			}
+			//}
 			this._uqs = UQsMan._uqs;
 		
             //let retErrors = await this.load();
@@ -185,8 +176,7 @@ export abstract class CAppBase extends Controller {
 		return nav.on(args[0], args[1], args[2]);
 	}
 
-	protected onRoute() {
-	}
+	protected onNavRoutes() {return;}
 
     private showUnsupport(predefinedUnit: number) {
         nav.clear();

@@ -47,7 +47,6 @@ export class VUnsupportedUnit extends VPage<CAppBase> {
         let userName:string = user? user.name : '[未登录]';
         let {appOwner, appName} = UQsMan.value;
         return <Page header="APP无法运行" logout={true}>
-			<a>a</a>
             <div className="m-3 text-danger container">
                 <div className="form-group row">
                     <div className="col-sm-3 font-weight-bold">登录用户</div>

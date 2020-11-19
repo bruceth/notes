@@ -133,6 +133,7 @@ module.exports = {
         // by webpacks internal loaders.
         options: {
           limit: 512,
+          emitFile: false,
           name: 'https://notes.jjol.cn/[name].[ext]',
         },
       },
@@ -145,6 +146,7 @@ module.exports = {
         // by webpacks internal loaders.
         options: {
           limit: 512,
+          emitFile: false,
           name: 'https://notes.jjol.cn/static/media/[name].[hash:8].[ext]',
         },
       },

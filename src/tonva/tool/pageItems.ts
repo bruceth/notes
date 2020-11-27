@@ -3,6 +3,7 @@ import {observable, IObservableArray, computed} from 'mobx';
 
 export abstract class PageItems<T> {
     constructor(itemObservable:boolean = false) {
+		if (itemObservable === undefined) itemObservable = false;
         this._items = observable.array<T>([], {deep:itemObservable});
     }
 	private isFirst: boolean = true;
@@ -65,7 +66,7 @@ export abstract class PageItems<T> {
     protected appendPosition:'head'|'tail' = 'tail';
 
 	protected sortOrder:'asc'|'desc';
-	protected abstract async loadResults(param:any, pageStart:any, pageSize:number):Promise<{[name:string]:any[]}>;
+	protected abstract loadResults(param:any, pageStart:any, pageSize:number):Promise<{[name:string]:any[]}>;
 	protected getPageId(item:T):any {return;}
 	protected setPageStart(item:T) {
 		this.pageStart = this.getPageId(item);

@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const MpPlugin = require('mp-webpack-plugin')
-const isOptimize = false // 是否压缩业务代码，开发者工具可能无法完美支持业务代码使用到的 es 特性，建议自己做代码压缩
+const isOptimize = true // 是否压缩业务代码，开发者工具可能无法完美支持业务代码使用到的 es 特性，建议自己做代码压缩
 const conditionalCompiler = {
   loader: 'js-conditional-compile-loader',
   options: {
@@ -21,7 +21,7 @@ module.exports = {
     index: path.resolve(__dirname, '../src/index.tsx'),
   },
   output: {
-    path: path.resolve(__dirname, '../build/mp/common'), // 放到小程序代码目录中的 common 目录下
+    path: path.resolve(__dirname, '../build/mpcp/common'), // 放到小程序代码目录中的 common 目录下
     filename: '[name].js', // 必需字段，不能修改
     library: 'createApp', // 必需字段，不能修改
     libraryExport: 'default', // 必需字段，不能修改
@@ -52,10 +52,10 @@ module.exports = {
         },
       },
     },
-
+	minimize: true,
     minimizer: isOptimize
       ? [
-        // 压缩CSS
+        //压缩CSS
         new OptimizeCSSAssetsPlugin({
           assetNameRegExp: /\.(css|wxss)$/g,
           cssProcessor: require('cssnano'),
@@ -91,24 +91,13 @@ module.exports = {
         ],
       },
       {
-        test: /\.less$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          {
-            loader: 'less-loader',
-          },
-          conditionalCompiler
-        ],
-      },
-      {
         test: /\.(js|mjs|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: [
           {
             loader: 'babel-loader',
             options: {
-              sourceType: 'unambiguous',
+              //sourceType: 'unambiguous',
               presets: [
                 '@babel/react', // 支持react
                 '@babel/typescript', // 支持typescript
@@ -149,7 +138,7 @@ module.exports = {
         },
       },
       {
-        test: /\.(svg|ttf|eot|woff|woff2)\??.*$/,
+        test: /\.(svg|ttf|eot)\??.*$/,
         loader: require.resolve('url-loader'),
         // Exclude `js` files to keep "css" loader working as it injects
         // its runtime that would otherwise be processed through "file" loader.
@@ -158,6 +147,17 @@ module.exports = {
         options: {
           limit: 512,
           emitFile: false,
+          name: 'https://notes.jjol.cn/static/media/[name].[hash:8].[ext]',
+        },
+      },
+      {
+        test: /\.(woff|woff2)\??.*$/,
+        loader: require.resolve('url-loader'),
+        // Exclude `js` files to keep "css" loader working as it injects
+        // its runtime that would otherwise be processed through "file" loader.
+        // Also exclude `html` and `json` extensions so they get processed
+        // by webpacks internal loaders.
+        options: {
           name: 'https://notes.jjol.cn/static/media/[name].[hash:8].[ext]',
         },
       },

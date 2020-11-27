@@ -22,7 +22,8 @@ export class CApp extends CUqApp {
 	protected async internalStart(isUserLogin: boolean) {
 		this.setRes(res);
 		if (isUserLogin === true) await this.initMySetting();
-		if (this.isRouting === false) await this.startHome();
+		//if (this.isRouting === false) 
+		await this.startHome();
 	}
 
 	protected async startHome() {

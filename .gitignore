@@ -12,7 +12,7 @@
 
 # production
 /build/mp
-
+/build/mpcp
 # misc
 .DS_Store
 .env.local

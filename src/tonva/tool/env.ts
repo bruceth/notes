@@ -1,16 +1,10 @@
 import { LocalMap } from './localDb';
 import _ from 'lodash';
 
-const testingTags:string[] = ['/test', '/test/', '-test', '-test/'];
+// 如果路径上有独立的test单词，则是test环境
 function isTesting():boolean {
-    if ("undefined" != typeof wx)
-        return false;
-    let {pathname} = window.location;
-    let pn = pathname.toLowerCase();
-    for (let item of testingTags) {
-        if (_.endsWith(pn, item) === true) return true;
-    }
-    return false;
+	let ret = /(\btest\b)/i.test(document.location.href);
+	return ret;
 }
 
 export const env = (function () {

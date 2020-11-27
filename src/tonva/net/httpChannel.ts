@@ -60,8 +60,8 @@ export abstract class HttpChannel {
         if (headers !== undefined) {
             let h = options.headers;
             for (let i in headers) {
-                //h.append(i, encodeURI(headers[i]));
-                h[i] = encodeURI(headers[i]);
+				//h.append(i, encodeURI(headers[i]));
+				h[i] = encodeURI(headers[i]);
             }
         }
         options.method = method;
@@ -227,7 +227,7 @@ export abstract class HttpChannel {
         };
     }
 
-    protected abstract async innerFetch(url: string, options: any, waiting: boolean): Promise<any>;
+    protected abstract innerFetch(url: string, options: any, waiting: boolean): Promise<any>;
 
     async callFetch(url: string, method: string, body: any): Promise<any> {
         let options = this.buildOptions();
@@ -239,7 +239,7 @@ export abstract class HttpChannel {
     }
 
     //private buildOptions(): {method:string; headers:Headers; body:any} {
-    private buildOptions(): { method: string; headers: { [name: string]: string }; body: any } {
+		private buildOptions(): {method:string; headers:{[name:string]: string}; body:any} {
         let headers = this.buildHeaders();
         let options = {
             headers: headers,
@@ -250,7 +250,7 @@ export abstract class HttpChannel {
         return options;
     }
 
-    /*
+	/*
     protected buildHeaders():Headers {
         let {language, culture} = nav;
         let headers = new Headers();
@@ -263,24 +263,24 @@ export abstract class HttpChannel {
             headers.append('Authorization', this.apiToken); 
         }
         return headers;
-    }
-    */
-    protected buildHeaders(): { [name: string]: string } {
-        let { language, culture } = nav;
-        let headers: { [name: string]: string } = {}; //new Headers();
+	}
+	*/
+	protected buildHeaders():{[name:string]: string} { 
+        let {language, culture} = nav;
+        let headers:{[name:string]: string} = {}; //new Headers();
         //headers.append('Access-Control-Allow-Origin', '*');
-        //headers.append('Content-Type', 'application/json;charset=UTF-8');
-        headers['Content-Type'] = 'application/json;charset=UTF-8';
+		//headers.append('Content-Type', 'application/json;charset=UTF-8');
+		headers['Content-Type'] = 'application/json;charset=UTF-8';
         let lang = language;
         if (culture) lang += '-' + culture;
-        //headers.append('Accept-Language', lang);
-        headers['Accept-Language'] = lang;
-        if (this.apiToken) {
-            //headers.append('Authorization', this.apiToken); 
-            headers['Authorization'] = this.apiToken;
+		//headers.append('Accept-Language', lang);
+		headers['Accept-Language'] = lang;
+        if (this.apiToken) { 
+			//headers.append('Authorization', this.apiToken); 
+			headers['Authorization'] = this.apiToken;
         }
         return headers;
-    }
+	}
 }
 
 export class CenterHttpChannel extends HttpChannel {

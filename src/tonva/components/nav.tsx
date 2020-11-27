@@ -381,7 +381,8 @@ export class NavView extends React.Component<Props, NavViewState> {
 export interface NavSettings {
     oem?: string;
     loginTop?: JSX.Element;
-    privacy?: string;
+	privacy?: string;
+	noUnit?: boolean;
 }
 
 export class Nav {
@@ -578,7 +579,13 @@ export class Nav {
 			}
 		}
 
-		let predefinedUnit = await this.loadPredefinedUnit();
+		let predefinedUnit:number;
+		if (this.navSettings?.noUnit === true) {
+			predefinedUnit = 0;
+		}
+		else {
+			predefinedUnit = await this.loadPredefinedUnit();
+		}
 		appInFrame.predefinedUnit = predefinedUnit;
 	}
 

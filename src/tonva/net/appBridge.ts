@@ -121,7 +121,7 @@ async function onReceiveAppApiMessage(hash: string, apiName: string): Promise<Uq
         console.error('no unit defined in unit.json or in index.html, or not logined in', unit);
     }
     let parts = apiName.split('/');
-    let param = {unit: unit, uqOwner: parts[0], uqName: parts[1], appOwner: parts[2], appName:parts[3]};
+    let param = {unit, uqOwner: parts[0], uqName: parts[1], appOwner: parts[2], appName:parts[3]};
     console.log('uqTokenApi.uq onReceiveAppApiMessage', param);
     let ret = await uqTokenApi.uq(param);
     let {db, url, token} = ret;
@@ -202,7 +202,13 @@ export function appUrl(url: string, unitId: number, page?:string, param?:any[]):
 
 function getUnit():number {
 	let {unit, predefinedUnit} = appInFrame;
-    let realUnit = unit || predefinedUnit;
+	let realUnit:number;
+	if (unit !== undefined) {
+		realUnit = unit;
+	} 
+	else if (predefinedUnit !== undefined) {
+		realUnit = predefinedUnit;
+	}
     if (realUnit === undefined) {
         throw new Error('no unit defined in unit.json or not logined in');
 	}

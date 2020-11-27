@@ -1,3 +1,4 @@
+import { nav } from '../components';
 import { AppConfig, CAppBase } from './CAppBase';
 
 export async function start(CApp: new (config: AppConfig) => CAppBase, appConfig: AppConfig, isUserLogin?:boolean) {	
@@ -12,6 +13,8 @@ export async function start(CApp: new (config: AppConfig) => CAppBase, appConfig
 		if (version) appConfig.version = version;
 	}
 
+	nav.setSettings(appConfig);
 	let cApp = new CApp(appConfig);
+	cApp.init();
     await cApp.start(isUserLogin);
 }

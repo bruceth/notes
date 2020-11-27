@@ -39,7 +39,7 @@ export abstract class Tuid extends Entity {
     abstract boxId(id:number):BoxId;
     abstract valueFromId(id:number):any;
 	abstract resetCache(id:number|BoxId):void;
-	abstract async assureBox<T> (id:number|BoxId): Promise<T>;
+	abstract assureBox<T> (id:number|BoxId): Promise<T>;
 	static idValue(id: {id:number}|number):number {
 		switch (typeof id) {
 			default: debugger; throw new Error('unknown id');
@@ -68,17 +68,17 @@ export abstract class Tuid extends Entity {
     isImport = false;
     abstract get hasDiv():boolean;// {return this.divs!==undefined}
     abstract div(name:string):TuidDiv;
-    abstract async loadMain(id:number|BoxId):Promise<any>;
-	abstract async load(id:number|BoxId):Promise<any>;
-    abstract async all():Promise<any[]>;
-	abstract async save(id:number, props:any):Promise<TuidSaveResult>;
+    abstract loadMain(id:number|BoxId):Promise<any>;
+	abstract load(id:number|BoxId):Promise<any>;
+    abstract all():Promise<any[]>;
+	abstract save(id:number, props:any):Promise<TuidSaveResult>;
 	abstract saveProp(id:number, prop:string, value:any):Promise<void>;
-    abstract async search(key:string, pageStart:string|number, pageSize:number):Promise<any>;
-    abstract async searchArr(owner:number, key:string, pageStart:string|number, pageSize:number):Promise<any>;
-    abstract async loadArr(arr:string, owner:number, id:number):Promise<any>;
-    abstract async saveArr(arr:string, owner:number, id:number, props:any):Promise<void>;
-	abstract async posArr(arr:string, owner:number, id:number, order:number):Promise<void>;
-	abstract async no():Promise<TuidNOResult>;
+    abstract search(key:string, pageStart:string|number, pageSize:number):Promise<any>;
+    abstract searchArr(owner:number, key:string, pageStart:string|number, pageSize:number):Promise<any>;
+    abstract loadArr(arr:string, owner:number, id:number):Promise<any>;
+    abstract saveArr(arr:string, owner:number, id:number, props:any):Promise<void>;
+	abstract posArr(arr:string, owner:number, id:number, order:number):Promise<void>;
+	abstract no():Promise<TuidNOResult>;
 }
 
 export class TuidInner extends Tuid {

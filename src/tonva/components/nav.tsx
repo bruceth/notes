@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {observable} from 'mobx';
 import marked from 'marked';
+import _ from 'lodash';
 import {User, Guest/*, UserInNav*/} from '../tool/user';
 import {Page} from './page/page';
 import {netToken} from '../net/netToken';
@@ -13,7 +14,6 @@ import {guestApi, logoutApis, setCenterUrl, setCenterToken, appInFrame, host, re
 import { resOptions } from '../res/res';
 import { Loading } from './loading';
 import { Navigo, RouteFunc, Hooks, NamedRoute } from './navigo';
-import _ from 'lodash';
 import 'font-awesome/css/font-awesome.min.css';
 import '../css/va-form.css';
 import '../css/va.css';
@@ -22,6 +22,7 @@ import { FA } from './simple';
 import { userApi } from '../net';
 import { ReloadPage, ConfirmReloadPage } from './reloadPage';
 import lv from '../entry/login'
+import { PageWebNav } from './page';
 
 const regEx = new RegExp('Android|webOS|iPhone|iPad|' +
     'BlackBerry|Windows Phone|'  +
@@ -37,6 +38,8 @@ export const mobileHeaderStyle = isMobile? {
 //const logo = require('../img/logo.svg');
 let logMark: number;
 const logs:string[] = [];
+
+export type NavPage = (params:any) => Promise<void>;
 
 export interface Props //extends React.Props<Nav>
 {
@@ -76,7 +79,9 @@ export class NavView extends React.Component<Props, NavViewState> {
     async componentDidMount()
     {
 		window.addEventListener('popstate', this.navBack);
-		if (nav.isRouting === false) await nav.init();
+		//if (nav.isRouting === false) {
+		await nav.init();
+		//}
         await nav.start();
     }
 
@@ -335,7 +340,7 @@ export class NavView extends React.Component<Props, NavViewState> {
     }
     render() {
         const {wait, fetchError} = this.state;
-        let stack = this.state.stack;
+        let {stack} = this.state;
         let top = stack.length - 1;
         let elWait = null, elError = null;
         switch (wait) {
@@ -376,16 +381,17 @@ export class NavView extends React.Component<Props, NavViewState> {
 export interface NavSettings {
     oem?: string;
     loginTop?: JSX.Element;
-    privacy?: string;
+	privacy?: string;
+	noUnit?: boolean;
 }
 
 export class Nav {
-    private nav:NavView;
+    private navView:NavView;
     //private ws: WsBase;
     private wsHost: string;
     private local: LocalData = new LocalData();
 	private navigo: Navigo;
-	isRouting: boolean = false;
+	//isRouting: boolean = false;
 	navSettings: NavSettings;
     @observable user: User/*InNav*/ = undefined;
     testing: boolean;
@@ -408,9 +414,9 @@ export class Nav {
         return g.guest;
     }
 
-    set(nav:NavView) {
+    set(navView:NavView) {
         //this.logo = logo;
-        this.nav = nav;
+        this.navView = navView;
 	}
 	/*
     registerReceiveHandler(handler: (message:any)=>Promise<void>):number {
@@ -579,7 +585,13 @@ export class Nav {
 			}
 		}
 
-		let predefinedUnit = await this.loadPredefinedUnit();
+		let predefinedUnit:number;
+		if (this.navSettings?.noUnit === true) {
+			predefinedUnit = 0;
+		}
+		else {
+			predefinedUnit = await this.loadPredefinedUnit();
+		}
 		appInFrame.predefinedUnit = predefinedUnit;
 	}
 
@@ -601,7 +613,7 @@ export class Nav {
             
             let user: User = this.local.user.get();
             if (user === undefined) {
-                let {notLogined} = this.nav.props;
+                let {notLogined} = this.navView.props;
                 if (notLogined !== undefined) {
                     await notLogined();
                 }
@@ -623,7 +635,7 @@ export class Nav {
 	}
 
 	resolveRoute() {
-		if (this.isRouting === false) return;
+		//if (this.isRouting === false) return;
 		if (this.navigo === undefined) return;
 		this.navigo.resolve();
 	}
@@ -635,12 +647,86 @@ export class Nav {
 	on(...args:any[]):Navigo {
 		if (this.navigo === undefined) {
 			this.navigo = new Navigo();
+			if (this.isWebNav !== true) this.navigo.historyAPIUpdateMethod('replaceState');
 		}
 		return this.navigo.on(args[0], args[1], args[2]);
 	}
 
+	private navLogin:NavPage = async (params:any) => {
+		nav.showLogin(async (user: User) => window.history.back(), false);
+	}
+
+	private navLogout:NavPage = async (params:any) => {
+		nav.showLogout(async () => window.history.back());
+	}
+
+	private navRegister:NavPage = async (params:any) => {
+		nav.showRegister();
+	}
+
+	private navForget:NavPage = async (params:any) => {
+		nav.showForget();
+	}
+
+	private sysRoutes: { [route: string]: NavPage } = {
+		'/login': this.navLogin,
+		'/logout': this.navLogout,
+		'/register': this.navRegister,
+		'/forget': this.navForget,
+	}
+
+	onSysNavRoutes() {
+		this.onNavRoutes(this.sysRoutes);
+	}
+
+	private navPageRoutes: {[url:string]: NavPage};
+	private routeFromNavPage(navPage: NavPage) {
+		return (params: any, queryStr: any) => {
+			if (navPage) {
+				if (this.isWebNav) nav.clear();
+				navPage(params);
+			}
+		}
+	}
+	onNavRoute(navPage: NavPage) {
+		this.on(this.routeFromNavPage(navPage));
+	}
+	onNavRoutes(navPageRoutes: {[url:string]: NavPage}) {
+		if (!navPageRoutes) return;
+		this.navPageRoutes = _.merge(this.navPageRoutes, navPageRoutes);
+		let navOns: { [route: string]: (params: any, queryStr: any) => void } = {};
+		for (let route in navPageRoutes) {
+			let navPage = navPageRoutes[route];
+			navOns[route] = this.routeFromNavPage(navPage);
+		}
+		this.on(navOns);
+	}
+
+	/*
+	get isWebNav():boolean { 
+		if (!this.navigo) return false;
+		return !isMobile;
+	}
+	*/
+	isWebNav:boolean = false;
+	backIcon = <i className="fa fa-angle-left" />;
+	closeIcon = <i className="fa fa-close" />;
+	setIsWebNav() {
+		this.isWebNav = true;
+		this.backIcon = <i className="fa fa-arrow-left" />;
+		this.closeIcon = <i className="fa fa-close" />;
+	}
+
+	pageWebNav: PageWebNav;
+
+	get isMobile():boolean {return isMobile;}
+
 	navigate(url:string, absolute?:boolean) {
-		this.clear();
+		if (!this.navigo) {
+			alert('Is not in webnav state, cannot navigate to url "' + url + '"');
+			return;
+		}
+		if (this.testing === true) url += '#test';
 		return this.navigo.navigate(url, absolute);
 	}
 
@@ -654,7 +740,7 @@ export class Nav {
 	}
 
     async showAppView(isUserLogin?: boolean) {
-        let {onLogined} = this.nav.props;
+        let {onLogined} = this.navView.props;
         if (onLogined === undefined) {
             nav.push(<div>NavView has no prop onLogined</div>);
             return;
@@ -783,10 +869,10 @@ export class Nav {
 			{withBack, callback}
 		);
         if (withBack !== true) {
-            this.nav.clear();
+            this.navView.clear();
             this.pop();
         }
-        this.nav.push(loginView);
+        this.navView.push(loginView);
     }
 
     async showLogout(callback?: ()=>Promise<void>) {
@@ -801,7 +887,19 @@ export class Nav {
                 </div>
             </div>
         </Page>);
-    }
+	}
+	
+	async showRegister() {
+		let lv = await import('../entry/register');
+		let c = new lv.RegisterController(undefined);
+		await c.start();
+	}
+
+	async showForget() {
+		let lv = await import('../entry/register');
+		let c = new lv.ForgetController(undefined);
+		await c.start();
+	}
 
     async logout(callback?:()=>Promise<void>) { //notShowLogin?:boolean) {
         appInFrame.unit = undefined;
@@ -824,59 +922,59 @@ export class Nav {
     }
 
     get level(): number {
-        return this.nav.level;
+        return this.navView.level;
     }
     startWait() {
-        this.nav?.startWait();
+        this.navView?.startWait();
     }
     endWait() {
-        this.nav?.endWait();
+        this.navView?.endWait();
     }
     async onError(error: FetchError) {
-        await this.nav.onError(error);
+        await this.navView.onError(error);
     }
     async showUpgradeUq(uq:string, version:number):Promise<void> {
-        await this.nav.showUpgradeUq(uq, version);
+        await this.navView.showUpgradeUq(uq, version);
     }
 
     show (view: JSX.Element, disposer?: ()=>void): void {
-        this.nav.show(view, disposer);
+        this.navView.show(view, disposer);
     }
     push(view: JSX.Element, disposer?: ()=>void): void {
-        this.nav.push(view, disposer);
+        this.navView.push(view, disposer);
     }
     replace(view: JSX.Element, disposer?: ()=>void): void {
-        this.nav.replace(view, disposer);
+        this.navView.replace(view, disposer);
     }
     pop(level:number = 1) {
-        this.nav.pop(level);
+        this.navView.pop(level);
     }
     topKey():number {
-        return this.nav.topKey();
+        return this.navView.topKey();
     }
     popTo(key:number) {
-        this.nav.popTo(key);
+        this.navView.popTo(key);
     }
     clear() {
-        this.nav?.clear();
+        this.navView?.clear();
     }
     navBack() {
-        this.nav.navBack();
+        this.navView.navBack();
     }
     ceaseTop(level?:number) {
-        this.nav.ceaseTop(level);
+        this.navView.ceaseTop(level);
     }
     removeCeased() {
-        this.nav.removeCeased();
+        this.navView.removeCeased();
     }
     async back(confirm:boolean = true) {
-        await this.nav.back(confirm);
+        await this.navView.back(confirm);
     }
     regConfirmClose(confirmClose: ()=>Promise<boolean>) {
-        this.nav.regConfirmClose(confirmClose);
+        this.navView.regConfirmClose(confirmClose);
     }
     confirmBox(message?:string): boolean {
-        return this.nav.confirmBox(message);
+        return this.navView.confirmBox(message);
     }
     async navToApp(url: string, unitId: number, apiId?:number, sheetType?:number, sheetId?:number):Promise<void> {
         return new Promise<void>((resolve, reject) => {

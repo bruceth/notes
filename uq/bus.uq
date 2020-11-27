@@ -1,3 +1,4 @@
+/*
 Bus BusBookProject FROM /[book-project]
     ACCEPT proof {
 		VAR projectId ID, note ID;
@@ -10,3 +11,12 @@ ACTION TestBusBootProject(
 ) {
 	Bus BusBookProject.Proof SET project='看看2', debit=98, memo='test bus';
 };
+*/
+
+Bus BusNotes FROM /notes
+	ACCEPT item {
+		TUID Note SET type=EnumNoteType.Text,
+			caption=project,
+			content=memo,
+			owner=$user;
+	};

@@ -1,6 +1,5 @@
 import * as React from 'react';
-import {nav, Page, Form, Schema, UiSchema, UiTextItem, UiPasswordItem, Context, UiButton, resLang, StringSchema} from '../components';
-import { RegisterController, ForgetController } from './register';
+import {nav, Page, Form, Schema, UiSchema, UiTextItem, UiPasswordItem, Context, UiButton, resLang, StringSchema, Ax} from '../components';
 import { userApi } from '../net';
 import { LoginRes, loginRes } from '../res';
 import { tonvaTop, getSender } from './tools';
@@ -53,7 +52,8 @@ export default class Login extends React.Component<LoginProps> {
         if (name === 'password') {
             return await this.onSubmit('login', context);
         }
-    }
+	}
+	/*
     private clickReg = () => {
         //nav.replace(<RegisterView />);
         let register = new RegisterController(undefined);
@@ -62,14 +62,14 @@ export default class Login extends React.Component<LoginProps> {
     private clickForget = () => {
         let forget = new ForgetController(undefined);
         forget.start();
-    }
+	}
+	*/
     render() {
         let footer = <div><div className="d-block">
             <div className='text-center'>
-                <button className="btn btn-link" style={{margin:'0px auto'}}
-                    onClick={this.clickReg}>
+                <Ax href="/register" className="btn btn-link" style={{margin:'0px auto'}}>
                     注册账号
-                </button>
+                </Ax>
             </div>
             {nav.privacyEntry()}
         </div>
@@ -88,10 +88,10 @@ export default class Login extends React.Component<LoginProps> {
                         onButtonClick={this.onSubmit} 
                         onEnter={this.onEnter}
                         requiredFlag={false} />
-                    <button className="btn btn-link btn-block"
-                        onClick={() => this.clickForget()}>
+					{/*onClick={() => this.clickForget()}*/}
+                    <Ax className="btn btn-link btn-block" href="/forget">
                         忘记密码
-                    </button>
+                    </Ax>
                 </div>
                 <div className="flex-fill" />
                 <div className="flex-fill" />

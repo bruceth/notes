@@ -54,16 +54,6 @@ export abstract class CAppBase extends Controller {
 	protected setRes(res:any) {
 		setGlobalRes(res);
 	}
-	
-	protected hookElements(elements: Elements) {
-		if (elements === undefined) return;
-		for (let i in elements) {
-			let el = document.getElementById(i);
-			if (el) {
-				elements[i](el);
-			}
-		}
-	};
 
 	private appUnit:any;
 	private roleDefines: string[];
@@ -83,16 +73,24 @@ export abstract class CAppBase extends Controller {
 
 	setAppUnit(appUnit:any) {
 		this.appUnit = appUnit;
-	}
+		let {roleDefs} = appUnit;
+		if (roleDefs) {
+			this.roleDefines = roleDefs.split('\t');
+		}
+		else {
+			this.roleDefines = [];
+		}
+}
 	
     protected async beforeStart():Promise<boolean> {
         try {
-			this.onRoute();
-			if (nav.isRouting === false) {
+			nav.onSysNavRoutes();
+			this.onNavRoutes();
+			//if (nav.isRouting === false) {
 				//await nav.init();
 				let {appName, version, tvs} = this.appConfig;
 				await UQsMan.load(appName, version, tvs);
-			}
+			//}
 			this._uqs = UQsMan._uqs;
 		
             //let retErrors = await this.load();
@@ -104,6 +102,8 @@ export abstract class CAppBase extends Controller {
             let {user} = nav;
             if (user !== undefined && user.id > 0) {
 				let result = await centerApi.userAppUnits(UQsMan.value.id);
+				this.appUnits = result;
+				/*
 				// 老版本，只返回一个数组。新版本，返回两个数组。下面做两个数组的判断
 				if (result.length === 0) {
 					this.appUnits = result;
@@ -121,14 +121,17 @@ export abstract class CAppBase extends Controller {
 						this.appUnits = result;
 					}
 				}
+				*/
 				if (this.noUnit === true) return true;
                 switch (this.appUnits.length) {
                     case 0:
                         this.showUnsupport(predefinedUnit);
 						return false;
                     case 1:
-						this.appUnit = this.appUnits[0];
-                        let appUnitId = this.appUnit.id;
+						let appUnit = this.appUnits[0];
+						this.setAppUnit(appUnit);
+						let {id} = appUnit;
+                        let appUnitId = id;
                         if (appUnitId === undefined || appUnitId < 0 || 
                             (predefinedUnit !== undefined && appUnitId !== predefinedUnit))
                         {
@@ -173,8 +176,7 @@ export abstract class CAppBase extends Controller {
 		return nav.on(args[0], args[1], args[2]);
 	}
 
-	protected onRoute() {
-	}
+	protected onNavRoutes() {return;}
 
     private showUnsupport(predefinedUnit: number) {
         nav.clear();
